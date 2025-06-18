@@ -1,0 +1,4 @@
+.flex { display: flex; }
+.alignCenter { align-items: center; }
+.justifyCenter { justify-content: center; }
+.center { text-align: center; margin-left: auto; margin-right: auto; @extend .alignCenter; @extend .justifyCenter; }
