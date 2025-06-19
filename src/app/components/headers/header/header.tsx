@@ -12,7 +12,7 @@ export default function Header() {
         <header className={`containerX ${menuExpanded ? `menuExpanded` : `menuCollapsed`}`}>
             <div className={`headerInner gridContainer w95i`} style={{ gridTemplateColumns: `auto 1fr` }}>
                 <div className={`headerStart`}>
-                    <Link href={`/`} className={`largeFont colorwhite`}>
+                    <Link href={`/`} className={`logoLink largeFont colorwhite`}>
                         <Logo />
                     </Link>
                 </div>

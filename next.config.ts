@@ -1,4 +1,5 @@
 import withPWA from 'next-pwa';
+import { NextConfig } from 'next';
 
 const withPWANextConfig = withPWA({
   dest: `public`,
@@ -6,7 +7,8 @@ const withPWANextConfig = withPWA({
   skipWaiting: true,
 });
 
-const nextConfig = {
+const nextConfig: NextConfig = {
+  devIndicators: false,
   reactStrictMode: true,
   async rewrites() {
     return [
@@ -64,4 +66,4 @@ const nextConfig = {
   }
 };
 
-export default withPWANextConfig(nextConfig);
+export default withPWANextConfig(nextConfig as any);

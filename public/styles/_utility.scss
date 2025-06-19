@@ -51,6 +51,7 @@
         repeat(auto-fit, minmax(0, 1fr)); 
 }
 
+.gap0 { gap: 0px; grid-gap: 0px; }
 .gap5 { gap: 5px; grid-gap: 5px; }
 .gap10 { gap: 10px; grid-gap: 10px; }
 .gap15 { gap: 15px; grid-gap: 15px; }

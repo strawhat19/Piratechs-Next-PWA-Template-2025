@@ -7,7 +7,6 @@ export type LogoOptions = {
     size?: number;
     label?: string;
     logoIcon?: any;
-    fontSize?: number;
     className?: string;
     fontWeight?: number;
     showLogoIcon?: boolean;
@@ -15,7 +14,6 @@ export type LogoOptions = {
 
 export default function Logo({
     size = 40,
-    fontSize = 24,
     fontWeight = 700,
     className = `logo`,
     showLogoIcon = false,
@@ -28,7 +26,7 @@ export default function Logo({
             {(showLogoIcon && logoIcon != undefined) ? logoIcon : (
                 <Img className={`logo`} src={src} alt={`Logo`} width={size} height={size} />
             )}
-            <div className={`lineClamp1`} style={{ fontSize }}>
+            <div className={`logoText lineClamp1`}>
                 {label}
             </div>
         </div>

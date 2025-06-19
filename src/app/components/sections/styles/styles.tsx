@@ -1,7 +1,15 @@
+import { constants } from "@/shared/scripts/constants";
+
 export default function Styles() {
     return (
         <section className={`typography flex column gap15 w75 mxauto`}>
-            <h1 className={`center`}>Styles</h1>
+            <h1 className={`center main`}>
+                <i>Styles</i>
+            </h1>
+
+            <h2 className={`center main`}>
+                <i>Font: {constants?.fonts?.sansSerif?.plusJakartaSans}</i>
+            </h2>
 
             <h1>Header 1</h1>
             <h2>Header 2</h2>
@@ -16,7 +24,7 @@ export default function Styles() {
 
             <p>
                 This is a paragraph. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                <strong> Strong text</strong>, <em>emphasized text</em>. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit obcaecati ea sed pariatur! Nihil corporis et sapiente pariatur! Tempore qui nostrum provident! Iure cupiditate praesentium consequuntur ipsa sed, exercitationem aliquam nam laudantium repellendus, debitis aut!
+                <strong> Strong text</strong>, <em>emphasized text</em>. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit obcaecati ea sed pariatur! Nihil corporis et sapiente pariatur! Tempore qui nostrum provident!
             </p>
 
             {/* <small>This is small text.</small> */}

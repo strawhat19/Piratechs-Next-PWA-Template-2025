@@ -27,11 +27,11 @@ html, body {
 
 body {
   min-height: 100dvh;
+  font-family: var(--font);
   color: var(--foreground);
   background: var(--background);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {

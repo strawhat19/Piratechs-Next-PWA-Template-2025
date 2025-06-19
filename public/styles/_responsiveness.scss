@@ -1,5 +1,9 @@
+$mobileBreakPoint3: 320px;
 $mobileBreakPoint4: 400px;
-$mobileBreakPoint5: 585px;
+$mobileBreakPoint425: 425px;
+$mobileBreakPoint480: 480px;
+$mobileBreakPoint515: 515px;
+$mobileBreakPoint585: 585px;
 $mobileBreakPoint6: 687px;
 $mobileBreakPoint7: 768px;
 
@@ -18,53 +22,128 @@ $desktopBreakPoint19: 1920px;
 
 html {
     container-type: inline-size;
+
     body {
         container-type: inline-size;
         grid-template-rows: auto 1fr 60px;
-        header {
-            height: 60px;
-            padding-top: 10px;
+    }
+
+    header {
+        height: 60px;
+        padding-top: 10px;
+        overflow-y: hidden;
+        container-type: inline-size;
+        transition: height var(--transition);
+        justify-content: flex-start !important;
+        .headerInner {
+            height: unset;
+            max-height: 60px;
+            min-height: unset;
             container-type: inline-size;
-            transition: height var(--transition);
-            justify-content: flex-start !important;
-            .headerInner {
-                height: unset;
-                max-height: 60px;
-                min-height: unset;
+        }
+    }
+
+    main {
+        padding: var(--space) 0;
+    }
+
+    .logoText {
+        font-size: 24px;
+    }
+
+    body {
+        &:has(.menuExpanded) {
+            header {
+                height: 128px;
+                grid-gap: 10px !important;
+                padding-bottom: var(--space);
+            }
+            .mobileNavContainer {
+                width: 100%;
+                display: inline-flex;
+                .mobileNav {
+                    .showOnMobile {
+                        display: none;
+                    }
+                    .hideOnMobile {
+                        display: inline-flex;
+                    }
+                }
+                nav {
+                    ul {
+                        align-items: stretch;
+                        flex-direction: column;
+                        .navigationLink {
+                            padding: 5px 20px;
+                            transition: var(--transition);
+                            border-top: 1px solid var(--main);
+                            a {
+                                grid-gap: 22px;
+                                transition: var(--transition);
+                            }
+                            svg {
+                                path {
+                                    transition: var(--transition);
+                                }
+                            }
+                            &:hover {
+                                background: var(--main);
+                                a {
+                                    color: white;
+                                }
+                                svg {
+                                    path {
+                                        fill: white;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-    @container (max-width: #{$mobileBreakPoint4}) {
+
+    @container (max-width: #{$mobileBreakPoint585}) {
+        .logoText {
+            font-size: 21px;
+        }
+    }
+    
+    @container (max-width: #{$mobileBreakPoint515}) {
+        .logoText {
+            font-size: 19px;
+        }
+        .medFont {
+            font-size: 18px;
+        }
+    }
+
+    @container (max-width: #{$mobileBreakPoint480}) {
+        .logoText {
+            font-size: 16px;
+        }
+        .medFont {
+            font-size: 14px;
+        }
+        .mobileNav {
+            ul {
+                grid-gap: 0;
+                .medFont {
+                    width: 100%;
+                    font-size: 16px;
+                    justify-content: flex-start;
+                }
+            }
+        }
+    }
+
+    @container (max-width: #{$mobileBreakPoint425}) {
         .showOnMobile {
             display: inline-flex;
         }
         .hideOnMobile {
             display: none;
-        }
-        .mobileNav {
-            .showOnMobile {
-                display: none;
-            }
-            .hideOnMobile {
-                display: inline-flex;
-            }
-        }
-        .mobileNavContainer {
-            width: 100%;
-            nav {
-                ul {
-                    padding: 0 20px;
-                    align-items: stretch;
-                    flex-direction: column;
-                }
-            }
-        }
-        body {
-            &:has(.menuExpanded) {
-                header {
-                    height: 200px;
-                }
-            }
         }
     }
 }

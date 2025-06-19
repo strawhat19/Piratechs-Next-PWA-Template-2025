@@ -12,29 +12,29 @@ export default function Nav({ iconSize = 24, className = `navComponent` }) {
     return (
         <nav className={`container ${className}`}>
             <ul className={`container row justifyEnd`}>
-                <li className={`showOnMobile`}>
+                <li className={`menuToggle showOnMobile`}>
                     {menuExpanded ? (
                         <Close 
                             style={{ fontSize: iconSize }} 
-                            className={`linkHover cursorPointer`} 
                             onClick={() => setMenuExpanded(!menuExpanded)}
+                            className={`menuToggleIcon menuCloseIcon linkHover cursorPointer`} 
                         />
                     ) : (
                         <Menu 
                             style={{ fontSize: iconSize }} 
-                            className={`linkHover cursorPointer`} 
                             onClick={() => setMenuExpanded(!menuExpanded)}
+                            className={`menuToggleIcon menuOpenIcon linkHover cursorPointer`} 
                         />
                     )}
                 </li>
-                <li className={`hideOnMobile`}>
-                    <Link href={`/about`} className={`medFont colorwhite`}>
+                <li className={`navigationLink hideOnMobile`}>
+                    <Link href={`/about`} className={`medFont colorwhite flexContainer`}>
                         <InfoIcon className={`linkHover`} style={{ fontSize: iconSize }} />
                         About
                     </Link>
                 </li>
-                <li className={`hideOnMobile`}>
-                    <Link href={`/styles`} className={`medFont colorwhite`}>
+                <li className={`navigationLink hideOnMobile`}>
+                    <Link href={`/styles`} className={`medFont colorwhite flexContainer`}>
                         <FormatPaintIcon className={`linkHover`} style={{ fontSize: iconSize - 2 }} />
                         Styles
                     </Link>
