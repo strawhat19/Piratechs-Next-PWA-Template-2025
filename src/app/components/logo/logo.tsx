@@ -10,7 +10,7 @@ export type LogoOptions = {
     fontSize?: number;
     className?: string;
     fontWeight?: number;
-    showLogoIcon: boolean;
+    showLogoIcon?: boolean;
 }
 
 export default function Logo({
