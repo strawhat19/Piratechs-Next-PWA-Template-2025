@@ -1,16 +1,3 @@
-$mobileBreakPoint5: 585px;
-$mobileBreakPoint6: 687px;
-$mobileBreakPoint7: 768px;
-
-$tabletBreakPoint9: 992px;
-$tabletBreakPoint10: 1080px;
-
-$laptopBreakPoint12: 1200px;
-$laptopBreakPoint13: 1366px;
-
-$desktopBreakPoint16: 1600px;
-$desktopBreakPoint19: 1920px;
-
 :root {
     // Spacing
     --space: 24px;
@@ -94,7 +81,7 @@ ul {
     display: flex;
     grid-gap: 5px;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .linkHover {

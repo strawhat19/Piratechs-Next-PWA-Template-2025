@@ -81,13 +81,17 @@
 .cursorAuto { cursor: auto !important; }
 .transition { transition: var(--transition); }
 
-.container {
+.containerX {
     @extend .flex; 
     @extend .w100; 
-    @extend .h100; 
     @extend .gap15; 
     @extend .center; 
     @extend .column; 
+}
+
+.container {
+    @extend .containerX; 
+    @extend .h100;  
 }
 
 .gridContainer {
@@ -97,4 +101,13 @@
     @extend .gap15;
     @extend .gridRow;
     @extend .alignCenter;
+}
+
+.lineClamp1 {
+    line-clamp: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
 }

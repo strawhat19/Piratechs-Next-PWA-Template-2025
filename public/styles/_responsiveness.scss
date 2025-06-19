@@ -1,0 +1,70 @@
+$mobileBreakPoint4: 400px;
+$mobileBreakPoint5: 585px;
+$mobileBreakPoint6: 687px;
+$mobileBreakPoint7: 768px;
+
+$tabletBreakPoint9: 992px;
+$tabletBreakPoint10: 1080px;
+
+$laptopBreakPoint12: 1200px;
+$laptopBreakPoint13: 1366px;
+
+$desktopBreakPoint16: 1600px;
+$desktopBreakPoint19: 1920px;
+
+.showOnMobile {
+    display: none;
+}
+
+html {
+    container-type: inline-size;
+    body {
+        container-type: inline-size;
+        grid-template-rows: auto 1fr 60px;
+        header {
+            height: 60px;
+            padding-top: 10px;
+            container-type: inline-size;
+            transition: height var(--transition);
+            justify-content: flex-start !important;
+            .headerInner {
+                height: unset;
+                max-height: 60px;
+                min-height: unset;
+            }
+        }
+    }
+    @container (max-width: #{$mobileBreakPoint4}) {
+        .showOnMobile {
+            display: inline-flex;
+        }
+        .hideOnMobile {
+            display: none;
+        }
+        .mobileNav {
+            .showOnMobile {
+                display: none;
+            }
+            .hideOnMobile {
+                display: inline-flex;
+            }
+        }
+        .mobileNavContainer {
+            width: 100%;
+            nav {
+                ul {
+                    padding: 0 20px;
+                    align-items: stretch;
+                    flex-direction: column;
+                }
+            }
+        }
+        body {
+            &:has(.menuExpanded) {
+                header {
+                    height: 200px;
+                }
+            }
+        }
+    }
+}
