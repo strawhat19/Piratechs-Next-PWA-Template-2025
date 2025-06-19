@@ -1,0 +1,140 @@
+$mobileBreakPoint5: 585px;
+$mobileBreakPoint6: 687px;
+$mobileBreakPoint7: 768px;
+
+$tabletBreakPoint9: 992px;
+$tabletBreakPoint10: 1080px;
+
+$laptopBreakPoint12: 1200px;
+$laptopBreakPoint13: 1366px;
+
+$desktopBreakPoint16: 1600px;
+$desktopBreakPoint19: 1920px;
+
+:root {
+    // Spacing
+    --space: 24px;
+    
+    // Sizing
+    --largeFont: 27px;
+    --fontWeight: 600;
+    --borderRadius: 5px;
+
+    // Colors
+    // greens
+    --teal: #3fa5e3;
+    --success: #13deb9;
+    
+    // blues
+    --blue: #0082c6;
+    --bluedark: #04397b;
+    --bluelight: #00a7ff;
+    --bluelighter: #009eff;
+
+    // navies
+    --navy: #041b44;
+
+    // colors
+    --bg: var(--bluedark);
+    --buttons: var(--blue);
+    --links: var(--bluelight);
+
+    --transition: 0.24s cubic-bezier(0.77, 0.2, 0.05, 1) !important;
+    --transitionalt: cubic-bezier(0.77, 0.2, 0.05, 1) !important;
+
+    // Fonts
+    --font: '__Plus_Jakarta_Sans_a182b8', '__Plus_Jakarta_Sans_Fallback_a182b8', Helvetica, Arial, sans-serif;
+}
+
+body {
+    --background: var(--bg);
+}
+
+main {
+    background: var(--navy);
+}
+
+.main {
+    color: var(--main);
+}
+
+.mainbg {
+    background: var(--main);
+}
+
+.colorwhite {
+    color: white;
+}
+
+h1 {
+    font-size: var(--largeFont);
+}
+
+p {
+    line-height: 1.6;
+}
+
+ul {
+    list-style: none;
+}
+
+.smallFont {
+    font-size: 16px;
+}
+
+.medFont {
+    font-size: 20px;
+}
+
+.largeFont {
+    font-size: var(--largeFont);
+}
+
+.flexContainer {
+    display: flex;
+    grid-gap: 5px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.linkHover {
+  color: var(--links);
+  transition: var(--transition);
+  &:hover {
+    color: var(--links);
+    filter: brightness(1.15);
+  }
+}
+
+a {
+  font-weight: 600;
+  text-decoration: none;
+  @extend .linkHover;
+  @extend .flexContainer;
+}
+
+button {
+    --color: var(--buttons); 
+
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 15px;
+    border-radius: 3px;
+
+    @extend .flexContainer;
+    
+    background: var(--color);
+    transition: var(--transition);
+    &:hover {
+        filter: brightness(1.15);
+        box-shadow: 0 0 3px var(--color);
+    }
+}
+
+blockquote {
+    color: white;
+    font-style: italic;
+    padding-left: 1rem;
+    border-left: 4px solid var(--main);
+}

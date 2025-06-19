@@ -1,4 +1,100 @@
+.m5 { margin: 5px; }
+.m10 { margin: 10px; }
+.m15 { margin: 15px; }
+.m20 { margin: 20px; }
+.m25 { margin: 25px; }
+.m30 { margin: 30px; }
+.m35 { margin: 35px; }
+.mxauto { margin-left: auto; margin-right: auto; }
+
+.p5 { padding: 5px; }
+.p10 { padding: 10px; }
+.p15 { padding: 15px; }
+.p20 { padding: 20px; }
+.p25 { padding: 25px; }
+.p30 { padding: 30px; }
+.p35 { padding: 35px; }
+
 .flex { display: flex; }
+.column { flex-direction: column; }
 .alignCenter { align-items: center; }
-.justifyCenter { justify-content: center; }
-.center { text-align: center; margin-left: auto; margin-right: auto; @extend .alignCenter; @extend .justifyCenter; }
+.row { flex-direction: row; }
+
+.spaceBetween { 
+    justify-content: space-between !important; 
+}
+
+.justifyStart { 
+    justify-items: flex-start; 
+    justify-content: flex-start; 
+}
+
+.justifyCenter { 
+    justify-items: center; 
+    justify-content: center; 
+}
+
+.justifyEnd { 
+    justify-items: flex-end; 
+    justify-content: flex-end; 
+}
+
+.center { 
+    @extend .mxauto; 
+    @extend .alignCenter; 
+    @extend .justifyCenter; 
+}
+
+.grid { display: grid; }
+.gridRow { 
+    grid-template-columns: 
+        repeat(auto-fit, minmax(0, 1fr)); 
+}
+
+.gap5 { gap: 5px; grid-gap: 5px; }
+.gap10 { gap: 10px; grid-gap: 10px; }
+.gap15 { gap: 15px; grid-gap: 15px; }
+.gap20 { gap: 20px; grid-gap: 20px; }
+.gap25 { gap: 25px; grid-gap: 25px; }
+.gap30 { gap: 30px; grid-gap: 30px; }
+.gap35 { gap: 35px; grid-gap: 35px; }
+
+.w75 { width: 75%; min-width: 75%; max-width: 75%; }
+.w80 { width: 80%; min-width: 80%; max-width: 80%; }
+.w85 { width: 85%; min-width: 85%; max-width: 85%; }
+.w90 { width: 90%; min-width: 90%; max-width: 90%; }
+.w95 { width: 95%; min-width: 95%; max-width: 95%; }
+.w100 { width: 100%; min-width: 100%; max-width: 100%; }
+
+.w95i { 
+    width: 95% !important; 
+    min-width: 95% !important; 
+    max-width: 95% !important; 
+}
+
+.h100 { height: 100%; min-height: 100%; max-height: 100%; }
+
+.hidden { display: none; }
+.fit { max-width: fit-content; }
+.blurred { filter: blur(15px); }
+.cursorPointer { cursor: pointer; }
+.cursorAuto { cursor: auto !important; }
+.transition { transition: var(--transition); }
+
+.container {
+    @extend .flex; 
+    @extend .w100; 
+    @extend .h100; 
+    @extend .gap15; 
+    @extend .center; 
+    @extend .column; 
+}
+
+.gridContainer {
+    @extend .grid;
+    @extend .w100;
+    @extend .h100;
+    @extend .gap15;
+    @extend .gridRow;
+    @extend .alignCenter;
+}

@@ -13,6 +13,7 @@ const nextConfig = {
       { source: `/about`, destination: `/pages/about` },
       { source: `/signin`, destination: `/pages/signin` },
       { source: `/signup`, destination: `/pages/signup` },
+      { source: `/styles`, destination: `/pages/styles` },
       { source: `/contact`, destination: `/pages/contact` },
       { source: `/profile`, destination: `/pages/profile` },
       { source: `/settings`, destination: `/pages/settings` },
@@ -21,6 +22,8 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Styles
+      { source: `/typography`, destination: `/styles`, permanent: true },
       // Sign In
       { source: `/log`, destination: `/signin`, permanent: true },
       { source: `/sign`, destination: `/signin`, permanent: true },
