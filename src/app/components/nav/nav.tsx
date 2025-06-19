@@ -12,21 +12,23 @@ export default function Nav({ iconSize = 24, className = `navComponent` }) {
     return (
         <nav className={`container ${className}`}>
             <ul className={`container row justifyEnd`}>
-                <li className={`menuToggle showOnMobile`}>
-                    {menuExpanded ? (
-                        <Close 
-                            style={{ fontSize: iconSize }} 
-                            onClick={() => setMenuExpanded(!menuExpanded)}
-                            className={`menuToggleIcon menuCloseIcon linkHover cursorPointer`} 
-                        />
-                    ) : (
-                        <Menu 
-                            style={{ fontSize: iconSize }} 
-                            onClick={() => setMenuExpanded(!menuExpanded)}
-                            className={`menuToggleIcon menuOpenIcon linkHover cursorPointer`} 
-                        />
-                    )}
-                </li>
+                {className != `mobileNav` && (
+                    <li className={`menuToggle showOnMobile`}>
+                        {menuExpanded ? (
+                            <Close 
+                                style={{ fontSize: iconSize }} 
+                                onClick={() => setMenuExpanded(!menuExpanded)}
+                                className={`menuToggleIcon menuCloseIcon linkHover cursorPointer`} 
+                            />
+                        ) : (
+                            <Menu 
+                                style={{ fontSize: iconSize }} 
+                                onClick={() => setMenuExpanded(!menuExpanded)}
+                                className={`menuToggleIcon menuOpenIcon linkHover cursorPointer`} 
+                            />
+                        )}
+                    </li>
+                )}
                 <li className={`navigationLink hideOnMobile`}>
                     <Link href={`/about`} className={`medFont colorwhite flexContainer`}>
                         <InfoIcon className={`linkHover`} style={{ fontSize: iconSize }} />

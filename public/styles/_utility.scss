@@ -39,6 +39,10 @@
     justify-content: flex-end; 
 }
 
+.textAlignCenter {
+    text-align: center;
+}
+
 .center { 
     @extend .mxauto; 
     @extend .alignCenter; 
@@ -105,10 +109,21 @@
 }
 
 .lineClamp1 {
-    line-clamp: 1;
+    --lines: 1;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
     text-overflow: ellipsis;
+    line-clamp: var(--lines);
     -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--lines);
 }
+
+.lineClamp2 { @extend .lineClamp1; --lines: 2; transition: var(--transition); }
+.lineClamp3 { @extend .lineClamp1; --lines: 3; transition: var(--transition); }
+.lineClamp4 { @extend .lineClamp1; --lines: 4; transition: var(--transition); }
+.lineClamp5 { @extend .lineClamp1; --lines: 5; transition: var(--transition); }
+.lineClamp6 { @extend .lineClamp1; --lines: 6; transition: var(--transition); }
+.lineClamp7 { @extend .lineClamp1; --lines: 7; transition: var(--transition); }
+.lineClamp8 { @extend .lineClamp1; --lines: 8; transition: var(--transition); }
+.lineClamp9 { @extend .lineClamp1; --lines: 9; transition: var(--transition); }
+.lineClamp10 { @extend .lineClamp1; --lines: 10; transition: var(--transition); }

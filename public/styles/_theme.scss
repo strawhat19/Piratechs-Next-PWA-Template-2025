@@ -36,6 +36,9 @@
 
 body {
     --background: var(--bg);
+    header, footer {
+        background: var(--bg);
+    }
 }
 
 main {
@@ -112,6 +115,7 @@ button {
 
     @extend .flexContainer;
     
+    color: white;
     background: var(--color);
     transition: var(--transition);
     &:hover {

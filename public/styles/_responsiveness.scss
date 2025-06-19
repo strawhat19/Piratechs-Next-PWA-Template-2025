@@ -54,7 +54,7 @@ html {
     body {
         &:has(.menuExpanded) {
             header {
-                height: 128px;
+                height: 148px;
                 grid-gap: 10px !important;
                 padding-bottom: var(--space);
             }
@@ -74,11 +74,11 @@ html {
                         align-items: stretch;
                         flex-direction: column;
                         .navigationLink {
-                            padding: 5px 20px;
+                            padding: 10px 25px;
                             transition: var(--transition);
                             border-top: 1px solid var(--main);
                             a {
-                                grid-gap: 22px;
+                                grid-gap: 20px;
                                 transition: var(--transition);
                             }
                             svg {
@@ -125,6 +125,23 @@ html {
         }
         .medFont {
             font-size: 14px;
+        }
+        header {
+            .headerInner {
+                width: 90% !important;
+                min-width: 90% !important;
+                max-width: 90% !important;
+                .headerEnd {
+                    align-self: stretch;
+                    .menuToggle {
+                        height: 100%;
+                        .menuToggleIcon {
+                            height: 100%;
+                            font-size: 28px !important;
+                        }
+                    }
+                }
+            }
         }
         .mobileNav {
             ul {
