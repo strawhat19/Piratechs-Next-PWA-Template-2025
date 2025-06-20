@@ -1,69 +1,28 @@
 import withPWA from 'next-pwa';
 import { NextConfig } from 'next';
 
-const withPWANextConfig = withPWA({
-  dest: `public`,
-  register: true,
-  skipWaiting: true,
-});
+export const routes = {
+  settings: { authenticated: `Moderator`, redirects: [`config`, `general`], icons: { fontAwesome: `fa-cog`, mui: `Settings` } },
+  chats: { authenticated: `User`, redirects: [`chat`, `message`, `messages`], icons: { fontAwesome: `fa-comments`, mui: `Chat` } },
+  profile: { authenticated: `User`, redirects: [`edit`, `account`, `preferences`], icons: { fontAwesome: `fa-user`, mui: `Person` } },
+  notifications: { authenticated: `User`, redirects: [`alerts`, `notification`], icons: { fontAwesome: `fa-bell`, mui: `Notifications` } },
+  signup: { authenticated: ``, redirects: [`new`, `sign-up`, `register`, `subscribe`], icons: { fontAwesome: `fa-user-plus`, mui: `PersonAdd` } },
+  signin: { authenticated: ``, redirects: [`log`, `sign`, `login`, `log-in`, `sign-in`], icons: { fontAwesome: `fa-sign-in-alt`, mui: `Login` } },
+  styles: { authenticated: ``, redirects: [`theme`, `design`, `components`, `typography`], icons: { fontAwesome: `fa-paint-brush`, mui: `Brush` } },
+  contact: { authenticated: ``, redirects: [`contactme`, `contactus`, `getintouch`, `get-in-touch`, `contact-me`], icons: { fontAwesome: `fa-envelope`, mui: `Mail` } },
+  about: { authenticated: ``, redirects: [`info`, `aboutus`, `portfolio`, `company`, `aboutme`, `about-us`, `about-me`], icons: { fontAwesome: `fa-info-circle`, mui: `Info` } },
+}
 
 const nextConfig: NextConfig = {
   devIndicators: false,
   reactStrictMode: true,
-  async rewrites() {
-    return [
-      { source: `/about`, destination: `/pages/about` },
-      { source: `/signin`, destination: `/pages/signin` },
-      { source: `/signup`, destination: `/pages/signup` },
-      { source: `/styles`, destination: `/pages/styles` },
-      { source: `/contact`, destination: `/pages/contact` },
-      { source: `/profile`, destination: `/pages/profile` },
-      { source: `/settings`, destination: `/pages/settings` },
-      { source: `/notifications`, destination: `/pages/notifications` },
-    ];
-  },
-  async redirects() {
-    return [
-      // Styles
-      { source: `/typography`, destination: `/styles`, permanent: true },
-      // Sign In
-      { source: `/log`, destination: `/signin`, permanent: true },
-      { source: `/sign`, destination: `/signin`, permanent: true },
-      { source: `/login`, destination: `/signin`, permanent: true },
-      { source: `/log-in`, destination: `/signin`, permanent: true },
-      { source: `/sign-in`, destination: `/signin`, permanent: true },
-      // Sign Up
-      { source: `/sign-up`, destination: `/signup`, permanent: true },
-      { source: `/register`, destination: `/signup`, permanent: true },
-      { source: `/subscribe`, destination: `/signup`, permanent: true },
-      // Profile
-      { source: `/edit`, destination: `/profile`, permanent: true },
-      { source: `/account`, destination: `/profile`, permanent: true },
-      { source: `/preferences`, destination: `/profile`, permanent: true },
-      // Settings
-      { source: `/config`, destination: `/settings`, permanent: true },
-      { source: `/general`, destination: `/settings`, permanent: true },
-      // Notifications
-      { source: `/alerts`, destination: `/notifications`, permanent: true },
-      { source: `/notification`, destination: `/notifications`, permanent: true },
-      // About
-      { source: `/info`, destination: `/about`, permanent: true },
-      { source: `/aboutus`, destination: `/about`, permanent: true },
-      { source: `/aboutme`, destination: `/about`, permanent: true },
-      { source: `/company`, destination: `/about`, permanent: true },
-      { source: `/about-us`, destination: `/about`, permanent: true },
-      { source: `/about-me`, destination: `/about`, permanent: true },
-      { source: `/portfolio`, destination: `/about`, permanent: true },
-      // Contact
-      { source: `/messages`, destination: `/contact`, permanent: true },
-      { source: `/contactus`, destination: `/contact`, permanent: true },
-      { source: `/contactme`, destination: `/contact`, permanent: true },
-      { source: `/contact-us`, destination: `/contact`, permanent: true },
-      { source: `/contact-me`, destination: `/contact`, permanent: true },
-      { source: `/getintouch`, destination: `/contact`, permanent: true },
-      { source: `/get-in-touch`, destination: `/contact`, permanent: true },
-    ];
-  }
+  rewrites: async () => Object.keys(routes).map(key => ({ source: `/${key}`, destination: `/pages/${key}` })),
+  redirects: async () => Object.entries(routes).flatMap(([key, route]) => route.redirects.map(alias => ({ source: `/${alias}`, destination: `/${key}`, permanent: true }))),
 };
 
-export default withPWANextConfig(nextConfig as any);
+export default withPWA({
+  dest: `public`,
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV !== `production`,
+})(nextConfig as any);

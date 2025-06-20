@@ -10,8 +10,9 @@ export const constants = {
     },
     images: {
         icons: {
-            logo: `icon-512x512.png`,
+            // logo: `icon-512x512.png`,
             // logo: `assets/icons/ico.svg`,
+            logo: `assets/icons/Piratechs-Icon-Blue-Neon.svg`,
         },
     },
 }

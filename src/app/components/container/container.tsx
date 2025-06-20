@@ -6,6 +6,7 @@ import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { debounce, devEnv } from '@/shared/scripts/constants';
 import { createContext, useEffect, useMemo, useState } from 'react';
+import Logo from '../logo/logo';
 
 export const State = createContext({});
 
@@ -44,8 +45,10 @@ export default function Container({ children, className = `containerComponent` }
                 <Header />
 
                 <main className={`container`}>
+
+                    <Logo label={width < 330 ? `` : undefined} />
                 
-                    {/* {loaded && isDevEnv ? width : ``} */}
+                    {loaded && isDevEnv ? `Window Width: ${width}px` : ``}
 
                     {children}
 

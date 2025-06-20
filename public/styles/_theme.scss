@@ -17,6 +17,7 @@
     --bluedark: #04397b;
     --bluelight: #00a7ff;
     --bluelighter: #009eff;
+    --blueneon: rgb(0, 191, 255);
 
     // navies
     --navy: #041b44;
@@ -24,8 +25,8 @@
     // colors
     --bg: var(--bluedark);
     --buttons: var(--blue);
-    --main: var(--bluelight);
-    --links: var(--bluelight);
+    --main: var(--blueneon);
+    --links: var(--blueneon);
 
     --transition: 0.24s cubic-bezier(0.77, 0.2, 0.05, 1) !important;
     --transitionalt: cubic-bezier(0.77, 0.2, 0.05, 1) !important;

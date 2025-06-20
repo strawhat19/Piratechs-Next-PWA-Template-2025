@@ -1,16 +1,18 @@
 import './globals.scss';
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { constants } from '@/shared/scripts/constants';
+
+export const dynamicParams = true;
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-plusJakartaSans',
 });
 
+export const viewport: Viewport = { themeColor: `#000000` };
 export const metadata: Metadata = {
-  themeColor: `#000000`,
   manifest: `/manifest.json`,
   title: constants?.titles.default,
   description: constants?.titles.extended,
