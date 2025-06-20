@@ -17,6 +17,8 @@ export const constants = {
     },
 }
 
+export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
+
 export const debounce = (func: (...args: any[]) => void, wait: number) => {
     let timeout: any;
     return (...args: any[]) => {

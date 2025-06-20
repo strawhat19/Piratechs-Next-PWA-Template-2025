@@ -1,7 +1,7 @@
 import withPWA from 'next-pwa';
 import { NextConfig } from 'next';
 
-export const routes = {
+const routes = {
   settings: { authenticated: `Moderator`, redirects: [`config`, `general`], icons: { fontAwesome: `fa-cog`, mui: `Settings` } },
   chats: { authenticated: `User`, redirects: [`chat`, `message`, `messages`], icons: { fontAwesome: `fa-comments`, mui: `Chat` } },
   profile: { authenticated: `User`, redirects: [`edit`, `account`, `preferences`], icons: { fontAwesome: `fa-user`, mui: `Person` } },

@@ -29,7 +29,6 @@ html {
     }
 
     header {
-        height: 60px;
         padding-top: 10px;
         overflow-y: hidden;
         container-type: inline-size;
@@ -51,10 +50,45 @@ html {
         font-size: 24px;
     }
 
+    .mobile {
+        .showOnMobile {
+            display: inline-flex;
+        }
+        .hideOnMobile {
+            display: none;
+        }
+        header {
+            .headerInner {
+                width: 90% !important;
+                min-width: 90% !important;
+                max-width: 90% !important;
+                .headerEnd {
+                    align-self: stretch;
+                    .menuToggle {
+                        height: 100%;
+                        .menuToggleIcon {
+                            height: 100%;
+                            font-size: 28px !important;
+                        }
+                    }
+                }
+            }
+        }
+        .mobileNav {
+            ul {
+                grid-gap: 0 !important;
+                .medFont {
+                    width: 100%;
+                    font-size: 16px;
+                    justify-content: flex-start;
+                }
+            }
+        }
+    }
+
     body {
         &:has(.menuExpanded) {
             header {
-                height: 148px;
                 grid-gap: 10px !important;
                 padding-bottom: var(--space);
             }
@@ -74,11 +108,11 @@ html {
                         align-items: stretch;
                         flex-direction: column;
                         .navigationLink {
-                            padding: 10px 25px;
                             transition: var(--transition);
                             border-top: 1px solid var(--main);
                             a {
                                 grid-gap: 20px;
+                                padding: 10px 25px;
                                 transition: var(--transition);
                             }
                             svg {
@@ -125,42 +159,6 @@ html {
         }
         .medFont {
             font-size: 14px;
-        }
-        header {
-            .headerInner {
-                width: 90% !important;
-                min-width: 90% !important;
-                max-width: 90% !important;
-                .headerEnd {
-                    align-self: stretch;
-                    .menuToggle {
-                        height: 100%;
-                        .menuToggleIcon {
-                            height: 100%;
-                            font-size: 28px !important;
-                        }
-                    }
-                }
-            }
-        }
-        .mobileNav {
-            ul {
-                grid-gap: 0;
-                .medFont {
-                    width: 100%;
-                    font-size: 16px;
-                    justify-content: flex-start;
-                }
-            }
-        }
-    }
-
-    @container (max-width: #{$mobileBreakPoint425}) {
-        .showOnMobile {
-            display: inline-flex;
-        }
-        .hideOnMobile {
-            display: none;
         }
     }
 }
