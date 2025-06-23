@@ -1,0 +1,26 @@
+.iconButton {
+    background: var(--blueopac) !important;
+    svg {
+        path {
+            fill: white;
+        }
+    }
+}
+
+.MuiTooltip-arrow {
+    color: var(--blueopac) !important;
+}
+
+.MuiTooltip-tooltip {
+    background: var(--blueopac) !important;
+}
+
+.MuiTouchRipple-root {
+    transition: var(--transition);
+}
+
+.MuiButton-root {
+    color: white !important;
+    transition: var(--transition);
+    background: var(--buttons) !important;
+}

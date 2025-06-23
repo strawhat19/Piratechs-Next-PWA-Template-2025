@@ -1,6 +1,7 @@
 'use client';
 
 import { useContext } from 'react';
+import { Button } from '@mui/material';
 import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
 
@@ -53,6 +54,12 @@ export default function Styles() {
                 <a href={`#`} className={`center`}>
                     Link
                 </a>
+            </div>
+
+            <div className={`buttons grid gridRow gap5 alignCenter`}>
+                <Button>Button</Button>
+                <Button>Button</Button>
+                <Button>Button</Button>
             </div>
 
             <p className={`center textAlignCenter ${menuExpanded ? `lineClamp3` : `lineClamp5`}`}>

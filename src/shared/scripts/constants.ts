@@ -1,7 +1,7 @@
 export const constants = {
     titles: {
         default:  `Next PWA`,
-        extended: `Next PWA w/ Typescript & Sass`,
+        extended: `Next PWA`,
     },
     fonts: {
         sansSerif: {

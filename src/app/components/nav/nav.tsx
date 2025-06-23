@@ -7,10 +7,10 @@ import { capWords } from '@/shared/scripts/constants';
 
 import { 
     Menu,
-    Mail,
     Info, 
     Brush,
     Close,
+    // Mail,
     // Chat,
     // Login,
     // Person,
@@ -28,7 +28,7 @@ export const routes = {
 //   signup: { icons: { fontAwesome: `fa-user-plus`, mui: <PersonAdd style={{ fontSize: size }} className={`linkHover`} /> } },
 //   signin: { icons: { fontAwesome: `fa-sign-in-alt`, mui: <Login style={{ fontSize: size }} className={`linkHover`} /> } },
   styles: { icons: { fontAwesome: `fa-paint-brush`, mui: <Brush style={{ fontSize: size + 2 }} className={`linkHover`} /> } },
-  contact: { icons: { fontAwesome: `fa-envelope`, mui: <Mail style={{ fontSize: size }} className={`linkHover`} /> } },
+//   contact: { icons: { fontAwesome: `fa-envelope`, mui: <Mail style={{ fontSize: size }} className={`linkHover`} /> } },
   about: { icons: { fontAwesome: `fa-info-circle`, mui: <Info style={{ fontSize: size }} className={`linkHover`} /> } },
 }
 
