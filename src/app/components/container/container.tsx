@@ -5,7 +5,7 @@ import './container.scss';
 import Logo from '../logo/logo';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
-import { debounce, devEnv } from '@/shared/scripts/constants';
+import { constants, debounce, devEnv } from '@/shared/scripts/constants';
 import { createContext, useEffect, useMemo, useState } from 'react';
 
 export const State = createContext({});
@@ -60,7 +60,7 @@ export default function Container({ children, className = `containerComponent` }
 
     return (
         <State.Provider value={state}>
-            <body className={`${className} pageContainer ${width <= 768 ? `mobile` : ``}`}>
+            <body className={`${className} pageContainer ${width <= constants?.breakpoints?.mobile ? `mobile` : ``}`}>
 
                 <Header />
 

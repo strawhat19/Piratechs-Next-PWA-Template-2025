@@ -29,7 +29,7 @@ html {
     }
 
     header {
-        padding-top: 10px;
+        padding-top: 15px;
         overflow-y: hidden;
         container-type: inline-size;
         transition: height var(--transition);
@@ -68,7 +68,6 @@ html {
                         height: 100%;
                         .menuToggleIcon {
                             height: 100%;
-                            font-size: 28px !important;
                         }
                     }
                 }

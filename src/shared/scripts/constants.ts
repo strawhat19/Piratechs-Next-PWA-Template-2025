@@ -1,4 +1,7 @@
 export const constants = {
+    breakpoints: {
+        mobile: 768,
+    },
     titles: {
         default:  `Next PWA`,
         extended: `Next PWA`,
