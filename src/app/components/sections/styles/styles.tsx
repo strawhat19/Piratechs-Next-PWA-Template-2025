@@ -9,9 +9,9 @@ export default function Styles() {
     let { menuExpanded } = useContext<any>(State);
     return (
         <section className={`typography flex column gap15 w75 mxauto`}>
-            <h2 className={`center main`}>
+            {/* <h2 className={`center main`}>
                 <i>Styles</i>
-            </h2>
+            </h2> */}
 
             <h3 className={`center main`}>
                 <i>Font: {constants?.fonts?.sansSerif?.plusJakartaSans}</i>

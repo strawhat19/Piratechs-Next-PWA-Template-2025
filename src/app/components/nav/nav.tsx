@@ -46,29 +46,21 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                             <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
                         </Icon_Button>
                     </li>
-                    <li className={`menuToggle showOnMobile`}>
+                    <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>
                         {menuExpanded ? (
-                            <Icon_Button title={`Close`}>
-                                <Close 
-                                    style={{ fontSize: iconSize }} 
-                                    onClick={() => setMenuExpanded(!menuExpanded)}
-                                    className={`menuToggleIcon menuCloseIcon linkHover cursorPointer`} 
-                                />
+                            <Icon_Button title={``}>
+                                <Close style={{ fontSize: iconSize }} className={`menuToggleIcon menuCloseIcon linkHover cursorPointer`} />
                             </Icon_Button>
                         ) : (
-                            <Icon_Button title={`Open`}>
-                                <Menu 
-                                    style={{ fontSize: iconSize }} 
-                                    onClick={() => setMenuExpanded(!menuExpanded)}
-                                    className={`menuToggleIcon menuOpenIcon linkHover cursorPointer`} 
-                                />
+                            <Icon_Button title={``}>
+                                <Menu style={{ fontSize: iconSize }} className={`menuToggleIcon menuOpenIcon linkHover cursorPointer`} />
                             </Icon_Button>
                         )}
                     </li>
                 </>}
                 {Object.entries(routes).map(([path, config]) => (
                     <li key={path} className={`navigationLink hideOnMobile`}>
-                        <Link href={`/${path}`} className={`medFont colorwhite flexContainer`}>
+                        <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
                             {config.icons.mui}
                             <span className={`linkText`}>
                                 {capWords(path)}

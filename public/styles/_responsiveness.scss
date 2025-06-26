@@ -109,9 +109,14 @@ html {
                         .navigationLink {
                             transition: var(--transition);
                             border-top: 1px solid var(--main);
+                            &:last-child {
+                                border-bottom: 1px solid var(--main);
+                            }
                             a {
+                                width: 100%;
                                 grid-gap: 20px;
                                 padding: 10px 25px;
+                                justify-content: flex-start;
                                 transition: var(--transition);
                             }
                             svg {
@@ -156,7 +161,7 @@ html {
         .logoText {
             font-size: 16px;
         }
-        .medFont {
+        .medFont, .smallFont {
             font-size: 14px;
         }
     }
