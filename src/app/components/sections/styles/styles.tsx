@@ -6,6 +6,7 @@ import Slider from '../../slider/slider';
 import { SwiperSlide } from 'swiper/react';
 import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
+import AutoComplete from '../../autocomplete/autocomplete';
 
 export default function Styles() {
     let { width, menuExpanded } = useContext<any>(State);
@@ -78,6 +79,7 @@ export default function Styles() {
 
     return (
         <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
+            <AutoComplete />
             <Slider showButtons={width > constants?.breakpoints?.mobile}>
                 <SwiperSlide>{fonts()}</SwiperSlide>
                 <SwiperSlide>{buttonsLinks()}</SwiperSlide>
