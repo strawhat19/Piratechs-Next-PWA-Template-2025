@@ -7,7 +7,7 @@ import { Swiper } from 'swiper/react';
 import { Button } from '@mui/material';
 // import { EffectCards } from 'swiper/modules';
 
-export default function Slider({ children }: any) {
+export default function Slider({ children, showButtons = true }: any) {
     let swiperRef = useRef<any>(null);
 
     const slide = (direction: number) => {
@@ -26,9 +26,11 @@ export default function Slider({ children }: any) {
 
     return <>
         <div className={`slider`}>
-            <Button onClick={() => slide(-1)} style={{ fontSize: 24, minWidth: `unset` }}>
-                {`<`}
-            </Button>
+            {showButtons && (
+                <Button className={`sliderButton`} onClick={() => slide(-1)}>
+                    {`<`}
+                </Button>
+            )}
             <Swiper 
                 loop={true}
                 // speed={500}
@@ -44,9 +46,11 @@ export default function Slider({ children }: any) {
             >
                 {children}
             </Swiper>
-            <Button onClick={() => slide(1)} style={{ fontSize: 24, minWidth: `unset` }}>
-                {`>`}
-            </Button>
+            {showButtons && (
+                <Button className={`sliderButton`} onClick={() => slide(1)}>
+                    {`>`}
+                </Button>
+            )}
         </div>
     </>
 }

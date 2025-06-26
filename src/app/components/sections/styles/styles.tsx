@@ -8,7 +8,7 @@ import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
 
 export default function Styles() {
-    let { menuExpanded } = useContext<any>(State);
+    let { width, menuExpanded } = useContext<any>(State);
 
     const fonts = () => {
         return <>
@@ -77,8 +77,8 @@ export default function Styles() {
     }
 
     return (
-        <section className={`typography flex column gap15 w75 mxauto`}>
-            <Slider>
+        <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
+            <Slider showButtons={width > constants?.breakpoints?.mobile}>
                 <SwiperSlide>{fonts()}</SwiperSlide>
                 <SwiperSlide>{buttonsLinks()}</SwiperSlide>
                 <SwiperSlide>{paragraph()}</SwiperSlide>
