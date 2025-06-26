@@ -76,7 +76,7 @@ export default function Container({ children, className = `containerComponent` }
 
                 <main className={`container`}>
 
-                    <Logo label={`Home`} />
+                    <Logo label={getPageName()} />
                 
                     {/* <div className={`grid gridRow w100 gap15`}>
                         <span className={`center`}>{loaded && isDevEnv ? `Window Width: ${width}px` : ``}</span>

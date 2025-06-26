@@ -1,0 +1,17 @@
+.slider {
+    gap: 15px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(auto, 45px) 1fr minmax(auto, 45px);
+}
+
+.swiper {
+    width: 100%;
+}
+
+.swiper-slide {
+    display: flex;
+    grid-gap: 15px;
+    flex-direction: column;
+    justify-content: center;
+}

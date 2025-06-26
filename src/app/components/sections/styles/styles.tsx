@@ -2,17 +2,16 @@
 
 import { useContext } from 'react';
 import { Button } from '@mui/material';
+import Slider from '../../slider/slider';
+import { SwiperSlide } from 'swiper/react';
 import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
 
 export default function Styles() {
     let { menuExpanded } = useContext<any>(State);
-    return (
-        <section className={`typography flex column gap15 w75 mxauto`}>
-            {/* <h2 className={`center main`}>
-                <i>Styles</i>
-            </h2> */}
 
+    const fonts = () => {
+        return <>
             <h3 className={`center main`}>
                 <i>Font: {constants?.fonts?.sansSerif?.plusJakartaSans}</i>
             </h3>
@@ -37,7 +36,11 @@ export default function Styles() {
                     Header 6
                 </h6>
             </div>
+        </>
+    }
 
+    const buttonsLinks = () => {
+        return <>
             <div className={`buttons grid gridRow gap5 alignCenter`}>
                 <button>Button</button>
                 <button>Button</button>
@@ -61,40 +64,25 @@ export default function Styles() {
                 <Button>Button</Button>
                 <Button>Button</Button>
             </div>
+        </>
+    }
 
+    const paragraph = () => {
+        return <>
             <p className={`center textAlignCenter ${menuExpanded ? `lineClamp3` : `lineClamp5`}`}>
                 This is a paragraph. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
                 <strong> Strong text</strong>, <em>emphasized text</em>. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Impedit obcaecati ea sed pariatur! Nihil corporis et sapiente pariatur! Tempore qui nostrum provident!
             </p>
+        </>
+    }
 
-            {/* <small>This is small text.</small> */}
-
-            {/* <ul>
-                <li>Unordered list item 1</li>
-                <li>Unordered list item 2</li>
-            </ul>
-
-            <ol>
-                <li>Ordered list item 1</li>
-                <li>Ordered list item 2</li>
-            </ol>
-
-            <blockquote>
-                This is a blockquote. “Typography is the craft of endowing human language with a durable visual form.” - Robert Bringhurst
-            </blockquote>
-
-            <pre>
-                <code>
-                    {`
-                        CODE BLOCKS
-
-                        const greeting = "Hello, world!";
-                        console.log(greeting);
-                    `}
-                </code>
-            </pre>
-
-            <hr /> */}
+    return (
+        <section className={`typography flex column gap15 w75 mxauto`}>
+            <Slider>
+                <SwiperSlide>{fonts()}</SwiperSlide>
+                <SwiperSlide>{buttonsLinks()}</SwiperSlide>
+                <SwiperSlide>{paragraph()}</SwiperSlide>
+            </Slider>
         </section>
     )
 }
