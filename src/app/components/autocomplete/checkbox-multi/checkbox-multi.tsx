@@ -1,5 +1,8 @@
+'use client';
+
 import './checkbox-multi.scss';
 
+import { useState } from 'react';
 // import Img from '../../image/image';
 import { AutoCompleteOption } from '../autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
@@ -11,30 +14,38 @@ const checkedIcon = <CheckBoxIcon fontSize={`small`} />;
 const icon = <CheckBoxOutlineBlankIcon fontSize={`small`} />;
 
 export default function CheckboxMulti() {
+    const [selectedOptions, setSelectedOptions] = useState<AutoCompleteOption[]>([]);
+
+    const onCheckboxMultiChange = (e: any, selectedOpts: AutoCompleteOption[]) => {
+        console.log(`onCheckboxMultiChange`, selectedOpts);
+        setSelectedOptions(selectedOpts);
+    }
+
     return (
         <Autocomplete
             multiple
             options={movies}
-            className={`w100`}
+            id={`checkboxMulti`}
             disableCloseOnSelect
-            id={`checkbox-multi`}
-            getOptionLabel={(option: AutoCompleteOption) => option.label}
+            getOptionLabel={(option: AutoCompleteOption) => `${option.emojis[0]} ${option.label}`}
+            onChange={(e, selectedOpts: AutoCompleteOption[]) => onCheckboxMultiChange(e, selectedOpts)}
+            className={`checkboxMultiComponent w100 ${selectedOptions?.length > 0 ? `hasValue` : `noValue`}`}
             renderInput={(params) => (
-                <TextField {...params} label={`Checkboxes`} placeholder={`Favorites`} />
+                <TextField {...params} label={`Checkboxes`} placeholder={`Favorites`} className={`checkboxMultiField`} />
             )}
             renderOption={(props, option: AutoCompleteOption, { selected }) => {
                 const { key, ...optionProps } = props;
                 return (
-                    <li key={option?.id} {...optionProps}>
+                    <li key={option?.id} data-option={`checkboxMultiLi`} {...optionProps}>
                         <Checkbox
                             icon={icon}
                             checked={selected}
                             checkedIcon={checkedIcon}
-                            style={{ marginRight: 5 }}
+                            style={{ marginRight: 0 }}
                         />
                         {option.emojis[0]}
                         {/* <Img src={option.image} alt={option.label} className={`autocomplete-poster`} width={100} height={150} /> */}
-                        <span style={{ color: `black`, marginLeft: 8}}>
+                        <span style={{ color: `black`, marginLeft: 8 }}>
                             {option.label}
                         </span>
                     </li>

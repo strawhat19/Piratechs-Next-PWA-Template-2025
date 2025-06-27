@@ -60,7 +60,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     }
 
     return (
-        <div className={`autocomplete-root`} {...getRootProps()}>
+        <div className={`autoCompleteComponent autocomplete-root`} {...getRootProps()}>
             <label className={`autocomplete-label`} {...getInputLabelProps()}>
                 Select {capWords(type)}
             </label>

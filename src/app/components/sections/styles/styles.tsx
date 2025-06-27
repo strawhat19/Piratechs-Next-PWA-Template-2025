@@ -82,6 +82,7 @@ export default function Styles() {
         <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
             <AutoComplete />
             <CheckboxMulti />
+            <div style={{ minHeight: 0 }} />
             <Slider showButtons={width > constants?.breakpoints?.mobile}>
                 <SwiperSlide>{fonts()}</SwiperSlide>
                 <SwiperSlide>{buttonsLinks()}</SwiperSlide>

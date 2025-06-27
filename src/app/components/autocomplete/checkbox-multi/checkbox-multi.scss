@@ -1,0 +1,45 @@
+.checkboxMultiComponent {
+    --bgColor: white;
+    --fontColor: black;
+    font-family: var(--font);
+    &.hasValue {
+        label {
+            top: -15px;
+            left: -15px;
+            font-weight: 600;
+            color: var(--bgColor);
+        }
+    }
+    label {
+        top: -3px;
+        color: #6e6e6e;
+        &.Mui-focused {
+            top: -15px;
+            left: -15px;
+            font-weight: 600;
+            color: var(--links);
+        }
+    }
+    .checkboxMultiField {
+        .MuiInputBase-root {
+            padding: 0;
+            padding-top: 5px;
+            padding-left: 5px;
+            padding-bottom: 5px;
+            background: var(--bgColor);
+            .MuiAutocomplete-tag {
+                color: white;
+                max-height: 30px;
+                background: var(--links);
+                svg {
+                    path {
+                        fill: white;
+                    }
+                }
+            }
+            input {
+                color: var(--fontColor);
+            }
+        }
+    }
+}

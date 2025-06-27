@@ -1,3 +1,11 @@
+[data-option="checkboxMultiLi"] {
+    --checkbox-multi-height: 30px;
+    padding: 0;
+    height: var(--checkbox-multi-height);
+    min-height: var(--checkbox-multi-height);
+    max-height: var(--checkbox-multi-height);
+}
+
 .iconButton {
     background: var(--blueopac) !important;
     svg {
