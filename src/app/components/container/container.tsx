@@ -17,12 +17,14 @@ export default function Container({ children, className = `containerComponent` }
     const pathname = usePathname();
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
+    let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
 
     useEffect(() => {
         const onResize = () => {
             const windowWidth = window?.innerWidth;
+            setSmallScreen(windowWidth <= constants?.breakpoints?.mobile);
             setWidth((prevWidth?: number) => prevWidth !== windowWidth ? windowWidth : prevWidth);
         }
 
@@ -39,8 +41,9 @@ export default function Container({ children, className = `containerComponent` }
         width, setWidth,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
+        smallScreen, setSmallScreen,
         menuExpanded, setMenuExpanded,
-    }), [width, loaded, isDevEnv, menuExpanded]);
+    }), [width, loaded, isDevEnv, menuExpanded, smallScreen]);
 
     const getPageName = (path = pathname) => {
         let pageName = `Home`;

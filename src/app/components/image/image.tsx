@@ -11,6 +11,7 @@ export default function Img({
     width,
     height,
     className,
+    style = {},
     effect = `blur`,
     useLazyLoad = true,
     onImageLoad = (e?: any) => {},
@@ -20,7 +21,8 @@ export default function Img({
         <LazyLoadImage 
             id={id} 
             alt={alt} 
-            src={src} 
+            src={src}
+            style={style} 
             width={width}
             height={height} 
             effect={effect} 
@@ -32,7 +34,8 @@ export default function Img({
         <Image 
             id={id} 
             alt={alt} 
-            src={src} 
+            src={src}
+            style={style} 
             width={width}
             height={height} 
             className={className}

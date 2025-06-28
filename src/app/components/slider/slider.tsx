@@ -1,3 +1,5 @@
+'use client';
+
 import 'swiper/css';
 import './slider.scss';
 
@@ -7,7 +9,7 @@ import { Swiper } from 'swiper/react';
 import { Button } from '@mui/material';
 // import { EffectCards } from 'swiper/modules';
 
-export default function Slider({ children, showButtons = true }: any) {
+export default function Slider({ children, showButtons = true, spaceBetween = 15, slidesPerView = 1, className = `sliderComponent` }: any) {
     let swiperRef = useRef<any>(null);
 
     const slide = (direction: number) => {
@@ -25,7 +27,7 @@ export default function Slider({ children, showButtons = true }: any) {
     }
 
     return <>
-        <div className={`slider`}>
+        <div className={`slider ${className}`}>
             {showButtons && (
                 <Button className={`sliderButton`} onClick={() => slide(-1)}>
                     {`<`}
@@ -35,14 +37,14 @@ export default function Slider({ children, showButtons = true }: any) {
                 loop={true}
                 // speed={500}
                 ref={swiperRef}
-                spaceBetween={0} 
-                slidesPerView={1} 
                 navigation={true} 
-                pagination={true} 
+                pagination={false} 
                 // effect={`cards`}
                 simulateTouch={true} 
                 allowTouchMove={true}
                 // modules={[EffectCards]}
+                spaceBetween={spaceBetween} 
+                slidesPerView={slidesPerView} 
             >
                 {children}
             </Swiper>

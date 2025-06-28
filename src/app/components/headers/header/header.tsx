@@ -14,7 +14,7 @@ export default function Header() {
     let { menuExpanded } = useContext<any>(State);
 
     return (
-        <header style={{ height: menuExpanded ? (defaultHeight + (Object.values(routes).length * 40)) : defaultHeight }} className={`containerX ${menuExpanded ? `menuExpanded` : `menuCollapsed`}`}>
+        <header style={{ height: menuExpanded ? (defaultHeight + (Object.values(routes).length * 38)) : defaultHeight }} className={`containerX ${menuExpanded ? `menuExpanded` : `menuCollapsed`}`}>
             <div className={`headerInner gridContainer w95i`} style={{ gridTemplateColumns: `auto 1fr` }}>
                 <div className={`headerStart flex alignCenter gap15`}>
                     <Icon_Button title={`Home`} url={`/`}>

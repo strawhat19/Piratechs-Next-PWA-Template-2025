@@ -83,6 +83,11 @@ html {
                 }
             }
         }
+        footer {
+            .footerInner {
+                width: 95%;
+            }
+        }
     }
 
     body {
@@ -90,6 +95,7 @@ html {
             header {
                 grid-gap: 10px !important;
                 padding-bottom: var(--space);
+                border-bottom: 1px solid var(--main);
             }
             .mobileNavContainer {
                 width: 100%;
@@ -109,9 +115,6 @@ html {
                         .navigationLink {
                             transition: var(--transition);
                             border-top: 1px solid var(--main);
-                            &:last-child {
-                                border-bottom: 1px solid var(--main);
-                            }
                             a {
                                 width: 100%;
                                 grid-gap: 20px;

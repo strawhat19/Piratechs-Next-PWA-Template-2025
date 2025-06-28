@@ -12,10 +12,14 @@
 }
 
 .swiper-slide {
+    cursor: grab;
     display: flex;
     grid-gap: 15px;
     flex-direction: column;
     justify-content: center;
+    &:active {
+        cursor: grabbing;
+    }
 }
 
 .sliderButton {
