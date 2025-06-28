@@ -23,11 +23,15 @@
     // navies
     --navy: #041b44;
 
+    // silver
+    --soft-silver: #aaaaaa;
+
     // colors
     --bg: var(--bluedark);
     --buttons: var(--blue);
     --main: var(--blueneon);
     --links: var(--blueneon);
+    --disabled: var(--soft-silver);
 
     --transition: 0.24s cubic-bezier(0.77, 0.2, 0.05, 1) !important;
     --transitionalt: cubic-bezier(0.77, 0.2, 0.05, 1) !important;
@@ -41,6 +45,11 @@ body {
     header, footer {
         background: var(--bg);
     }
+}
+
+::placeholder {
+    color: var(--disabled);
+    font-family: var(--font);
 }
 
 main {

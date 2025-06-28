@@ -47,7 +47,6 @@
   border-radius: 3px;
   align-items: center;
   background: #e0e0e0;
-//   font-family: var(--font);
 
   span {
     color: black;
@@ -80,10 +79,10 @@
 }
 
 @mixin activeOption {
-    background: var(--buttons);
-    span {
-        color: white;
-    }
+  background: var(--buttons);
+  span {
+    color: white;
+  }
 }
 
 .autocomplete-option {
@@ -92,7 +91,6 @@
   font-size: 14px;
   padding: 8px 10px;
   align-items: center;
-//   font-family: var(--font);
   transition: var(--transition);
   justify-content: space-between;
 
@@ -102,12 +100,13 @@
 
   span {
     color: black;
+    font-family: var(--font);
     transition: var(--transition);
   }
 
   &[aria-selected='true'] {
     font-weight: 600;
-
+    font-family: var(--font);
     svg {
       color: #1976d2;
     }

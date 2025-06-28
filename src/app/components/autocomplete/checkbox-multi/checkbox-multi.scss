@@ -11,8 +11,9 @@
         }
     }
     label {
-        top: -3px;
-        color: #6e6e6e;
+        top: -7px;
+        color: var(--disabled);
+        font-family: var(--font);
         &.Mui-focused {
             top: -15px;
             left: -15px;
@@ -23,9 +24,9 @@
     .checkboxMultiField {
         .MuiInputBase-root {
             padding: 0;
-            padding-top: 5px;
-            padding-left: 5px;
-            padding-bottom: 5px;
+            padding-top: 1px;
+            padding-left: 1px;
+            padding-bottom: 1px;
             background: var(--bgColor);
             .MuiAutocomplete-tag {
                 color: white;

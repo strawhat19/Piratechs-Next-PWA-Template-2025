@@ -6,11 +6,11 @@ import Slider from '../../slider/slider';
 import { SwiperSlide } from 'swiper/react';
 import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
-import AutoComplete from '../../autocomplete/autocomplete';
+// import AutoComplete from '../../autocomplete/autocomplete';
 import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
 
 export default function Styles() {
-    let { width, menuExpanded } = useContext<any>(State);
+    let { width, loaded, menuExpanded } = useContext<any>(State);
 
     const fonts = () => {
         return <>
@@ -80,8 +80,8 @@ export default function Styles() {
 
     return (
         <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
-            <AutoComplete />
-            <CheckboxMulti />
+            {/* <AutoComplete /> */}
+            {loaded && <CheckboxMulti />}
             <div style={{ minHeight: 0 }} />
             <Slider showButtons={width > constants?.breakpoints?.mobile}>
                 <SwiperSlide>{fonts()}</SwiperSlide>

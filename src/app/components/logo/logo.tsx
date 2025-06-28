@@ -26,7 +26,7 @@ export default function Logo({
             {(showLogoIcon && logoIcon != undefined) ? logoIcon : (
                 <Img className={`logo`} src={src} alt={`Logo`} width={size} height={size} />
             )}
-            <div className={`logoText lineClamp1`}>
+            <div className={`logoText lineClamp1 font`}>
                 {label}
             </div>
         </div>

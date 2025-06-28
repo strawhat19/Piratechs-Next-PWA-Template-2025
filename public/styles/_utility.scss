@@ -16,6 +16,8 @@
 .p30 { padding: 30px; }
 .p35 { padding: 35px; }
 
+.font { font-family: var(--font); }
+
 .flex { display: flex; }
 .column { flex-direction: column; }
 .alignCenter { align-items: center; }

@@ -1,0 +1,20 @@
+footer {
+    &.clippedFooter {
+        background: var(--navy) !important;
+        .footerInner {
+            top: -8px;
+        }
+    }
+    .footerInner {
+        width: 98%;
+        display: flex;
+        margin: 0 auto;
+        padding: 8px 15px;
+        text-align: center;
+        position: relative;
+        border-radius: 10px;
+        align-items: center;
+        background: var(--bg);
+        justify-content: space-between;
+    }
+}
