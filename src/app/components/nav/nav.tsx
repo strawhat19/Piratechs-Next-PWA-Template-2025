@@ -9,17 +9,9 @@ import Icon_Button from '../buttons/icon-button/icon-button';
 import { 
     Menu,
     Info, 
-    Brush,
     Close,
     Settings,
     PermMedia,
-    // Mail,
-    // Chat,
-    // Login,
-    // Person,
-    // Settings,
-    // PersonAdd,
-    // Notifications,
 } from '@mui/icons-material';
 
 const size = 20;

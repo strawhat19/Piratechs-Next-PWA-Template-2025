@@ -13,7 +13,7 @@ export default function Footer({ full = false }: any) {
                     <Logo size={30} />
                 </Link>
                 <span className={`copyright flex alignCenter gap5`}>
-                    Copyright <Copyright style={{ color: `var(--links)` }} /> 2025
+                    Copyright <Copyright style={{ color: `var(--links)` }} /> {new Date()?.getFullYear()}
                 </span>
             </div>
         </footer>
