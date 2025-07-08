@@ -130,3 +130,48 @@
 .lineClamp8 { @extend .lineClamp1; --lines: 8; transition: var(--transition); }
 .lineClamp9 { @extend .lineClamp1; --lines: 9; transition: var(--transition); }
 .lineClamp10 { @extend .lineClamp1; --lines: 10; transition: var(--transition); }
+
+.hoverLink {
+    display: flex;
+    grid-gap: 0.3em;
+    position: relative;
+    align-items: center;
+    transition: var(--transition);
+
+    &::before {
+        right: 0;
+        z-index: 0;
+        width: 100%;
+        height: 1px;
+        bottom: -5px;
+        display: block;
+        position: absolute;
+        transform: scale(0, 1);
+        content: "" !important;
+        background: var(--main);
+        transform-origin: 0% 100%;
+        transition: var(--transition);
+    }
+
+    &:hover {
+        transition: var(--transition);
+
+        &::before {
+            transform: scale(1, 1);
+            transition: 500ms ease-in-out;
+        }
+    }
+}
+
+.headerEnd {
+    nav {
+        .navigationLink {
+            @extend .hoverLink;
+            &.activeRoute {
+                &::before {
+                    transform: scale(1, 1);
+                }
+            }
+        }
+    }
+}

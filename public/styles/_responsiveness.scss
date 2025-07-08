@@ -32,8 +32,8 @@ html {
         padding-top: 15px;
         overflow-y: hidden;
         container-type: inline-size;
-        transition: height var(--transition);
         justify-content: flex-start !important;
+        transition: height 300ms var(--transitionalt);
         .headerInner {
             height: unset;
             max-height: 60px;

@@ -13,6 +13,14 @@ export const State = createContext({});
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415 };
 
+export const getPageName = (path: string) => {
+    let pageName = `Home`;
+    if (path != `/`) {
+        pageName = capWords(path?.slice(1, path?.length))
+    }
+    return pageName;
+}
+
 export default function Container({ children, className = `containerComponent` }: any) {
     const pathname = usePathname();
     let [loaded, setLoaded] = useState<any>(false);
@@ -45,20 +53,12 @@ export default function Container({ children, className = `containerComponent` }
         menuExpanded, setMenuExpanded,
     }), [width, loaded, isDevEnv, menuExpanded, smallScreen]);
 
-    const getPageName = (path = pathname) => {
-        let pageName = `Home`;
-        if (path != `/`) {
-            pageName = capWords(path?.slice(1, path?.length))
-        }
-        return pageName;
-    }
-
     return (
         <State.Provider value={state}>
-            <body className={`${className} ${getPageName()} pageContainer ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
+            <body className={`${className} ${getPageName(pathname)} pageContainer ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
                 <Header />
                 <main className={`container`}>
-                    <Logo label={getPageName()} />
+                    <Logo label={getPageName(pathname)} />
                     {children}
                 </main>
                 <Footer />

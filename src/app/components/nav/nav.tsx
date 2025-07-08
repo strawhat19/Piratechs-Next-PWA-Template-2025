@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useContext } from 'react';
+import { usePathname } from 'next/navigation';
 import { State } from '../container/container';
 import { capWords } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
@@ -29,6 +30,7 @@ export const routes = {
 }
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {
+    const pathname = usePathname();
     let { menuExpanded, setMenuExpanded } = useContext<any>(State);
 
     return (
@@ -53,7 +55,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </li>
                 </>}
                 {Object.entries(routes).map(([path, config]) => (
-                    <li key={path} className={`navigationLink hideOnMobile`}>
+                    <li key={path} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
                         <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
                             {config.icons.mui}
                             <span className={`linkText`}>
