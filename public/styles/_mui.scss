@@ -35,6 +35,7 @@
 
 .MuiButton-root {
     color: white !important;
-    transition: var(--transition);
+    text-transform: none !important;
     background: var(--buttons) !important;
+    transition: var(--transition) !important;
 }

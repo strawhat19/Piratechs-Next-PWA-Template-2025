@@ -1,0 +1,21 @@
+.Toastify {
+    max-height: 0;
+}
+
+.Toastify__toast-container {
+    --toastify-toast-min-height: auto;
+    --toastify-color-dark: var(--blackGlass);
+    --toastify-container-width: calc(auto + 20px);
+    .Toastify__toast {
+        width: 100%;
+        display: flex;
+        padding-top: 8px;
+        font-weight: 600;
+        flex-direction: row;
+        font-family: var(--font);
+        backdrop-filter: blur(5px);
+        .Toastify__close-button {
+            display: none;
+        }
+    }
+}

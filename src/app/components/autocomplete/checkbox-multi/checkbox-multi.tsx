@@ -2,7 +2,6 @@
 
 import './checkbox-multi.scss';
 
-// import Img from '../../image/image';
 import { useContext, useState } from 'react';
 import { State } from '../../container/container';
 import { AutoCompleteOption } from '../autocomplete';
@@ -19,7 +18,6 @@ export default function CheckboxMulti() {
     const [selectedOptions, setSelectedOptions] = useState<AutoCompleteOption[]>([]);
 
     const onCheckboxMultiChange = (e: any, selectedOpts: AutoCompleteOption[]) => {
-        console.log(`onCheckboxMultiChange`, selectedOpts);
         setSelectedOptions(selectedOpts);
     }
 

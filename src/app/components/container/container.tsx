@@ -1,11 +1,15 @@
 'use client';
 
+import 'react-toastify/dist/ReactToastify.css';
+
 import './container.scss';
 
 import Logo from '../logo/logo';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';
+import { ToastContainer } from 'react-toastify';
+import { AuthStates } from '@/shared/types/types';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { capWords, constants, debounce, devEnv } from '@/shared/scripts/constants';
 
@@ -16,18 +20,22 @@ export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415 };
 export const getPageName = (path: string) => {
     let pageName = `Home`;
     if (path != `/`) {
-        pageName = capWords(path?.slice(1, path?.length))
+        pageName = capWords(path?.slice(1, path?.length));
     }
     return pageName;
 }
 
 export default function Container({ children, className = `containerComponent` }: any) {
     const pathname = usePathname();
+
+    let [user, setUser] = useState<any>(null);
+    let [users, setUsers] = useState<any>([]);
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
+    let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
 
     useEffect(() => {
         const onResize = () => {
@@ -46,12 +54,15 @@ export default function Container({ children, className = `containerComponent` }
     }, []);
 
     const state = useMemo(() => ({
+        user, setUser,
+        users, setUsers,
         width, setWidth,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
+        authState, setAuthState,
         smallScreen, setSmallScreen,
         menuExpanded, setMenuExpanded,
-    }), [width, loaded, isDevEnv, menuExpanded, smallScreen]);
+    }), [user, users, width, loaded, isDevEnv, authState, menuExpanded, smallScreen]);
 
     return (
         <State.Provider value={state}>
@@ -60,6 +71,19 @@ export default function Container({ children, className = `containerComponent` }
                 <main className={`container`}>
                     <Logo label={getPageName(pathname)} />
                     {children}
+                    <ToastContainer
+                        draggable
+                        rtl={false}
+                        closeOnClick
+                        theme={`dark`}
+                        autoClose={3_500}
+                        newestOnTop={true}
+                        pauseOnHover={false}
+                        position={`top-right`}
+                        hideProgressBar={false}
+                        pauseOnFocusLoss={false}
+                        style={{ marginTop: 55 }}
+                    />
                 </main>
                 <Footer />
             </body>

@@ -1,39 +1,33 @@
-// import { genID } from '../ID';
-// import { Types } from '../types/types';
-// import { countPropertiesInObject, isValid } from '../constants';
+import { Types } from '../types';
+import { capWords, countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
 
-// export class Data {
-//   A?: any;
+export class Data {
+  id!: string;
+  uid!: string;
+  name!: string;
+  uuid!: string;
+  email!: string;
+  title?: string;
+  password?: string;
+  number: number = 1;
+  properties?: number;
 
-//   ID: any;
-//   id!: string;
-//   uid: string;
-//   rank: number;
-//   uuid: string;
-//   name!: string;
-//   email: string;
-//   title?: string;
-//   properties: number;
-//   type: Types = Types.Data;
+  type: Types = Types.Data;
 
-//   meta = {
-//     created: undefined,
-//     updated: undefined,
-//   }
+  created: Date | string = new Date()?.toLocaleString();
+  updated: Date | string = new Date()?.toLocaleString();
 
-//   constructor(data: Partial<Data>) {
-//     Object.assign(this, data);
+  constructor(data: Partial<Data>) {
+    Object.assign(this, data);
 
-//     this.A = this.name;
+    if (isValid(this.email) && !isValid(this.name)) this.name = capWords(this.email.split(`@`)[0]);
     
-//     let ID = genID(this.type, this.rank, this.name, this.uid);
-//     let { id, date, title, uuid } = ID;
+    let ID = genID(this.type, this.number, this.name);
+    let { id, title, uuid } = ID;
 
-//     if (!isValid(this.id)) this.id = id;
-//     if (!isValid(this.uuid)) this.uuid = uuid;
-//     if (!isValid(this.title)) this.title = title;
-//     if (!isValid(this.meta.created)) this.meta.created = date;
-//     if (!isValid(this.meta.updated)) this.meta.updated = date;
-//     if (!isValid(this.properties)) this.properties = countPropertiesInObject(this) + 1;
-//   }
-// }
+    if (!isValid(this.id)) this.id = id;
+    if (!isValid(this.uuid)) this.uuid = uuid;
+    if (!isValid(this.title)) this.title = title;
+    if (!isValid(this.properties)) this.properties = countPropertiesInObject(this) + 1;
+  }
+}

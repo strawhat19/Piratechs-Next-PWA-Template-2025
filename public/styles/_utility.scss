@@ -22,6 +22,8 @@
 .column { flex-direction: column; }
 .alignCenter { align-items: center; }
 .row { flex-direction: row; }
+.alignStart { align-items: flex-start; }
+.alignEnd { align-items: flex-end; }
 
 .spaceBetween { 
     justify-content: space-between !important; 
@@ -42,8 +44,16 @@
     justify-content: flex-end; 
 }
 
+.textAlignLeft {
+    text-align: left;
+}
+
 .textAlignCenter {
     text-align: center;
+}
+
+.textAlignRight {
+    text-align: right;
 }
 
 .center { 

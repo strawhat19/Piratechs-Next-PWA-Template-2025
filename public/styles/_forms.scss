@@ -1,0 +1,91 @@
+.avatar {
+    --size: 28px;
+    max-width: var(--size);
+    max-height: var(--size);
+}
+
+.formEnd {
+    top: -2px;
+    position: relative;
+}
+
+form {
+    width: 100%;
+    font-family: var(--font) !important;
+    button {
+        font-weight: 600 !important;
+        min-width: fit-content !important;
+        font-family: var(--font) !important;
+        border-radius: calc(var(--borderRadius) + 3px) !important;
+    }
+}
+
+input {
+    top: 4px;
+    z-index: 0;
+    width: 100%;
+    border: none;
+    outline: none;
+    color: black;
+    position: relative;
+    background: white;
+    padding: 5px 5px 5px 8px;
+    border: 3px solid black;
+    font-family: var(--font) !important;
+    border-radius: calc(var(--borderRadius) + 3px);
+}
+
+.formContainer {
+    width: 90%;
+    display: flex;
+    margin: 0 auto;
+    grid-gap: 10px;
+    align-items: center;
+    padding: 10px 10px 5px 7px;
+    justify-content: space-between;
+    border-radius: calc(var(--borderRadius) + 3px);
+    background: linear-gradient(90deg, var(--buttons), var(--bg));
+}
+
+.authForm {
+    display: flex;
+    grid-gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.formFields {
+    width: 100%;
+    grid-gap: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.formField {
+    width: 100%;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    span {
+        width: 100%;
+    }
+}
+
+.formFieldLabel {
+    padding: 3px;
+    color: black;
+    font-size: 9px;
+    font-weight: 700;
+    background: white;
+    border: 3px solid black;
+    border-radius: var(--borderRadius);
+    font-family: var(--font) !important;
+    
+    z-index: 1;
+    left: 5px;
+    top: -10px;
+    position: absolute;
+    max-width: fit-content;
+}
