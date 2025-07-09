@@ -1,5 +1,5 @@
 import { Types } from '../types';
-import { capWords, countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
+import { capWords, countPropertiesInObject, customDate, genID, isValid } from '@/shared/scripts/constants';
 
 export class Data {
   id!: string;
@@ -14,8 +14,8 @@ export class Data {
 
   type: Types = Types.Data;
 
-  created: Date | string = new Date()?.toLocaleString();
-  updated: Date | string = new Date()?.toLocaleString();
+  updated: Date | string | any = customDate()?.datetime;
+  created: Date | string | any = customDate()?.datetime;
 
   constructor(data: Partial<Data>) {
     Object.assign(this, data);

@@ -130,8 +130,8 @@ export const customDate = (date: Date = new Date()) => {
   let time = hours + `:` + minutes + ` ` + ampm;
   let dateSlashes = (slice: number = 0) => (date.getMonth() + 1) + `/` + date.getDate() + `/` + String(date.getFullYear()).slice(slice);
 
-  let seconds = date.getSeconds();
   let milliseconds = date.getMilliseconds();
+  let seconds = String(milliseconds * 1000)?.slice(0, 2);
   let ms = Math.round(milliseconds / 10).toString().padStart(2, `0`);
 
   let secondsTime = `${hours}:${minutes}:${seconds} ${ampm}`;
