@@ -69,7 +69,7 @@ export default function AuthForm() {
                     {authState}
                 </Button>
             </form>
-            {user == null && <Avatar id={`authFormAvatar`} className={`avatar formEnd`} />}
+            {/* {user == null && <Avatar id={`authFormAvatar`} className={`avatar formEnd`} />} */}
         </div>
     )
 }
