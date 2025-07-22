@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <Container className={`homePage`}>
-      {dev() && <SwapyDemo />}
+      <SwapyDemo />
       <AuthForm />
       <Styles />
     </Container>
