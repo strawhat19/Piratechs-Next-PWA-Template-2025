@@ -16,6 +16,7 @@ const eslintConfig = [
       semi: `off`,
       [`prefer-const`]: `off`,
       [`no-extra-semi`]: `off`,
+      [`react-hooks/exhaustive-deps`]: `off`,
       [`@typescript-eslint/no-extra-semi`]: `off`,
       [`@typescript-eslint/no-unused-vars`]: `off`,
       [`@typescript-eslint/no-explicit-any`]: `off`,

@@ -1,0 +1,40 @@
+.swapyDemoComponent {   
+    min-width: 75%;
+    padding-bottom: 5px;
+    @media (max-width: 768px) {
+        width: 90%;
+    }
+}
+
+.users-container {
+    gap: 10px;
+    width: 100%;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.slot {
+    padding: 0;
+    border-radius: 6px;
+}
+
+.user {
+    cursor: grab;
+    display: flex;
+    padding: 10px;
+    grid-gap: 15px;
+    border-radius: 6px;
+    flex-direction: column;
+    background: linear-gradient(90deg, var(--bg), var(--bg));
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.swapyDemoItemRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
