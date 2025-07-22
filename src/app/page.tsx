@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { constants, dev } from '@/shared/scripts/constants';
+import { constants } from '@/shared/scripts/constants';
 import Styles from '@/app/components/sections/styles/styles';
 import Container from '@/app/components/container/container';
 import SwapyDemo from './components/drag-and-drop/swapy/demo/swapy-demo';
