@@ -32,7 +32,9 @@ export const generateArray = (length: number, itemData: any, includeIndexData = 
       let name = `${itemData?.type ?? Types.Data} ${number}`;
       let id = stringNoSpaces(name);
       let baseObj = { ...itemData, id, name, number };
-      let obj = Model ? new Model(baseObj) : baseObj;
+      let modelObj = new Model(baseObj);
+      // let updatedModelObj = { ...modelObj, id: id + `_` + modelObj?.uuid };
+      let obj = Model ? modelObj : baseObj;
       return obj;
     } else {
       return itemData;
