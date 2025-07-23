@@ -34,7 +34,13 @@ export default function SwapyDemo() {
     console.log(`Users`, users);
   }, [users])
 
-  const newSwapyItem = () => {
+  const removeDNDItem = (user: User) => {
+    // setTimeout(() => {
+      setUsers(users.filter(u => u[identifierKey] !== user[identifierKey]));
+    // }, 100);
+  }
+
+  const newDNDItem = () => {
     setUsers(prevUsrs => {
       let number = prevUsrs.length + 1;
       let newUser = new User({
@@ -66,7 +72,7 @@ export default function SwapyDemo() {
                 </span>
                 <Menu style={{ opacity: 0.55 }} />  
               </div>
-              <button onClick={() => setUsers(users.filter(u => u[identifierKey] !== user[identifierKey]))}>
+              <button onClick={() => removeDNDItem(user)}>
                 Delete
               </button>
             </div>
@@ -74,7 +80,7 @@ export default function SwapyDemo() {
         ))}
       </div>
 
-      <button className={`newSwapyItemButton`} onClick={newSwapyItem}>
+      <button className={`newSwapyItemButton w100`} onClick={newDNDItem}>
         Add User
       </button>
 
