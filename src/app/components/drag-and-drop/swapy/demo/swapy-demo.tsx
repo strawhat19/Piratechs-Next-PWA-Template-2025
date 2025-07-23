@@ -44,7 +44,10 @@ export default function SwapyDemo() {
       });
       let updatedUsrs = [
         ...prevUsrs,
-        new User({ ...newUser, [identifierKey]: newUser[identifierKey] + `_` + newUser?.uuid }),
+        new User({ 
+          ...newUser, 
+          [identifierKey]: newUser[identifierKey] + `_` + newUser?.uuid, 
+        }),
       ];
       return updatedUsrs;
     })
