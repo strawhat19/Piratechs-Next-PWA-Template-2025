@@ -25,50 +25,66 @@ export const constants = {
 export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
 export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g, `_`)?.replaceAll(/[\s,:/]/g, `-`).replaceAll(/-/g, `_`);
 
+export const generateArray = (length: number, itemData: any, includeIndexData = false, Model: any = undefined) => {
+  let generatedArray = Array.from({ length }, (_, index) => {
+    if (includeIndexData) {
+      let number = index + 1;
+      let name = `${itemData?.type ?? Types.Data} ${number}`;
+      let id = stringNoSpaces(name);
+      let baseObj = { ...itemData, id, name, number };
+      let obj = Model ? new Model(baseObj) : baseObj;
+      return obj;
+    } else {
+      return itemData;
+    }
+  });
+  return generatedArray;
+}
+
 export const debounce = (func: (...args: any[]) => void, wait: number) => {
-    let timeout: any;
-    return (...args: any[]) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-    };
+  let timeout: any;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
 }
 
 export const urlHostMatches = (envs: string[]) => {
-    let hostMatched = false;
-    let windowEnabled = typeof window !== `undefined`;
-    if (windowEnabled) {
-        hostMatched = envs.some(env => window?.location?.host?.includes(env));
-    }
-    return hostMatched;
+  let hostMatched = false;
+  let windowEnabled = typeof window !== `undefined`;
+  if (windowEnabled) {
+    hostMatched = envs.some(env => window?.location?.host?.includes(env));
+  }
+  return hostMatched;
 }
 
 export const development = process?.env?.NODE_ENV == `development`;
 export const devEnv = urlHostMatches([`local`, `:3000`]) || development;
 
 export const dev = (item?: any, source?: any) => {
-    if (item) {
-        console.log(`Dev Log`, item);
-    } else if (item && source) {
-        console.log(`Dev Log`, item, `From`, source);
-    }
-    return devEnv;
+  if (item) {
+    console.log(`Dev Log`, item);
+  } else if (item && source) {
+    console.log(`Dev Log`, item, `From`, source);
+  }
+  return devEnv;
 }
 
 // Check if Item is Not Null, Not Undefined, Not a Zero Value, etc.
 export const isValid = (item: any) => {
-    if (typeof item == `string`) {
-        let isInvalidString = !item || item == `` || item.trim() == `` || item == undefined || item == null;
-        return !isInvalidString;
-    } else if (typeof item == `number`) {
-        let isInvalidNumber = isNaN(item) || item == undefined || item == null;
-        return !isInvalidNumber;
-    } else if (typeof item == `object` && item != undefined && item != null) {
-        let isInvalidObject = Object.keys(item).length == 0 || item == undefined || item == null;
-        return !isInvalidObject;
-    } else {
-        let isUndefined = item == undefined || item == null;
-        return !isUndefined;
-    }
+  if (typeof item == `string`) {
+    let isInvalidString = !item || item == `` || item.trim() == `` || item == undefined || item == null;
+    return !isInvalidString;
+  } else if (typeof item == `number`) {
+    let isInvalidNumber = isNaN(item) || item == undefined || item == null;
+    return !isInvalidNumber;
+  } else if (typeof item == `object` && item != undefined && item != null) {
+    let isInvalidObject = Object.keys(item).length == 0 || item == undefined || item == null;
+    return !isInvalidObject;
+  } else {
+    let isUndefined = item == undefined || item == null;
+    return !isUndefined;
+  }
 }
 
 export const minRole = (roleOfUser: Roles, minimumRole: Roles): boolean => {

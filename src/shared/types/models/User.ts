@@ -1,33 +1,59 @@
+import { Data } from './Data';
+import { Types } from '../types';
+import { capWords, countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
+
+export enum Providers { 
+  Google = `Google` ,
+  Firebase = `Firebase`, 
+}
+
+export enum Groups { 
+    Developers = `Developers`,
+    Alpha = `Alpha`,
+    Testers = `Testers`,
+    Beta = `Beta`,
+    Production = `Production`,
+}
+
+export enum Roles {
+  Guests = `Guests`,
+  Subscribers = `Subscribers`,
+  Editors = `Editors`,
+  Moderators = `Moderators`,
+  Administrators = `Administrators`,
+  Developers = `Developers`,
+  Owners = `Owners`,
+}
+
+export class User extends Data {
+
+    avatar: any = ``;
+    token: string = ``;
+    type: Types = Types.User;
+    phone: string | number = ``;
+    password?: string = undefined;
+    role: Roles | string = Roles.Subscribers;
+    group: Groups | string = Groups.Production;
+    provider: Providers | string = Providers.Firebase;
+
+    constructor(data: Partial<User>) {
+        super(data);
+        Object.assign(this, data);
+        if (isValid(this.email) && !isValid(this.name)) this.name = capWords(this.email.split(`@`)[0]);
+        let ID = genID(this.type, this.number, this.name);
+        let { id, title, uuid } = ID;
+        if (!isValid(this.id)) this.id = id;
+        if (!isValid(this.uuid)) this.uuid = uuid;
+        if (!isValid(this.title)) this.title = title;
+        if (!isValid(this.properties)) this.properties = countPropertiesInObject(this) + 1;
+    }
+}
+
 // import { Data } from './Data';
 // import { Types } from '../types/types';
 // import { generateID, genID } from '../ID';
 // import { capWords } from '../../pages/_app';
 // import { countPropertiesInObject, isValid, removeNullAndUndefinedProperties, stringNoSpaces } from '../constants';
-
-// export enum Providers { 
-//   Google = `Google` ,
-//   Firebase = `Firebase`, 
-// }
-
-// export enum Roles {
-//   Guest = `Guest`,
-//   Subscriber = `Subscriber`,
-//   Editor = `Editor`,
-//   Moderator = `Moderator`,
-//   Administrator = `Administrator`,
-//   Developer = `Developer`,
-//   Owner = `Owner`,
-// }
-
-// export enum RolesMap {
-//   Guest = 1,
-//   Subscriber = 2,
-//   Editor = 3,
-//   Moderator = 4,
-//   Administrator = 5,
-//   Developer = 6,
-//   Owner = 7,
-// }
 
 // export class Role {
 //   name: any;
@@ -61,12 +87,9 @@
 //   ownerID: string;
 //   ownerUID: string;
   
-//   token: string;
-//   phone: any = ``;
-//   avatar: any = ``;
 //   email: string = ``;
 //   lastSelectedGridID: string = ``;
-  
+
 //   beta: boolean = false;
 //   type: Types = Types.User;
 //   showBeta: boolean = false;

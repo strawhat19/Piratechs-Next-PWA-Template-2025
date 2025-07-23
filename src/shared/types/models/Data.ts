@@ -19,12 +19,9 @@ export class Data {
 
   constructor(data: Partial<Data>) {
     Object.assign(this, data);
-
     if (isValid(this.email) && !isValid(this.name)) this.name = capWords(this.email.split(`@`)[0]);
-    
     let ID = genID(this.type, this.number, this.name);
     let { id, title, uuid } = ID;
-
     if (!isValid(this.id)) this.id = id;
     if (!isValid(this.uuid)) this.uuid = uuid;
     if (!isValid(this.title)) this.title = title;

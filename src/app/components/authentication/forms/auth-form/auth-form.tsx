@@ -3,7 +3,7 @@
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { Avatar, Button } from '@mui/material';
-import { Data } from '@/shared/types/models/Data';
+import { User } from '@/shared/types/models/User';
 import { State } from '@/app/components/container/container';
 import { AuthStates, Providers, Roles, Types } from '@/shared/types/types';
 
@@ -30,8 +30,7 @@ export default function AuthForm() {
                 email = String(email);
                 password = String(password);
 
-                let newUser: any = new Data({ type: Types.User, number: 19, email, password });
-                newUser = { ...newUser, provider: Providers.Firebase, role: Roles.Administrator };
+                let newUser: any = new User({ email, password, number: 19, provider: Providers.Firebase, role: Roles.Administrator });
 
                 // toast.success(`Ready for ${authState}`);    
                 console.log(`Ready for ${authState}`, newUser);
