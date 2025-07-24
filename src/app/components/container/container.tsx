@@ -17,6 +17,19 @@ export const State = createContext({});
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415 };
 
+export const getStocksAccount = async () => {
+    try {
+        let stocksAccountAPIUrl = `/api/stocks/account`;
+        let stocksAccountAPIUrlResponse = await fetch(stocksAccountAPIUrl);
+        if (stocksAccountAPIUrlResponse) {
+            let stocksAccountAPIUrlResult = await stocksAccountAPIUrlResponse?.json();
+            return stocksAccountAPIUrlResult;
+        }
+    } catch (errorOnGetStocksAccount) {
+        console.log(`Error on Get Stocks Account`, errorOnGetStocksAccount);
+    }
+}
+
 export const getPageName = (path: string) => {
     let pageName = `Home`;
     if (path != `/`) {
@@ -32,10 +45,13 @@ export default function Container({ children, className = `containerComponent` }
     let [users, setUsers] = useState<any>([]);
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
+    let [stocksAcc, setStocksAcc] = useState<any>(null);
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
+
+    const refreshStocksAccount = () => getStocksAccount()?.then(acc => setStocksAcc(acc));
 
     useEffect(() => {
         const onResize = () => {
@@ -48,6 +64,7 @@ export default function Container({ children, className = `containerComponent` }
 
         onResize();
         setLoaded(true);
+        if (devEnv && !loaded) refreshStocksAccount();
 
         window?.addEventListener(`resize`, debouncedResize);
         return () => window?.removeEventListener(`resize`, debouncedResize);
@@ -59,10 +76,11 @@ export default function Container({ children, className = `containerComponent` }
         width, setWidth,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
+        stocksAcc, setStocksAcc,
         authState, setAuthState,
         smallScreen, setSmallScreen,
         menuExpanded, setMenuExpanded,
-    }), [user, users, width, loaded, isDevEnv, authState, menuExpanded, smallScreen]);
+    }), [user, users, width, loaded, isDevEnv, authState, menuExpanded, smallScreen, stocksAcc]);
 
     return (
         <State.Provider value={state}>
