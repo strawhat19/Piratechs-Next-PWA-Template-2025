@@ -4,14 +4,18 @@ import './swapy-demo.scss';
 
 import { Menu } from '@mui/icons-material';
 import { User } from '@/shared/types/models/User';
+import Loader from '@/app/components/loaders/loader';
 import { generateArray } from '@/shared/scripts/constants';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { createSwapy, utils, type SlotItemMap } from 'swapy';
+import { State } from '@/app/components/container/container';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 const identifierKey = `id`;
 const initialUsers = generateArray(7, new User({ }), true, User);
 
 export default function SwapyDemo() {
+  const { loaded } = useContext<any>(State);
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const swapyRef = useRef<ReturnType<typeof createSwapy> | null>(null);
 
@@ -62,27 +66,31 @@ export default function SwapyDemo() {
   return (
     <div className={`swapyDemoComponent`}>
 
-      <div ref={containerRef} className={`users-container`}>
-        {slottedItems.map(({ slotId, itemId, item: user }: any) => (
-          <div key={slotId} className={`slot`} data-swapy-slot={slotId}>
-            <div key={itemId} className={`user`} data-swapy-item={itemId}>
-              <div className={`swapyDemoItemRow`}>
-                <span className={`usernameText`}>
-                  {user?.name}
-                </span>
-                <Menu style={{ opacity: 0.55 }} />  
+      {!loaded ? (
+        <Loader height={370} label={`Users Loading`} />
+      ) : <>
+        <div ref={containerRef} className={`users-container`}>
+          {slottedItems.map(({ slotId, itemId, item: user }: any) => (
+            <div key={slotId} className={`slot`} data-swapy-slot={slotId}>
+              <div key={itemId} className={`user`} data-swapy-item={itemId}>
+                <div className={`swapyDemoItemRow`}>
+                  <span className={`usernameText`}>
+                    {user?.name}
+                  </span>
+                  <Menu style={{ opacity: 0.55 }} />  
+                </div>
+                <button onClick={() => removeDNDItem(user)}>
+                  Delete
+                </button>
               </div>
-              <button onClick={() => removeDNDItem(user)}>
-                Delete
-              </button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <button className={`newSwapyItemButton w100`} onClick={newDNDItem}>
-        Add User
-      </button>
+        <button className={`newSwapyItemButton w100`} onClick={newDNDItem}>
+          Add User
+        </button>
+      </>}
 
     </div>
   )

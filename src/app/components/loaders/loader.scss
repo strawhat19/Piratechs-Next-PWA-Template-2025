@@ -1,0 +1,47 @@
+:root {
+    --skeletonColor: var(--darkGlass);
+    --skeletonSweepBlue: rgba(55, 134, 172, 0.25);
+    --skeletonSweepColor: var(--skeletonSweepBlue);
+}
+
+.MuiSkeleton-root {
+    transform: none !important;
+    background: var(--skeletonColor) !important;
+    &::after {
+        content: "";
+        clip-path: polygon(25% 0, 100% 0%, 75% 100%, 0% 100%);
+        animation-delay: var(--animation-delay, 0s) !important;
+        background: linear-gradient(321deg, transparent, var(--skeletonSweepColor), transparent) !important;
+    }
+}
+
+.MuiLinearProgress-root {
+    height: 1px !important;
+    background: var(--gameBlue) !important;
+}
+
+.loader {
+    height: 100%;
+    width: 100% !important;
+    border-radius: var(--borderRadius) !important;
+    .loader_content {
+        z-index: 5;
+        width: 98%;
+        height: 100%;
+        display: flex;
+        margin: 0 auto;
+        position: relative;
+        visibility: visible;
+        align-items: center;
+        justify-content: center;
+        .loader_label_container {
+            display: grid;
+            margin: 0 auto;
+            align-items: center;
+            grid-template-columns: auto auto 1fr;
+            .loader_label {
+                font-weight: 500;
+            }
+        }
+    }
+}

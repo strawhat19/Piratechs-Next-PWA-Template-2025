@@ -18,7 +18,11 @@ export default function Header() {
             className={`containerX ${menuExpanded ? `menuExpanded` : `menuCollapsed`}`}
             style={{ 
                 paddingBottom: menuExpanded ? 0 : undefined, 
-                height: menuExpanded ? defaultHeight + (Object.values(routes).length * 38) : defaultHeight 
+                height: menuExpanded ? defaultHeight + (
+                    Object.values(routes).length * (38 + (Object.values(routes)?.length >= 3 
+                    ? (0.75 * Object.values(routes)?.length) 
+                    : 0))
+                ) : defaultHeight, 
             }} 
         >
             <div className={`headerInner gridContainer w95i`} style={{ gridTemplateColumns: `auto 1fr` }}>

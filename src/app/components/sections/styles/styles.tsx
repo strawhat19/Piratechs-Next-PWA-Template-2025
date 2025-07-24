@@ -8,6 +8,7 @@ import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
 // import AutoComplete from '../../autocomplete/autocomplete';
 import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
+import Loader from '../../loaders/loader';
 
 export default function Styles() {
     let { width, loaded, menuExpanded } = useContext<any>(State);
@@ -81,13 +82,19 @@ export default function Styles() {
     return (
         <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
             {/* <AutoComplete /> */}
-            {loaded && <CheckboxMulti />}
+            {loaded ? <CheckboxMulti /> : (
+                <Loader height={40} label={`Movies Loading`} style={{ [`--animation-delay`]: `${3 * 0.15}s` }} />
+            )}
             <div style={{ minHeight: 0 }} />
-            <Slider showButtons={width > constants?.breakpoints?.mobile}>
-                <SwiperSlide>{fonts()}</SwiperSlide>
-                <SwiperSlide>{buttonsLinks()}</SwiperSlide>
-                <SwiperSlide>{paragraph()}</SwiperSlide>
-            </Slider>
+            {loaded ? (
+                <Slider showButtons={width > constants?.breakpoints?.mobile}>
+                    <SwiperSlide>{fonts()}</SwiperSlide>
+                    <SwiperSlide>{buttonsLinks()}</SwiperSlide>
+                    <SwiperSlide>{paragraph()}</SwiperSlide>
+                </Slider>
+            ) : (
+                <Loader height={150} label={`Styles Loading`} style={{ [`--animation-delay`]: `${4 * 0.15}s` }} />
+            )}
         </section>
     )
 }

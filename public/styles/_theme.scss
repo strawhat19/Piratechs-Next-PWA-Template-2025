@@ -17,6 +17,7 @@
     
     // blues
     --blue: #0082c6;
+    --gameBlue: #00c2ff;
     --bluedark: #04397b;
     --bluelight: #00a7ff;
     --bluelighter: #009eff;
@@ -32,6 +33,10 @@
     // blacks
     --black: black;
     --blackGlass: rgba(0, 0, 0, 0.75);
+
+    // glass
+    --lightGlass: rgba(255, 61, 0, 0.2);
+    --darkGlass: rgba(0, 194, 255, 0.2);
 
     // colors
     --bg: var(--bluedark);
@@ -50,6 +55,7 @@
 body {
     --background: var(--bg);
     header, footer {
+        z-index: 1;
         background: var(--bg);
     }
 }

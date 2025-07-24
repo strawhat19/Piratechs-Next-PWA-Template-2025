@@ -84,7 +84,7 @@ export default function Container({ children, className = `containerComponent` }
 
     return (
         <State.Provider value={state}>
-            <body className={`${className} ${getPageName(pathname)} pageContainer ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
+            <body className={`${className} ${getPageName(pathname)} pageContainer ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
                 <Header />
                 <main className={`container`}>
                     <Logo label={getPageName(pathname)} />

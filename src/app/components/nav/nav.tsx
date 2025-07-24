@@ -13,6 +13,7 @@ import {
     Close,
     Settings,
     PermMedia,
+    BarChart,
 } from '@mui/icons-material';
 
 const size = 20;
@@ -27,6 +28,7 @@ export const routes = {
 //   contact: { icons: { fontAwesome: `fa-envelope`, mui: <Mail style={{ fontSize: size }} className={`linkHover`} /> } },
   about: { icons: { fontAwesome: `fa-info-circle`, mui: <Info style={{ fontSize: size }} className={`linkHover`} /> } },
   gallery: { icons: { fontAwesome: `fa-images`, mui: <PermMedia style={{ fontSize: size - 2 }} className={`linkHover`} /> } },
+  stocks: { icons: { fontAwesome: `fa-bars`, mui: <BarChart style={{ fontSize: size }} className={`linkHover`} /> } },
 }
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {

@@ -17,8 +17,8 @@ export const GET = async () => {
     const cpuLoad = os.loadavg()[0];
 
     const getApiRoutes = (): string[] => {
-      const apiDir = path.join(process.cwd(), `src`, `app`, `api`);
       let routes: string[] = [];
+      const apiDir = path.join(process.cwd(), `src`, `app`, `api`);
 
       const walk = (dir: string, baseRoute = ``) => {
         const files = fs.readdirSync(dir);
@@ -40,22 +40,27 @@ export const GET = async () => {
         });
       };
 
-      walk(apiDir);
+      if (process.env.NODE_ENV == `development`) walk(apiDir);
       return routes;
     };
+
+    let defaultMessage = `API Server Connected`;
+    let defaultTitle = constants?.titles?.extended;
 
     return NextResponse.json({
       ok: true,
       status: 200,
       success: true,
       statusText: `ok`,
-      routes: getApiRoutes(),
-      message: `API Server Connected`,
-      A: constants?.titles?.extended,
-      cpuLoad: `${cpuLoad.toFixed(2)}`,
-      timestamp: new Date().toISOString(),
-      uptime: `${uptimeHours} hours, ${uptimeMinutes} minutes`,
-      memoryUsage: `${usedMem.toFixed(2)} GB of ${totalMem.toFixed(2)} GB`,
+      title: defaultTitle,
+      message: defaultMessage,
+      datetime: new Date().toLocaleString(),
+      stats: {
+        cpuLoad: `${cpuLoad.toFixed(2)}`,
+        uptime: `${uptimeHours} hours, ${uptimeMinutes} minutes`,
+        memoryUsage: `${usedMem.toFixed(2)} GB of ${totalMem.toFixed(2)} GB`,
+      },
+      ...(process.env.NODE_ENV == `development` && { routes: getApiRoutes() }),
     });
 
   } catch (error) {
