@@ -64,7 +64,7 @@ export default function Container({ children, className = `containerComponent` }
 
         onResize();
         setLoaded(true);
-        if (devEnv && !loaded) refreshStocksAccount();
+        if (!loaded) refreshStocksAccount();
 
         window?.addEventListener(`resize`, debouncedResize);
         return () => window?.removeEventListener(`resize`, debouncedResize);
