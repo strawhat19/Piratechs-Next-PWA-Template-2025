@@ -3,15 +3,17 @@
 import 'swiper/css';
 import './slider.scss';
 
-import { useRef } from 'react';
 // import 'swiper/css/effect-cards';
 import { Swiper } from 'swiper/react';
 import { Button } from '@mui/material';
 import { Autoplay } from 'swiper/modules';
+import { useContext, useRef } from 'react';
+import { State } from '../container/container';
 // import { EffectCards } from 'swiper/modules';
 
 export default function Slider({ children, showButtons = true, spaceBetween = 15, slidesPerView = 1, autoplay = false, className = `sliderComponent` }: any) {
     let swiperRef = useRef<any>(null);
+    let { width } = useContext<any>(State);
 
     const slide = (direction: number) => {
         let swiperInstance = null;
@@ -55,7 +57,7 @@ export default function Slider({ children, showButtons = true, spaceBetween = 15
                     {...autoplay && {
                         speed: 5000,
                         freeMode: true,
-                        slidesPerView: 9,
+                        slidesPerView: 10,
                         modules: [Autoplay],
                         autoplay: {
                             delay: 0,

@@ -3,9 +3,9 @@ import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
 
-export const popularStockSymbols = Object.keys(popularStocks);
+const popularStockSymbols = Object.keys(popularStocks);
 
-export const fmpRoutes = {
+const fmpRoutes = {
     stocks: () => fmpRoutes.popularStocks(),
     allStocks: (limit: number = 25) => `https://financialmodelingprep.com/api/v3/stock/list?limit=${limit}&apikey=${fmpAPIKey}`,
     totalStocks: (limit: number = 25) => `https://financialmodelingprep.com/api/v3/available-traded/list?limit=${limit}&apikey=${fmpAPIKey}`,
