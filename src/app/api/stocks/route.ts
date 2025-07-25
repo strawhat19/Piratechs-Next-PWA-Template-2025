@@ -3,7 +3,7 @@ import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
 
-const popularStockSymbols = Object.keys(popularStocks);
+const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 
 const fmpRoutes = {
   stocks: () => fmpRoutes.popularStocks(),
