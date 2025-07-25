@@ -32,10 +32,11 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             {loading ? <Loader height={35} label={`Stocks Loading`} className={`topBarLoader`} /> : <>
                 <Slider className={`stocksCarousel`} autoplay slidesPerView={12} spaceBetween={15} showButtons={false}>
                     {stocks?.map((stock: any, stockIndex: number) => {
-                        let { symbol, price } = stock;
+                        let { symbol, price, companyName: name, website, changes } = stock;
+                        let params = { symbol, price, name, changes, ...(website && website != `` && { website }) };
                         return (
-                            <SwiperSlide key={stockIndex}>
-                                <Stock symbol={symbol} price={price} />
+                            <SwiperSlide key={stockIndex} className={`stockSlide`}>
+                                <Stock {...params} />
                             </SwiperSlide>
                         )
                     })}

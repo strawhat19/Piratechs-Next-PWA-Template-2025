@@ -1,5 +1,15 @@
+.stocksCarousel {
+    .swiper {
+        min-height: 35px;
+    }
+}
+
 .stocksScroll {
     display: grid;
     align-items: center;
     grid-template-columns: max-content;
+}
+
+.stockSlide {
+    min-width: fit-content;
 }

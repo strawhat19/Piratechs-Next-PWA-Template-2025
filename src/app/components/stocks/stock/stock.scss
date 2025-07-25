@@ -1,10 +1,28 @@
+.stockFlex {
+    display: flex;
+    grid-gap: 10px;
+    padding: 0 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .stockContainer {
     .stock {
-        display: flex;
-        grid-gap: 10px;
-        padding: 0 10px;
-        align-items: center;
-        justify-content: space-between;
+        @extend .stockFlex;
+        grid-gap: 2px;
+        flex-direction: column;
+        .stockRow {
+            @extend .stockFlex;
+            padding: 0;
+        }
+        .stockPrice {
+            @extend .stockFlex;
+            padding: 0;
+            grid-gap: 2px;
+            &:has(.changes_positive) {
+                grid-gap: 5px;
+            }
+        }
         .stockImage {
             display: flex;
             align-items: center;

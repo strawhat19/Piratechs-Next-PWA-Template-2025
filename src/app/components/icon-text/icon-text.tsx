@@ -6,7 +6,10 @@ export const numberFormatWithCommas = (numberValue: string | number) => {
     let numberFormatted = numberValue; 
     let parsedNumber = typeof numberValue == `string` ? parseFloat(numberValue) : numberValue;
     let validNumber = !isNaN(parsedNumber);
-    if (validNumber) numberFormatted = parsedNumber?.toLocaleString(`en-US`);
+    if (validNumber) {
+        let parsedFloat = parsedNumber?.toFixed(2);
+        numberFormatted = parsedNumber > 999 ? parsedNumber?.toLocaleString(`en-US`) + `.00` : parsedFloat;
+    }
     return numberFormatted;
 }
 
