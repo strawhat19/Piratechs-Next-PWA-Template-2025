@@ -1,12 +1,21 @@
 import { NextResponse } from 'next/server';
+import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
+
+const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
+
+export const popularStockSymbols = Object.keys(popularStocks);
+
+export const fmpRoutes = {
+    stocks: () => fmpRoutes.popularStocks(),
+    allStocks: (limit: number = 25) => `https://financialmodelingprep.com/api/v3/stock/list?limit=${limit}&apikey=${fmpAPIKey}`,
+    totalStocks: (limit: number = 25) => `https://financialmodelingprep.com/api/v3/available-traded/list?limit=${limit}&apikey=${fmpAPIKey}`,
+    listStocks: (limit: number = 25, exchange = `NASDAQ`) => `https://financialmodelingprep.com/api/v3/stock-screener?limit=${limit}&exchange=${exchange}&apikey=${fmpAPIKey}`,
+    popularStocks: (symbolsJoinedString: string = popularStockSymbols.join(`,`)) => `https://financialmodelingprep.com/api/v3/profile/${symbolsJoinedString}?apikey=${fmpAPIKey}`,
+}
 
 export const GET = async () => {
   try {
-    const limit = 100;
-    const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
-    const fmpAPIStocksURL = `https://financialmodelingprep.com/api/v3/available-traded/list?limit=${limit}&apikey=${fmpAPIKey}`;
-
-    const fmpAPIStocksResponse = await fetch(fmpAPIStocksURL);
+    const fmpAPIStocksResponse = await fetch(fmpRoutes.stocks());
     if (fmpAPIStocksResponse) {
       const fmpAPIStocksResult = await fmpAPIStocksResponse?.json();
       if (fmpAPIStocksResult) {

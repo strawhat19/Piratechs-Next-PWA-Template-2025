@@ -34,7 +34,7 @@ export const apiRoutes = {
 export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
 export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g, `_`)?.replaceAll(/[\s,:/]/g, `-`).replaceAll(/-/g, `_`);
 
-export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.routes.account) => {
+export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url) => {
   let APIServerRouteResult: any = {};
   try {
     let APIServerRouteResponse = await fetch(APIServerRoute);

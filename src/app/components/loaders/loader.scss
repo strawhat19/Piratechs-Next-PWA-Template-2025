@@ -20,6 +20,11 @@
     background: var(--gameBlue) !important;
 }
 
+.topBarLoader_container {
+    border-radius: 0 !important;
+    background: black !important;
+}
+
 .loader {
     height: 100%;
     width: 100% !important;

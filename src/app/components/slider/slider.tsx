@@ -7,9 +7,10 @@ import { useRef } from 'react';
 // import 'swiper/css/effect-cards';
 import { Swiper } from 'swiper/react';
 import { Button } from '@mui/material';
+import { Autoplay } from 'swiper/modules';
 // import { EffectCards } from 'swiper/modules';
 
-export default function Slider({ children, showButtons = true, spaceBetween = 15, slidesPerView = 1, className = `sliderComponent` }: any) {
+export default function Slider({ children, showButtons = true, spaceBetween = 15, slidesPerView = 1, autoplay = false, className = `sliderComponent` }: any) {
     let swiperRef = useRef<any>(null);
 
     const slide = (direction: number) => {
@@ -33,21 +34,40 @@ export default function Slider({ children, showButtons = true, spaceBetween = 15
                     {`<`}
                 </Button>
             )}
-            <Swiper 
-                loop={true}
-                // speed={500}
-                ref={swiperRef}
-                navigation={true} 
-                pagination={false} 
-                // effect={`cards`}
-                simulateTouch={true} 
-                allowTouchMove={true}
-                // modules={[EffectCards]}
-                spaceBetween={spaceBetween} 
-                slidesPerView={slidesPerView} 
-            >
-                {children}
-            </Swiper>
+
+            {/* {autoplay ? (
+
+            ) : ( */}
+                <Swiper 
+                    loop={true}
+                    // speed={500}
+                    ref={swiperRef}
+                    navigation={true} 
+                    grabCursor={true}
+                    pagination={false} 
+                    // effect={`cards`}
+                    simulateTouch={true} 
+                    allowTouchMove={true}
+                    // modules={[EffectCards]}
+                    // freeModeMomentum={false}
+                    spaceBetween={spaceBetween} 
+                    slidesPerView={slidesPerView} 
+                    {...autoplay && {
+                        speed: 5000,
+                        freeMode: true,
+                        slidesPerView: 9,
+                        modules: [Autoplay],
+                        autoplay: {
+                            delay: 0,
+                            pauseOnMouseEnter: true,
+                            disableOnInteraction: false,
+                        },
+                    }}
+                >
+                    {children}
+                </Swiper>
+            {/* )} */}
+            
             {showButtons && (
                 <Button className={`sliderButton`} onClick={() => slide(1)}>
                     {`>`}

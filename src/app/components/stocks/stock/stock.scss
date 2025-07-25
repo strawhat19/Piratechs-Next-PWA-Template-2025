@@ -1,0 +1,9 @@
+.stockContainer {
+    .stock {
+        display: flex;
+        grid-gap: 10px;
+        padding: 0 10px;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

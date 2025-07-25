@@ -14,7 +14,6 @@ export default function Loader(props: any) {
         animation = `wave`, 
         showLoading = true,
         labelColor = `white`, 
-        // labelColor = `silver`, 
         skeletonContainerGap = 25,
         skeletonContainerPadding = 0,
         className = `loaderComponent`, 

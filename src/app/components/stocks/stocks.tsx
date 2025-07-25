@@ -5,44 +5,30 @@ import './stocks.scss';
 import Loader from '../loaders/loader';
 import { State } from '../container/container';
 import { useContext, useEffect, useState } from 'react';
-import { getAPIServerData } from '@/shared/scripts/constants';
+import { apiRoutes, getAPIServerData } from '@/shared/scripts/constants';
+import IconText from '../icon-text/icon-text';
 
 export default function Stocks({ className = `stocksComponent` }) {
     const { stocksAcc, setStocksAcc } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocks = () => {
-        console.log(`Refresh Stocks in Development`);
-        // let apiServerRoute = apiRoutes?.stocks?.url;
-        // getAPIServerData(apiServerRoute)?.then(apiData => {
-        //     console.log(`API Data`, apiData);
-        // });
-    }
-
     const refreshStocksAccount = () => {
-        getAPIServerData()?.then(acc => {
+        let apiServerRoute = apiRoutes?.stocks?.routes?.account;
+        getAPIServerData(apiServerRoute)?.then(acc => {
             setStocksAcc(acc);
             setLoading(false);
+            console.log(`Account`, acc);
         });
     }
 
-    const getMetricValueLabel = (metricValue: any) => {
-        let metricValueLabel = metricValue; 
-        let number_metricValue = parseFloat(metricValue);
-        let validNumber = !isNaN(number_metricValue);
-        if (validNumber) metricValueLabel = number_metricValue?.toLocaleString(`en-US`);
-        return metricValueLabel;
-    }
-
     useEffect(() => {
-        refreshStocks();
         refreshStocksAccount();
     }, [])
 
     return (
         <div className={`stocksContainer w75 ${className}`}>
-            {loading ? <Loader height={250} label={`Stocks Loading`} /> : <>
+            {loading ? <Loader height={250} label={`Account Loading`} /> : <>
                 <div className={`stockMetrics w100`}>
                     <div className={`stockMetric`}>
                         <strong>Account</strong>
@@ -67,19 +53,25 @@ export default function Stocks({ className = `stocksComponent` }) {
                     <div className={`stockMetric`}>
                         <strong>Cash</strong> 
                         <div className={`subMetric`}>
-                            <strong style={{ color: `var(--success)` }}>$</strong> {getMetricValueLabel(stocksAcc?.cash) ?? `0.00`}
+                            <IconText dollarSign number={stocksAcc?.cash} />
                         </div>
                     </div>
                     <div className={`stockMetric`}>
                         <strong>Equity</strong>
                         <div className={`subMetric`}>
-                            <strong style={{ color: `var(--success)` }}>$</strong> {getMetricValueLabel(stocksAcc?.equity) ?? `0.00`}
+                            <IconText dollarSign number={stocksAcc?.equity} />
+                        </div>
+                    </div>
+                    <div className={`stockMetric`}>
+                        <strong>Portfolio Value</strong> 
+                        <div className={`subMetric`}>
+                            <IconText dollarSign number={stocksAcc?.portfolio_value} />
                         </div>
                     </div>
                     <div className={`stockMetric`}>
                         <strong>Buying Power</strong> 
                         <div className={`subMetric`}>
-                            <strong style={{ color: `var(--success)` }}>$</strong> {getMetricValueLabel(stocksAcc?.buying_power) ?? `0.00`}
+                            <IconText dollarSign number={stocksAcc?.buying_power} />
                         </div>
                     </div>
                 </div>

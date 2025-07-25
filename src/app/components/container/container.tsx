@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './container.scss';
 
 import Logo from '../logo/logo';
+import TopBar from '../topbar/topbar';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';
@@ -25,7 +26,7 @@ export const getPageName = (path: string) => {
     return pageName;
 }
 
-export default function Container({ children, className = `containerComponent` }: any) {
+export default function Container({ children, topBarComponent = null, showPageLogo = true, className = `containerComponent` }: any) {
     const pathname = usePathname();
 
     let [user, setUser] = useState<any>(null);
@@ -76,9 +77,14 @@ export default function Container({ children, className = `containerComponent` }
     return (
         <State.Provider value={state}>
             <body className={`${className} ${getPageName(pathname)} pageContainer ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
+                {topBarComponent != null && (
+                    <TopBar>
+                        {topBarComponent}
+                    </TopBar>
+                )}
                 <Header />
                 <main className={`container`}>
-                    <Logo label={getPageName(pathname)} />
+                    {showPageLogo && <Logo label={getPageName(pathname)} />}
                     {children}
                     <ToastContainer
                         draggable
