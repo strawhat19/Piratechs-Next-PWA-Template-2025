@@ -1,29 +1,53 @@
 import { Roles, Types } from "../types/types";
 
 export const constants = {
-    breakpoints: {
-        mobile: 768,
+  breakpoints: {
+    mobile: 768,
+  },
+  titles: {
+    default:  `Next PWA`,
+    extended: `Next PWA`,
+  },
+  fonts: {
+    sansSerif: {
+      plusJakartaSans: `Plus Jakarta Sans`,
+    }
+  },
+  images: {
+    icons: {
+      // logo: `icon-512x512.png`,
+      // logo: `assets/icons/ico.svg`,
+      logo: `assets/icons/Piratechs-Icon-Blue-Neon.svg`,
     },
-    titles: {
-        default:  `Next PWA`,
-        extended: `Next PWA`,
-    },
-    fonts: {
-        sansSerif: {
-            plusJakartaSans: `Plus Jakarta Sans`,
-        }
-    },
-    images: {
-        icons: {
-            // logo: `icon-512x512.png`,
-            // logo: `assets/icons/ico.svg`,
-            logo: `assets/icons/Piratechs-Icon-Blue-Neon.svg`,
-        },
-    },
+  },
+}
+
+export const apiRoutes = {
+  stocks: {
+    url: `/api/stocks`,
+    routes: {
+      account: `/api/stocks/account`,
+    }
+  }
 }
 
 export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
 export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g, `_`)?.replaceAll(/[\s,:/]/g, `-`).replaceAll(/-/g, `_`);
+
+export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.routes.account) => {
+  let APIServerRouteResult: any = {};
+  try {
+    let APIServerRouteResponse = await fetch(APIServerRoute);
+    if (APIServerRouteResponse) {
+      APIServerRouteResult = await APIServerRouteResponse?.json();
+      return APIServerRouteResult;
+    }
+  } catch (errorOnGetAPIServerData) {
+    APIServerRouteResult = errorOnGetAPIServerData;
+    console.log(`Error on Get ${APIServerRoute}`, errorOnGetAPIServerData);
+    return APIServerRouteResult;
+  }
+}
 
 export const generateArray = (length: number, itemData: any, includeIndexData = false, Model: any = undefined) => {
   let generatedArray = Array.from({ length }, (_, index) => {

@@ -2,11 +2,18 @@
     gap: 15px;
     width: 100%;
     display: grid;
+    font-size: 18px;
     padding: 0 0 15px;
     &:not(.w100) {
         grid-template-columns: repeat(3, 1fr);
     }
-    .subMetric {
-        padding-left: 25px;
+    .stockMetric {
+        display: flex;
+        grid-gap: 5px;
+        flex-direction: column;
+        .subMetric {
+            font-size: 16px;
+            padding-left: 25px;
+        }
     }
 }
