@@ -13,7 +13,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 const identifierKey = `id`;
 const initialUsers = generateArray(7, new User({ }), true, User);
 
-export default function SwapyDemo() {
+export default function SwapyDemo({ label = `User` }) {
   const { loaded } = useContext<any>(State);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -35,7 +35,6 @@ export default function SwapyDemo() {
     if (swapyRef.current) {
       utils.dynamicSwapy(swapyRef.current, users, identifierKey, slotItemMap, setSlotItemMap);
     }
-    console.log(`Users`, users);
   }, [users])
 
   const removeDNDItem = (user: User) => {
@@ -49,8 +48,8 @@ export default function SwapyDemo() {
       let number = prevUsrs.length + 1;
       let newUser = new User({
         number,
-        name: `User ${number}`,
-        [identifierKey]: `User_${number}`,
+        name: `${label} ${number}`,
+        [identifierKey]: `${label}_${number}`,
       });
       let updatedUsrs = [
         ...prevUsrs,
@@ -67,7 +66,7 @@ export default function SwapyDemo() {
     <div className={`swapyDemoComponent`}>
 
       {!loaded ? (
-        <Loader height={370} label={`Users Loading`} />
+        <Loader height={370} label={`${label}s Loading`} />
       ) : <>
         <div ref={containerRef} className={`users-container`}>
           {slottedItems.map(({ slotId, itemId, item: user }: any) => (
@@ -88,7 +87,7 @@ export default function SwapyDemo() {
         </div>
 
         <button className={`newSwapyItemButton w100`} onClick={newDNDItem}>
-          Add User
+          Add {label}
         </button>
       </>}
 

@@ -1,0 +1,12 @@
+.stockMetrics {
+    gap: 15px;
+    width: 100%;
+    display: grid;
+    padding: 0 0 15px;
+    &:not(.w100) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .subMetric {
+        padding-left: 25px;
+    }
+}
