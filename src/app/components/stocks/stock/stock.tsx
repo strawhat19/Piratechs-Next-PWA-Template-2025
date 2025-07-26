@@ -7,30 +7,6 @@ import { Tooltip } from '@mui/material';
 import IconText from '../../icon-text/icon-text';
 import { BarChart, PlayArrow } from '@mui/icons-material';
 
-export function StockDetails({ city, state, country, employees, ceo }: any) {
-    return (
-        <div className={`stockDetails w100 flex column gap5`}>
-            <div className={`stockRow w100 flex gap5 spaceBetween`}>
-                <strong>Location</strong>
-                <div>{city ? `${city}, ` : ``} {state ? `${state}, ` : ``} {country}</div>
-                {/* <div>{country}, {zip}</div> */}
-            </div>
-            <div className={`stockRow w100 flex gap15`}>
-                <div className={`stockRow flex column gap5`}>
-                    <strong>CEO</strong>
-                    <div>{ceo && ceo != `` ? ceo : `Unknown`}</div>
-                </div>
-                <div className={`stockRow flex column gap5`}>
-                    <strong>Employees</strong>
-                    <div>
-                        <IconText number={employees} showIcon={false} decimalPlaces={0} />
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 export default function Stock({ 
     changes = 0,
     zip = 95014,
@@ -67,19 +43,26 @@ export default function Stock({
     return (
         <div className={`stockContainer ${className}_container`}>
             <Tooltip title={linkable ? <StockDetails {...{ address, city, state, country, zip, employees, ceo }} /> : ``} arrow>
-                <Link href={website} onClick={(e) => linkable ? undefined : e?.preventDefault()} target={`_blank`} className={`smallFont colorwhite flexContainer ${linkable ? `hoverLink` : `pointerEventsNone`}`}>
+                <Link href={website} onClick={(e) => linkable ? undefined : e?.preventDefault()} target={`_blank`} className={`stockLink smallFont colorwhite flexContainer ${linkable ? `hoverLink` : `pointerEventsNone`}`}>
                     <div className={`stock ${className}`}>
                         <div className={`stockRow stockTopRow`}>
-                            <div className={`stockRow stockSymbol`}>
+                            <div className={`stockRow stockSymbol stockText`}>
                                 {symbol}
                             </div>
                             <div className={`stockImage`}>
                                 {imageErrored ? <BarChart style={{ color: `var(--links)` }} /> : (
-                                    <Img className={`logo`} src={logo} alt={name} width={`auto`} height={20} onImageError={() => setImageErrored(true)} />
+                                    <Img 
+                                        src={logo} 
+                                        alt={name} 
+                                        height={20} 
+                                        width={`auto`} 
+                                        className={`logo`} 
+                                        onImageError={() => setImageErrored(true)} 
+                                    />
                                 )}
                             </div>
-                            <div className={`stockPrice`}>
-                                <IconText dollarSign number={price} />
+                            <div className={`stockPrice stockText`}>
+                                <IconText dollarSign number={price} className={`stockText`} />
                                 {changes != 0 && (
                                     <PlayArrow className={`changesIndicator change_${changes < 0 ? `negative` : `positive`}`} style={{ 
                                         marginRight: -5,
@@ -92,22 +75,46 @@ export default function Stock({
                                 )}
                             </div>
                             {showCompanyName && (
-                                <div className={`stockRow stockSymbol stockName`}>
+                                <div className={`stockRow stockSymbol stockName stockText`}>
                                     {name}
                                 </div>
                             )}
                             {children != null && (
-                                <div className={`stockRow pointerEventsAuto`}>
+                                <div className={`stockRow pointerEventsAuto stockText`}>
                                     {children}
                                 </div>
                             )}
                         </div>
-                        {/* <div className={`stockRow`}>
+                        {/* <div className={`stockRow stockText`}>
                             {name}
                         </div> */}
                     </div>
                 </Link>
             </Tooltip>
+        </div>
+    )
+}
+
+export function StockDetails({ city, state, country, employees, ceo }: any) {
+    return (
+        <div className={`stockDetails w100 flex column gap5`}>
+            <div className={`stockRow w100 flex gap5 spaceBetween`}>
+                <strong>Location</strong>
+                <div>{city ? `${city}, ` : ``} {state ? `${state}, ` : ``} {country}</div>
+                {/* <div>{country}, {zip}</div> */}
+            </div>
+            <div className={`stockRow w100 flex gap15`}>
+                <div className={`stockRow flex column gap5`}>
+                    <strong>CEO</strong>
+                    <div>{ceo && ceo != `` ? ceo : `Unknown`}</div>
+                </div>
+                <div className={`stockRow flex column gap5`}>
+                    <strong>Employees</strong>
+                    <div>
+                        <IconText number={employees} showIcon={false} decimalPlaces={0} />
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

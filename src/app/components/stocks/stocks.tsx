@@ -7,14 +7,14 @@ import IconText from '../icon-text/icon-text';
 import { State } from '../container/container';
 import { useContext, useEffect, useState } from 'react';
 import CheckboxMulti from '../autocomplete/checkbox-multi/checkbox-multi';
-import { apiRoutes, constants, getAPIServerData } from '@/shared/scripts/constants';
+import { apiRoutes, constants, devEnv, getAPIServerData } from '@/shared/scripts/constants';
 
 export default function Stocks({ className = `stocksComponent` }) {
     const { width, stocks, stocksAcc, setStocksAcc } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocksAccount = (fromServer = false) => {
+    const refreshStocksAccount = (fromServer = !devEnv) => {
         if (fromServer) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.account;
             getAPIServerData(apiServerRoute)?.then(acc => {
@@ -34,6 +34,15 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     return (
         <div className={`stocksContainer w75 ${className}`}>
+
+            <div className={`stocksSearchField`} style={{ paddingBottom: 15 }}>
+                {(loading || stocks?.length == 0) ? (
+                    <Loader height={40} label={`Stocks Search Loading`} style={{ [`--animation-delay`]: `${2 * 0.15}s` }} />
+                ) : (
+                    <CheckboxMulti optionsToUse={stocks} placeholder={`Stocks`} />
+                )}
+            </div>
+
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
                 <div className={`stockMetrics w100`}>
                     <div className={`stockMetric`}>
@@ -56,14 +65,6 @@ export default function Stocks({ className = `stocksComponent` }) {
                             </>}
                         </div>
                     </div>
-                </div>
-
-                <div className={`stocksSearchField`} style={{ paddingBottom: 15 }}>
-                    {(loading || stocks?.length == 0) ? (
-                        <Loader height={40} label={`Stocks Search Loading`} style={{ [`--animation-delay`]: `${2 * 0.15}s` }} />
-                    ) : (
-                        <CheckboxMulti optionsToUse={stocks} placeholder={`Stocks`} />
-                    )}
                 </div>
 
                 <div className={`stockMetrics`}>

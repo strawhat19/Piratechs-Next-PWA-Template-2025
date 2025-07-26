@@ -9,11 +9,11 @@ import { useContext, useState } from 'react';
 import IconText from '../../icon-text/icon-text';
 import { State } from '../../container/container';
 import { AutoCompleteOption } from '../autocomplete';
+import { constants } from '@/shared/scripts/constants';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { movies } from '@/shared/server/database/samples/movies/movies';
 import { Autocomplete, Checkbox, IconButton, TextField } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import { constants } from '@/shared/scripts/constants';
 
 const checkedIcon = <CheckBoxIcon fontSize={`small`} />;
 const icon = <CheckBoxOutlineBlankIcon fontSize={`small`} />;
@@ -110,15 +110,15 @@ export default function CheckboxMulti({
                             {width >= constants.breakpoints.mobile && <>
                                 <span style={{ color: `var(--links)` }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    CEO: {option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`}
+                                    {width >= constants.breakpoints.notebook ? `CEO: ` : ``}{option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`}
                                 </span>
                                 <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    Employees: <IconText number={option?.employees} showIcon={false} decimalPlaces={0} />
+                                    {width >= constants.breakpoints.notebook ? `Employees: ` : ``}<IconText number={option?.employees} showIcon={false} decimalPlaces={0} />
                                 </span>
                                 <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {option?.city ? `${option?.city}, ` : ``} {option?.state ? `${option?.state}, ` : ``} {option?.country}
+                                    {option?.city ? `${option?.city}` : ``}{option?.state ? `, ${option?.state}` : ``}{width >= constants.breakpoints.notebook ? `, ${option?.country}` : ``}
                                 </span>
                             </>}
                         </> : (

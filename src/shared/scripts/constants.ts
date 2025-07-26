@@ -2,7 +2,14 @@ import { Roles, Types } from "../types/types";
 
 export const constants = {
   breakpoints: {
+    smallPhone: 678,
     mobile: 768,
+    tablet: 992,
+    tabletLarge: 1092,
+    notebook: 1200,
+    laptop: 1366,
+    computer: 1600,
+    dektop: 1920,
   },
   titles: {
     default:  `Next PWA`,

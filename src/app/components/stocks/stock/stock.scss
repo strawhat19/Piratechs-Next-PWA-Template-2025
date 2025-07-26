@@ -14,6 +14,24 @@
     min-width: fit-content;
 }
 
+.stockLink {
+    .stockText {
+        z-index: 1;
+        transition: var(--transition);
+    }
+    &:hover {
+        .stockText {
+            color: white;
+        }
+    }
+    &::before {
+        bottom: 0;
+        height: 100%;
+        border-radius: 15px;
+        background: var(--buttons);
+    }
+}
+
 .stockContainer {
     .stock {
         @extend .stockFlex;
