@@ -15,8 +15,6 @@ export class AutoCompleteOption {
     id: string = ``;
     label: string = ``;
     value: string = ``;
-    year: number = 9999;
-    emojis: string[] = [];
     constructor(data: Partial<AutoCompleteOption>) {
         Object.assign(this, data);
     }

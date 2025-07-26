@@ -115,9 +115,11 @@ ul {
 .linkHover {
   color: var(--links);
   transition: var(--transition);
-  &:hover {
-    color: var(--links);
-    filter: brightness(1.15);
+  &:not(.pointerEventsNone) {
+    &:hover {
+        color: var(--links);
+        filter: brightness(1.15);
+    }
   }
 }
 

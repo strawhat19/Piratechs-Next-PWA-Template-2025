@@ -1,9 +1,11 @@
 .topBarContainer {
     top: 60px;
-    padding: 5px 0 0;
+    padding: 8px 0 0;
     min-height: 35px;
     position: absolute;
+    border-bottom: 2px solid var(--links);
     &:has(.topBarLoader) {
         padding: 5px 5px 0;
+        border-bottom: none !important;
     }
 }

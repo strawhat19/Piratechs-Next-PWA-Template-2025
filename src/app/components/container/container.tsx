@@ -13,6 +13,7 @@ import { ToastContainer } from 'react-toastify';
 import { AuthStates } from '@/shared/types/types';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { capWords, constants, debounce, devEnv } from '@/shared/scripts/constants';
+import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 export const State = createContext({});
 
@@ -39,9 +40,9 @@ export default function Container({ children, topBarComponent = null, showPageLo
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
-    let [stocks, setStocks] = useState([]);
     let [histories, setHistories] = useState([]);
-    let [stocksAcc, setStocksAcc] = useState<any>(null);
+    let [stocks, setStocks] = useState(sampleStocks);
+    let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 
     useEffect(() => {
         const onResize = () => {

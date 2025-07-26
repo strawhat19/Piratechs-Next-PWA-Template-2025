@@ -15,12 +15,17 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocks = () => {
-        getAPIServerData()?.then(stocksData => {
-            setStocks(stocksData);
+    const refreshStocks = (fromServer = false) => {
+        if (fromServer) {
+            getAPIServerData()?.then(stocksData => {
+                setStocks(stocksData);
+                setLoading(false);
+                console.log(`Stocks`, stocksData);
+            });
+        } else {
             setLoading(false);
-            console.log(`Stocks`, stocksData);
-        });
+            console.log(`Stocks`, stocks);
+        }
     }
 
     useEffect(() => {
@@ -31,17 +36,11 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         <div className={`stocksScrollContainer w100 h100 ${className}`}>
             {loading ? <Loader height={35} label={`Stocks Loading`} className={`topBarLoader`} /> : <>
                 <Slider className={`stocksCarousel`} autoplay slidesPerView={12} spaceBetween={15} showButtons={false}>
-                    {stocks?.map((stock: any, stockIndex: number) => {
-                        let { companyName: name, exchangeShortName: exchange, fullTimeEmployees: employees, website } = stock;
-                        delete stock.website;
-                        let cleanedStock = { ...stock, name, exchange, employees };
-                        let params = { ...cleanedStock, ...(website && website != `` && { website }) };
-                        return (
-                            <SwiperSlide key={stockIndex} className={`stockSlide`}>
-                                <Stock {...params} />
-                            </SwiperSlide>
-                        )
-                    })}
+                    {stocks?.map((stock: any, stockIndex: number) => (
+                        <SwiperSlide key={stockIndex} className={`stockSlide`}>
+                            <Stock {...stock} />
+                        </SwiperSlide>
+                    ))}
                 </Slider>
             </>}
         </div>

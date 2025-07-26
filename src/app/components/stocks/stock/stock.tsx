@@ -36,7 +36,9 @@ export default function Stock({
     zip = 95014,
     state = `CA`, 
     country = `US`,
+    children = null,
     symbol = `AAPL`, 
+    linkable = true,
     currency = `USD`,
     price = 99999.99, 
     volume = 53248283,
@@ -49,6 +51,7 @@ export default function Stock({
     range = `169.21-260.1`,
     IPODate = `1980-12-12`,
     ceo = `Timothy D. Cook`,
+    showCompanyName = true,
     phone = `(408) 996-1010`,
     marketCap = 3195217187580,
     className = `stockComponent`, 
@@ -63,8 +66,8 @@ export default function Stock({
 
     return (
         <div className={`stockContainer ${className}_container`}>
-            <Tooltip title={<StockDetails {...{ address, city, state, country, zip, employees, ceo }} />} arrow>
-                <Link href={website} target={`_blank`} className={`smallFont colorwhite flexContainer hoverLink`}>
+            <Tooltip title={linkable ? <StockDetails {...{ address, city, state, country, zip, employees, ceo }} /> : ``} arrow>
+                <Link href={website} onClick={(e) => linkable ? undefined : e?.preventDefault()} target={`_blank`} className={`smallFont colorwhite flexContainer ${linkable ? `hoverLink` : `pointerEventsNone`}`}>
                     <div className={`stock ${className}`}>
                         <div className={`stockRow stockTopRow`}>
                             <div className={`stockRow stockSymbol`}>
@@ -88,9 +91,16 @@ export default function Stock({
                                     }} />
                                 )}
                             </div>
-                            <div className={`stockRow stockSymbol`}>
-                                {name}
-                            </div>
+                            {showCompanyName && (
+                                <div className={`stockRow stockSymbol stockName`}>
+                                    {name}
+                                </div>
+                            )}
+                            {children != null && (
+                                <div className={`stockRow pointerEventsAuto`}>
+                                    {children}
+                                </div>
+                            )}
                         </div>
                         {/* <div className={`stockRow`}>
                             {name}

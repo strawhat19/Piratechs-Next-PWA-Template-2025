@@ -3,23 +3,29 @@
 import './stocks.scss';
 
 import Loader from '../loaders/loader';
+import IconText from '../icon-text/icon-text';
 import { State } from '../container/container';
 import { useContext, useEffect, useState } from 'react';
-import { apiRoutes, getAPIServerData } from '@/shared/scripts/constants';
-import IconText from '../icon-text/icon-text';
+import CheckboxMulti from '../autocomplete/checkbox-multi/checkbox-multi';
+import { apiRoutes, constants, getAPIServerData } from '@/shared/scripts/constants';
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { stocksAcc, setStocksAcc } = useContext<any>(State);
+    const { width, stocks, stocksAcc, setStocksAcc } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocksAccount = () => {
-        let apiServerRoute = apiRoutes?.stocks?.routes?.account;
-        getAPIServerData(apiServerRoute)?.then(acc => {
-            setStocksAcc(acc);
+    const refreshStocksAccount = (fromServer = false) => {
+        if (fromServer) {
+            let apiServerRoute = apiRoutes?.stocks?.routes?.account;
+            getAPIServerData(apiServerRoute)?.then(acc => {
+                setStocksAcc(acc);
+                setLoading(false);
+                console.log(`Account`, acc);
+            });
+        } else {
             setLoading(false);
-            console.log(`Account`, acc);
-        });
+            console.log(`Account`, stocksAcc);
+        }
     }
 
     useEffect(() => {
@@ -34,21 +40,32 @@ export default function Stocks({ className = `stocksComponent` }) {
                         <strong>Account</strong>
                         <div className={`subMetric flex column gap5`}>
                             Rakib
-                            <div className={`subMetric`}>
-                                <strong>Number</strong>
-                                <div className={`subMetric`}>
-                                    {stocksAcc?.account_number}
+                            {width >= constants.breakpoints.mobile && <>
+                                <div className={`subMetric flex column gap5`}>
+                                    <strong>Number</strong>
+                                    <div className={`subMetric`}>
+                                        {stocksAcc?.account_number}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={`subMetric`}>
-                                <strong>ID</strong>
-                                <div className={`subMetric`}>
-                                    {stocksAcc?.id}
+                                <div className={`subMetric flex column gap5`}>
+                                    <strong>ID</strong>
+                                    <div className={`subMetric`}>
+                                        {stocksAcc?.id}
+                                    </div>
                                 </div>
-                            </div>
+                            </>}
                         </div>
                     </div>
                 </div>
+
+                <div className={`stocksSearchField`} style={{ paddingBottom: 15 }}>
+                    {(loading || stocks?.length == 0) ? (
+                        <Loader height={40} label={`Stocks Search Loading`} style={{ [`--animation-delay`]: `${2 * 0.15}s` }} />
+                    ) : (
+                        <CheckboxMulti optionsToUse={stocks} placeholder={`Stocks`} />
+                    )}
+                </div>
+
                 <div className={`stockMetrics`}>
                     <div className={`stockMetric`}>
                         <strong>Cash</strong> 

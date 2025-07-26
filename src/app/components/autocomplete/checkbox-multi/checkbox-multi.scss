@@ -2,18 +2,26 @@
     --bgColor: white;
     --fontColor: black;
     font-family: var(--font);
+    .input_hasValue {
+        input {
+            top: 2px;
+        }
+    }
+    input {
+        padding: 7.5px 4px 12.5px 11px !important;
+    }
     &.hasValue {
         label {
-            top: -15px;
+            top: -13px;
             left: -15px;
             font-weight: 600;
             color: var(--bgColor);
         }
     }
     label {
-        top: -7px;
+        top: -6px;
         color: var(--disabled);
-        font-family: var(--font);
+        font-family: var(--font) !important;
         &.Mui-focused {
             top: -15px;
             left: -15px;
@@ -31,10 +39,14 @@
             .MuiAutocomplete-tag {
                 color: white;
                 max-height: 30px;
+                font-weight: bolder;
                 background: var(--links);
+                font-family: var(--font) !important;
                 svg {
-                    path {
-                        fill: white;
+                    &:not(.changesIndicator) {
+                        path {
+                            fill: white;
+                        }
                     }
                 }
             }

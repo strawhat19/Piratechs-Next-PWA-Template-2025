@@ -3,12 +3,10 @@
 import { useContext } from 'react';
 import { Button } from '@mui/material';
 import Slider from '../../slider/slider';
+import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
-// import AutoComplete from '../../autocomplete/autocomplete';
-import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
-import Loader from '../../loaders/loader';
 
 export default function Styles() {
     let { width, loaded, menuExpanded } = useContext<any>(State);
@@ -81,11 +79,6 @@ export default function Styles() {
 
     return (
         <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
-            {/* <AutoComplete /> */}
-            {loaded ? <CheckboxMulti /> : (
-                <Loader height={40} label={`Movies Loading`} style={{ [`--animation-delay`]: `${3 * 0.15}s` }} />
-            )}
-            <div style={{ minHeight: 0 }} />
             {loaded ? (
                 <Slider showButtons={width > constants?.breakpoints?.mobile}>
                     <SwiperSlide>{fonts()}</SwiperSlide>

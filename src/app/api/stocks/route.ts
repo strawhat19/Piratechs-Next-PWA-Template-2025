@@ -17,15 +17,48 @@ export const GET = async () => {
   try {
     const fmpAPIStocksResponse = await fetch(fmpRoutes.stocks());
     if (fmpAPIStocksResponse) {
-      const fmpAPIStocksResult = await fmpAPIStocksResponse?.json();
+
+      let fmpAPIStocksResult = await fmpAPIStocksResponse?.json();
+
       if (fmpAPIStocksResult) {
+
         if (Array.isArray(fmpAPIStocksResult)) {
+
+          fmpAPIStocksResult = fmpAPIStocksResult?.map(stock => {
+
+            let { 
+              symbol, 
+              website, 
+              volAvg: volume, 
+              companyName: name, 
+              lastDiv: lastDividend, 
+              exchangeShortName: exchange, 
+              fullTimeEmployees: employees, 
+            } = stock;
+
+            delete stock.website;
+
+            let cleanedStock = { ...stock, name, exchange, employees, volume, lastDividend };
+
+            let updatedStock = { 
+              ...cleanedStock, 
+              id: symbol, 
+              label: name, 
+              value: symbol,
+              type: `Stock`,
+              ...(website && website != `` && { website }), 
+            };
+
+            return updatedStock;
+          });
+          
           if (fmpAPIStocksResult[0]?.symbol) {
             fmpAPIStocksResult.sort((a: any, b: any) => a?.symbol?.localeCompare(b?.symbol));
           } else if (fmpAPIStocksResult[0]?.companyName) {
             fmpAPIStocksResult.sort((a: any, b: any) => a?.companyName?.localeCompare(b?.companyName));
           }
         }
+
         return NextResponse.json(fmpAPIStocksResult);
       }
     }

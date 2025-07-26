@@ -18,6 +18,10 @@
 
 .font { font-family: var(--font); }
 
+.pointerEventsAll { pointer-events: all; }
+.pointerEventsAuto { pointer-events: auto; }
+.pointerEventsNone { pointer-events: none; }
+
 .flex { display: flex; }
 .column { flex-direction: column; }
 .alignCenter { align-items: center; }
@@ -163,12 +167,13 @@
         transition: var(--transition);
     }
 
-    &:hover {
-        transition: var(--transition);
-
-        &::before {
-            transform: scale(1, 1);
-            transition: 500ms ease-in-out;
+    &:not(.pointerEventsNone) {
+        &:hover {
+            transition: var(--transition);
+            &::before {
+                transform: scale(1, 1);
+                transition: 500ms ease-in-out;
+            }
         }
     }
 }
