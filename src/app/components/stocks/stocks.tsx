@@ -7,15 +7,15 @@ import IconText from '../icon-text/icon-text';
 import { State } from '../container/container';
 import { useContext, useEffect, useState } from 'react';
 import CheckboxMulti from '../autocomplete/checkbox-multi/checkbox-multi';
-import { apiRoutes, constants, devEnv, getAPIServerData } from '@/shared/scripts/constants';
+import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function Stocks({ className = `stocksComponent` }) {
     const { width, stocks, stocksAcc, setStocksAcc } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocksAccount = (fromServer = !devEnv) => {
-        if (fromServer) {
+    const refreshStocksAccount = () => {
+        if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.account;
             getAPIServerData(apiServerRoute)?.then(acc => {
                 setStocksAcc(acc);

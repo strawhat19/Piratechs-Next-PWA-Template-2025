@@ -8,15 +8,15 @@ import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 import { State } from '../../container/container';
 import { useContext, useEffect, useState } from 'react';
-import { devEnv, getAPIServerData } from '@/shared/scripts/constants';
+import { getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { stocks, setStocks } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocks = (fromServer = !devEnv) => {
-        if (fromServer) {
+    const refreshStocks = () => {
+        if (getRealStocks) {
             getAPIServerData()?.then(stocksData => {
                 setStocks(stocksData);
                 setLoading(false);

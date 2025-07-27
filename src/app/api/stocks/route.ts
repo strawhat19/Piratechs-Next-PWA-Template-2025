@@ -24,9 +24,10 @@ export const GET = async () => {
 
         if (Array.isArray(fmpAPIStocksResult)) {
 
-          fmpAPIStocksResult = fmpAPIStocksResult?.map(stock => {
+          fmpAPIStocksResult = fmpAPIStocksResult?.map((stock, stockIndex) => {
 
             let { 
+              range,
               symbol, 
               website, 
               volAvg: volume, 
@@ -40,12 +41,17 @@ export const GET = async () => {
 
             let cleanedStock = { ...stock, name, exchange, employees, volume, lastDividend };
 
+            let [low, high] = range?.split(`-`);
+
             let updatedStock = { 
               ...cleanedStock, 
               id: symbol, 
               label: name, 
               value: symbol,
               type: `Stock`,
+              low: parseFloat(low), 
+              high: parseFloat(high),
+              number: stockIndex + 1,
               ...(website && website != `` && { website }), 
             };
 

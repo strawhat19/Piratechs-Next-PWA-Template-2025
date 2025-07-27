@@ -14,6 +14,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { movies } from '@/shared/server/database/samples/movies/movies';
 import { Autocomplete, Checkbox, IconButton, TextField } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CityStateCountry from '../../locations/city-state-country/city-state-country';
 
 const checkedIcon = <CheckBoxIcon fontSize={`small`} />;
 const icon = <CheckBoxOutlineBlankIcon fontSize={`small`} />;
@@ -49,24 +50,6 @@ export default function CheckboxMulti({
                     }
                 }
             } : {}}
-            renderTags={options[0]?.type == `Stock` ? (selected: AutoCompleteOption[], getTagProps) => (
-                selected.map((option, index) => {
-                    const { key, onDelete, ...tagProps } = getTagProps({ index });
-                    return (
-                        <div
-                            key={option.id}
-                            {...tagProps}
-                            style={{ background: `var(--bg)`, padding: `3px 0 10px`, borderRadius: 15 }}
-                        >
-                            <Stock {...option} linkable={false} showCompanyName={width >= constants.breakpoints.mobile}>
-                                <IconButton onClick={onDelete} style={{ padding: 0, maxHeight: 30 }}>
-                                    <Cancel />
-                                </IconButton>
-                            </Stock>
-                        </div>
-                    );
-                })
-            ) : undefined}
             renderInput={(params) => (
                 <TextField 
                     {...params} 
@@ -75,6 +58,25 @@ export default function CheckboxMulti({
                     className={`checkboxMultiField ${selectedOptions?.length > 0 ? `input_hasValue` : `input_noValue`}`} 
                 />
             )}
+            renderTags={options[0]?.type == `Stock` ? (selected: AutoCompleteOption[], getTagProps) => (
+                selected.map((option, index) => {
+                    const { key, onDelete, ...tagProps } = getTagProps({ index });
+                    return (
+                        <div
+                            key={option.id}
+                            {...tagProps}
+                            className={`${tagProps?.className} checkboxMultiTag`}
+                            style={{ background: `var(--bg)`, padding: `3px 0 10px`, borderRadius: 15 }}
+                        >
+                            <Stock {...option} linkable={false} showCompanyName={width >= constants.breakpoints.mobile}>
+                                <IconButton className={`checkboxMultiTagDeleteBtn`} onClick={onDelete} style={{ padding: 0, maxHeight: 30 }}>
+                                    <Cancel />
+                                </IconButton>
+                            </Stock>
+                        </div>
+                    );
+                })
+            ) : undefined}
             renderOption={(props, option: AutoCompleteOption, { selected }) => {
                 const { key, ...optionProps } = props;
                 return (
@@ -110,16 +112,28 @@ export default function CheckboxMulti({
                             {width >= constants.breakpoints.mobile && <>
                                 <span style={{ color: `var(--links)` }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {width >= constants.breakpoints.notebook ? `CEO: ` : ``}{option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`}
+                                    {width >= constants.breakpoints.notebook ? `Low: ` : ``}<IconText dollarSign number={option?.low} className={`stockSeachResultPrice`} />
                                 </span>
                                 <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {width >= constants.breakpoints.notebook ? `Employees: ` : ``}<IconText number={option?.employees} showIcon={false} decimalPlaces={0} />
+                                    {width >= constants.breakpoints.notebook ? `High: ` : ``}<IconText dollarSign number={option?.high} className={`stockSeachResultPrice`} />
                                 </span>
-                                <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
-                                <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {option?.city ? `${option?.city}` : ``}{option?.state ? `, ${option?.state}` : ``}{width >= constants.breakpoints.notebook ? `, ${option?.country}` : ``}
-                                </span>
+                                {width >= constants.breakpoints.laptop && <>
+                                    <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
+                                    <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
+                                        {width >= constants.breakpoints.laptop ? `CEO: ` : ``}{option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`}
+                                    </span>
+                                    <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
+                                    <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
+                                        {width >= constants.breakpoints.laptop ? `Employees: ` : ``}<IconText number={option?.employees} showIcon={false} decimalPlaces={0} />
+                                    </span>
+                                    {width >= constants.breakpoints.computer && <>
+                                        <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
+                                        <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
+                                            <CityStateCountry {...{ city: option?.city, state: option?.state, country: option?.country }} />
+                                        </span>
+                                    </>}
+                                </>}
                             </>}
                         </> : (
                             <span className={`font`} style={{ color: `black`, marginLeft: 8 }}>

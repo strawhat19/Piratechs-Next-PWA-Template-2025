@@ -42,10 +42,10 @@
                 font-weight: bolder;
                 background: var(--links);
                 font-family: var(--font) !important;
-                svg {
-                    &:not(.changesIndicator) {
+                .checkboxMultiTagDeleteBtn {
+                    svg {
                         path {
-                            fill: white;
+                            fill: var(--white);
                         }
                     }
                 }
