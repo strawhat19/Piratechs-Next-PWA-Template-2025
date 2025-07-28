@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { Types } from '@/shared/types/types';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
@@ -48,7 +49,7 @@ export const GET = async () => {
               id: symbol, 
               label: name, 
               value: symbol,
-              type: `Stock`,
+              type: Types.Stock,
               low: parseFloat(low), 
               high: parseFloat(high),
               number: stockIndex + 1,

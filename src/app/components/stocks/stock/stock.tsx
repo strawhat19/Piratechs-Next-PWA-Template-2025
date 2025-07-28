@@ -5,8 +5,8 @@ import { useState } from 'react';
 import Img from '../../image/image';
 import { Tooltip } from '@mui/material';
 import IconText from '../../icon-text/icon-text';
+import StockDetails from './stock-details/stock-details';
 import { BarChart, PlayArrow } from '@mui/icons-material';
-import CityStateCountry from '../../locations/city-state-country/city-state-country';
 import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
 
 export default function Stock({ 
@@ -95,37 +95,6 @@ export default function Stock({
                     </div>
                 </Link>
             </Tooltip>
-        </div>
-    )
-}
-
-export function StockDetails({ city, state, country, employees, ceo, high, low }: any) {
-    return (
-        <div className={`stockDetails w100 flex column gap5`}>
-            <div className={`stockRow w100 flex gap15`}>
-                <div className={`stockRow flex column gap5`}>
-                    <strong>Low</strong>
-                    <IconText dollarSign number={low} className={`stockDetailPrice`} />
-                </div>
-                <div className={`stockRow flex column gap5`}>
-                    <strong>High</strong>
-                    <IconText dollarSign number={high} className={`stockDetailPrice`} />
-                </div>
-            </div>
-            <div className={`stockRow flex column gap5`}>
-                <strong>Location</strong>
-                <CityStateCountry {...{ city, state, country }} />
-            </div>
-            <div className={`stockRow w100 flex gap15`}>
-                <div className={`stockRow flex column gap5`}>
-                    <strong>CEO</strong>
-                    <div>{ceo && ceo != `` ? ceo : `Unknown`}</div>
-                </div>
-                <div className={`stockRow flex column gap5`}>
-                    <strong>Employees</strong>
-                    <IconText number={employees} showIcon={false} decimalPlaces={0} />
-                </div>
-            </div>
         </div>
     )
 }

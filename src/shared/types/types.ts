@@ -16,21 +16,22 @@ export enum Roles {
 }
 
 export enum Types {
-    Data = `Data`,
-    User = `User`,
-    Chat = `Chat`,
-    Post = `Post`,
-    Upload = `Upload`,
-    Message = `Message`,
-    Feature = `Feature`,
-    Notification = `Notification`,
+  Data = `Data`,
+  User = `User`,
+  Chat = `Chat`,
+  Post = `Post`,
+  Stock = `Stock`,
+  Upload = `Upload`,
+  Message = `Message`,
+  Feature = `Feature`,
+  Notification = `Notification`,
 }
 
 export enum AuthStates {
-    Next = `Next`,
-    Sign_In = `Sign In`,
-    Sign_Up = `Sign Up`,
-    Sign_Out = `Sign Out`,
-    Reset_Password = `Reset Password`,
-    Forgot_Password = `Forgot Password`,
+  Next = `Next`,
+  Sign_In = `Sign In`,
+  Sign_Up = `Sign Up`,
+  Sign_Out = `Sign Out`,
+  Reset_Password = `Reset Password`,
+  Forgot_Password = `Forgot Password`,
 }

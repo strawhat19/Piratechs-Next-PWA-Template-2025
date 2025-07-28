@@ -5,6 +5,7 @@ import './checkbox-multi.scss';
 import Img from '../../image/image';
 import Stock from '../../stocks/stock/stock';
 import { useContext, useState } from 'react';
+import { Types } from '@/shared/types/types';
 import IconText from '../../icon-text/icon-text';
 import { State } from '../../container/container';
 import { AutoCompleteOption } from '../autocomplete';
@@ -40,10 +41,10 @@ export default function CheckboxMulti({
             className={`checkboxMultiComponent w100 ${selectedOptions?.length > 0 ? `hasValue` : `noValue`}`}
             getOptionLabel={(option: AutoCompleteOption) => option?.emojis && option.emojis?.length > 0 ? (
                 `${option?.emojis[0]} ${option?.label}`
-            ) : option?.type == `Stock` ? (
+            ) : option?.type == Types.Stock ? (
                 `${option?.symbol} ${option?.label} ${option?.ceo} ${option?.employees} ${option?.city} ${option?.state} ${option?.country}`
             ) : option?.label}
-            slotProps={options[0]?.type == `Stock` ? {
+            slotProps={options[0]?.type == Types.Stock ? {
                 paper: {
                     sx: {
                         background: `var(--bg)`,
@@ -58,7 +59,7 @@ export default function CheckboxMulti({
                     className={`checkboxMultiField ${selectedOptions?.length > 0 ? `input_hasValue` : `input_noValue`}`} 
                 />
             )}
-            renderTags={options[0]?.type == `Stock` ? (selected: AutoCompleteOption[], getTagProps) => (
+            renderTags={options[0]?.type == Types.Stock ? (selected: AutoCompleteOption[], getTagProps) => (
                 selected.map((option, index) => {
                     const { key, onDelete, ...tagProps } = getTagProps({ index });
                     return (
@@ -86,7 +87,7 @@ export default function CheckboxMulti({
                             checked={selected}
                             checkedIcon={checkedIcon}
                             style={{ marginRight: 0 }}
-                            sx={option?.type == `Stock` ? {
+                            sx={option?.type == Types.Stock ? {
                                 color: `white`,
                                 [`&.Mui-checked`]: {
                                     color: `white`,
@@ -95,7 +96,7 @@ export default function CheckboxMulti({
                         />
                         {option?.emojis && option.emojis?.length > 0 ? option?.emojis[0] : (
                             option?.image && option?.image != `` ? (
-                                option?.type == `Stock` ? (
+                                option?.type == Types.Stock ? (
                                     <Stock {...option} linkable={false} showCompanyName={width >= constants.breakpoints.mobile} />
                                 ) : (
                                     <Img 
@@ -108,15 +109,15 @@ export default function CheckboxMulti({
                                 )
                             ) : <></>
                         )}
-                        {option?.type == `Stock` ? <>
+                        {option?.type == Types.Stock ? <>
                             {width >= constants.breakpoints.mobile && <>
                                 <span style={{ color: `var(--links)` }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {width >= constants.breakpoints.notebook ? `Low: ` : ``}<IconText dollarSign number={option?.low} className={`stockSeachResultPrice`} />
+                                    {width >= constants.breakpoints.notebook ? `52w L: ` : ``}<IconText dollarSign number={option?.low} className={`stockSeachResultPrice`} />
                                 </span>
                                 <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {width >= constants.breakpoints.notebook ? `High: ` : ``}<IconText dollarSign number={option?.high} className={`stockSeachResultPrice`} />
+                                    {width >= constants.breakpoints.notebook ? `52w H: ` : ``}<IconText dollarSign number={option?.high} className={`stockSeachResultPrice`} />
                                 </span>
                                 {width >= constants.breakpoints.laptop && <>
                                     <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
