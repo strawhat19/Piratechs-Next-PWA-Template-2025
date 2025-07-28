@@ -105,15 +105,11 @@ export function StockDetails({ city, state, country, employees, ceo, high, low }
             <div className={`stockRow w100 flex gap15`}>
                 <div className={`stockRow flex column gap5`}>
                     <strong>Low</strong>
-                    <div>
-                        <IconText dollarSign number={low} className={`stockDetailPrice`} />
-                    </div>
+                    <IconText dollarSign number={low} className={`stockDetailPrice`} />
                 </div>
                 <div className={`stockRow flex column gap5`}>
                     <strong>High</strong>
-                    <div>
-                        <IconText dollarSign number={high} className={`stockDetailPrice`} />
-                    </div>
+                    <IconText dollarSign number={high} className={`stockDetailPrice`} />
                 </div>
             </div>
             <div className={`stockRow flex column gap5`}>
@@ -127,9 +123,7 @@ export function StockDetails({ city, state, country, employees, ceo, high, low }
                 </div>
                 <div className={`stockRow flex column gap5`}>
                     <strong>Employees</strong>
-                    <div>
-                        <IconText number={employees} showIcon={false} decimalPlaces={0} />
-                    </div>
+                    <IconText number={employees} showIcon={false} decimalPlaces={0} />
                 </div>
             </div>
         </div>

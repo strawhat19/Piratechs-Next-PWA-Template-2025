@@ -93,7 +93,7 @@ export const urlHostMatches = (envs: string[]) => {
 
 export const development = process?.env?.NODE_ENV == `development`;
 export const devEnv = urlHostMatches([`local`, `:3000`]) || development;
-export const getRealStocks = true;
+export const getRealStocks = !devEnv;
 
 export const dev = (item?: any, source?: any) => {
   if (item) {

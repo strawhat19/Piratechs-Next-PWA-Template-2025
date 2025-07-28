@@ -92,6 +92,18 @@ export default function Stocks({ className = `stocksComponent` }) {
                             <IconText dollarSign number={stocksAcc?.buying_power} />
                         </div>
                     </div>
+                    <div className={`stockMetric`}>
+                        <strong>Last Equity</strong> 
+                        <div className={`subMetric`}>
+                            <IconText dollarSign number={stocksAcc?.last_equity} />
+                        </div>
+                    </div>
+                    <div className={`stockMetric`}>
+                        <strong>Options Buying Power</strong> 
+                        <div className={`subMetric`}>
+                            <IconText dollarSign number={stocksAcc?.options_buying_power} />
+                        </div>
+                    </div>
                 </div>
             </>}
         </div>

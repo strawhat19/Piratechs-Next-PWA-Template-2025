@@ -3,7 +3,6 @@
 import './checkbox-multi.scss';
 
 import Img from '../../image/image';
-import { Cancel } from '@mui/icons-material';
 import Stock from '../../stocks/stock/stock';
 import { useContext, useState } from 'react';
 import IconText from '../../icon-text/icon-text';
@@ -11,6 +10,7 @@ import { State } from '../../container/container';
 import { AutoCompleteOption } from '../autocomplete';
 import { constants } from '@/shared/scripts/constants';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { Cancel, People, Person } from '@mui/icons-material';
 import { movies } from '@/shared/server/database/samples/movies/movies';
 import { Autocomplete, Checkbox, IconButton, TextField } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -121,11 +121,22 @@ export default function CheckboxMulti({
                                 {width >= constants.breakpoints.laptop && <>
                                     <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                     <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                        {width >= constants.breakpoints.laptop ? `CEO: ` : ``}{option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`}
+                                        {width >= constants.breakpoints.laptop ? (
+                                            <IconText 
+                                                icon={<Person style={{ fontSize: 20, color: `var(--links)` }} />} 
+                                                text={option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`} 
+                                            />
+                                        ) : ``}
                                     </span>
                                     <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                     <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                        {width >= constants.breakpoints.laptop ? `Employees: ` : ``}<IconText number={option?.employees} showIcon={false} decimalPlaces={0} />
+                                        {width >= constants.breakpoints.laptop ? (
+                                            <IconText 
+                                                decimalPlaces={0} 
+                                                number={option?.employees} 
+                                                icon={<People style={{ fontSize: 20, color: `var(--links)` }} />} 
+                                            />
+                                        ) : ``}
                                     </span>
                                     {width >= constants.breakpoints.computer && <>
                                         <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
