@@ -11,6 +11,7 @@ import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import { AuthStates } from '@/shared/types/types';
+import { User } from '@/shared/types/models/User';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { capWords, constants, debounce, devEnv } from '@/shared/scripts/constants';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
@@ -30,10 +31,10 @@ export const getPageName = (path: string) => {
 export default function Container({ children, topBarComponent = null, showPageLogo = true, className = `containerComponent` }: any) {
     const pathname = usePathname();
 
-    let [user, setUser] = useState<any>(null);
     let [users, setUsers] = useState<any>([]);
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
+    let [user, setUser] = useState<User | null>(null);
     
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);

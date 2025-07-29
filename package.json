@@ -1,6 +1,6 @@
 {
   "name": "piratechs-next-pwa-template-2025",
-  "version": "0.3.9",
+  "version": "0.3.9.1",
   "private": true,
   "scripts": {
     "dev": "next dev",

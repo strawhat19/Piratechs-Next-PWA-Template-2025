@@ -1,6 +1,7 @@
 import { Data } from './Data';
 import { Types } from '../types';
 import { capWords, countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
+import { Stock } from './Stock';
 
 export enum Providers { 
   Google = `Google` ,
