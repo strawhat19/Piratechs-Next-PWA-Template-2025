@@ -10,6 +10,7 @@ import { BarChart, PlayArrow } from '@mui/icons-material';
 import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
 
 export default function Stock({ 
+    style = {},
     changes = 0,
     zip = 95014,
     state = `CA`, 
@@ -45,7 +46,7 @@ export default function Stock({
     const [imageErrored, setImageErrored] = useState(false);
 
     return (
-        <div className={`stockContainer ${className}_container`}>
+        <div className={`stockContainer ${className}_container`} style={style}>
             <Tooltip title={linkable ? <StockDetails {...{ address, city, state, country, zip, employees, ceo, low, high }} /> : ``} arrow>
                 <Link href={website} onClick={(e) => linkable ? undefined : e?.preventDefault()} target={`_blank`} className={`stockLink smallFont colorwhite flexContainer ${linkable ? `hoverLink` : `pointerEventsNone`}`}>
                     <div className={`stock ${className}`}>

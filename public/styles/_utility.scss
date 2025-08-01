@@ -88,6 +88,8 @@
 .w90 { width: 90%; min-width: 90%; max-width: 90%; }
 .w95 { width: 95%; min-width: 95%; max-width: 95%; }
 .w100, .fullW { width: 100%; min-width: 100%; max-width: 100%; }
+.minwunset { min-width: unset; }
+.minwunsetI { min-width: unset !important; }
 
 .w95i { 
     width: 95% !important; 

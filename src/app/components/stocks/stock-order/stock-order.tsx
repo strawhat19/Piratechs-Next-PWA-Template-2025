@@ -1,18 +1,9 @@
 'use client';
 
-import { useContext } from 'react';
 import Stock from '../stock/stock';
-import { State } from '../../container/container';
 import { capWords } from '@/shared/scripts/constants';
 
-export default function StockOrder({ order, className = `stockOrderComponent` }: any) {
-    const { stocks } = useContext<any>(State);
-
-    const getStock = (symbol: string) => {
-        let stock = stocks?.find((s: any) => s?.symbol == symbol);
-        return stock;
-    }
-    
+export default function StockOrder({ order, getStock, className = `stockOrderComponent` }: any) {
     return (
         <div className={`stockOrderContainer flex gap10 alignCenter ${className}`}>
             <div className={`stockOrderStat flex gap5 column alignCenter`}>
@@ -23,7 +14,7 @@ export default function StockOrder({ order, className = `stockOrderComponent` }:
                     {order?.qty}
                 </div>
             </div>
-            <Stock {...getStock(order?.symbol)} />
+            <Stock {...getStock(order?.symbol)} className={`stockOrder w100 minwunset stkOrd`} />
             <div className={`stockOrderStat flex gap5 column alignCenter`}>
                 <div className={`stockOrderStatLabel`}>
                     Type: 
