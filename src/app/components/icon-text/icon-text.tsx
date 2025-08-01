@@ -7,8 +7,9 @@ export const numberFormatWithCommas = (numberValue: string | number, decimalPlac
     let parsedNumber = typeof numberValue == `string` ? parseFloat(numberValue) : numberValue;
     let validNumber = !isNaN(parsedNumber);
     if (validNumber) {
+        let stringNum = parsedNumber?.toLocaleString(`en-US`);
         let parsedFloat = decimalPlaces > 0 ? parsedNumber?.toFixed(decimalPlaces) : parsedNumber;
-        numberFormatted = parsedNumber > 999 ? parsedNumber?.toLocaleString(`en-US`) + (decimalPlaces > 0 ? `.00` : ``) : parsedFloat;
+        numberFormatted = parsedNumber > 999 ? stringNum?.includes(`.`) ? stringNum : (stringNum + (decimalPlaces > 0 ? `.00` : ``)) : parsedFloat;
     }
     return numberFormatted;
 }

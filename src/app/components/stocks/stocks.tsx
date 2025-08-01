@@ -2,17 +2,23 @@
 
 import './stocks.scss';
 
+import Stock from './stock/stock';
 import Loader from '../loaders/loader';
 import IconText from '../icon-text/icon-text';
 import { State } from '../container/container';
 import { useContext, useEffect, useState } from 'react';
 import CheckboxMulti from '../autocomplete/checkbox-multi/checkbox-multi';
-import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { apiRoutes, capWords, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { width, stocks, stocksAcc, setStocksAcc } = useContext<any>(State);
+    const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
+
+    const getStock = (symbol: string) => {
+        let stock = stocks?.find((s: any) => s?.symbol == symbol);
+        return stock;
+    }
 
     const refreshStocksAccount = () => {
         if (getRealStocks) {
@@ -27,9 +33,39 @@ export default function Stocks({ className = `stocksComponent` }) {
             console.log(`Account`, stocksAcc);
         }
     }
+    
+    const refreshStockPositions = () => {
+        if (getRealStocks) {
+            let apiServerRoute = apiRoutes?.stocks?.routes?.positions;
+            getAPIServerData(apiServerRoute)?.then(poss => {
+                setStockPositions(poss);
+                setLoading(false);
+                console.log(`Positions`, poss);
+            });
+        } else {
+            setLoading(false);
+            console.log(`Positions`, stockPositions);
+        }
+    }
+  
+    const refreshStockOrders = () => {
+        if (getRealStocks) {
+            let apiServerRoute = apiRoutes?.stocks?.routes?.orders;
+            getAPIServerData(apiServerRoute)?.then(ordrs => {
+                setStockOrders(ordrs);
+                setLoading(false);
+                console.log(`Orders`, ordrs);
+            });
+        } else {
+            setLoading(false);
+            console.log(`Orders`, stockOrders);
+        }
+    }
 
     useEffect(() => {
         refreshStocksAccount();
+        refreshStockPositions();
+        refreshStockOrders();
     }, [])
 
     return (
@@ -39,13 +75,59 @@ export default function Stocks({ className = `stocksComponent` }) {
                 {(loading || stocks?.length == 0) ? (
                     <Loader height={40} label={`Stocks Search Loading`} style={{ [`--animation-delay`]: `${2 * 0.15}s` }} />
                 ) : (
-                    <CheckboxMulti optionsToUse={stocks} placeholder={`Stocks`} />
+                    <CheckboxMulti optionsToUse={stocks} placeholder={`Stocks (${stocks?.length})`} />
                 )}
             </div>
 
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
-                <div className={`stockMetrics w100`}>
-                    <div className={`stockMetric`}>
+                <div className={`stockMetrics stockMetrics_account_stats w100`}>
+                    <div className={`stockMetric stockMetric_orders flex column gap15I`}>
+                        <strong>Orders ({stockOrders?.length})</strong>
+                        <div className={`ordersContainer`}>
+                            {stockOrders?.length > 0 ? stockOrders?.map((ord: any, ordIndex: number) => (
+                                <div key={ordIndex} className={`stockOrderContainer flex gap10 alignCenter`}>
+                                    <div className={`stockOrderStat flex gap10 alignCenter`}>
+                                        <div className={`stockOrderStatLabel`}>
+                                            Qty: 
+                                        </div>
+                                        <div className={`stockOrderStatValue`}>
+                                            {ord?.qty}
+                                        </div>
+                                    </div>
+                                    <Stock {...getStock(ord?.symbol)} />
+                                    <div className={`stockOrderStat flex gap10 alignCenter`}>
+                                        <div className={`stockOrderStatLabel`}>
+                                            Type: 
+                                        </div>
+                                        <div className={`stockOrderStatValue`}>
+                                            {capWords(ord?.order_type)}
+                                        </div>
+                                    </div>
+                                    <div className={`stockOrderStat flex gap10 alignCenter`}>
+                                        <div className={`stockOrderStatLabel`}>
+                                            Side: 
+                                        </div>
+                                        <div className={`stockOrderStatValue`}>
+                                            {capWords(ord?.side)}
+                                        </div>
+                                    </div>
+                                </div>
+                            )) : <></>}
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`stockMetrics stockMetrics_account_stats`}>
+                    <div className={`stockMetric stockMetric_positions`}>
+                        <strong>Positions</strong>
+                        <div className={`subMetric flex column gap5`}>
+                            {stockPositions?.length}
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`stockMetrics stockMetrics_account w100`}>
+                    <div className={`stockMetric stockMetric_account`}>
                         <strong>Account</strong>
                         <div className={`subMetric flex column gap5`}>
                             Rakib
@@ -67,7 +149,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                     </div>
                 </div>
 
-                <div className={`stockMetrics`}>
+                <div className={`stockMetrics stockMetrics_stats`}>
                     <div className={`stockMetric`}>
                         <strong>Cash</strong> 
                         <div className={`subMetric`}>

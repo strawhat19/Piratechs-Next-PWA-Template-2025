@@ -6,7 +6,7 @@
     padding: 0 0 15px;
     &:not(.w100) {
         grid-template-columns: repeat(3, 1fr);
-        @media (max-width: 768px) {
+        @media (max-width: 880px) {
             grid-template-columns: repeat(2, 1fr);
         }
     }

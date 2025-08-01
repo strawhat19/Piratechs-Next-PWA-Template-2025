@@ -28,7 +28,13 @@ export const getPageName = (path: string) => {
     return pageName;
 }
 
-export default function Container({ children, topBarComponent = null, showPageLogo = true, className = `containerComponent` }: any) {
+export default function Container({ 
+    children, 
+    logoLabel = ``, 
+    showPageLogo = true, 
+    topBarComponent = null, 
+    className = `containerComponent`,
+}: any) {
     const pathname = usePathname();
 
     let [users, setUsers] = useState<any>([]);
@@ -43,6 +49,8 @@ export default function Container({ children, topBarComponent = null, showPageLo
     
     let [histories, setHistories] = useState([]);
     let [stocks, setStocks] = useState(sampleStocks);
+    let [stockOrders, setStockOrders] = useState([]);
+    let [stockPositions, setStockPositions] = useState([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 
     useEffect(() => {
@@ -74,7 +82,9 @@ export default function Container({ children, topBarComponent = null, showPageLo
         stocks, setStocks,
         stocksAcc, setStocksAcc,
         histories, setHistories,
-    }), [user, users, width, loaded, isDevEnv, authState, menuExpanded, smallScreen, stocks, histories, stocksAcc]);
+        stockOrders, setStockOrders,
+        stockPositions, setStockPositions,
+    }), [user, users, width, loaded, isDevEnv, authState, menuExpanded, smallScreen, stocks, histories, stockOrders, stocksAcc, stockPositions]);
 
     return (
         <State.Provider value={state}>
@@ -86,7 +96,7 @@ export default function Container({ children, topBarComponent = null, showPageLo
                 )}
                 <Header />
                 <main className={`container`}>
-                    {showPageLogo && <Logo label={getPageName(pathname)} />}
+                    {showPageLogo && <Logo label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
                     {children}
                     <ToastContainer
                         draggable

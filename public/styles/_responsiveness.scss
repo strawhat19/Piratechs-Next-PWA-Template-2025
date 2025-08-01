@@ -149,6 +149,10 @@ html {
         .logoText {
             font-size: 21px;
         }
+        .stockMetrics {
+            justify-content: center;
+            grid-template-columns: repeat(1, auto) !important;
+        }
     }
     
     @container (max-width: #{$mobileBreakPoint515}) {

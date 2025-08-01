@@ -35,6 +35,7 @@ export default function CheckboxMulti({
     return (
         <Autocomplete
             multiple
+            // open={true}
             options={options}
             disableCloseOnSelect
             onChange={(e, selectedOpts: AutoCompleteOption[]) => onCheckboxMultiChange(e, selectedOpts)}
