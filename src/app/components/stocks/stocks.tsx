@@ -2,23 +2,18 @@
 
 import './stocks.scss';
 
-import Stock from './stock/stock';
 import Loader from '../loaders/loader';
 import IconText from '../icon-text/icon-text';
 import { State } from '../container/container';
+import StockOrder from './stock-order/stock-order';
 import { useContext, useEffect, useState } from 'react';
 import CheckboxMulti from '../autocomplete/checkbox-multi/checkbox-multi';
-import { apiRoutes, capWords, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function Stocks({ className = `stocksComponent` }) {
     const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(State);
 
     const [loading, setLoading] = useState(true);
-
-    const getStock = (symbol: string) => {
-        let stock = stocks?.find((s: any) => s?.symbol == symbol);
-        return stock;
-    }
 
     const refreshStocksAccount = () => {
         if (getRealStocks) {
@@ -80,48 +75,22 @@ export default function Stocks({ className = `stocksComponent` }) {
             </div>
 
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
-                <div className={`stockMetrics stockMetrics_account_stats w100`}>
-                    <div className={`stockMetric stockMetric_orders flex column gap15I`}>
-                        <strong>Orders ({stockOrders?.length})</strong>
-                        <div className={`ordersContainer`}>
-                            {stockOrders?.length > 0 ? stockOrders?.map((ord: any, ordIndex: number) => (
-                                <div key={ordIndex} className={`stockOrderContainer flex gap10 alignCenter`}>
-                                    <div className={`stockOrderStat flex gap10 alignCenter`}>
-                                        <div className={`stockOrderStatLabel`}>
-                                            Qty: 
-                                        </div>
-                                        <div className={`stockOrderStatValue`}>
-                                            {ord?.qty}
-                                        </div>
-                                    </div>
-                                    <Stock {...getStock(ord?.symbol)} />
-                                    <div className={`stockOrderStat flex gap10 alignCenter`}>
-                                        <div className={`stockOrderStatLabel`}>
-                                            Type: 
-                                        </div>
-                                        <div className={`stockOrderStatValue`}>
-                                            {capWords(ord?.order_type)}
-                                        </div>
-                                    </div>
-                                    <div className={`stockOrderStat flex gap10 alignCenter`}>
-                                        <div className={`stockOrderStatLabel`}>
-                                            Side: 
-                                        </div>
-                                        <div className={`stockOrderStatValue`}>
-                                            {capWords(ord?.side)}
-                                        </div>
-                                    </div>
-                                </div>
-                            )) : <></>}
-                        </div>
-                    </div>
-                </div>
-
                 <div className={`stockMetrics stockMetrics_account_stats`}>
                     <div className={`stockMetric stockMetric_positions`}>
                         <strong>Positions</strong>
                         <div className={`subMetric flex column gap5`}>
                             {stockPositions?.length}
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`stockMetrics stockMetrics_account_orders w100`}>
+                    <div className={`stockMetric stockMetric_orders flex column gap15I`}>
+                        <strong>Orders ({stockOrders?.length})</strong>
+                        <div className={`ordersContainer`}>
+                            {stockOrders?.length > 0 ? stockOrders?.map((ord: any, ordIndex: number) => (
+                                <StockOrder key={ordIndex} order={ord} />
+                            )) : <></>}
                         </div>
                     </div>
                 </div>
