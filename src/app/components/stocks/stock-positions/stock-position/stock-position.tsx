@@ -1,7 +1,7 @@
 'use client';
 
-import Stock from '../stock/stock';
-import IconText from '../../icon-text/icon-text';
+import Stock from '../../stock/stock';
+import IconText from '../../../icon-text/icon-text';
 
 export default function StockPostion({ position, getStock, className = `stockPositionComponent` }: any) {
     return (

@@ -1,6 +1,6 @@
 'use client';
 
-import Stock from '../stock/stock';
+import Stock from '../../stock/stock';
 import { capWords } from '@/shared/scripts/constants';
 
 export default function StockOrder({ order, getStock, className = `stockOrderComponent` }: any) {
