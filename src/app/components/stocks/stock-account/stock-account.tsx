@@ -33,37 +33,49 @@ export default function StockAccount() {
 
         <div className={`stockMetrics stockMetrics_stats`}>
             <div className={`stockMetric`}>
-                <strong>Cash</strong> 
+                <strong className={`stockMetricLabel`}>
+                    Cash
+                </strong> 
                 <div className={`subMetric`}>
                     <IconText dollarSign number={stocksAcc?.cash} />
                 </div>
             </div>
             <div className={`stockMetric`}>
-                <strong>Equity</strong>
+                <strong className={`stockMetricLabel`}>
+                    Equity
+                </strong>
                 <div className={`subMetric`}>
                     <IconText dollarSign number={stocksAcc?.equity} />
                 </div>
             </div>
             <div className={`stockMetric`}>
-                <strong>Portfolio Value</strong> 
+                <strong className={`stockMetricLabel`}>
+                    Portfolio Value
+                </strong> 
                 <div className={`subMetric`}>
                     <IconText dollarSign number={stocksAcc?.portfolio_value} />
                 </div>
             </div>
             <div className={`stockMetric`}>
-                <strong>Buying Power</strong> 
+                <strong className={`stockMetricLabel`}>
+                    Buying Power
+                </strong> 
                 <div className={`subMetric`}>
                     <IconText dollarSign number={stocksAcc?.buying_power} />
                 </div>
             </div>
             <div className={`stockMetric`}>
-                <strong>Last Equity</strong> 
+                <strong className={`stockMetricLabel`}>
+                    Last Equity
+                </strong> 
                 <div className={`subMetric`}>
                     <IconText dollarSign number={stocksAcc?.last_equity} />
                 </div>
             </div>
             <div className={`stockMetric`}>
-                <strong>Options Buying Power</strong> 
+                <strong className={`stockMetricLabel`}>
+                    Options Buying Power
+                </strong> 
                 <div className={`subMetric`}>
                     <IconText dollarSign number={stocksAcc?.options_buying_power} />
                 </div>

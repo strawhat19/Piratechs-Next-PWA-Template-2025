@@ -4,6 +4,7 @@ export const constants = {
   breakpoints: {
     smallPhone: 678,
     mobile: 768,
+    tabletSmall: 875,
     tablet: 992,
     tabletLarge: 1092,
     notebook: 1200,

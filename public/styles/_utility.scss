@@ -82,12 +82,14 @@
 .gap35 { gap: 35px; grid-gap: 35px; }
 .gap15I { gap: 15px !important; grid-gap: 15px !important; }
 
+.width100 { width: 100%; }
 .w75 { width: 75%; min-width: 75%; max-width: 75%; }
 .w80 { width: 80%; min-width: 80%; max-width: 80%; }
 .w85 { width: 85%; min-width: 85%; max-width: 85%; }
 .w90 { width: 90%; min-width: 90%; max-width: 90%; }
 .w95 { width: 95%; min-width: 95%; max-width: 95%; }
-.w100, .fullW { width: 100%; min-width: 100%; max-width: 100%; }
+.w100, .W100, .fullW, .fullw { width: 100%; min-width: 100%; max-width: 100%; }
+
 .minwunset { min-width: unset; }
 .minwunsetI { min-width: unset !important; }
 

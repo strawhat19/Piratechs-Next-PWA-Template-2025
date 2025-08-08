@@ -1,3 +1,16 @@
+.stockMetricsSingleColumnCentered {
+    justify-content: center;
+    grid-template-columns: repeat(1, auto) !important;
+}
+
+.stockMetricCount {
+    font-size: 0.8em;
+}
+
+.stockColValue {
+    min-height: 24px;
+}
+
 .stockMetrics {
     gap: 15px;
     width: 100%;

@@ -12,6 +12,6 @@ export const GET = async () => {
     const positions = await alpaca.getPositions();
     return NextResponse.json(positions);
   } catch (error) {
-    return NextResponse.json({ error: `Failed to Get Positions ` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to Get Positions` }, { status: 500 });
   }
 };

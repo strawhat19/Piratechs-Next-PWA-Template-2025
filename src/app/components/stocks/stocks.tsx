@@ -13,6 +13,8 @@ import StockAccount from './stock-account/stock-account';
 import StockPositions from './stock-positions/stock-positions';
 import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
+export const stockTableAlignmentCenter = false;
+
 export default function Stocks({ className = `stocksComponent` }) {
     const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(State);
 
@@ -72,21 +74,21 @@ export default function Stocks({ className = `stocksComponent` }) {
     }, [])
 
     return (
-        <div className={`stocksContainer w75 ${className}`}>
+        <div className={`stocksContainer w95 ${className}`}>
 
             <StockSearch {...{loading}} />
 
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
 
-                <Slider showButtons={width > constants?.breakpoints?.mobile}>
+                <Slider showButtons={width > constants?.breakpoints?.tabletSmall}>
+                    <SwiperSlide>
+                        <StockAccount />
+                    </SwiperSlide>
                     <SwiperSlide>
                         <StockPositions {...{getStock}} />
                     </SwiperSlide>
                     <SwiperSlide>
                         <StockOrders {...{getStock}} />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <StockAccount />
                     </SwiperSlide>
                 </Slider>
 

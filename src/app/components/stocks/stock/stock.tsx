@@ -36,6 +36,7 @@ export default function Stock({
     phone = `(408) 996-1010`,
     marketCap = 3195217187580,
     className = `stockComponent`, 
+    linkClass = `stockLinkElement`,
     address = `One Apple Park Way`,
     industry = `Consumer Electronics`,
     website = `https://www.apple.com`,
@@ -48,7 +49,7 @@ export default function Stock({
     return (
         <div className={`stockContainer ${className}_container`} style={style}>
             <Tooltip title={linkable ? <StockDetails {...{ address, city, state, country, zip, employees, ceo, low, high }} /> : ``} arrow>
-                <Link href={website} onClick={(e) => linkable ? undefined : e?.preventDefault()} target={`_blank`} className={`stockLink smallFont colorwhite flexContainer ${linkable ? `hoverLink` : `pointerEventsNone`}`}>
+                <Link href={website} onClick={(e) => linkable ? undefined : e?.preventDefault()} target={`_blank`} className={`stockLink smallFont colorwhite flexContainer ${linkClass} ${linkable ? `hoverLink` : `pointerEventsNone`}`}>
                     <div className={`stock ${className}`}>
                         <div className={`stockRow stockTopRow`}>
                             <div className={`stockRow stockSymbol stockText`}>

@@ -1,6 +1,8 @@
 $mobileBreakPoint3: 320px;
 $mobileBreakPoint4: 400px;
 $mobileBreakPoint425: 425px;
+$mobileBreakPoint435: 435px;
+$mobileBreakPoint450: 450px;
 $mobileBreakPoint480: 480px;
 $mobileBreakPoint515: 515px;
 $mobileBreakPoint585: 585px;
@@ -149,10 +151,6 @@ html {
         .logoText {
             font-size: 21px;
         }
-        .stockMetrics {
-            justify-content: center;
-            grid-template-columns: repeat(1, auto) !important;
-        }
     }
     
     @container (max-width: #{$mobileBreakPoint515}) {
@@ -170,6 +168,12 @@ html {
         }
         .medFont, .smallFont {
             font-size: 14px;
+        }
+    }
+   
+    @container (max-width: #{$mobileBreakPoint435}) {
+        .stockMetricLabel {
+            font-size: 15px;
         }
     }
 }
