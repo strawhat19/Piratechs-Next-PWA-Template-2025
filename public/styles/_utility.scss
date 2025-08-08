@@ -104,6 +104,7 @@
 .hidden { display: none; }
 .fit { max-width: fit-content; }
 .blurred { filter: blur(15px); }
+.fitMin { min-width: fit-content; }
 .cursorPointer { cursor: pointer; }
 .cursorAuto { cursor: auto !important; }
 .transition { transition: var(--transition); }
