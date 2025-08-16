@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Stock from '../../stock/stock';
+// import { Badge } from '@mui/material';
 import IconText from '../../../icon-text/icon-text';
-import { stockTableAlignmentCenter } from '../../stocks';
+import { positionProfitLoss, stockTableAlignmentCenter } from '../../stocks';
 
 export default function StockPostion({ position, getStock, className = `stockPositionComponent` }: any) {
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
@@ -26,7 +27,9 @@ export default function StockPostion({ position, getStock, className = `stockPos
                     <strong>Qty</strong> 
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric`}>
-                    {position?.qty}
+                    {/* <Badge color={`primary`} badgeContent={`QTY`} className={`stockBadgeComponent`} anchorOrigin={{ horizontal: `left` }}> */}
+                        {position?.qty}
+                    {/* </Badge> */}
                 </div>
             </div>
             <div className={`stockPositionStat flex gap5 column alignCenter fitMin`}>
@@ -45,7 +48,7 @@ export default function StockPostion({ position, getStock, className = `stockPos
                     <div className={`flex alignCenter gap5`}>
                         <span>{position?.qty}</span>
                         <span>x</span>
-                        <IconText dollarSign number={(position?.current_price - position?.avg_entry_price)} />
+                        <IconText dollarSign number={positionProfitLoss(position)} />
                     </div>
                     <div className={`flex alignCenter gap5`}>
                         = <IconText dollarSign number={position?.unrealized_pl} />

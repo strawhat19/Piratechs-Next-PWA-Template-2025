@@ -15,6 +15,8 @@ import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/
 
 export const stockTableAlignmentCenter = false;
 
+export const positionProfitLoss = (position: any) => position?.current_price - position?.avg_entry_price;
+
 export default function Stocks({ className = `stocksComponent` }) {
     const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(State);
 
@@ -43,6 +45,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.positions;
             getAPIServerData(apiServerRoute)?.then(poss => {
+                poss?.sort((posA: any, posB: any) => positionProfitLoss(posB) - positionProfitLoss(posA));
                 setStockPositions(poss);
                 setLoading(false);
                 console.log(`Positions`, poss);
