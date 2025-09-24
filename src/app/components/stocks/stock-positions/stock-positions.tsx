@@ -16,7 +16,7 @@ export default function StockPositions({ getStock }: any) {
                     </strong>
                     <StockSearch stcks={stocks?.filter((s: any) => stockPositions?.map((sp: any) => sp?.symbol)?.includes(s?.symbol))} />
                 </div>
-                <div className={`positionsContainer`}>
+                <div className={`positionsContainer stockMetricTableContainer`}>
                     {stockPositions?.length > 0 ? stockPositions?.map((pos: any, posIndex: number) => (
                         <StockPostion key={posIndex} position={pos} getStock={getStock} />
                     )) : <></>}

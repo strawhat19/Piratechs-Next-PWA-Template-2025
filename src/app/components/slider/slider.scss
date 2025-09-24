@@ -1,9 +1,27 @@
+// .stocksComponentSlider {
+    // max-height: var(--stockSliderHeight);
+    // .sliderButton {
+    //     max-height: var(--stockSliderHeight);
+    // }
+    // .swiper {
+    //     max-height: var(--stockSliderHeight);
+    // }
+// }
+
 .slider {
     width: 100%;
+    --stockSliderHeight: 535px;
     &:has(.sliderButton) {
         gap: 15px;
         display: grid;
         grid-template-columns: minmax(auto, 45px) 1fr minmax(auto, 45px);
+        &.stocksComponentSlider {
+            grid-template-rows: var(--stockSliderHeight);
+            .stockMetricTableContainer {
+                overflow: auto;
+                max-height: calc(var(--stockSliderHeight) - 52px);
+            }
+        }
     }
 }
 

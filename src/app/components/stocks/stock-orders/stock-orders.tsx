@@ -12,7 +12,7 @@ export default function StockOrders({ getStock }: any) {
                 <strong className={`stockTableRow`}>
                     Orders <span className={`main stockMetricCount`}>({stockOrders?.length})</span>
                 </strong>
-                <div className={`ordersContainer`}>
+                <div className={`ordersContainer stockMetricTableContainer`}>
                     {stockOrders?.length > 0 ? stockOrders?.map((ord: any, ordIndex: number) => (
                         <StockOrder key={ordIndex} order={ord} getStock={getStock} />
                     )) : <></>}
