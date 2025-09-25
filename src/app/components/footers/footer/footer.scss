@@ -1,4 +1,7 @@
 footer {
+    &.isPWAFooter {
+        padding-bottom: 15px;
+    }
     &.clippedFooter {
         background: var(--navy) !important;
         .footerInner {

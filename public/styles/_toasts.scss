@@ -7,8 +7,9 @@
     --toastify-color-dark: var(--blackGlass);
     --toastify-container-width: calc(auto + 20px);
     .Toastify__toast {
-        width: 100%;
+        width: 95%;
         display: flex;
+        margin: 0 auto;
         padding-top: 8px;
         font-weight: 600;
         flex-direction: row;

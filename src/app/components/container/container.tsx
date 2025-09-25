@@ -13,8 +13,8 @@ import { ToastContainer } from 'react-toastify';
 import { AuthStates } from '@/shared/types/types';
 import { User } from '@/shared/types/models/User';
 import { createContext, useEffect, useMemo, useState } from 'react';
-import { capWords, constants, debounce, devEnv } from '@/shared/scripts/constants';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { capWords, constants, debounce, devEnv, isInStandaloneMode } from '@/shared/scripts/constants';
 
 export const State = createContext({});
 
@@ -41,7 +41,8 @@ export default function Container({
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [user, setUser] = useState<User | null>(null);
-    
+
+    let [isPWA, setIsPWA] = useState(false);
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
@@ -54,6 +55,11 @@ export default function Container({
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 
     useEffect(() => {
+        if (typeof window != `undefined`) {
+            let isOnPWA = isInStandaloneMode();
+            setIsPWA(isOnPWA);
+        }
+
         const onResize = () => {
             const windowWidth = window?.innerWidth;
             setSmallScreen(windowWidth <= constants?.breakpoints?.mobile);
@@ -73,6 +79,7 @@ export default function Container({
         user, setUser,
         users, setUsers,
         width, setWidth,
+        isPWA, setIsPWA,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
         authState, setAuthState,
@@ -84,11 +91,19 @@ export default function Container({
         histories, setHistories,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
-    }), [user, users, width, loaded, isDevEnv, authState, menuExpanded, smallScreen, stocks, histories, stockOrders, stocksAcc, stockPositions]);
+    }), [user, users, width, loaded, isDevEnv, isPWA, authState, menuExpanded, smallScreen, stocks, histories, stockOrders, stocksAcc, stockPositions]);
 
     return (
         <State.Provider value={state}>
-            <body className={`${className} ${getPageName(pathname)} pageContainer ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
+            <body className={`
+                    ${className} 
+                    ${getPageName(pathname)} 
+                    pageContainer 
+                    ${isPWA ? `isPWA` : ``} 
+                    ${devEnv ? `overflowHidden` : ``} 
+                    ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}
+                `}
+            >
                 {topBarComponent != null && (
                     <TopBar>
                         {topBarComponent}
@@ -109,7 +124,7 @@ export default function Container({
                         position={`top-right`}
                         hideProgressBar={false}
                         pauseOnFocusLoss={false}
-                        style={{ marginTop: 55 }}
+                        style={{ marginTop: 75 }}
                     />
                 </main>
                 <Footer />
