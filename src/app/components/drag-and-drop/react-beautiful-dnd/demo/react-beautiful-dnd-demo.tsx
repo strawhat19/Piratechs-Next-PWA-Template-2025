@@ -53,13 +53,13 @@
 //       <DragDropContext onDragEnd={handleDragEnd}>
 
 //         <Droppable droppableId={`users`} isDropDisabled={false} isCombineEnabled={false} ignoreContainerClipping={false}>
-//           {(provided) => (
+//           {(provided: any) => (
 
 //             <div ref={provided.innerRef} {...provided.droppableProps} className={`droppableItems`} style={{ display: `grid`, gap: 12, gridTemplateColumns: `repeat(8, 1fr)` }}>
 //               {users.map((user: User, index: number) => (
 
 //                 <Draggable key={user.id} draggableId={user.id} index={index} isDragDisabled={false}>
-//                   {(provided) => (
+//                   {(provided: any) => (
 //                     <div
 //                       {...provided.draggableProps}
 //                       {...provided.dragHandleProps}

@@ -31,11 +31,11 @@ export default function SwapyDemo({ label = `User` }) {
     return () => swapyRef.current?.destroy();
   }, [])
 
-  useEffect(() => {
-    if (swapyRef.current) {
-      utils.dynamicSwapy(swapyRef.current, users, identifierKey, slotItemMap, setSlotItemMap);
-    }
-  }, [users])
+  // useEffect(() => {
+  //   if (swapyRef.current) {
+  //     utils.dynamicSwapy(swapyRef.current, users, identifierKey, slotItemMap, setSlotItemMap);
+  //   }
+  // }, [users])
 
   const removeDNDItem = (user: User) => {
     // setTimeout(() => {

@@ -39,8 +39,16 @@ input {
     border-radius: calc(var(--borderRadius) + 3px);
 }
 
-.formContainer {
+.componentContainer {
     width: 90%;
+    margin: 0 auto;
+    @media (min-width: 768px) {
+        width: 75%;
+    }
+}
+
+.formContainer {
+    @extend .componentContainer;
     display: flex;
     grid-gap: 10px;
     align-items: center;
@@ -49,9 +57,6 @@ input {
     justify-content: space-between;
     border-radius: calc(var(--borderRadius) + 3px);
     background: linear-gradient(90deg, var(--buttons), var(--bg));
-    @media (min-width: 768px) {
-        width: 75%;
-    }
 }
 
 .authForm {

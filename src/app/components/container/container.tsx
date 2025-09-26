@@ -15,6 +15,7 @@ import { User } from '@/shared/types/models/User';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { capWords, constants, debounce, devEnv, isInStandaloneMode } from '@/shared/scripts/constants';
+import DialogComponent from '../dialog/dialog';
 
 export const State = createContext({});
 
@@ -43,6 +44,7 @@ export default function Container({
     let [user, setUser] = useState<User | null>(null);
 
     let [isPWA, setIsPWA] = useState(false);
+    let [selected, setSelected] = useState<any>(null);
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
@@ -82,6 +84,7 @@ export default function Container({
         isPWA, setIsPWA,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
+        selected, setSelected,
         authState, setAuthState,
         smallScreen, setSmallScreen,
         menuExpanded, setMenuExpanded,
@@ -91,7 +94,7 @@ export default function Container({
         histories, setHistories,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
-    }), [user, users, width, loaded, isDevEnv, isPWA, authState, menuExpanded, smallScreen, stocks, histories, stockOrders, stocksAcc, stockPositions]);
+    }), [user, users, width, selected, loaded, isDevEnv, isPWA, authState, menuExpanded, smallScreen, stocks, histories, stockOrders, stocksAcc, stockPositions]);
 
     return (
         <State.Provider value={state}>
@@ -113,6 +116,7 @@ export default function Container({
                 <main className={`container`}>
                     {showPageLogo && <Logo label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
                     {children}
+                    <DialogComponent />
                     <ToastContainer
                         draggable
                         rtl={false}
