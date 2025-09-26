@@ -2,7 +2,7 @@
 
 import { CSS } from '@dnd-kit/utilities';
 import { Types } from '@/shared/types/types';
-import { genID } from '@/shared/scripts/constants';
+import { constants, genID } from '@/shared/scripts/constants';
 import { useContext, useMemo, useState } from 'react';
 import { State } from '@/app/components/container/container';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -74,7 +74,7 @@ function SortableRow({
 
 // ---- Demo Component ----
 export default function DndKitSimpleDemo() {
-  let { smallScreen, isPWA, setSelected } = useContext<any>(State);
+  let { width, isPWA, setSelected } = useContext<any>(State);
 
   const [items, setItems] = useState<Item[]>(() => [
     { id: genID(Types.Data, 1, `First Task`)?.id, title: `First Task` },
@@ -90,7 +90,9 @@ export default function DndKitSimpleDemo() {
         // useSensor(MouseSensor),
         useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 5 } })
     );
-  const sensors = (smallScreen || isPWA) ? mobileSensors : desktopSensors;
+  const sensors = (isPWA || width <= constants?.breakpoints?.mobile) ? mobileSensors : desktopSensors;
+
+  // <Img alt={img[0]} src={img[1]} width={`auto`} height={(isPWA || width <= constants?.breakpoints?.mobile) ? `300px` : `650px`} />
 
   // add item (ephemeral)
   const addItem = () => {
@@ -131,11 +133,13 @@ export default function DndKitSimpleDemo() {
     border: '1px solid #2a2a2a',
     background: 'var(--surface, #0f0f0f)',
     color: '#eaeaea',
+    overflowY: `auto`,
     fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif',
+    maxHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 800,
   }), []);
 
   return (
-    <div className={`componentContainer`} style={box}>
+    <div className={`dndContainer componentContainer`} style={box}>
       {/* <h2 style={{ marginTop: 0, marginBottom: 12 }}>
         dnd-kit demo
       </h2> */}
