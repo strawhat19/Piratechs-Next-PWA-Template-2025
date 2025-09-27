@@ -2,16 +2,18 @@
 
 import { CSS } from '@dnd-kit/utilities';
 import { Types } from '@/shared/types/types';
-import { constants, genID } from '@/shared/scripts/constants';
 import { useContext, useMemo, useState } from 'react';
 import { State } from '@/app/components/container/container';
+import { constants, genID } from '@/shared/scripts/constants';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, DragEndEvent, MouseSensor, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 // OPTIONAL: if you want to constrain dragging vertically, uncomment this line and add to DndContext `modifiers`
 // import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
-type Item = { id: string; title: string };
+type Item = { id: string; type: Types | string; title: string; number: number; };
+
+const type = Types.Item;
 
 // ---- Sortable Row (headless, minimal styles) ----
 function SortableRow({
@@ -77,9 +79,9 @@ export default function DndKitSimpleDemo() {
   let { width, isPWA, setSelected } = useContext<any>(State);
 
   const [items, setItems] = useState<Item[]>(() => [
-    { id: genID(Types.Data, 1, `First Task`)?.id, title: `First Task` },
-    { id: genID(Types.Data, 2, `Second Task`)?.id, title: `Second Task` },
-    { id: genID(Types.Data, 3, `Third Task`)?.id, title: `Third Task` },
+    { number: 1, type: type, title: `First Item`, id: genID(type, 1, `First`)?.id },
+    { number: 2, type: type, title: `Second Item`, id: genID(type, 2, `Second`)?.id },
+    { number: 3, type: type, title: `Third Item`, id: genID(type, 3, `Third`)?.id },
   ]);
 
   const [newTitle, setNewTitle] = useState('');
@@ -100,9 +102,9 @@ export default function DndKitSimpleDemo() {
     // if (!title) return;
     setItems((prev: any) => {
         let newIndex = prev.length + 1;
-        let newTitle = `Task ${newIndex}`;
-        let newID = genID(Types.Data, newIndex, newTitle);
-        let updatedItems = [...prev, { id: newID?.id, title: newTitle }];
+        let newTitle = `${type} ${newIndex}`;
+        let newID = genID(type, newIndex, newTitle);
+        let updatedItems = [...prev, { id: newID?.id, title: newTitle, type: type, number: newIndex }];
         return updatedItems;
     });
     setNewTitle(``);

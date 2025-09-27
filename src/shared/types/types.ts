@@ -18,8 +18,11 @@ export enum Roles {
 export enum Types {
   Data = `Data`,
   User = `User`,
+  Item = `Item`,
+  Task = `Task`,
   Chat = `Chat`,
   Post = `Post`,
+  Board = `Board`,
   Stock = `Stock`,
   Upload = `Upload`,
   Message = `Message`,

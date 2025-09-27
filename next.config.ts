@@ -3,9 +3,9 @@ import { NextConfig } from 'next';
 
 const routes = {
   gallery: { authenticated: ``, redirects: [`pictures`, `images`], icons: { fontAwesome: `fa-images`, mui: `PremMedia` } },
-  lists: { authenticated: ``, redirects: [`items`, `tasks`], icons: { fontAwesome: `fa-list-check`, mui: `Checklist` } },
   settings: { authenticated: `Moderator`, redirects: [`config`, `general`], icons: { fontAwesome: `fa-cog`, mui: `Settings` } },
   chats: { authenticated: `User`, redirects: [`chat`, `message`, `messages`], icons: { fontAwesome: `fa-comments`, mui: `Chat` } },
+  board: { authenticated: ``, redirects: [`items`, `tasks`, `lists`, `list`], icons: { fontAwesome: `fa-list-check`, mui: `Checklist` } },
   notifications: { authenticated: `User`, redirects: [`alerts`, `notification`], icons: { fontAwesome: `fa-bell`, mui: `Notifications` } },
   profile: { authenticated: `User`, redirects: [`edit`, `account`, `preferences`, `account`], icons: { fontAwesome: `fa-user`, mui: `Person` } },
   signup: { authenticated: ``, redirects: [`new`, `sign-up`, `register`, `subscribe`], icons: { fontAwesome: `fa-user-plus`, mui: `PersonAdd` } },

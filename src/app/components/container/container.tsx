@@ -9,13 +9,13 @@ import TopBar from '../topbar/topbar';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';
+import DialogComponent from '../dialog/dialog';
 import { ToastContainer } from 'react-toastify';
 import { AuthStates } from '@/shared/types/types';
 import { User } from '@/shared/types/models/User';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { capWords, constants, debounce, devEnv, isInStandaloneMode } from '@/shared/scripts/constants';
-import DialogComponent from '../dialog/dialog';
 
 export const State = createContext({});
 
@@ -98,15 +98,7 @@ export default function Container({
 
     return (
         <State.Provider value={state}>
-            <body className={`
-                    ${className} 
-                    ${getPageName(pathname)} 
-                    pageContainer 
-                    ${isPWA ? `isPWA` : ``} 
-                    ${devEnv ? `overflowHidden` : ``} 
-                    ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}
-                `}
-            >
+            <body className={`${className} ${getPageName(pathname)} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
                 {topBarComponent != null && (
                     <TopBar>
                         {topBarComponent}

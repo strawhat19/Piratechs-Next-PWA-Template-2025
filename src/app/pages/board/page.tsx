@@ -4,12 +4,12 @@ import Container from '@/app/components/container/container';
 import DndKitSimpleDemo from '@/app/components/drag-and-drop/dnd-kit/demo/dnd-kit-demo';
 
 export const metadata: Metadata = {
-  title: `Lists | ${constants.titles.default}`,
+  title: `Board | ${constants.titles.default}`,
 };
 
-export default function ListsPage() {
+export default function BoardPage() {
     return (
-        <Container className={`listsPage`}>
+        <Container className={`boardPage`}>
             <DndKitSimpleDemo />
         </Container>
     )

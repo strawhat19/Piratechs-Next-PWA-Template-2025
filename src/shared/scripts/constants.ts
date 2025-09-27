@@ -206,7 +206,7 @@ export const customDate = (date: Date = new Date()) => {
     secondsTime,
     milliseconds,
     date: dateSlashes(),
-    datetime: time + ` ` + dateSlashes(),
+    datetime: time + ` ` + dateSlashes(2),
   }
 
   return datesObject;

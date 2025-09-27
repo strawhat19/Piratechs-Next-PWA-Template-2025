@@ -38,6 +38,11 @@
     justify-content: flex-start; 
 }
 
+.justifyStartI { 
+    justify-items: flex-start !important; 
+    justify-content: flex-start !important; 
+}
+
 .justifyCenter { 
     justify-items: center; 
     justify-content: center; 
