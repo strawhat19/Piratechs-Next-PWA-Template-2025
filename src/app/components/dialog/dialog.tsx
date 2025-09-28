@@ -20,7 +20,7 @@ function SimpleDialog(props: SimpleDialogProps) {
   return (
     <Dialog onClose={onClose} open={open}>
       {selected != null && <>
-        <div className={`dialogContent`}>
+        <div style={{ flex: 1 }} className={`dialogContent`}>
           <div className={`dialogRow dialogHeader`}>
             <DialogTitle className={`dialogTitle`}>
               <strong>{selected?.title}</strong>
@@ -31,7 +31,7 @@ function SimpleDialog(props: SimpleDialogProps) {
               </Icon_Button>
             </div>
           </div>
-          <div className={`dialogCenterContent w100 mxauto dialogDefaultTitlePadding`}>
+          <div style={{ flex: 1 }} className={`dialogCenterContent w100 mxauto dialogDefaultTitlePadding`}>
             <div className={`dialogFieldGroup gap15 dialogRow`}>
               <div className={`dialogRow dialogField gap15`}>
                 <h4>

@@ -9,7 +9,7 @@ import { useContext, useState } from 'react';
 import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
 
-const imagesObject = {
+export const imagesObject = {
     vertical: {
         ocean: `https://images.pexels.com/photos/1802268/pexels-photo-1802268.jpeg?w=1280&h=1920`,
         sunset: `https://images.pexels.com/photos/561463/pexels-photo-561463.jpeg?w=1280&h=1883`,

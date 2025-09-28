@@ -33,6 +33,7 @@ export default function Container({
     children, 
     logoLabel = ``, 
     showPageLogo = true, 
+    showPageFooter = true, 
     topBarComponent = null, 
     className = `containerComponent`,
 }: any) {
@@ -105,7 +106,7 @@ export default function Container({
                     </TopBar>
                 )}
                 <Header />
-                <main className={`container`}>
+                <main className={`container`} aria-hidden={true}>
                     {showPageLogo && <Logo label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
                     {children}
                     <DialogComponent />
@@ -123,7 +124,7 @@ export default function Container({
                         style={{ marginTop: 75 }}
                     />
                 </main>
-                <Footer />
+                {showPageFooter && <Footer />}
             </body>
         </State.Provider>
     )

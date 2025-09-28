@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function BoardPage() {
     return (
-        <Container className={`boardPage`}>
+        <Container className={`boardPage`} logoLabel={`To Do`}>
             <DndKitSimpleDemo />
         </Container>
     )
