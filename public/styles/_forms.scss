@@ -1,3 +1,28 @@
+.boardFormContainer {
+    gap: 8px;
+    display: flex;
+    margin-top: 12px;
+    align-items: center;
+    .boardForm {
+        gap: 8px;
+        display: flex;
+        margin-top: -2px;
+        padding: 0px 0 2px;
+        align-items: center;
+    }
+    .boardFormField {
+        min-height: 45px;
+        input {
+            border: none;
+            color: white;
+            padding-left: 15px;
+            background: var(--navy);
+            font-family: var(--font);
+            height: -webkit-fill-available;
+        }
+    }
+}
+
 .avatar {
     --size: 28px;
     max-width: var(--size);

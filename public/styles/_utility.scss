@@ -17,6 +17,7 @@
 .p35 { padding: 35px; }
 
 .font { font-family: var(--font); }
+.fontI { font-family: var(--font) !important; }
 
 .pointerEventsAll { pointer-events: all; }
 .pointerEventsAuto { pointer-events: auto; }
