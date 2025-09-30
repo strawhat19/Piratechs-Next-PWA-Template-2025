@@ -3,14 +3,33 @@
 import { Button } from '@mui/material';
 import { CSS } from '@dnd-kit/utilities';
 import { Types } from '@/shared/types/types';
+import Logo from '@/app/components/logo/logo';
 import Img from '@/app/components/image/image';
 import { useContext, useMemo, useState } from 'react';
+import { Check, Circle, List } from '@mui/icons-material';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { State } from '@/app/components/container/container';
-import { constants, genID } from '@/shared/scripts/constants';
+import { constants, genID, randomNumber } from '@/shared/scripts/constants';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+
+const type = Types.Item;
+
+export const statuses: any = {
+  Idea: {
+    transition: `Active`,
+    iconTransition: <Circle style={{ fontSize: 18 }} />,
+  },
+  Active: {
+    transition: `Complete`,
+    iconTransition: <Check style={{ fontSize: 18 }} />,
+  },
+  Complete: {
+    transition: `Idea`,
+    iconTransition: <List style={{ fontSize: 18 }} />,
+  },
+}
 
 export class Item { 
   id: string = ``; 
@@ -19,14 +38,13 @@ export class Item {
   urls: string[] = []; 
   tags: string[] = []; 
   images: string[] = []; 
+  status: string = `Idea`;
   description: string = ``; 
-  type: Types | string = Types.Item;
+  type: Types | string = type;
   constructor(data: Partial<Item>) {
     Object.assign(this, data);
   }
 };
-
-const type = Types.Item;
 
 function SortableRow({
   id,
@@ -34,12 +52,14 @@ function SortableRow({
   children,
   onClick,
   onDelete,
+  setItems,
 }: {
   item: Item;
   id: string;
-  children: React.ReactNode;
+  setItems: any;
   onClick: () => void;
   onDelete: () => void;
+  children: React.ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
@@ -58,6 +78,11 @@ function SortableRow({
     transform: CSS.Transform.toString(transform),
   };
 
+  const statusChange = (e: any, itm: Item) => {
+    itm.status = statuses[itm.status].transition;
+    setItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
+  }
+
   return (
     <div ref={setNodeRef} className={`draggableItem`} style={style} {...attributes} {...listeners}>
       <div style={{ flex: 1, display: `flex`, alignItems: `center`, justifyContent: `space-between`, gap: 10 }} onClick={onClick}>
@@ -66,23 +91,34 @@ function SortableRow({
           title={`Drag`}
           style={{
             width: 25, height: 25, borderRadius: 4, border: `0px solid #555`,
-            display: `grid`, placeItems: `center`, fontSize: 10, flex: `0 0 auto`
+            display: `grid`, placeItems: `center`, fontSize: 12, flex: `0 0 auto`
           }}
         >
           ⇅ {item?.number}
         </div>
-        <Img alt={`Image`} src={imagesObject.vertical.ocean} width={`auto`} height={`150px`} />
-        <div style={{ flex: 1 }}>
+        {item?.images?.length > 0 && (
+          <Img alt={item?.name} src={item?.images[0]} width={`auto`} height={`150px`} />
+        )}
+        <div style={{ flex: 1, gap: 8, paddingLeft: 10, display: `flex`, flexDirection: `column` }}>
           <div style={{ flex: 1 }}>
             <h3>
-              <strong>{children}</strong>
+              <strong>{children}</strong> <span style={{ fontWeight: 300, fontSize: 14, marginLeft: 15 }}><i>{item?.status}</i></span>
             </h3>
           </div>
           <div style={{ flex: 1 }}>
-            {item?.name}
+            {item?.description}
           </div>
         </div>
       </div>
+      <button
+        onClick={(e) => statusChange(e, item)}
+        style={{
+          border: `0px solid #444`, background: `transparent`, color: `inherit`,
+          padding: `6px 10px`, borderRadius: 8, cursor: `pointer`
+        }}
+      >
+        {statuses[item?.status]?.iconTransition}
+      </button>
       <button
         onClick={onDelete}
         aria-label={`Delete`}
@@ -98,13 +134,7 @@ function SortableRow({
 }
 
 export default function DndKitSimpleDemo() {
-  let { width, isPWA, setSelected } = useContext<any>(State);
-
-  const [items, setItems] = useState<Item[]>(() => [
-    new Item({ number: 1, type: type, name: `First Item`, id: genID(type, 1, `First`)?.id, description: `This is First Item in the Board List Component` }),
-    new Item({ number: 2, type: type, name: `Second Item`, id: genID(type, 2, `Second`)?.id, description: `This is Second Item in the Board List Component` }),
-    new Item({ number: 3, type: type, name: `Third Item`, id: genID(type, 3, `Third`)?.id, description: `This is Third Item in the Board List Component` }),
-  ]);
+  const { width, isPWA, setSelected } = useContext<any>(State);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const mobileSensors = useSensors(
@@ -113,12 +143,57 @@ export default function DndKitSimpleDemo() {
   );
   const sensors = (isPWA || width <= constants?.breakpoints?.mobile) ? mobileSensors : desktopSensors;
 
+  const imageURLs = Object.values(imagesObject.vertical);
+
+  const [items, setItems] = useState<Item[]>(() => [
+    new Item({ 
+      number: 1, 
+      name: `First Item`, 
+      id: genID(type, 1, `First`)?.id, 
+      images: [imageURLs[randomNumber(imageURLs?.length)]], 
+      description: `This is First Item in the Board List Component`, 
+    }),
+    new Item({ 
+      number: 2, 
+      name: `Second Item`, 
+      id: genID(type, 2, `Second`)?.id, 
+      images: [imageURLs[randomNumber(imageURLs?.length)]], 
+      description: `This is Second Item in the Board List Component`, 
+    }),
+    new Item({ 
+      number: 3, 
+      name: `Third Item`, 
+      id: genID(type, 3, `Third`)?.id, 
+      images: [imageURLs[randomNumber(imageURLs?.length)]], 
+      description: `This is Third Item in the Board List Component`,
+    }),
+  ]);
+
+  const [form, setForm] = useState({ name: ``, description: ``, imageURL: `` });
+
+  const updateForm = (e: any) => {
+    const formField = e?.target;
+    setForm(prevFormData => ({ ...prevFormData, [formField?.name]: formField?.value }));
+  }
+
+  const onItemFormSubmit = (e: any) => {
+    e?.preventDefault();
+    const form = e?.target;
+    const formData = new FormData(form);
+    const formValues: any = Object.fromEntries(formData?.entries());
+    setForm(formValues);
+  }
+
   const addItem = () => {
     setItems((prev: any) => {
       let newIndex = prev.length + 1;
-      let newTitle = `${type} ${newIndex}`;
+      let randomImage = imageURLs[randomNumber(imageURLs?.length)];
+      let newImageURL = form?.imageURL == `` ? randomImage : form?.imageURL;
+      let images = [newImageURL]?.filter(val => val != ``);
+      let newTitle = form?.name == `` ? `${type} ${newIndex}` : form?.name;
+      let newDescription = form?.description == `` ? newTitle : form?.description;
       let newID = genID(type, newIndex, newTitle);
-      let updatedItems = [...prev, { id: newID?.id, title: newTitle, type: type, number: newIndex }];
+      let updatedItems = [...prev, new Item({ type, images, id: newID?.id, name: newTitle, number: newIndex, description: newDescription })];
       return updatedItems;
     });
   };
@@ -141,51 +216,55 @@ export default function DndKitSimpleDemo() {
     padding: 16,
     maxWidth: `100%`,
     borderRadius: 14,
-    overflowY: `auto`,
     color: `#eaeaea`,
-    margin: `30px auto`,
+    overflowY: `auto`,
+    margin: `10px auto`,
+    borderTopRightRadius: 0,
+    fontFamily: `var(--font)`,
+    borderBottomRightRadius: 0,
     border: `1px solid var(--bg)`,
     background: `var(--background)`,
-    fontFamily: `system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif`,
-    maxHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 800,
+    maxHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 600,
   }), []);
 
-  const onItemFormSubmit = (e: any) => {
-    e?.preventDefault();
-    console.log(`onItemFormSubmit`, e);
-  }
-
   return (
-    <div className={`dndContainer componentContainer`} style={box}>
-      <DndContext modifiers={[restrictToVerticalAxis]} sensors={sensors} onDragEnd={onDragEnd}>
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
-          <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
-            {items.map(item => (
-              <SortableRow key={item.id} item={item} id={item.id} onClick={() => setSelected(item)} onDelete={() => deleteItem(item.id)}>
-                {item?.name}
-              </SortableRow>
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
-      <div className={`boardFormContainer`}>
-        <form className={`boardForm boardFormField`} onSubmit={(e) => onItemFormSubmit(e)}>
-          <input name={`name`} type={`text`} className={`nameField`} placeholder={`Item Name`} required />
-          <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Item Description`} required />
+    <div className={`dndBoard`} style={{ width: `100%` }}>
+      <div className={`boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
+        <Logo label={`To Do`} />
+      </div>
+      <div className={`dndContainer componentContainer`} style={box}>
+        <DndContext modifiers={[restrictToVerticalAxis]} sensors={sensors} onDragEnd={onDragEnd}>
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+            <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
+              {items.map(item => (
+                <SortableRow key={item.id} item={item} id={item.id} setItems={setItems} onClick={() => setSelected(item)} onDelete={() => deleteItem(item.id)}>
+                  {item?.name}
+                </SortableRow>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+      <div className={`boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `0 auto` }}>
+        <form className={`boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
+          <input name={`name`} type={`text`} className={`nameField`} placeholder={`Item Name`} style={{ maxWidth: 300 }} required />
+          <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Item Description`} />
+          <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Public Image URL`} />
+          <Button
+            type={`submit`}
+            onClick={addItem}
+            disabled={form?.name == ``}
+            className={`fontI boardFormField`}
+            style={{
+              width: `100%`,
+              maxWidth: `fit-content`,
+              padding: `10px 14px`, borderRadius: 8, border: `0px solid #444`,
+              background: `black`, color: `inherit`, cursor: `pointer`
+            }}
+          >
+            Add
+          </Button>
         </form>
-        <Button
-          // disabled={}
-          onClick={addItem}
-          className={`fontI boardFormField`}
-          style={{
-            width: `100%`,
-            maxWidth: `fit-content`,
-            padding: `10px 14px`, borderRadius: 8, border: `0px solid #444`,
-            background: `black`, color: `inherit`, cursor: `pointer`
-          }}
-        >
-          Add
-        </Button>
       </div>
     </div>
   );

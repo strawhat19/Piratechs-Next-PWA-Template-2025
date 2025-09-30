@@ -7,10 +7,12 @@ import { Close } from '@mui/icons-material';
 import { State } from '../container/container';
 import DialogTitle from '@mui/material/DialogTitle';
 import Icon_Button from '../buttons/icon-button/icon-button';
+import { Item } from '../drag-and-drop/dnd-kit/demo/dnd-kit-demo';
+import ImagesCarousel from '../slider/images-carousel/images-carousel';
 
 export interface SimpleDialogProps {
   open: boolean;
-  selected: any;
+  selected: Item;
   onClose: () => void;
 }
 
@@ -23,7 +25,7 @@ function SimpleDialog(props: SimpleDialogProps) {
         <div style={{ flex: 1 }} className={`dialogContent`}>
           <div className={`dialogRow dialogHeader`}>
             <DialogTitle className={`dialogTitle`}>
-              <strong>{selected?.title}</strong>
+              <strong>{selected?.name}</strong>
             </DialogTitle>
             <div className={`dialogDefaultTitlePadding`}>
               <Icon_Button title={``} onClick={onClose}>
@@ -51,7 +53,7 @@ function SimpleDialog(props: SimpleDialogProps) {
                 <h4>
                   <strong>Title</strong>
                 </h4>
-                <p>{selected?.title}</p>
+                <p>{selected?.name}</p>
               </div>
               <div className={`dialogRow dialogField gap15`}>
                 <h4>
@@ -59,6 +61,22 @@ function SimpleDialog(props: SimpleDialogProps) {
                 </h4>
                 <p>{selected?.id}</p>
               </div>
+            </div>
+            <div className={`dialogFieldGroup gap15 dialogRow column mt15`}>
+              <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
+                <h4>
+                  <strong>Description</strong>
+                </h4>
+                <p>{selected?.description}</p>
+              </div>
+              {selected?.images?.length > 0 && (
+                <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
+                  <h4>
+                    <strong>Images</strong> <span style={{ fontSize: 12 }}><i>({selected?.images.length})</i></span>
+                  </h4>
+                  <ImagesCarousel imageURLs={selected?.images} desktopSize={`350px`} />
+                </div>
+              )}
             </div>
           </div>
           <div className={`dialogFooter w100 mxauto dialogDefaultTitlePadding`}>

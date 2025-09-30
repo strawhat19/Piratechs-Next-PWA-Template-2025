@@ -19,14 +19,19 @@ export const imagesObject = {
     }
 }
 
-export default function ImagesCarousel() {
+export default function ImagesCarousel({ mobileSize = `300px`, desktopSize = `650px`, imageURLs = Object.values(imagesObject.vertical) }) {
     let { width, smallScreen } = useContext<any>(State);
-    let [images, setImages] = useState(Object.entries(imagesObject.vertical));
+    let [images, setImages] = useState(imageURLs);
     return (
         <Slider className={`imagesCarousel`} slidesPerView={(smallScreen || width <= constants?.breakpoints?.mobile) ? 2.25 : 3.33} spaceBetween={15} showButtons={false}>
             {images?.map((img, imgIndex) => (
                 <SwiperSlide key={imgIndex}>
-                    <Img alt={img[0]} src={img[1]} width={`auto`} height={(smallScreen || width <= constants?.breakpoints?.mobile) ? `300px` : `650px`} />
+                    <Img 
+                        src={img} 
+                        alt={`Image`} 
+                        width={`auto`} 
+                        height={(smallScreen || width <= constants?.breakpoints?.mobile) ? mobileSize : desktopSize} 
+                    />
                 </SwiperSlide>
             ))}
         </Slider>

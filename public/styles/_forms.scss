@@ -1,8 +1,14 @@
 .boardFormContainer {
     gap: 8px;
+    // left: 50%;
+    // width: 98%;
     display: flex;
-    margin-top: 12px;
+    // bottom: 15px;
+    // position: fixed;
+    border-radius: 14px;
     align-items: center;
+    background: var(--bg);
+    // transform: translateX(-50%);
     .boardForm {
         gap: 8px;
         display: flex;
