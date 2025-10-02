@@ -147,16 +147,23 @@ html {
         }
     }
 
+    $itm_hght: 35px;
     .itemButton {
-        &:has(.itemDeleteIcon) {
-            top: 2px;
-            position: relative;
+        background: var(--bg) !important;
+        &:not(.currentStatusTag) {
+            min-height: $itm_hght;
+            &.itemDeleteButton {
+                min-width: 40px !important;
+                .itemDeleteIcon {
+                    pointer-events: none;
+                }
+            }
         }
     }
 
     @container (max-width: #{$mobileBreakPoint7}) {
         .itemInner {
-            gap: 1px !important;
+            gap: 7px !important;
         }
         .listTitle {
             padding: 2px 10px 0 !important;
@@ -168,19 +175,25 @@ html {
         .itemName {
             font-size: 16px;
         }
+        .itemNameStatusDescription {
+            width: 100%;
+        }
         .itemDescription {
             font-size: 14px;
         }
         .dndBoardListContext {
+            --dnd_pwa_hght: 525px;
             padding: 10px !important;
-            max-height: 525px !important;
+            min-height: var(--dnd_pwa_hght) !important;
+            max-height: var(--dnd_pwa_hght) !important;
         }
         .boardFormField {
-            --hght: 30px;
+            --hght: 28px;
             min-height: var(--hght) !important;
             max-height: var(--hght) !important;
             input {
                 padding-left: 10px !important;
+                min-height: var(--hght) !important;
                 &.nameField {
                     max-width: 70px !important;
                 }
@@ -190,10 +203,9 @@ html {
             --tag_height: 22px;
             padding: 0;
             grid-gap: 7px;
-            // padding: 15px 0;
             flex-direction: column;
             align-items: flex-start;
-            .statusTagContainer {
+            .statusTag {
                 max-height: var(--tag_height);
             }
             .itemButton {
@@ -208,8 +220,11 @@ html {
             .itemEnd {
                 width: 100%;
                 grid-gap: 7px;
-                padding-left: 10px;
-                .statusTagContainer  {
+                .itemButton {
+                    --tag_height: 28px;
+                    min-height: var(--tag_height) !important;
+                }
+                .statusTag  {
                     width: 100%;
                     button {
                         width: 100%;
@@ -251,7 +266,7 @@ html {
             grid-gap: 5px;
             flex-direction: column;
             align-items: flex-start;
-            .statusTagContainer {
+            .statusTag {
                 width: 100%;
                 margin-left: 0 !important;
                 button {

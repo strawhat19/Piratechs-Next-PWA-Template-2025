@@ -1,14 +1,9 @@
 .boardFormContainer {
     gap: 8px;
-    // left: 50%;
-    // width: 98%;
     display: flex;
-    // bottom: 15px;
-    // position: fixed;
-    border-radius: 14px;
+    border-radius: 8px;
     align-items: center;
     background: var(--bg);
-    // transform: translateX(-50%);
     .boardForm {
         gap: 8px;
         display: flex;
@@ -18,9 +13,11 @@
     }
     .boardFormField {
         min-height: 45px;
+        border-radius: 4px !important;
         input {
             border: none;
             color: white;
+            border-radius: 4px;
             padding-left: 15px;
             background: var(--navy);
             font-family: var(--font);

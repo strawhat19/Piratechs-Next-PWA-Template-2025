@@ -20,6 +20,7 @@
 .p35 { padding: 35px; }
 
 .invisible { opacity: 0; pointer-events: none; }
+.disabled { opacity: 0.33; pointer-events: none; }
 
 .font { font-family: var(--font); }
 .fontI { font-family: var(--font) !important; }

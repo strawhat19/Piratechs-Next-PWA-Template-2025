@@ -1,8 +1,8 @@
 'use client';
 
 import BoardForm from '../form/board-form';
+import { useContext, useMemo } from 'react';
 import Logo from '@/app/components/logo/logo';
-import { useContext, useMemo, useState } from 'react';
 import ItemComponent, { Item, type } from '../item/item';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { State } from '@/app/components/container/container';
@@ -12,7 +12,7 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 export default function ListComponent() {
-  const { width, boardForm, isPWA, setSelected } = useContext<any>(State);
+  const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(State);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const mobileSensors = useSensors(
@@ -23,32 +23,8 @@ export default function ListComponent() {
 
   const imageURLs = Object.values(imagesObject.vertical);
 
-  const [items, setItems] = useState<Item[]>(() => [
-    new Item({ 
-      number: 1, 
-      name: `First Item`, 
-      id: genID(type, 1, `First`)?.id, 
-      imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
-      description: `This is First Item in the Board List Component`, 
-    }),
-    new Item({ 
-      number: 2, 
-      name: `Second Item`, 
-      id: genID(type, 2, `Second`)?.id, 
-      imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
-      description: `This is Second Item in the Board List Component`, 
-    }),
-    new Item({ 
-      number: 3, 
-      name: `Third Item`, 
-      id: genID(type, 3, `Third`)?.id, 
-      imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
-      description: `This is Third Item in the Board List Component`,
-    }),
-  ]);
-
   const addItem = () => {
-    setItems((prev: any) => {
+    setBoardItems((prev: any) => {
       let newIndex = prev.length + 1;
       let randomImage = imageURLs[randomNumber(imageURLs?.length)];
       let newImageURL = boardForm?.imageURL == `` ? randomImage : boardForm?.imageURL;
@@ -62,21 +38,26 @@ export default function ListComponent() {
   };
 
   const deleteItem = (id: string) => {
-    setItems(prev => prev.filter(i => i.id !== id));
+    setBoardItems((prev: Item[]) => prev.filter(i => i.id !== id));
   };
 
   const onItemClick = (e: any, item: Item | any) => {
     let clicked = e?.target;
-    let clickedClasses = clicked?.className;
-    if (!clickedClasses.includes(`itemButton`)) {
-        setSelected(item);
+    if (clicked) {
+        let clickedClasses = String(clicked?.className);
+        console.log(`onItemClick`, {class: clicked?.className, clickedClasses});
+        if (clickedClasses && (clickedClasses.length > 0)) {
+            if (!clickedClasses.includes(`itemButton`)) {
+                setSelected(item);
+            }
+        }
     }
   }
 
   const onDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
-    setItems(prev => {
+    setBoardItems((prev: Item[]) => {
       const oldIndex = prev.findIndex(i => i.id === active.id);
       const newIndex = prev.findIndex(i => i.id === over.id);
       return arrayMove(prev, oldIndex, newIndex);
@@ -86,7 +67,7 @@ export default function ListComponent() {
   const box: React.CSSProperties = useMemo(() => ({
     padding: 16,
     maxWidth: `100%`,
-    borderRadius: 14,
+    borderRadius: 8,
     color: `#eaeaea`,
     overflowY: `auto`,
     margin: `10px auto`,
@@ -95,6 +76,7 @@ export default function ListComponent() {
     border: `1px solid var(--bg)`,
     // borderBottomRightRadius: 0,
     background: `var(--background)`,
+    minHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 600,
     maxHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 600,
   }), []);
 
@@ -104,20 +86,20 @@ export default function ListComponent() {
         <Logo label={`To Do`} />
         <span className={`flexCenter gap5`}>
             <span className={`main`}>
-                {items.length}
+                {boardItems.length}
             </span> Item(s)
         </span>
       </div>
       <div className={`dndBoardListContext dndContainer componentContainer`} style={box}>
         <DndContext modifiers={[restrictToVerticalAxis]} sensors={sensors} onDragEnd={onDragEnd}>
-          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          <SortableContext items={boardItems} strategy={verticalListSortingStrategy}>
             <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
-              {items.map(item => (
+              {boardItems.map((item: Item) => (
                 <ItemComponent 
                     item={item} 
                     id={item.id} 
                     key={item.id} 
-                    setItems={setItems} 
+                    setItems={setBoardItems} 
                     onDelete={() => deleteItem(item.id)} 
                     onClick={(e: any) => onItemClick(e, item)} 
                 />

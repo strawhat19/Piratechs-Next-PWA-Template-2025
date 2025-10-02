@@ -6,17 +6,18 @@ import './container.scss';
 
 import Logo from '../logo/logo';
 import TopBar from '../topbar/topbar';
+import { Item } from '../board/item/item';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';
 import DialogComponent from '../dialog/dialog';
 import { ToastContainer } from 'react-toastify';
-import { AuthStates } from '@/shared/types/types';
 import { User } from '@/shared/types/models/User';
+import { AuthStates, Types } from '@/shared/types/types';
 import { createContext, useEffect, useMemo, useState } from 'react';
+import { imagesObject } from '../slider/images-carousel/images-carousel';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { capWords, constants, debounce, devEnv, isInStandaloneMode } from '@/shared/scripts/constants';
-import { Item } from '../board/item/item';
+import { capWords, constants, debounce, devEnv, genID, isInStandaloneMode, randomNumber } from '@/shared/scripts/constants';
 
 export const State = createContext({});
 
@@ -58,7 +59,32 @@ export default function Container({
     let [stockPositions, setStockPositions] = useState([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 
+    let type = Types.Item;
+    let imageURLs = Object.values(imagesObject.vertical);
     let [boardForm, setBoardForm] = useState<Partial<Item | any>>({ name: ``, description: ``, imageURL: `` });
+    let [boardItems, setBoardItems] = useState<Item[]>(() => [
+        new Item({ 
+            number: 1, 
+            name: `First Item`, 
+            id: genID(type, 1, `First`)?.id, 
+            imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
+            description: `This is First Item in the Board List Component`, 
+        }),
+        new Item({ 
+            number: 2, 
+            name: `Second Item`, 
+            id: genID(type, 2, `Second`)?.id, 
+            imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
+            description: `This is Second Item in the Board List Component`, 
+        }),
+        new Item({ 
+            number: 3, 
+            name: `Third Item`, 
+            id: genID(type, 3, `Third`)?.id, 
+            imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
+            description: `This is Third Item in the Board List Component`,
+        }),
+    ]);
 
     useEffect(() => {
         if (typeof window != `undefined`) {
@@ -101,11 +127,12 @@ export default function Container({
         stockPositions, setStockPositions,
 
         boardForm, setBoardForm,
+        boardItems, setBoardItems,
     }), [
         user, users, width, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
-        boardForm,
+        boardForm, boardItems,
     ]);
 
     return (

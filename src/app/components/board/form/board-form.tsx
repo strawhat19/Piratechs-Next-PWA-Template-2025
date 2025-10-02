@@ -1,9 +1,10 @@
 import { useContext } from 'react';
-import { Button } from '@mui/material';
+import { Add } from '@mui/icons-material';
+import { Button, Tooltip } from '@mui/material';
 import { State } from '../../container/container';
 
 export default function BoardForm({ onClick }: any) {    
-    const { boardForm, setBoardForm } = useContext<any>(State);
+    const { boardItems, boardForm, setBoardForm } = useContext<any>(State);
 
     const updateForm = (e: any) => {
         const formField = e?.target;
@@ -24,21 +25,23 @@ export default function BoardForm({ onClick }: any) {
                 <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} style={{ maxHeight: 45, maxWidth: 300 }} required />
                 <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} style={{ maxHeight: 45 }} />
                 <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} style={{ maxHeight: 45 }} />
-                <Button
-                    type={`submit`}
-                    onClick={onClick}
-                    disabled={boardForm?.name == ``}
-                    className={`fontI boardFormField`}
-                    style={{
-                        width: `100%`,
-                        maxWidth: `fit-content`,
-                        padding: `10px 14px`, borderRadius: 8, border: `0px solid #444`,
-                        background: `black`, color: `inherit`, cursor: `pointer`,
-                        position: `relative`, top: 4,
-                    }}
-                >
-                    Add
-                </Button>
+                <Tooltip placement={`top`} title={`+ Add Item #${boardItems.length + 1}`} arrow>
+                    <Button
+                        type={`submit`}
+                        onClick={onClick}
+                        disabled={boardForm?.name == ``}
+                        className={`fontI boardFormField ${boardForm?.name == `` ? `disabled` : ``}`}
+                        style={{
+                            width: `100%`,
+                            maxWidth: `fit-content`,
+                            padding: `0 7px`, border: `0px solid #444`,
+                            background: `black`, color: `inherit`, cursor: `pointer`,
+                            position: `relative`, top: 4,
+                        }}
+                    >
+                        <Add style={{ fontSize: 20 }} />
+                    </Button>   
+                </Tooltip>
             </form>
         </div>
     )

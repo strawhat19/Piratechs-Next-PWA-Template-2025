@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
 import Img from '../../image/image';
-import { Button } from '@mui/material';
 import { CSS } from '@dnd-kit/utilities';
 import { Delete } from '@mui/icons-material';
 import { Types } from '@/shared/types/types';
+import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import StatusTag, { Status, statuses } from '../status/status';
 
@@ -51,7 +50,7 @@ export default function ItemComponent({
     transition,
     cursor: `grab`,
     display: `flex`,
-    borderRadius: 12,
+    borderRadius: 8,
     userSelect: `none`,
     alignItems: `center`,
     padding: `0 9px 0 7px`,
@@ -65,10 +64,6 @@ export default function ItemComponent({
     itm.status = statuses[itm.status].transition;
     setItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
   }
-
-//   useEffect(() => {
-//     item.onClick = statusChange;
-//   }, [])
 
   return (
     <div ref={setNodeRef} className={`itemComponent draggableItem`} style={style} {...attributes} {...listeners}>
@@ -98,10 +93,10 @@ export default function ItemComponent({
             )}
         </div>
         <div className={`itemContent width100 itemNameStatusDescriptionEnd flexCenter gap5 spaceBetween`}>
-            <div className={`itemNameStatusDescription`} style={{ flex: 1, gap: 8, paddingLeft: 10, display: `flex`, flexDirection: `column` }}>
+            <div className={`itemNameStatusDescription`} style={{ flex: 1, gap: 8, display: `flex`, flexDirection: `column` }}>
                 <div className={`itemNameStatus`} style={{ flex: 1 }}>
                     <h3 className={`itemNameStatusRow flexCenter`}>
-                        <strong className={`itemName`}>
+                        <strong className={`itemName lineClamp2`}>
                             {item?.name}
                         </strong>
                         <StatusTag item={item} style={{ marginLeft: 15 }} />
@@ -113,17 +108,23 @@ export default function ItemComponent({
             </div>
             <div className={`itemEnd flexCenter gap10`}>
                 <StatusTag item={item} disabled={false} currentStatus={false} onClick={(e: any) => statusChange(e, item)} />
-                <Button
-                    onClick={onDelete}
-                    aria-label={`Delete`}
-                    className={`itemButton itemDeleteButton`}
-                    style={{
-                        border: `0px solid #444`, background: `var(--bg)`, color: `inherit`,
-                        padding: `6px 10px`, borderRadius: 4, cursor: `pointer`
-                    }}
-                >
-                    <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
-                </Button>
+                <Tooltip placement={`top`} title={`Delete Item #${item?.number} "${item?.name}"`} arrow>
+                    <Button
+                        onClick={onDelete}
+                        aria-label={`Delete`}
+                        className={`itemButton itemDeleteButton`}
+                        style={{
+                            padding: 0, 
+                            borderRadius: 4, 
+                            color: `inherit`,
+                            cursor: `pointer`, 
+                            background: `var(--bg)`, 
+                            border: `0px solid #444`, 
+                        }}
+                    >
+                        <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
+                    </Button>
+                </Tooltip>
             </div>
         </div>
       </div>
