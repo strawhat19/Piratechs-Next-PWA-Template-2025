@@ -6,134 +6,16 @@ import { Types } from '@/shared/types/types';
 import Logo from '@/app/components/logo/logo';
 import Img from '@/app/components/image/image';
 import { useContext, useMemo, useState } from 'react';
-import { Check, Circle, List } from '@mui/icons-material';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { State } from '@/app/components/container/container';
+import StatusTag, { Status, statuses } from '../status/status';
 import { constants, genID, randomNumber } from '@/shared/scripts/constants';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import ItemComponent, { Item, type } from '../item/item';
 
-const type = Types.Item;
-
-export const statuses: any = {
-  Idea: {
-    transition: `Active`,
-    iconTransition: <Circle style={{ fontSize: 18 }} />,
-  },
-  Active: {
-    transition: `Complete`,
-    iconTransition: <Check style={{ fontSize: 18 }} />,
-  },
-  Complete: {
-    transition: `Idea`,
-    iconTransition: <List style={{ fontSize: 18 }} />,
-  },
-}
-
-export class Item { 
-  id: string = ``; 
-  name: string = ``; 
-  number: number = 0; 
-  urls: string[] = []; 
-  tags: string[] = []; 
-  images: string[] = []; 
-  status: string = `Idea`;
-  description: string = ``; 
-  type: Types | string = type;
-  constructor(data: Partial<Item>) {
-    Object.assign(this, data);
-  }
-};
-
-function SortableRow({
-  id,
-  item,
-  children,
-  onClick,
-  onDelete,
-  setItems,
-}: {
-  item: Item;
-  id: string;
-  setItems: any;
-  onClick: () => void;
-  onDelete: () => void;
-  children: React.ReactNode;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
-
-  const style: React.CSSProperties = {
-    gap: 10,
-    transition,
-    cursor: `grab`,
-    display: `flex`,
-    borderRadius: 12,
-    padding: `0 12px`,
-    userSelect: `none`,
-    background: `black`,
-    alignItems: `center`,
-    opacity: isDragging ? 0.85 : 1,
-    border: `1px solid var(--background)`,
-    transform: CSS.Transform.toString(transform),
-  };
-
-  const statusChange = (e: any, itm: Item) => {
-    itm.status = statuses[itm.status].transition;
-    setItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
-  }
-
-  return (
-    <div ref={setNodeRef} className={`draggableItem`} style={style} {...attributes} {...listeners}>
-      <div style={{ flex: 1, display: `flex`, alignItems: `center`, justifyContent: `space-between`, gap: 10 }} onClick={onClick}>
-        <div
-          aria-hidden
-          title={`Drag`}
-          style={{
-            width: 25, height: 25, borderRadius: 4, border: `0px solid #555`,
-            display: `grid`, placeItems: `center`, fontSize: 12, flex: `0 0 auto`
-          }}
-        >
-          ⇅ {item?.number}
-        </div>
-        {item?.images?.length > 0 && (
-          <Img alt={item?.name} src={item?.images[0]} width={`auto`} height={`150px`} />
-        )}
-        <div style={{ flex: 1, gap: 8, paddingLeft: 10, display: `flex`, flexDirection: `column` }}>
-          <div style={{ flex: 1 }}>
-            <h3>
-              <strong>{children}</strong> <span style={{ fontWeight: 300, fontSize: 14, marginLeft: 15 }}><i>{item?.status}</i></span>
-            </h3>
-          </div>
-          <div style={{ flex: 1 }}>
-            {item?.description}
-          </div>
-        </div>
-      </div>
-      <button
-        onClick={(e) => statusChange(e, item)}
-        style={{
-          border: `0px solid #444`, background: `transparent`, color: `inherit`,
-          padding: `6px 10px`, borderRadius: 8, cursor: `pointer`
-        }}
-      >
-        {statuses[item?.status]?.iconTransition}
-      </button>
-      <button
-        onClick={onDelete}
-        aria-label={`Delete`}
-        style={{
-          border: `0px solid #444`, background: `transparent`, color: `inherit`,
-          padding: `6px 10px`, borderRadius: 8, cursor: `pointer`
-        }}
-      >
-        ✕
-      </button>
-    </div>
-  );
-}
-
-export default function DndKitSimpleDemo() {
+export default function ListComponent() {
   const { width, isPWA, setSelected } = useContext<any>(State);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -150,21 +32,21 @@ export default function DndKitSimpleDemo() {
       number: 1, 
       name: `First Item`, 
       id: genID(type, 1, `First`)?.id, 
-      images: [imageURLs[randomNumber(imageURLs?.length)]], 
+      imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
       description: `This is First Item in the Board List Component`, 
     }),
     new Item({ 
       number: 2, 
       name: `Second Item`, 
       id: genID(type, 2, `Second`)?.id, 
-      images: [imageURLs[randomNumber(imageURLs?.length)]], 
+      imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
       description: `This is Second Item in the Board List Component`, 
     }),
     new Item({ 
       number: 3, 
       name: `Third Item`, 
       id: genID(type, 3, `Third`)?.id, 
-      images: [imageURLs[randomNumber(imageURLs?.length)]], 
+      imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
       description: `This is Third Item in the Board List Component`,
     }),
   ]);
@@ -193,7 +75,7 @@ export default function DndKitSimpleDemo() {
       let newTitle = form?.name == `` ? `${type} ${newIndex}` : form?.name;
       let newDescription = form?.description == `` ? newTitle : form?.description;
       let newID = genID(type, newIndex, newTitle);
-      let updatedItems = [...prev, new Item({ type, images, id: newID?.id, name: newTitle, number: newIndex, description: newDescription })];
+      let updatedItems = [...prev, new Item({ type, imageURLs: images, id: newID?.id, name: newTitle, number: newIndex, description: newDescription })];
       return updatedItems;
     });
   };
@@ -228,25 +110,35 @@ export default function DndKitSimpleDemo() {
   }), []);
 
   return (
-    <div className={`dndBoard`} style={{ width: `100%` }}>
-      <div className={`boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
+    <div className={`listComponent dndBoardList`} style={{ width: `100%` }}>
+      <div className={`boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
         <Logo label={`To Do`} />
+        <span className={`flexCenter gap5`}>
+            <span className={`main`}>
+                {items.length}
+            </span> Item(s)
+        </span>
       </div>
-      <div className={`dndContainer componentContainer`} style={box}>
+      <div className={`dndBoardListContext dndContainer componentContainer`} style={box}>
         <DndContext modifiers={[restrictToVerticalAxis]} sensors={sensors} onDragEnd={onDragEnd}>
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
             <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
               {items.map(item => (
-                <SortableRow key={item.id} item={item} id={item.id} setItems={setItems} onClick={() => setSelected(item)} onDelete={() => deleteItem(item.id)}>
-                  {item?.name}
-                </SortableRow>
+                <ItemComponent 
+                    item={item} 
+                    id={item.id} 
+                    key={item.id} 
+                    setItems={setItems} 
+                    onClick={() => setSelected(item)} 
+                    onDelete={() => deleteItem(item.id)} 
+                />
               ))}
             </div>
           </SortableContext>
         </DndContext>
       </div>
-      <div className={`boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `0 auto` }}>
-        <form className={`boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
+      <div className={`boardListFormContainer boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `0 auto` }}>
+        <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
           <input name={`name`} type={`text`} className={`nameField`} placeholder={`Item Name`} style={{ maxWidth: 300 }} required />
           <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Item Description`} />
           <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Public Image URL`} />

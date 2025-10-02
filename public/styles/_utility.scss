@@ -25,6 +25,7 @@
 .pointerEventsAll { pointer-events: all; }
 .pointerEventsAuto { pointer-events: auto; }
 .pointerEventsNone { pointer-events: none; }
+.pointerEventsNoneI { pointer-events: none !important; }
 
 .flex { display: flex; }
 .column { flex-direction: column; }
@@ -33,54 +34,17 @@
 .alignStart { align-items: flex-start; }
 .alignEnd { align-items: flex-end; }
 .alignStartI { align-items: flex-start !important; }
-
-.spaceBetween { 
-    justify-content: space-between !important; 
-}
-
-.justifyStart { 
-    justify-items: flex-start; 
-    justify-content: flex-start; 
-}
-
-.justifyStartI { 
-    justify-items: flex-start !important; 
-    justify-content: flex-start !important; 
-}
-
-.justifyCenter { 
-    justify-items: center; 
-    justify-content: center; 
-}
-
-.justifyEnd { 
-    justify-items: flex-end; 
-    justify-content: flex-end; 
-}
-
-.textAlignLeft {
-    text-align: left;
-}
-
-.textAlignCenter {
-    text-align: center;
-}
-
-.textAlignRight {
-    text-align: right;
-}
-
-.center { 
-    @extend .mxauto; 
-    @extend .alignCenter; 
-    @extend .justifyCenter; 
-}
+.spaceBetween { justify-content: space-between !important; }
+.justifyStart { justify-items: flex-start; justify-content: flex-start; }
+.justifyStartI { justify-items: flex-start !important; justify-content: flex-start !important; }
+.justifyCenter { justify-items: center; justify-content: center; }
+.justifyEnd { justify-items: flex-end; justify-content: flex-end; }
+.textAlignLeft { text-align: left; }
+.textAlignCenter { text-align: center; }
+.textAlignRight { text-align: right; }
 
 .grid { display: grid; }
-.gridRow { 
-    grid-template-columns: 
-        repeat(auto-fit, minmax(0, 1fr)); 
-}
+.gridRow { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
 
 .gap0 { gap: 0px; grid-gap: 0px; }
 .gap5 { gap: 5px; grid-gap: 5px; }
@@ -118,6 +82,22 @@
 .cursorPointer { cursor: pointer; }
 .cursorAuto { cursor: auto !important; }
 .transition { transition: var(--transition); }
+
+.flexCenter {
+    @extend .flex; 
+    @extend .alignCenter; 
+}
+
+.flexColCenter {
+    @extend .flexCenter; 
+    @extend .column; 
+}
+
+.center { 
+    @extend .mxauto; 
+    @extend .alignCenter; 
+    @extend .justifyCenter; 
+}
 
 .containerX {
     @extend .flex; 

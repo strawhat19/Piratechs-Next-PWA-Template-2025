@@ -3,11 +3,12 @@ import './dialog.scss';
 import { useContext } from 'react';
 import { Button } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
+import { Item } from '../board/item/item';
 import { Close } from '@mui/icons-material';
 import { State } from '../container/container';
+import StatusTag from '../board/status/status';
 import DialogTitle from '@mui/material/DialogTitle';
 import Icon_Button from '../buttons/icon-button/icon-button';
-import { Item } from '../drag-and-drop/dnd-kit/demo/dnd-kit-demo';
 import ImagesCarousel from '../slider/images-carousel/images-carousel';
 
 export interface SimpleDialogProps {
@@ -24,8 +25,9 @@ function SimpleDialog(props: SimpleDialogProps) {
       {selected != null && <>
         <div style={{ flex: 1 }} className={`dialogContent`}>
           <div className={`dialogRow dialogHeader`}>
-            <DialogTitle className={`dialogTitle`}>
+            <DialogTitle className={`dialogTitle flexCenter gap15`}>
               <strong>{selected?.name}</strong>
+              <StatusTag item={selected} />
             </DialogTitle>
             <div className={`dialogDefaultTitlePadding`}>
               <Icon_Button title={``} onClick={onClose}>
@@ -36,13 +38,13 @@ function SimpleDialog(props: SimpleDialogProps) {
           <div style={{ flex: 1 }} className={`dialogCenterContent w100 mxauto dialogDefaultTitlePadding`}>
             <div className={`dialogFieldGroup gap15 dialogRow`}>
               <div className={`dialogRow dialogField gap15`}>
-                <h4>
+                <h4 className={`main`}>
                   <strong>#</strong>
                 </h4>
                 <p>{selected?.number}</p>
               </div>
               <div className={`dialogRow dialogField gap15`}>
-                <h4>
+                <h4 className={`main`}>
                   <strong>Type</strong>
                 </h4>
                 <p>{selected?.type}</p>
@@ -50,13 +52,13 @@ function SimpleDialog(props: SimpleDialogProps) {
             </div>
             <div className={`dialogFieldGroup gap15 dialogRow`}>
               <div className={`dialogRow dialogField gap15`}>
-                <h4>
+                <h4 className={`main`}>
                   <strong>Title</strong>
                 </h4>
                 <p>{selected?.name}</p>
               </div>
               <div className={`dialogRow dialogField gap15`}>
-                <h4>
+                <h4 className={`main`}>
                   <strong>ID</strong>
                 </h4>
                 <p>{selected?.id}</p>
@@ -64,17 +66,17 @@ function SimpleDialog(props: SimpleDialogProps) {
             </div>
             <div className={`dialogFieldGroup gap15 dialogRow column mt15`}>
               <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
-                <h4>
+                <h4 className={`main`}>
                   <strong>Description</strong>
                 </h4>
                 <p>{selected?.description}</p>
               </div>
-              {selected?.images?.length > 0 && (
+              {selected?.imageURLs?.length > 0 && (
                 <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
                   <h4>
-                    <strong>Images</strong> <span style={{ fontSize: 12 }}><i>({selected?.images.length})</i></span>
+                    <strong>Images</strong> <span className={`main`} style={{ fontSize: 12 }}><i>({selected?.imageURLs.length})</i></span>
                   </h4>
-                  <ImagesCarousel imageURLs={selected?.images} desktopSize={`350px`} />
+                  <ImagesCarousel imageURLs={selected?.imageURLs} desktopSize={`350px`} />
                 </div>
               )}
             </div>
