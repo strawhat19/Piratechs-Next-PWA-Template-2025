@@ -1,19 +1,15 @@
 'use client';
 
 import { Button } from '@mui/material';
-import { CSS } from '@dnd-kit/utilities';
-import { Types } from '@/shared/types/types';
 import Logo from '@/app/components/logo/logo';
-import Img from '@/app/components/image/image';
 import { useContext, useMemo, useState } from 'react';
+import ItemComponent, { Item, type } from '../item/item';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { State } from '@/app/components/container/container';
-import StatusTag, { Status, statuses } from '../status/status';
 import { constants, genID, randomNumber } from '@/shared/scripts/constants';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
-import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import ItemComponent, { Item, type } from '../item/item';
 
 export default function ListComponent() {
   const { width, isPWA, setSelected } = useContext<any>(State);

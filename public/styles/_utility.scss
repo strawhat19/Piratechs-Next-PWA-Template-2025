@@ -19,6 +19,8 @@
 .p30 { padding: 30px; }
 .p35 { padding: 35px; }
 
+.invisible { opacity: 0; pointer-events: none; }
+
 .font { font-family: var(--font); }
 .fontI { font-family: var(--font) !important; }
 
