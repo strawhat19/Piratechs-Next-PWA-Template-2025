@@ -6,7 +6,7 @@ export const statusIconSize = 14;
 export enum Status {
     ToDo = `Idea`,
     Active = `Active`,
-    Done = `Complete`,
+    Done = `Done`,
 }
 
 export const statuses: any = {
@@ -43,21 +43,23 @@ export default function StatusTag({
             <Button
                 onClick={onClick}
                 disabled={disabled}
-                className={`itemButton statusTag ${className} flexCenter gap1`}
+                className={`itemButton statusTag ${className} flexCenter`}
                 style={{
-                    borderRadius: 8, 
+                    borderRadius: 4, 
                     color: `inherit`,
                     cursor: `pointer`,
                     padding: `6px 10px`, 
                     border: `0px solid #444`, 
                 }}
             >
-                <span className={`main`} style={{ maxHeight: 18 }}>
-                    {currentStatus ? statuses[item?.status]?.icon : statuses[item?.status]?.iconTransition}
-                </span>
-                <span style={{ fontWeight: 300, fontSize: 14 }}>
-                    <i>{currentStatus ? item?.status : statuses[item?.status].transition}</i>
-                </span>
+                <div className={`tagContent flexCenter gap5 pointerEventsNone`}>
+                    <span className={`main`} style={{ maxHeight: 18 }}>
+                        {currentStatus ? statuses[item?.status]?.icon : statuses[item?.status]?.iconTransition}
+                    </span>
+                    <span style={{ fontWeight: 300, fontSize: 14 }}>
+                        <i>{currentStatus ? item?.status : statuses[item?.status].transition}</i>
+                    </span>
+                </div>
             </Button>
         </div>
     )

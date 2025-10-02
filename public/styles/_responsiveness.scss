@@ -147,17 +147,67 @@ html {
         }
     }
 
+    .itemButton {
+        &:has(.itemDeleteIcon) {
+            top: 2px;
+            position: relative;
+        }
+    }
+
     @container (max-width: #{$mobileBreakPoint7}) {
+        .itemInner {
+            gap: 1px !important;
+        }
+        .listTitle {
+            padding: 0 10px !important;
+            margin: 33px auto 0 !important;
+        }
+        .formRow {
+            padding: 7px 10px 10px !important;
+        }
+        .itemName {
+            font-size: 16px;
+        }
+        .itemDescription {
+            font-size: 14px;
+        }
+        .dndBoardListContext {
+            padding: 10px !important;
+        }
+        .boardFormField {
+            --hght: 30px;
+            min-height: var(--hght) !important;
+            max-height: var(--hght) !important;
+            input {
+                font-size: 14px;
+                padding-left: 10px !important;
+                &.nameField {
+                    max-width: 70px !important;
+                }
+            }
+        }
         .itemContent {
-            grid-gap: 15px;
-            padding: 15px 0;
+            --tag_height: 22px;
+            padding: 0;
+            grid-gap: 7px;
+            // padding: 15px 0;
             flex-direction: column;
             align-items: flex-start;
+            .statusTagContainer {
+                max-height: var(--tag_height);
+            }
+            .itemButton {
+                max-height: var(--tag_height);
+                div {
+                    max-height: var(--tag_height);
+                }
+            }
             .itemNameStatusRow {
                 justify-content: space-between;
             }
             .itemEnd {
                 width: 100%;
+                grid-gap: 7px;
                 padding-left: 10px;
                 .statusTagContainer  {
                     width: 100%;

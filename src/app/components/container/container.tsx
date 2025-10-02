@@ -16,6 +16,7 @@ import { User } from '@/shared/types/models/User';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { capWords, constants, debounce, devEnv, isInStandaloneMode } from '@/shared/scripts/constants';
+import { Item } from '../board/item/item';
 
 export const State = createContext({});
 
@@ -57,6 +58,8 @@ export default function Container({
     let [stockPositions, setStockPositions] = useState([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 
+    let [boardForm, setBoardForm] = useState<Partial<Item | any>>({ name: ``, description: ``, imageURL: `` });
+
     useEffect(() => {
         if (typeof window != `undefined`) {
             let isOnPWA = isInStandaloneMode();
@@ -82,6 +85,7 @@ export default function Container({
         user, setUser,
         users, setUsers,
         width, setWidth,
+
         isPWA, setIsPWA,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
@@ -95,7 +99,14 @@ export default function Container({
         histories, setHistories,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
-    }), [user, users, width, selected, loaded, isDevEnv, isPWA, authState, menuExpanded, smallScreen, stocks, histories, stockOrders, stocksAcc, stockPositions]);
+
+        boardForm, setBoardForm,
+    }), [
+        user, users, width, selected, loaded, isDevEnv, 
+        isPWA, authState, menuExpanded, smallScreen, 
+        stocks, histories, stockOrders, stocksAcc, stockPositions,
+        boardForm,
+    ]);
 
     return (
         <State.Provider value={state}>

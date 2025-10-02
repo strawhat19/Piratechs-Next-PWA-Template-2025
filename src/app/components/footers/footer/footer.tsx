@@ -23,7 +23,7 @@ export default function Footer({ full = false }: any) {
 
     return (
         <footer className={`container footerContainer ${full ? `fullFooter` : `clippedFooter`} ${isPWA ? `isPWAFooter` : `standardWFooter`}`}>
-            <div className={`footerInner ${isPWA ? `invisible` : ``}`}>
+            <div className={`footerInner`}>
                 {showBottomNav ? (
                     <BottomNavigation showLabels={true} sx={{ width: `100%` }} value={value} onChange={handleChange}>
                         <BottomNavigationAction

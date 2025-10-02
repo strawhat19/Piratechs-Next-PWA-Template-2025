@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@mui/material';
+import BoardForm from '../form/board-form';
 import Logo from '@/app/components/logo/logo';
 import { useContext, useMemo, useState } from 'react';
 import ItemComponent, { Item, type } from '../item/item';
@@ -12,7 +12,7 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 export default function ListComponent() {
-  const { width, isPWA, setSelected } = useContext<any>(State);
+  const { width, boardForm, isPWA, setSelected } = useContext<any>(State);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const mobileSensors = useSensors(
@@ -47,29 +47,14 @@ export default function ListComponent() {
     }),
   ]);
 
-  const [form, setForm] = useState({ name: ``, description: ``, imageURL: `` });
-
-  const updateForm = (e: any) => {
-    const formField = e?.target;
-    setForm(prevFormData => ({ ...prevFormData, [formField?.name]: formField?.value }));
-  }
-
-  const onItemFormSubmit = (e: any) => {
-    e?.preventDefault();
-    const form = e?.target;
-    const formData = new FormData(form);
-    const formValues: any = Object.fromEntries(formData?.entries());
-    setForm(formValues);
-  }
-
   const addItem = () => {
     setItems((prev: any) => {
       let newIndex = prev.length + 1;
       let randomImage = imageURLs[randomNumber(imageURLs?.length)];
-      let newImageURL = form?.imageURL == `` ? randomImage : form?.imageURL;
+      let newImageURL = boardForm?.imageURL == `` ? randomImage : boardForm?.imageURL;
       let images = [newImageURL]?.filter(val => val != ``);
-      let newTitle = form?.name == `` ? `${type} ${newIndex}` : form?.name;
-      let newDescription = form?.description == `` ? newTitle : form?.description;
+      let newTitle = boardForm?.name == `` ? `${type} ${newIndex}` : boardForm?.name;
+      let newDescription = boardForm?.description == `` ? newTitle : boardForm?.description;
       let newID = genID(type, newIndex, newTitle);
       let updatedItems = [...prev, new Item({ type, imageURLs: images, id: newID?.id, name: newTitle, number: newIndex, description: newDescription })];
       return updatedItems;
@@ -79,6 +64,14 @@ export default function ListComponent() {
   const deleteItem = (id: string) => {
     setItems(prev => prev.filter(i => i.id !== id));
   };
+
+  const onItemClick = (e: any, item: Item | any) => {
+    let clicked = e?.target;
+    let clickedClasses = clicked?.className;
+    if (!clickedClasses.includes(`itemButton`)) {
+        setSelected(item);
+    }
+  }
 
   const onDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
@@ -107,7 +100,7 @@ export default function ListComponent() {
 
   return (
     <div className={`listComponent dndBoardList`} style={{ width: `100%` }}>
-      <div className={`boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
+      <div className={`listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
         <Logo label={`To Do`} />
         <span className={`flexCenter gap5`}>
             <span className={`main`}>
@@ -125,35 +118,16 @@ export default function ListComponent() {
                     id={item.id} 
                     key={item.id} 
                     setItems={setItems} 
-                    onClick={() => setSelected(item)} 
                     onDelete={() => deleteItem(item.id)} 
+                    onClick={(e: any) => onItemClick(e, item)} 
                 />
               ))}
             </div>
           </SortableContext>
         </DndContext>
       </div>
-      <div className={`boardListFormContainer boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `0 auto` }}>
-        <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
-          <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} style={{ maxHeight: 45, maxWidth: 300 }} required />
-          <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} style={{ maxHeight: 45 }} />
-          <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} style={{ maxHeight: 45 }} />
-          <Button
-            type={`submit`}
-            onClick={addItem}
-            disabled={form?.name == ``}
-            className={`fontI boardFormField`}
-            style={{
-              width: `100%`,
-              maxWidth: `fit-content`,
-              padding: `10px 14px`, borderRadius: 8, border: `0px solid #444`,
-              background: `black`, color: `inherit`, cursor: `pointer`
-            }}
-          >
-            Add
-          </Button>
-        </form>
-      </div>
+      <BoardForm onClick={addItem} />
+      {/* {(isPWA || width <= constants?.breakpoints?.mobile) ? <></> : <BoardForm onClick={addItem} />} */}
     </div>
   );
 }

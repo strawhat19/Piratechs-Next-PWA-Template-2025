@@ -40,8 +40,8 @@ export default function ItemComponent({
   item: Item;
   id: string;
   setItems: any;
-  onClick: () => void;
   onDelete: () => void;
+  onClick: (e: any) => void;
 //   children: React.ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -52,9 +52,9 @@ export default function ItemComponent({
     cursor: `grab`,
     display: `flex`,
     borderRadius: 12,
-    padding: `0 12px`,
     userSelect: `none`,
     alignItems: `center`,
+    padding: `0 9px 0 7px`,
     background: `var(--navy)`,
     opacity: isDragging ? 0.85 : 1,
     border: `1px solid var(--background)`,
@@ -66,9 +66,9 @@ export default function ItemComponent({
     setItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
   }
 
-  useEffect(() => {
-    item.onClick = statusChange;
-  }, [])
+//   useEffect(() => {
+//     item.onClick = statusChange;
+//   }, [])
 
   return (
     <div ref={setNodeRef} className={`itemComponent draggableItem`} style={style} {...attributes} {...listeners}>
@@ -79,9 +79,9 @@ export default function ItemComponent({
                 title={`Drag`}
                 className={`itemTypeIndex flexCenter gap5`}
                 style={{
-                    width: 25, 
                     height: 25, 
                     fontSize: 12,
+                    width: `auto`, 
                     borderRadius: 4, 
                     border: `0px solid #555`, 
                 }}
@@ -94,20 +94,20 @@ export default function ItemComponent({
                 </span>
             </div>
             {item?.imageURLs?.length > 0 && (
-                <Img alt={item?.name} src={item?.imageURLs[0]} width={`auto`} height={`150px`} />
+                <Img alt={item?.name} src={item?.imageURLs[0]} width={`auto`} height={`160px`} />
             )}
         </div>
         <div className={`itemContent width100 itemNameStatusDescriptionEnd flexCenter gap5 spaceBetween`}>
             <div className={`itemNameStatusDescription`} style={{ flex: 1, gap: 8, paddingLeft: 10, display: `flex`, flexDirection: `column` }}>
                 <div className={`itemNameStatus`} style={{ flex: 1 }}>
                     <h3 className={`itemNameStatusRow flexCenter`}>
-                        <strong>
+                        <strong className={`itemName`}>
                             {item?.name}
                         </strong>
                         <StatusTag item={item} style={{ marginLeft: 15 }} />
                     </h3>
                 </div>
-                <div className={`itemDescription`} style={{ flex: 1 }}>
+                <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
                     {item?.description}
                 </div>
             </div>
@@ -119,10 +119,10 @@ export default function ItemComponent({
                     className={`itemButton itemDeleteButton`}
                     style={{
                         border: `0px solid #444`, background: `var(--bg)`, color: `inherit`,
-                        padding: `6px 10px`, borderRadius: 8, cursor: `pointer`
+                        padding: `6px 10px`, borderRadius: 4, cursor: `pointer`
                     }}
                 >
-                    <Delete style={{ fontSize: 18 }} className={`main`} />
+                    <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
                 </Button>
             </div>
         </div>
