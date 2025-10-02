@@ -101,10 +101,10 @@ export default function ListComponent() {
     color: `#eaeaea`,
     overflowY: `auto`,
     margin: `10px auto`,
-    borderTopRightRadius: 0,
     fontFamily: `var(--font)`,
-    borderBottomRightRadius: 0,
+    // borderTopRightRadius: 0,
     border: `1px solid var(--bg)`,
+    // borderBottomRightRadius: 0,
     background: `var(--background)`,
     maxHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 600,
   }), []);
@@ -139,9 +139,9 @@ export default function ListComponent() {
       </div>
       <div className={`boardListFormContainer boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `0 auto` }}>
         <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
-          <input name={`name`} type={`text`} className={`nameField`} placeholder={`Item Name`} style={{ maxWidth: 300 }} required />
-          <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Item Description`} />
-          <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Public Image URL`} />
+          <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} style={{ maxHeight: 45, maxWidth: 300 }} required />
+          <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} style={{ maxHeight: 45 }} />
+          <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} style={{ maxHeight: 45 }} />
           <Button
             type={`submit`}
             onClick={addItem}

@@ -147,6 +147,28 @@ html {
         }
     }
 
+    @container (max-width: #{$mobileBreakPoint7}) {
+        .itemContent {
+            grid-gap: 15px;
+            padding: 15px 0;
+            flex-direction: column;
+            align-items: flex-start;
+            .itemNameStatusRow {
+                justify-content: space-between;
+            }
+            .itemEnd {
+                width: 100%;
+                padding-left: 10px;
+                .statusTagContainer  {
+                    width: 100%;
+                    button {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+
     @container (max-width: #{$mobileBreakPoint585}) {
         .logoText {
             font-size: 21px;
@@ -174,6 +196,18 @@ html {
     @container (max-width: #{$mobileBreakPoint435}) {
         .stockMetricLabel {
             font-size: 15px;
+        }
+        .itemNameStatusRow {
+            grid-gap: 5px;
+            flex-direction: column;
+            align-items: flex-start;
+            .statusTagContainer {
+                width: 100%;
+                margin-left: 0 !important;
+                button {
+                    width: 100%;
+                }
+            }
         }
     }
 }

@@ -34,9 +34,10 @@
                 font-size: 12px;
             }
             .dialogFieldGroup {
+                grid-gap: 10px;
                 flex-direction: column;
                 &:not(:first-child) {
-                    padding-top: 15px;
+                    padding-top: 10px;
                 }
             }
         }

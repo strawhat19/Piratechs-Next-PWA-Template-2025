@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import { Check, Circle, List } from '@mui/icons-material';
 
 export const statusIconSize = 14;
@@ -39,16 +40,15 @@ export default function StatusTag({
 }: any) {
     return (
         <div style={style} className={`statusTagContainer ${className}Container ${disabled ? `pointerEventsNone` : ``}`}>
-            <button
+            <Button
                 onClick={onClick}
                 disabled={disabled}
-                className={`statusTag ${className} flexCenter gap1`}
+                className={`itemButton statusTag ${className} flexCenter gap1`}
                 style={{
                     borderRadius: 8, 
                     color: `inherit`,
                     cursor: `pointer`,
                     padding: `6px 10px`, 
-                    background: `var(--bg)`, 
                     border: `0px solid #444`, 
                 }}
             >
@@ -58,7 +58,7 @@ export default function StatusTag({
                 <span style={{ fontWeight: 300, fontSize: 14 }}>
                     <i>{currentStatus ? item?.status : statuses[item?.status].transition}</i>
                 </span>
-            </button>
+            </Button>
         </div>
     )
 }
