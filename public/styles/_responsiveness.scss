@@ -159,8 +159,8 @@ html {
             gap: 1px !important;
         }
         .listTitle {
-            padding: 0 10px !important;
-            margin: 33px auto 0 !important;
+            padding: 2px 10px 0 !important;
+            margin: 25px auto 0 !important;
         }
         .formRow {
             padding: 7px 10px 10px !important;
@@ -173,13 +173,13 @@ html {
         }
         .dndBoardListContext {
             padding: 10px !important;
+            max-height: 525px !important;
         }
         .boardFormField {
             --hght: 30px;
             min-height: var(--hght) !important;
             max-height: var(--hght) !important;
             input {
-                font-size: 14px;
                 padding-left: 10px !important;
                 &.nameField {
                     max-width: 70px !important;
