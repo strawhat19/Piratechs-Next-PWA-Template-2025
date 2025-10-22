@@ -1,9 +1,9 @@
 'use client';
 
 import { useContext } from 'react';
-import { toast } from 'react-toastify';
 import { Avatar, Button } from '@mui/material';
 import { User } from '@/shared/types/models/User';
+import { toast, ToastOptions } from 'react-toastify';
 import Loader from '@/app/components/loaders/loader';
 import { State } from '@/app/components/container/container';
 import { AuthStates, Providers, Roles } from '@/shared/types/types';
@@ -35,7 +35,7 @@ export default function AuthForm() {
 
                 // toast.success(`Ready for ${authState}`);    
                 console.log(`Ready for ${authState}`, newUser);
-                toast.success(`Registration in Development!`);    
+                toast.success(`Registration in Development!`, { autoClose: 50000 } as ToastOptions);    
             } else {
                 // if (users) {
 

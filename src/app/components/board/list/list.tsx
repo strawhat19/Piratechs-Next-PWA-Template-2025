@@ -94,11 +94,12 @@ export default function ListComponent() {
         <DndContext modifiers={[restrictToVerticalAxis]} sensors={sensors} onDragEnd={onDragEnd}>
           <SortableContext items={boardItems} strategy={verticalListSortingStrategy}>
             <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
-              {boardItems.map((item: Item) => (
+              {boardItems.map((item: Item, itemIndex: number) => (
                 <ItemComponent 
                     item={item} 
                     id={item.id} 
                     key={item.id} 
+                    itemIndex={itemIndex}
                     setItems={setBoardItems} 
                     onDelete={() => deleteItem(item.id)} 
                     onClick={(e: any) => onItemClick(e, item)} 

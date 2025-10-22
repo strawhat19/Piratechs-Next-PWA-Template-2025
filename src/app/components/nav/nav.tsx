@@ -6,10 +6,11 @@ import { usePathname } from 'next/navigation';
 import { State } from '../container/container';
 import { capWords } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
+// import AuthForm from '../authentication/forms/auth-form/auth-form';
 
 import { 
     Menu,
-    Info, 
+    // Info, 
     Close,
     Settings,
     PermMedia,
@@ -68,6 +69,11 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                         </Link>
                     </li>
                 ))}
+                {/* {className == `mobileNav` && (
+                    <li>
+                        <AuthForm />
+                    </li>
+                )} */}
             </ul>
         </nav>
     )

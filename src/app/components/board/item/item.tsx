@@ -18,6 +18,7 @@ export class Item {
     rating: number = 5;
     urls: string[] = []; 
     tags: string[] = []; 
+    itemIndex?: number = 0; 
     imageURLs: string[] = []; 
     description: string = ``; 
     type: Types | string = type;
@@ -35,10 +36,12 @@ export default function ItemComponent({
   onClick,
   onDelete,
   setItems,
+  itemIndex,
 }: {
   item: Item;
   id: string;
   setItems: any;
+  itemIndex: number;
   onDelete: () => void;
   onClick: (e: any) => void;
 //   children: React.ReactNode;
@@ -85,7 +88,8 @@ export default function ItemComponent({
                     ⇅
                 </span> 
                 <span className={`itemIndex`}>
-                    {item?.number}
+                    {itemIndex + 1}
+                    {/* {item?.number} */}
                 </span>
             </div>
             {item?.imageURLs?.length > 0 && (
