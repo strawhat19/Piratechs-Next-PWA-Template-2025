@@ -55,7 +55,7 @@ export default function StatusTag({
                 }}
             >
                 <div className={`tagContent flexCenter gap5 pointerEventsNone`}>
-                    <span className={`main flexCenter`} style={{ maxHeight: 18 }}>
+                    <span className={`tagIcon main flexCenter`} style={{ maxHeight: 18 }}>
                         {currentStatus ? statuses[item?.status]?.icon : statuses[item?.status]?.iconTransition}
                     </span>
                     <span className={`tagName`} style={{ maxHeight: 18, fontWeight: 300, fontSize: 14, lineHeight: 1.4 }}>

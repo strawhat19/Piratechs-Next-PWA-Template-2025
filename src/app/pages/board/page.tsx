@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
+import Board from '@/app/components/board/board';
 import { constants } from '@/shared/scripts/constants';
 import Container from '@/app/components/container/container';
-import ListComponent from '@/app/components/board/list/list';
 
 export const metadata: Metadata = {
   title: `Board | ${constants.titles.default}`,
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function BoardPage() {
     return (
         <Container className={`boardPage`} logoLabel={`To Do`} showPageLogo={false}>
-            <ListComponent />
+            <Board />
         </Container>
     )
 }

@@ -8,6 +8,26 @@
     // }
 // }
 
+.paginationDots {
+    width: 100%;
+    display: flex;
+    margin: 0 auto;
+    grid-gap: 10px;
+    padding: 25px 0 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    .paginationDot {
+        svg {
+            path { fill: #04397b; }
+            &:has(circle) {
+                circle { fill: #04397b; }
+                path { fill: var(--main); }
+            }
+        }
+    }
+}
+
 .slider {
     width: 100%;
     --stockSliderHeight: 535px;

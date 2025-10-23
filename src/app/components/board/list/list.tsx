@@ -11,7 +11,9 @@ import { imagesObject } from '@/app/components/slider/images-carousel/images-car
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
-export default function ListComponent() {
+export default function ListComponent({
+  title = `To Do`,
+}: any) {
   const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(State);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -83,7 +85,7 @@ export default function ListComponent() {
   return (
     <div className={`listComponent dndBoardList`} style={{ width: `100%` }}>
       <div className={`listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
-        <Logo label={`To Do`} />
+        <Logo label={title} />
         <span className={`flexCenter gap5`}>
             <span className={`main`}>
                 {boardItems.length}
