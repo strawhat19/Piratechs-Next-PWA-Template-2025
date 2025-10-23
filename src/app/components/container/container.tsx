@@ -125,10 +125,13 @@ export default function Container({
         }
     }
 
-    const onSignIn = (usr: User) => {
+    const onSignIn = (usr: User, showSuccess = false) => {
+        if (user != null) return;
         setUser(usr);
         setAuthState(AuthStates.Sign_Out);
-        logToast(`User Signed In Successfully`, usr?.name, false, usr);
+        if (showSuccess) {
+            logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
+        }
     }
 
     const onSignOut = async () => {
@@ -137,7 +140,7 @@ export default function Container({
         await signOut(auth);
     }
 
-    const onSignInError = (error: any) => {
+    const onSignInError = (error: any): any => {
         onSignOut();
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -159,12 +162,12 @@ export default function Container({
                 let existingUser = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
                 if (existingUser) {
                     const { date } = getIDParts();
-                    await updateUserInDatabase(existingUser?.id, { signedIn: true, lastSignIn: date, lastAuthenticated: date }).then(async () => {
-                        refreshUsers();
-                        let usr = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
-                        if (usr) {
-                            onSignIn(usr);
-                        } else onSignOut();
+                    await updateUserInDatabase(existingUser?.id, { signedIn: true, lastSignIn: date, lastAuthenticated: date, updated: date, }).then(async () => {
+                        // refreshUsers();
+                        // let usr = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
+                        // if (usr) {
+                        //     onSignIn(usr);
+                        // } else onSignOut();
                     }).catch(error => onSignInError(error));
                 } else onSignOut();
             }
@@ -178,7 +181,7 @@ export default function Container({
                 if (usr) {
                     if (usr?.uid) {
                         let thisUser = users.find((us: User) => us?.uid == usr?.uid);
-                        onSignIn(thisUser);
+                        onSignIn(thisUser, true);
                     }
                 } else {
                     console.log(`Users`, users);
