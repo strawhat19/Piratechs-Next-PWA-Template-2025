@@ -1,12 +1,14 @@
 'use client';
 
-import { useContext } from 'react';
+import { toast } from 'react-toastify';
+import { useContext, useRef } from 'react';
 import { Avatar, Button } from '@mui/material';
 import { User } from '@/shared/types/models/User';
-import { toast, ToastOptions } from 'react-toastify';
 import Loader from '@/app/components/loaders/loader';
+import { logToast } from '@/shared/scripts/constants';
 import { State } from '@/app/components/container/container';
-import { AuthStates, Providers, Roles } from '@/shared/types/types';
+import { addUserToDatabase } from '@/shared/server/firebase';
+import { AuthStates, Providers, Roles, Types } from '@/shared/types/types';
 
 const { Next, Sign_Up, Sign_In, Sign_Out } = AuthStates;
 
@@ -15,9 +17,10 @@ const stateLabels: any = {
 }
 
 export default function AuthForm() {
-    const { user, loaded, authState, setAuthState } = useContext<any>(State);
+    let emailOrUsernameField = useRef(null);
+    const { user, users, loaded, authState, setAuthState, refreshUsers } = useContext<any>(State);
 
-    const onAuthFormSubmit = (onFormSubmitEvent: any) => {
+    const onAuthFormSubmit = async (onFormSubmitEvent: any) => {
         onFormSubmitEvent?.preventDefault();
 
         const form = onFormSubmitEvent?.target;
@@ -31,17 +34,32 @@ export default function AuthForm() {
                 email = String(email);
                 password = String(password);
 
-                let newUser: any = new User({ email, password, number: 19, provider: Providers.Firebase, role: Roles.Administrator });
+                let type = Types.User;
+                let newIndex = users.length + 1;
 
-                // toast.success(`Ready for ${authState}`);    
-                console.log(`Ready for ${authState}`, newUser);
-                toast.success(`Registration in Development!`, { autoClose: 50000 } as ToastOptions);    
+                let newUser: any = new User({ type, email, number: newIndex, provider: Providers.Firebase, role: Roles.Owner }); 
+
+                await addUserToDatabase(newUser).then(async () => {
+                    logToast(`Created User`, newUser?.name, false, newUser);
+                    form.reset();
+                    refreshUsers();
+                }).catch(signUpAndSeedError => {
+                    let errorMessage = `Error on Sign Up & Set Default Data`;
+                    console.log(errorMessage, signUpAndSeedError);
+                    toast.error(errorMessage);
+                    return;
+                });
             } else {
-                // if (users) {
-
-                // } else {
+                if (users && users.length > 0) {
+                    let thisUser = users.find((u: User) => u?.email?.toLowerCase()?.includes(String(email)?.toLowerCase()));
+                    if (thisUser) {
+                        setAuthState(Sign_In);
+                    } else {
+                        setAuthState(Sign_Up);
+                    }
+                } else {
                     setAuthState(Sign_Up);
-                // }
+                }
             }
         }
     }
@@ -59,11 +77,11 @@ export default function AuthForm() {
                                 <span className={`formFieldLabel`}>
                                     {stateLabels[authState] ?? authState}
                                 </span>
-                                <input name={`email`} type={`email`} className={`email`} placeholder={`Email Address`} required />
+                                <input ref={emailOrUsernameField} name={`email`} type={`email`} className={`email`} placeholder={`Email Address`} autoComplete={`off`} required />
                             </div>
                             {authState != Next && (
                                 <div className={`formField gap10 column alignStart`}>
-                                    <input name={`password`} minLength={6} type={`password`} className={`password`} placeholder={`Password`} autoFocus required />
+                                    <input name={`password`} minLength={6} type={`password`} className={`password`} placeholder={`Password`} autoFocus autoComplete={`off`} required />
                                 </div>
                             )}
                         </div>

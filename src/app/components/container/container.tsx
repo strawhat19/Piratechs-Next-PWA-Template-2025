@@ -17,7 +17,7 @@ import { AuthStates, Types } from '@/shared/types/types';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { imagesObject } from '../slider/images-carousel/images-carousel';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { capWords, constants, debounce, devEnv, genID, isInStandaloneMode, randomNumber } from '@/shared/scripts/constants';
+import { capWords, constants, debounce, devEnv, genID, isInStandaloneMode, logToast, randomNumber } from '@/shared/scripts/constants';
 
 export const State = createContext({});
 
@@ -45,6 +45,7 @@ export default function Container({
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [user, setUser] = useState<User | null>(null);
+    let [usersLoading, setUsersLoading] = useState(true);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -86,6 +87,44 @@ export default function Container({
         }),
     ]);
 
+    const refreshUsers = async () => {
+        setUsersLoading(true);
+        try {
+            const res = await fetch(`/api/users`, {
+                method: `GET`,
+                cache: `no-store`,
+                headers: { [`Accept`]: `application/json` },
+            });
+
+            if (!res.ok) {
+                const msg = `Failed to Get Users (${res.status})`;
+                logToast(msg, `Error`, true);
+                return;
+            }
+
+            const data = (await res.json()) as unknown;
+
+            if (!Array.isArray(data)) {
+                logToast(`Error on Get Users`, `Error`, true);
+                return;
+            }
+
+            const usersFromAPI = data.map((u) => ({
+                id: String((u as any).id ?? ''),
+                ...u,
+            })) as User[];
+
+            console.log(`Users`, usersFromAPI);
+
+            setUsers(usersFromAPI);
+        } catch (err: any) {
+            logToast(`Error on Get Users`, `Error`, true, err);
+        } finally {
+            setUsersLoading(false);
+            setLoaded(true);
+        }
+    }
+
     useEffect(() => {
         if (typeof window != `undefined`) {
             let isOnPWA = isInStandaloneMode();
@@ -101,16 +140,19 @@ export default function Container({
         const debouncedResize = debounce(onResize, 5);
 
         onResize();
-        setLoaded(true);
+
+        refreshUsers();
 
         window?.addEventListener(`resize`, debouncedResize);
         return () => window?.removeEventListener(`resize`, debouncedResize);
     }, []);
 
     const state = useMemo(() => ({
+        refreshUsers,
         user, setUser,
         users, setUsers,
         width, setWidth,
+        usersLoading, setUsersLoading,
 
         isPWA, setIsPWA,
         loaded, setLoaded,
@@ -129,7 +171,7 @@ export default function Container({
         boardForm, setBoardForm,
         boardItems, setBoardItems,
     }), [
-        user, users, width, selected, loaded, isDevEnv, 
+        user, users, usersLoading, width, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
         boardForm, boardItems,

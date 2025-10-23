@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { Roles, Types } from '../types/types';
 
 export const constants = {
@@ -48,6 +49,19 @@ export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g,
 export const isInStandaloneMode = () => {
   if (typeof window === `undefined`) return false;
   return window.matchMedia(`(display-mode: standalone)`).matches;
+}
+
+export const logToast = (message: string, content: any, error = false, data: any = null) => {
+  let sendMsg = typeof content == `string` ? content : ``;
+  if (dev()) {
+    if (data != null) console.log(message, content, data);
+    else console.log(message, content);
+  }
+  if (error == false) {
+    toast.success(message + ` ` + sendMsg);
+  } else {
+    toast.error(message + ` ` + sendMsg);
+  }
 }
 
 export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url) => {
