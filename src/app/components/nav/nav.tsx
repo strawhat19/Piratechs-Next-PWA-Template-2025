@@ -42,12 +42,13 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         <nav className={`container ${className}`}>
             <ul className={`container row justifyEnd`}>
                 {className != `mobileNav` && <>
-                    {user != null && <AuthForm style={{ position: `relative`, right: -10 }} />}
-                    <li className={`menuButton`}>
-                        <Icon_Button title={`Settings`} url={`/settings`}>
-                            <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
-                        </Icon_Button>
-                    </li>
+                    {user != null ? <AuthForm style={{ position: `relative`, right: -10 }} /> : (
+                        <li className={`menuButton`}>
+                            <Icon_Button title={`Settings`} url={`/settings`}>
+                                <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
+                            </Icon_Button>
+                        </li>
+                    )}
                     <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>
                         {menuExpanded ? (
                             <Icon_Button title={``}>

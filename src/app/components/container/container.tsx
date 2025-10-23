@@ -23,7 +23,7 @@ import { capWords, constants, debounce, devEnv, genID, getIDParts, isInStandalon
 
 export const State = createContext({});
 
-export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415 };
+export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
 
 export const getPageName = (path: string) => {
     let pageName = `Home`;
@@ -54,6 +54,7 @@ export default function Container({
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
+    let [height, setHeight] = useState<any>(defaultSizes.windowH);
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
     let [histories, setHistories] = useState([]);
@@ -121,7 +122,6 @@ export default function Container({
             logToast(`Error on Get Users`, `Error`, true, err);
         } finally {
             setUsersLoading(false);
-            setLoaded(true);
         }
     }
 
@@ -129,9 +129,10 @@ export default function Container({
         if (user != null) return;
         setUser(usr);
         setAuthState(AuthStates.Sign_Out);
-        if (showSuccess) {
-            logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
+        if (showSuccess && loaded == false) {
+            // logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
         }
+        setLoaded(true);
     }
 
     const onSignOut = async () => {
@@ -185,10 +186,19 @@ export default function Container({
                     }
                 } else {
                     console.log(`Users`, users);
+                    setLoaded(true);
                 }
             });
-        } else if (listenForUserAuthChanges != null) listenForUserAuthChanges();
-        return () => {if (listenForUserAuthChanges != null) listenForUserAuthChanges();};
+        } else if (listenForUserAuthChanges != null) {
+            listenForUserAuthChanges();
+            setLoaded(true);
+        }
+        return () => {
+            if (listenForUserAuthChanges != null) {
+                listenForUserAuthChanges();
+                setLoaded(true);
+            }
+        };
     }, [users]);
 
     useEffect(() => {
@@ -199,8 +209,10 @@ export default function Container({
 
         const onResize = () => {
             const windowWidth = window?.innerWidth;
+            const windowHeight = window?.innerHeight;
             setSmallScreen(windowWidth <= constants?.breakpoints?.mobile);
             setWidth((prevWidth?: number) => prevWidth !== windowWidth ? windowWidth : prevWidth);
+            setHeight((prevHeight?: number) => prevHeight !== windowHeight ? windowHeight : prevHeight);
         }
 
         const debouncedResize = debounce(onResize, 5);
@@ -219,6 +231,7 @@ export default function Container({
         user, setUser,
         users, setUsers,
         width, setWidth,
+        height, setHeight,
         usersLoading, setUsersLoading,
 
         isPWA, setIsPWA,
@@ -238,7 +251,7 @@ export default function Container({
         boardForm, setBoardForm,
         boardItems, setBoardItems,
     }), [
-        user, users, usersLoading, width, selected, loaded, isDevEnv, 
+        user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
         boardForm, boardItems,

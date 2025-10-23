@@ -5,9 +5,9 @@ import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 export const runtime = `nodejs`;
 export const dynamic = `force-dynamic`;
 
-export async function GET(_req: Request, ctx: any) {
+export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = ctx.params as { id: string };
+    const { id } = await ctx.params;
     const userRef = doc(db, Tables.users, id).withConverter(userConverter);
     const snap: any = await getDoc(userRef);
 
@@ -21,9 +21,9 @@ export async function GET(_req: Request, ctx: any) {
   }
 }
 
-export async function PATCH(req: Request, ctx: any) {
+export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = ctx.params as { id: string };
+    const { id } = await ctx.params;
     const updates = await req.json();
 
     const userRef = doc(db, Tables.users, id).withConverter(userConverter);
@@ -39,9 +39,9 @@ export async function PATCH(req: Request, ctx: any) {
   }
 }
 
-export async function DELETE(_req: Request, ctx: any) {
+export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = ctx.params as { id: string };
+    const { id } = await ctx.params;
     const userRef = doc(db, Tables.users, id);
     await deleteDoc(userRef);
     return NextResponse.json({ id }, { status: 200 });

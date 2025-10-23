@@ -8,10 +8,14 @@ import { State } from '../container/container';
 import { constants } from '@/shared/scripts/constants';
 
 export default function Board() {
-    const { width } = useContext<any>(State);
+    const { width, height } = useContext<any>(State);
     return <>
         <div className={`boardComponent`}>
-            <Slider className={`boardsListsSlider`} showButtons={false} showPaginationDots={width > constants?.breakpoints?.tabletSmall}>
+            <Slider 
+                showButtons={false} 
+                className={`boardsListsSlider`} 
+                showPaginationDots={width > constants?.breakpoints?.tabletSmall && height > constants?.breakpoints?.tabletSmall} 
+            >
                 <SwiperSlide>
                     <ListComponent />
                 </SwiperSlide>

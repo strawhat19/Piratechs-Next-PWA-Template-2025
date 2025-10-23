@@ -31,6 +31,7 @@ html {
     }
 
     header {
+        z-index: 2;
         padding-top: 15px;
         overflow-y: hidden;
         container-type: inline-size;
@@ -162,6 +163,11 @@ html {
     }
 
     @container (max-width: #{$mobileBreakPoint7}) {
+        .Toastify__toast-container {
+            .Toastify__toast {
+                width: 95%;
+            }
+        }
         .itemInner {
             gap: 7px !important;
         }
