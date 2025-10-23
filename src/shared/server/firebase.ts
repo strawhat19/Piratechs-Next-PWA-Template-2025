@@ -51,13 +51,45 @@ export const addUserToDatabase = async (usr: User) => {
     body: JSON.stringify(usr),
     headers: { [`Content-Type`]: `application/json` },
   });
-
   if (!res.ok) {
-    logToast(`Error Adding User to Database ${Tables.users}`, res, true);
+    let message = `Error on Create User (${res.status})`;
+    logToast(`Error Adding User to Database ${Tables.users} - ${message}`, res, true);
     return;
   }
-
   return res.json();
+}
+
+export const updateUserInDatabase = async (id: string, updates: Partial<User>) => {
+  const res = await fetch(`/api/users/${id}`, {
+    method: `PATCH`,
+    body: JSON.stringify(updates),
+    headers: { [`Content-Type`]: `application/json` },
+  });
+  if (!res.ok) {
+    let message = `Error on Update User (${res.status})`;
+    logToast(`Error Updating User in Database ${Tables.users} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const renderFirebaseAuthErrorMessage = (erMsg: string) => {
+  let erMsgQuery = erMsg?.toLowerCase();
+  if (erMsgQuery.includes(`invalid-email`)) {
+    return `Please use a valid email.`;
+  } else if (erMsgQuery?.includes(`email-already-in-use`)) {
+    return `Existing Email or Username, Switching to Sign In`;
+  } else if (erMsgQuery?.includes(`weak-password`)) {
+    return `Password should be at least 6 characters`;
+  } else if (erMsgQuery?.includes(`wrong-password`) || erMsgQuery?.includes(`invalid-login-credentials`)) {
+    return `Incorrect Password`;
+  } else if (erMsgQuery?.includes(`user-not-found`)) {
+    return `User Not Found`;
+  } else if (erMsgQuery?.includes(`too-many-requests`)) {
+    return `Too Many Requests, Try Again Later`;
+  } else {
+    return erMsg;
+  }
 }
 
 // export const boardConverter = {

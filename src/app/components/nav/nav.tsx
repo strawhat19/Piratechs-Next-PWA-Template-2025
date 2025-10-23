@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { State } from '../container/container';
 import { capWords } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
-// import AuthForm from '../authentication/forms/auth-form/auth-form';
+import AuthForm from '../authentication/forms/auth-form/auth-form';
 
 import { 
     Menu,
@@ -36,12 +36,13 @@ export const routes = {
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {
     const pathname = usePathname();
-    let { menuExpanded, setMenuExpanded } = useContext<any>(State);
+    let { user, menuExpanded, setMenuExpanded } = useContext<any>(State);
 
     return (
         <nav className={`container ${className}`}>
             <ul className={`container row justifyEnd`}>
                 {className != `mobileNav` && <>
+                    {user != null && <AuthForm style={{ position: `relative`, right: -10 }} />}
                     <li className={`menuButton`}>
                         <Icon_Button title={`Settings`} url={`/settings`}>
                             <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />

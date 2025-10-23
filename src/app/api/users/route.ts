@@ -21,9 +21,9 @@ export const POST = async (req: Request) => {
       return NextResponse.json({ error: `id is required when using setDoc` }, { status: 400 });
     }
     const userDoc = doc(db, Tables.users, String(body.id)).withConverter(userConverter);
-    await setDoc(userDoc, body);
+    await setDoc(userDoc, body, { merge: true });
     return NextResponse.json({ id: body.id, ...body }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: `Error on Create User` }, { status: 500 });
+    return NextResponse.json({ error: `Error on Create/Update User` }, { status: 500 });
   }
 };

@@ -1,6 +1,6 @@
 import { Data } from './Data';
 import { Types } from '../types';
-import { capWords, countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
+import { capWords, countPropertiesInObject, genID, getIDParts, isValid } from '@/shared/scripts/constants';
 
 export enum Providers { 
   Google = `Google` ,
@@ -26,9 +26,18 @@ export enum Roles {
 }
 
 export class User extends Data {
+  color?: string;
+  phone?: string;
+  avatar?: string;
+  z_token?: string;
   type: Types = Types.User;
+  verified?: boolean = true;
+  signedIn?: boolean = false;
+  anonymous?: boolean = false;
   role: Roles | string = Roles.Subscribers;
   provider: Providers | string = Providers.Firebase;
+  lastSignIn?: Date | string | any = getIDParts()?.date;
+  lastAuthenticated?: Date | string | any = getIDParts()?.date;
 
   constructor(data: Partial<User>) {
     super(data);

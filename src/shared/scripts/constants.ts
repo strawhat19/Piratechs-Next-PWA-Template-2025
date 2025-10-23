@@ -175,6 +175,20 @@ export const genID = (type: Types = Types.Data, number = 1, name: string) => {
   return { id, date, uuid, title, id_Title, generatedUUID };
 }
 
+export const findHighestNumberInArrayByKey = async ( arrayOfObjects: any[], key: string ): Promise<number> => {
+  try {
+    const filteredNumbers = arrayOfObjects
+      .map(obj => obj[key])
+      .filter(value => typeof value === `number`);
+    if (filteredNumbers.length === 0) return 0;
+    const highestNumber = Math.max(...filteredNumbers) ?? 0;
+    return highestNumber;
+  } catch (error) {
+    console.log(`Error while finding the highest number for key "${key}"`, error);
+    return 0;
+  }
+}
+
 export const countPropertiesInObject = (obj: any) => {
   let count = 0;
   if (typeof obj === `object` && obj !== null) {

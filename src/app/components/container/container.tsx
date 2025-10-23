@@ -11,13 +11,15 @@ import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';
 import DialogComponent from '../dialog/dialog';
-import { ToastContainer } from 'react-toastify';
 import { User } from '@/shared/types/models/User';
+import { toast, ToastContainer } from 'react-toastify';
 import { AuthStates, Types } from '@/shared/types/types';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { imagesObject } from '../slider/images-carousel/images-carousel';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { capWords, constants, debounce, devEnv, genID, isInStandaloneMode, logToast, randomNumber } from '@/shared/scripts/constants';
+import { updateUserInDatabase, auth, renderFirebaseAuthErrorMessage } from '@/shared/server/firebase';
+import { capWords, constants, debounce, devEnv, genID, getIDParts, isInStandaloneMode, logToast, randomNumber } from '@/shared/scripts/constants';
 
 export const State = createContext({});
 
@@ -109,12 +111,10 @@ export default function Container({
                 return;
             }
 
-            const usersFromAPI = data.map((u) => ({
-                id: String((u as any).id ?? ''),
+            const usersFromAPI = data.map((u) => new User({
+                id: String((u as any).id ?? ``),
                 ...u,
             })) as User[];
-
-            console.log(`Users`, usersFromAPI);
 
             setUsers(usersFromAPI);
         } catch (err: any) {
@@ -124,6 +124,69 @@ export default function Container({
             setLoaded(true);
         }
     }
+
+    const onSignIn = (usr: User) => {
+        setUser(usr);
+        setAuthState(AuthStates.Sign_Out);
+        logToast(`User Signed In Successfully`, usr?.name, false, usr);
+    }
+
+    const onSignOut = async () => {
+        setUser(null);
+        setAuthState(AuthStates.Next);
+        await signOut(auth);
+    }
+
+    const onSignInError = (error: any) => {
+        onSignOut();
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorMessage) {
+            toast.error(renderFirebaseAuthErrorMessage(errorMessage));
+            console.log(`Error Signing In`, {
+                error,
+                errorCode,
+                errorMessage,
+            });
+        }
+        setAuthState(AuthStates.Sign_In);
+        return;
+    }
+
+    const signInUser = async (email: string, password: string) => {
+        signInWithEmailAndPassword(auth, email, password).then(async (userCredential: any) => {
+            if (userCredential != null) {
+                let existingUser = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
+                if (existingUser) {
+                    const { date } = getIDParts();
+                    await updateUserInDatabase(existingUser?.id, { signedIn: true, lastSignIn: date, lastAuthenticated: date }).then(async () => {
+                        refreshUsers();
+                        let usr = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
+                        if (usr) {
+                            onSignIn(usr);
+                        } else onSignOut();
+                    }).catch(error => onSignInError(error));
+                } else onSignOut();
+            }
+        }).catch(error => onSignInError(error));
+    }
+
+    useEffect(() => {
+        let listenForUserAuthChanges: any = null;
+        if (users?.length > 0) {
+            if (listenForUserAuthChanges == null) listenForUserAuthChanges = onAuthStateChanged(auth, async (usr) => {
+                if (usr) {
+                    if (usr?.uid) {
+                        let thisUser = users.find((us: User) => us?.uid == usr?.uid);
+                        onSignIn(thisUser);
+                    }
+                } else {
+                    console.log(`Users`, users);
+                }
+            });
+        } else if (listenForUserAuthChanges != null) listenForUserAuthChanges();
+        return () => {if (listenForUserAuthChanges != null) listenForUserAuthChanges();};
+    }, [users]);
 
     useEffect(() => {
         if (typeof window != `undefined`) {
@@ -148,7 +211,8 @@ export default function Container({
     }, []);
 
     const state = useMemo(() => ({
-        refreshUsers,
+        onSignOut,
+        signInUser,
         user, setUser,
         users, setUsers,
         width, setWidth,

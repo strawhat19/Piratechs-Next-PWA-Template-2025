@@ -178,6 +178,8 @@
 }
 
 .headerEnd {
+    display: flex;
+    align-items: center;
     nav {
         .navigationLink {
             @extend .hoverLink;
