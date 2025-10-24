@@ -5,11 +5,12 @@ import { Button } from '@mui/material';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
-import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
+import AuthForm from '../../authentication/forms/auth-form/auth-form';
 
-export default function Styles() {
-    let { width, loaded, menuExpanded } = useContext<any>(State);
+export default function Styles({ showAuth = false }: any) {
+    let { user, width, loaded, menuExpanded } = useContext<any>(StateGlobals);
 
     const fonts = () => {
         return <>
@@ -77,7 +78,8 @@ export default function Styles() {
         </>
     }
 
-    return (
+    return <>
+        {showAuth ? (user != null ? <></> : <AuthForm />) : <></>}
         <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
             {loaded ? (
                 <Slider showButtons={width > constants?.breakpoints?.mobile}>
@@ -89,5 +91,5 @@ export default function Styles() {
                 <Loader height={150} label={`Styles Loading`} style={{ [`--animation-delay`]: `${4 * 0.15}s` }} />
             )}
         </section>
-    )
+    </>
 }

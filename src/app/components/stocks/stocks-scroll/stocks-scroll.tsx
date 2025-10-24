@@ -6,12 +6,12 @@ import Stock from '../stock/stock';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
-import { State } from '../../container/container';
+import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
-    const { stocks, setStocks } = useContext<any>(State);
+    const { stocks, setStocks } = useContext<any>(StateGlobals);
 
     const [loading, setLoading] = useState(true);
 

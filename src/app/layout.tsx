@@ -2,6 +2,7 @@ import './globals.scss';
 
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
+import GlobalProvider from '@/shared/global-context';
 import { constants } from '@/shared/scripts/constants';
 
 export const dynamicParams = true;
@@ -26,7 +27,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={`en`} className={`appContainer ${plusJakartaSans?.variable}`}>
-      {children}
+      <GlobalProvider>
+        {children}
+      </GlobalProvider>
     </html>
   );
 }

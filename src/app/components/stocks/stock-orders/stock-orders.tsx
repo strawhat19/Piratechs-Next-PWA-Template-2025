@@ -1,11 +1,11 @@
 'use client';
 
 import { useContext } from 'react';
-import { State } from '../../container/container';
 import StockOrder from './stock-order/stock-order';
+import { StateGlobals } from '@/shared/global-context';
 
 export default function StockOrders({ getStock }: any) {
-    const { stockOrders } = useContext<any>(State);
+    const { stockOrders } = useContext<any>(StateGlobals);
     return (
         <div className={`stockMetrics stockMetricsTableContainer stockMetrics_account_orders w100 h100`}>
             <div className={`stockMetric stockMetric_orders flex column gap15I`}>

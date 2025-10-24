@@ -11,7 +11,7 @@ export default function SettingsPage() {
     return (
         <Container className={`settingsPage`}>
             <h1>Settings Page</h1>
-            <Styles />
+            <Styles showAuth={true} />
         </Container>
     )
 }

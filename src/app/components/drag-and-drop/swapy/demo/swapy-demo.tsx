@@ -5,16 +5,16 @@ import './swapy-demo.scss';
 import { Menu } from '@mui/icons-material';
 import { User } from '@/shared/types/models/User';
 import Loader from '@/app/components/loaders/loader';
+import { StateGlobals } from '@/shared/global-context';
 import { generateArray } from '@/shared/scripts/constants';
 import { createSwapy, utils, type SlotItemMap } from 'swapy';
-import { State } from '@/app/components/container/container';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 const identifierKey = `id`;
 const initialUsers = generateArray(7, new User({ }), true, User);
 
 export default function SwapyDemo({ label = `User` }) {
-  const { loaded } = useContext<any>(State);
+  const { loaded } = useContext<any>(StateGlobals);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const swapyRef = useRef<ReturnType<typeof createSwapy> | null>(null);

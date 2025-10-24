@@ -4,15 +4,15 @@ import Link from 'next/link';
 import Logo from '../../logo/logo';
 import { useContext, useState } from 'react';
 import { Copyright } from '@mui/icons-material';
-import { State } from '../../container/container';
 import FolderIcon from '@mui/icons-material/Folder';
 import RestoreIcon from '@mui/icons-material/Restore';
+import { StateGlobals } from '@/shared/global-context';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 
 export default function Footer({ full = false }: any) {
-    let { isPWA } = useContext<any>(State);
+    let { isPWA } = useContext<any>(StateGlobals);
 
     let [value, setValue] = useState(`recents`);
     let [showBottomNav, setShowBottomNav] = useState(false);

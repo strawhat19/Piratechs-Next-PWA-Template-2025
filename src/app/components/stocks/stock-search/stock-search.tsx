@@ -2,11 +2,11 @@
 
 import Loader from '../../loaders/loader';
 import { useContext, useState } from 'react';
-import { State } from '../../container/container';
+import { StateGlobals } from '@/shared/global-context';
 import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
 
 export default function StockSearch({ loading, stcks }: any) {
-    const { stocks } = useContext<any>(State);
+    const { stocks } = useContext<any>(StateGlobals);
     const [stocksToDisplay, setStocksToDisplay] = useState(stcks ?? stocks);
     return (
         <div className={`stocksSearchField`} style={{ paddingBottom: 15 }}>

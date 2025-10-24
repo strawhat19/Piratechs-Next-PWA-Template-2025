@@ -2,7 +2,7 @@
 
 import { useContext } from 'react';
 import { Button, Tooltip } from '@mui/material';
-import { State } from '../../container/container';
+import { StateGlobals } from '@/shared/global-context';
 import { Check, Circle, List } from '@mui/icons-material';
 
 export const statusIconSize = 14;
@@ -43,7 +43,7 @@ export default function StatusTag({
     currentStatus = true, 
     className = `statusTagComponent`, 
 }: any) {
-    let { selected } = useContext<any>(State);
+    let { selected } = useContext<any>(StateGlobals);
     return (
         <Tooltip placement={`top`} title={currentStatus ? `` : `Change Status from "${item?.status}" to "${statuses[item?.status]?.transition}"`} arrow>
             <Button

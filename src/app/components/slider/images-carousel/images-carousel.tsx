@@ -6,8 +6,8 @@ import Slider from '../slider';
 import Img from '../../image/image';
 import { SwiperSlide } from 'swiper/react';
 import { useContext, useState } from 'react';
-import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
 
 export const imagesObject = {
     vertical: {
@@ -20,7 +20,7 @@ export const imagesObject = {
 }
 
 export default function ImagesCarousel({ mobileSize = `300px`, desktopSize = `650px`, imageURLs = Object.values(imagesObject.vertical) }) {
-    let { width, smallScreen } = useContext<any>(State);
+    let { width, smallScreen } = useContext<any>(StateGlobals);
     let [images, setImages] = useState(imageURLs);
     return (
         <Slider className={`imagesCarousel`} slidesPerView={(smallScreen || width <= constants?.breakpoints?.mobile) ? 2.25 : 3.33} spaceBetween={15} showButtons={false}>

@@ -5,13 +5,13 @@ import { useContext } from 'react';
 import Logo from '../../logo/logo';
 import { Home } from '@mui/icons-material';
 import Nav, { routes } from '../../nav/nav';
-import { State } from '../../container/container';
+import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 
 export const defaultHeight = 60;
 
 export default function Header() {
-    let { menuExpanded } = useContext<any>(State);
+    let { menuExpanded } = useContext<any>(StateGlobals);
 
     return (
         <header 

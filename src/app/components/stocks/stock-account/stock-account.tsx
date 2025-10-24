@@ -2,11 +2,11 @@
 
 import { useContext } from 'react';
 import IconText from '../../icon-text/icon-text';
-import { State } from '../../container/container';
 import { constants } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
 
 export default function StockAccount() {
-    const { width, stocksAcc } = useContext<any>(State);
+    const { width, stocksAcc } = useContext<any>(StateGlobals);
     return <>
         <div className={`stockMetrics stockMetrics_account w100`}>
             <div className={`stockMetric stockMetric_account`}>

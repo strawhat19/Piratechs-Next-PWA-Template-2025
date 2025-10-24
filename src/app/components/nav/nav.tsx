@@ -3,14 +3,13 @@
 import Link from 'next/link';
 import { useContext } from 'react';
 import { usePathname } from 'next/navigation';
-import { State } from '../container/container';
 import { capWords } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import AuthForm from '../authentication/forms/auth-form/auth-form';
 
 import { 
     Menu,
-    // Info, 
     Close,
     Settings,
     PermMedia,
@@ -36,7 +35,7 @@ export const routes = {
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {
     const pathname = usePathname();
-    let { user, menuExpanded, setMenuExpanded } = useContext<any>(State);
+    let { user, menuExpanded, setMenuExpanded } = useContext<any>(StateGlobals);
 
     return (
         <nav className={`container ${className}`}>

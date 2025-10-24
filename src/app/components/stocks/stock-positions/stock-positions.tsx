@@ -1,12 +1,12 @@
 'use client';
 
 import { useContext } from 'react';
-import { State } from '../../container/container';
 import StockSearch from '../stock-search/stock-search';
+import { StateGlobals } from '@/shared/global-context';
 import StockPostion from './stock-position/stock-position';
 
 export default function StockPositions({ getStock }: any) {
-    const { stocks, stockPositions } = useContext<any>(State);
+    const { stocks, stockPositions } = useContext<any>(StateGlobals);
     return (
         <div className={`stockMetrics stockMetricsTableContainer stockMetrics_account_positions w100 h100`}>
             <div className={`stockMetric stockMetric_positions flex column gap15I`}>

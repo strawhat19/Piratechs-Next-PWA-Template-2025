@@ -5,9 +5,9 @@ import { Button } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import { Item } from '../board/item/item';
 import { Close } from '@mui/icons-material';
-import { State } from '../container/container';
 import StatusTag from '../board/status/status';
 import DialogTitle from '@mui/material/DialogTitle';
+import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import ImagesCarousel from '../slider/images-carousel/images-carousel';
 
@@ -101,7 +101,7 @@ function SimpleDialog(props: SimpleDialogProps) {
 }
 
 export default function DialogComponent() {
-  let { selected, setSelected } = useContext<any>(State);
+  let { selected, setSelected } = useContext<any>(StateGlobals);
   return (
     <div className={`dialogComponent`}>
       <SimpleDialog

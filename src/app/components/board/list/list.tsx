@@ -3,10 +3,10 @@
 import BoardForm from '../form/board-form';
 import { statuses } from '../status/status';
 import Logo from '@/app/components/logo/logo';
+import { StateGlobals } from '@/shared/global-context';
 import ItemComponent, { Item, type } from '../item/item';
 import { useContext, useMemo, useCallback } from 'react';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { State } from '@/app/components/container/container';
 import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -15,7 +15,7 @@ import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, u
 export default function ListComponent({
   title = `To Do`,
 }: any) {
-  const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(State);
+  const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(StateGlobals);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const mobileSensors = useSensors(

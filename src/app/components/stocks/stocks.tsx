@@ -5,9 +5,9 @@ import './stocks.scss';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
-import { State } from '../container/container';
 import StockSearch from './stock-search/stock-search';
 import StockOrders from './stock-orders/stock-orders';
+import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import StockAccount from './stock-account/stock-account';
 import StockPositions from './stock-positions/stock-positions';
@@ -18,7 +18,7 @@ export const stockTableAlignmentCenter = false;
 export const positionProfitLoss = (position: any) => position?.current_price - position?.avg_entry_price;
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(State);
+    const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(StateGlobals);
 
     const [loading, setLoading] = useState(true);
 

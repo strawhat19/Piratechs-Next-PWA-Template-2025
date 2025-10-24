@@ -11,7 +11,7 @@ export default function ProfilePage() {
     return (
         <Container className={`profilePage`}>
             <h1>Profile Page</h1>
-            <Styles />
+            <Styles showAuth={true} />
         </Container>
     )
 }

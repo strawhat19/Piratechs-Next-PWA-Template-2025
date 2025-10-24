@@ -7,9 +7,9 @@ import Stock from '../../stocks/stock/stock';
 import { useContext, useState } from 'react';
 import { Types } from '@/shared/types/types';
 import IconText from '../../icon-text/icon-text';
-import { State } from '../../container/container';
 import { AutoCompleteOption } from '../autocomplete';
 import { constants } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { Cancel, People, Person } from '@mui/icons-material';
 import { movies } from '@/shared/server/database/samples/movies/movies';
@@ -24,7 +24,7 @@ export default function CheckboxMulti({
     optionsToUse = movies,
     placeholder = `Movies`,
 }) {
-    const { width, loaded } = useContext<any>(State);
+    const { width, loaded } = useContext<any>(StateGlobals);
     const [options, ] = useState<AutoCompleteOption[]>(optionsToUse);
     const [selectedOptions, setSelectedOptions] = useState<AutoCompleteOption[]>([]);
 

@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 import { Add } from '@mui/icons-material';
 import { Button, Tooltip } from '@mui/material';
-import { State } from '../../container/container';
+import { StateGlobals } from '@/shared/global-context';
 
 export default function BoardForm({ onClick }: any) {    
-    const { boardItems, boardForm, setBoardForm } = useContext<any>(State);
+    const { boardItems, boardForm, setBoardForm } = useContext<any>(StateGlobals);
 
     const updateForm = (e: any) => {
         const formField = e?.target;

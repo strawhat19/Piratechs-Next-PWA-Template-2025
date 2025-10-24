@@ -4,11 +4,11 @@ import { useContext } from 'react';
 import Slider from '../slider/slider';
 import ListComponent from './list/list';
 import { SwiperSlide } from 'swiper/react';
-import { State } from '../container/container';
 import { constants } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
 
 export default function Board() {
-    const { width, height } = useContext<any>(State);
+    const { width, height } = useContext<any>(StateGlobals);
     return <>
         <div className={`boardComponent`}>
             <Slider 

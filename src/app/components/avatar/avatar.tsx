@@ -4,7 +4,7 @@ import './avatar.scss';
 
 import { useContext } from 'react';
 import { Avatar } from '@mui/material';
-import { State } from '../container/container';
+import { StateGlobals } from '@/shared/global-context';
 
 export default function AvatarComponent({ 
     style,
@@ -17,7 +17,7 @@ export default function AvatarComponent({
     id = `authFormAvatar`,
     background = `var(--blueopac)`, 
 }: any) {
-    let { user } = useContext<any>(State);
+    let { user } = useContext<any>(StateGlobals);
 
     return <>
         <div className={`avatarComponent`} style={{ ...style, width, minWidth: width, height }}>

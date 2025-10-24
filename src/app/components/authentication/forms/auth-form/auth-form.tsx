@@ -5,7 +5,7 @@ import {  Button } from '@mui/material';
 import { useContext, useRef } from 'react';
 import { User } from '@/shared/types/models/User';
 import Loader from '@/app/components/loaders/loader';
-import { State } from '@/app/components/container/container';
+import { StateGlobals } from '@/shared/global-context';
 import AvatarComponent from '@/app/components/avatar/avatar';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { AuthStates, Providers, Roles, Types } from '@/shared/types/types';
@@ -21,7 +21,7 @@ const stateLabels: any = {
 export default function AuthForm({ style = { opacity: 1 } }: any) {
     let emailOrUsernameField = useRef(null);
 
-    const { user, users, loaded, authState, setAuthState, signInUser, onSignOut } = useContext<any>(State);
+    const { user, users, loaded, authState, setAuthState, signInUser, onSignOut } = useContext<any>(StateGlobals);
 
     const onAuthFormSubmit = async (onFormSubmitEvent: any) => {
         onFormSubmitEvent?.preventDefault();
