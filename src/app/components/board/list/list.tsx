@@ -3,12 +3,14 @@
 import BoardForm from '../form/board-form';
 import { statuses } from '../status/status';
 import Logo from '@/app/components/logo/logo';
+import { Settings } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
 import ItemComponent, { Item, type } from '../item/item';
 import { useContext, useMemo, useCallback } from 'react';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
+import Icon_Button from '../../buttons/icon-button/icon-button';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
+import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
@@ -101,6 +103,9 @@ export default function ListComponent({
       <div className={`boardListTitle listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`}>
         <Logo label={title} />
         <span className={`flexCenter gap5`}>
+          <Icon_Button title={`List Settings`}>
+            <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
+          </Icon_Button>
           <span className={`main`}>
             {boardItems.length}
           </span> Item(s)
@@ -126,7 +131,6 @@ export default function ListComponent({
         </DndContext>
       </div>
       <BoardForm onClick={addItem} />
-      {/* {(isPWA || width <= constants?.breakpoints?.mobile) ? <></> : <BoardForm onClick={addItem} />} */}
     </div>
   );
 }

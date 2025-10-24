@@ -17,6 +17,7 @@ export default function BoardForm({ onClick }: any) {
         const formData = new FormData(form);
         const formValues: any = Object.fromEntries(formData?.entries());
         setBoardForm(formValues);
+        form?.reset();
     }
 
     return (
