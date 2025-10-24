@@ -1,6 +1,9 @@
 .boardFormContainer {
+    --hght: 25px;
     gap: 8px;
     display: flex;
+    margin: 0 auto;
+    padding: 9px 10px;
     border-radius: 8px;
     align-items: center;
     background: var(--bg);
@@ -12,16 +15,20 @@
         align-items: center;
     }
     .boardFormField {
-        min-height: 45px;
+        min-height: var(--hght);
         border-radius: 4px !important;
         input {
             border: none;
             color: white;
             border-radius: 4px;
             padding-left: 15px;
+            max-height: var(--hght);
             background: var(--navy);
             font-family: var(--font);
             height: -webkit-fill-available;
+            &.nameField {
+                max-width: 300px;
+            }
         }
     }
 }

@@ -68,8 +68,10 @@ export default function Slider({
             ) : ( */}
                 <Swiper 
                     loop={true}
+                    nested={true}
                     // speed={500}
                     ref={swiperRef}
+                    noSwiping={true}
                     navigation={true} 
                     grabCursor={true}
                     pagination={false} 
@@ -80,6 +82,7 @@ export default function Slider({
                     // freeModeMomentum={false}
                     spaceBetween={spaceBetween} 
                     slidesPerView={slidesPerView} 
+                    noSwipingClass={`swiper-no-swiping`}
                     onSlideChange={(e) => onSlideChange(e)}
                     {...autoplay && {
                         speed: 5000,

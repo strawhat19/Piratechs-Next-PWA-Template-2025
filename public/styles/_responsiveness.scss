@@ -9,6 +9,8 @@ $mobileBreakPoint585: 585px;
 $mobileBreakPoint6: 687px;
 $mobileBreakPoint7: 768px;
 
+$mobileBreakPoint875: 875px;
+
 $tabletBreakPoint9: 992px;
 $tabletBreakPoint10: 1080px;
 
@@ -162,6 +164,12 @@ html {
         }
     }
 
+    @container (min-width: #{$mobileBreakPoint875 + 1}) {
+        .dndBoardListContext {
+            --dnd_offset: 290px !important;
+        }
+    }
+
     @container (max-width: #{$mobileBreakPoint7}) {
         .Toastify__toast-container {
             .Toastify__toast {
@@ -187,11 +195,8 @@ html {
         .itemDescription {
             font-size: 14px;
         }
-        .dndBoardListContext {
-            --dnd_pwa_hght: 525px;
-            padding: 10px !important;
-            min-height: var(--dnd_pwa_hght) !important;
-            max-height: var(--dnd_pwa_hght) !important;
+        .boardComponent {
+            --wdth: 95%;
         }
         .boardFormField {
             --hght: 28px;

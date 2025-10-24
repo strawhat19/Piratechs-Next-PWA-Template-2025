@@ -20,11 +20,11 @@ export default function BoardForm({ onClick }: any) {
     }
 
     return (
-        <div className={`formRow boardListFormContainer boardFormContainer`} style={{ width: `95%`, padding: `10px 16px`, margin: `0 auto` }}>
+        <div className={`formRow boardListFormContainer boardFormContainer`}>
             <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
-                <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} style={{ maxHeight: 45, maxWidth: 300 }} required />
-                <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} style={{ maxHeight: 45 }} />
-                <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} style={{ maxHeight: 45 }} />
+                <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} required />
+                <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} />
+                <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
                 <Tooltip placement={`top`} title={`+ Add Item #${boardItems.length + 1}`} arrow>
                     <Button
                         type={`submit`}

@@ -1,3 +1,39 @@
 .boardComponent {
+    --wdth: 98%;
+    top: 2px;
     width: 100%;
+    position: relative;
+    .dndBoardList {
+        width: 100%;
+        overflow-x: hidden !important;
+        .boardListTitle {
+            width: var(--wdth);
+            padding: 2px 10px 0;
+            margin: 25px auto 0;
+        }
+        .dndBoardListContext {
+            width: var(--wdth);
+            padding: 10px;
+            max-width: 100%;
+            color: #eaeaea;
+            overflow-y: auto;
+            margin: 10px auto;
+            border-radius: 8px;
+            font-family: var(--font);
+            border: 1px solid var(--bg);
+            background: var(--background);
+            overflow-x: hidden !important;
+            --dnd_offset: 245px;
+            --dnd_pwa_hght: calc(100dvh - var(--dnd_offset));
+            @supports (height: 100svh) {
+                --dnd_pwa_hght: calc(100svh - var(--dnd_offset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            }
+            min-height: var(--dnd_pwa_hght);
+            max-height: var(--dnd_pwa_hght);
+        }
+        
+        .boardFormContainer {
+            width: var(--wdth);
+        }
+    }
 }

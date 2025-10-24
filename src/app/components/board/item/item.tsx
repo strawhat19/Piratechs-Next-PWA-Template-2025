@@ -69,7 +69,7 @@ export default function ItemComponent({
   }
 
   return (
-    <div ref={setNodeRef} className={`itemComponent draggableItem`} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>
       <div className={`itemInner`} style={{ flex: 1, display: `flex`, alignItems: `center`, justifyContent: `space-between`, gap: 10 }} onClick={onClick}>
         <div className={`itemTypeIndexImages flexCenter gap5`}>
             <div

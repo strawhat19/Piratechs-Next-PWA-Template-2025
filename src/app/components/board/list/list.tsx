@@ -1,15 +1,15 @@
 'use client';
 
 import BoardForm from '../form/board-form';
-import { useContext, useMemo } from 'react';
 import Logo from '@/app/components/logo/logo';
 import ItemComponent, { Item, type } from '../item/item';
+import { useContext, useMemo, useCallback } from 'react';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { State } from '@/app/components/container/container';
 import { constants, genID, randomNumber } from '@/shared/scripts/constants';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DndContext, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 export default function ListComponent({
   title = `To Do`,
@@ -24,6 +24,14 @@ export default function ListComponent({
   const sensors = (isPWA || width <= constants?.breakpoints?.mobile) ? mobileSensors : desktopSensors;
 
   const imageURLs = Object.values(imagesObject.vertical);
+
+  const modifiers = useMemo(() => [restrictToVerticalAxis], []);
+
+  const onDragStart = useCallback((e: DragStartEvent) => {
+    // keep or log if you want; the key is to ALWAYS pass this prop
+    // const { active, activatorEvent } = e;
+    // console.log(`onDragStart`, { e, active, activatorEvent });
+  }, []);
 
   const addItem = () => {
     setBoardItems((prev: any) => {
@@ -46,17 +54,16 @@ export default function ListComponent({
   const onItemClick = (e: any, item: Item | any) => {
     let clicked = e?.target;
     if (clicked) {
-        let clickedClasses = String(clicked?.className);
-        console.log(`onItemClick`, {class: clicked?.className, clickedClasses});
-        if (clickedClasses && (clickedClasses.length > 0)) {
-            if (!clickedClasses.includes(`itemButton`)) {
-                setSelected(item);
-            }
+      let clickedClasses = String(clicked?.className);
+      if (clickedClasses && (clickedClasses.length > 0)) {
+        if (!clickedClasses.includes(`itemButton`)) {
+          setSelected(item);
         }
+      }
     }
   }
 
-  const onDragEnd = (e: DragEndEvent) => {
+  const onDragEnd = useCallback((e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
     setBoardItems((prev: Item[]) => {
@@ -64,47 +71,31 @@ export default function ListComponent({
       const newIndex = prev.findIndex(i => i.id === over.id);
       return arrayMove(prev, oldIndex, newIndex);
     });
-  };
-
-  const box: React.CSSProperties = useMemo(() => ({
-    padding: 16,
-    maxWidth: `100%`,
-    borderRadius: 8,
-    color: `#eaeaea`,
-    overflowY: `auto`,
-    margin: `10px auto`,
-    fontFamily: `var(--font)`,
-    // borderTopRightRadius: 0,
-    border: `1px solid var(--bg)`,
-    // borderBottomRightRadius: 0,
-    background: `var(--background)`,
-    minHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 600,
-    maxHeight: width <= constants?.breakpoints?.mobile ? (isPWA ? 400 : 300) : 600,
-  }), []);
+  }, [setBoardItems]);
 
   return (
-    <div className={`listComponent dndBoardList`} style={{ width: `100%` }}>
-      <div className={`listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`} style={{ width: `95%`, padding: `10px 16px`, margin: `10px auto 0` }}>
+    <div className={`listComponent dndBoardList`}>
+      <div className={`boardListTitle listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`}>
         <Logo label={title} />
         <span className={`flexCenter gap5`}>
-            <span className={`main`}>
-                {boardItems.length}
-            </span> Item(s)
+          <span className={`main`}>
+            {boardItems.length}
+          </span> Item(s)
         </span>
       </div>
-      <div className={`dndBoardListContext dndContainer componentContainer`} style={box}>
-        <DndContext modifiers={[restrictToVerticalAxis]} sensors={sensors} onDragEnd={onDragEnd}>
+      <div className={`dndBoardListContext dndContainer componentContainer`}>
+        <DndContext sensors={sensors} modifiers={modifiers} onDragStart={onDragStart} onDragEnd={onDragEnd}>
           <SortableContext items={boardItems} strategy={verticalListSortingStrategy}>
             <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
               {boardItems.map((item: Item, itemIndex: number) => (
                 <ItemComponent 
-                    item={item} 
-                    id={item.id} 
-                    key={item.id} 
-                    itemIndex={itemIndex}
-                    setItems={setBoardItems} 
-                    onDelete={() => deleteItem(item.id)} 
-                    onClick={(e: any) => onItemClick(e, item)} 
+                  item={item} 
+                  id={item.id} 
+                  key={item.id} 
+                  itemIndex={itemIndex}
+                  setItems={setBoardItems} 
+                  onDelete={() => deleteItem(item.id)} 
+                  onClick={(e: any) => onItemClick(e, item)} 
                 />
               ))}
             </div>

@@ -160,3 +160,12 @@ blockquote {
     padding-left: 1rem;
     border-left: 4px solid var(--main);
 }
+
+::-webkit-scrollbar {
+    width: 1px !important;
+    background: var(--background) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gameBlue);
+}
