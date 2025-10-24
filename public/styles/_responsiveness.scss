@@ -285,7 +285,12 @@ html {
     @container (max-width: #{$mobileBreakPoint435}) {
         .isPWA {
             .dndBoardListContext {
-                --dnd_offset: 290px !important;
+                --dnd_offset: 280px !important;
+            }
+            &:has(.menuExpanded) {
+                .dndBoardListContext {
+                    --dnd_offset: 365px !important;
+                }
             }
         }
         .stockMetricLabel {
