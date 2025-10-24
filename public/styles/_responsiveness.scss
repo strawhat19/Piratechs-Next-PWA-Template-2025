@@ -285,11 +285,11 @@ html {
     @container (max-width: #{$mobileBreakPoint435}) {
         .isPWA {
             .dndBoardListContext {
-                --dnd_offset: 280px !important;
+                --dnd_offset: 270px !important;
             }
             &:has(.menuExpanded) {
                 .dndBoardListContext {
-                    --dnd_offset: 365px !important;
+                    --dnd_offset: 375px !important;
                 }
             }
         }
