@@ -1,5 +1,5 @@
 .dialogDefaultTitlePadding {
-    padding: 16px 24px;
+    padding: 16px var(--space);
 }
 
 .dialogContent {
@@ -18,11 +18,33 @@
         justify-content: space-between;
     }
     .dialogTitle {
+        min-width: 280px;
         font-family: var(--font);
+        padding: 16px var(--space);
+        .dialogTitleName {
+            width: 100%;
+            max-width: 139px;
+        }
+        .statusTag {
+            padding: 6px 33px !important;
+        }
+    }
+    .dialogCloseButton {
+        padding-right: var(--space);
+    }
+    .dialogTitleIndex {
+        grid-gap: 5px;
+        max-width: fit-content;
     }
     .dialogButton {
         font-family: var(--font);
         background: var(--buttons);
+    }
+    .simpleFieldGroup {
+        p {
+            top: 1px;
+            position: relative;
+        }
     }
     .dialogField {
         justify-content: flex-start;

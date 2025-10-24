@@ -134,6 +134,16 @@
     -webkit-line-clamp: var(--lines);
 }
 
+.lineClamp1i {
+    --lines: 1;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    text-overflow: ellipsis !important;
+    line-clamp: var(--lines) !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: var(--lines) !important;
+}
+
 .lineClamp2 { @extend .lineClamp1; --lines: 2; transition: var(--transition); }
 .lineClamp3 { @extend .lineClamp1; --lines: 3; transition: var(--transition); }
 .lineClamp4 { @extend .lineClamp1; --lines: 4; transition: var(--transition); }
@@ -143,6 +153,17 @@
 .lineClamp8 { @extend .lineClamp1; --lines: 8; transition: var(--transition); }
 .lineClamp9 { @extend .lineClamp1; --lines: 9; transition: var(--transition); }
 .lineClamp10 { @extend .lineClamp1; --lines: 10; transition: var(--transition); }
+
+.relative { position: relative; }
+
+.absoluteCenter {
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
 
 .hoverLink {
     display: flex;

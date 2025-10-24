@@ -171,6 +171,34 @@ html {
     }
 
     @container (max-width: #{$mobileBreakPoint7}) {
+        .dialogContent {
+            --space: 12px;
+            .dialogTitleName {
+                max-width: 89px !important;
+            }
+        }
+        .boardPage {
+            &:has(.menuExpanded) {
+                .dndBoardListContext {
+                    --dnd_offset: 365px !important;
+                }
+            }
+        }
+        .boardComponent {
+            --wdth: 95%;
+        }
+        .boardFormField {
+            --hght: 28px;
+            min-height: var(--hght) !important;
+            max-height: var(--hght) !important;
+            input {
+                padding-left: 10px !important;
+                min-height: var(--hght) !important;
+                &.nameField {
+                    max-width: 70px !important;
+                }
+            }
+        }
         .Toastify__toast-container {
             .Toastify__toast {
                 width: 95%;
@@ -194,21 +222,6 @@ html {
         }
         .itemDescription {
             font-size: 14px;
-        }
-        .boardComponent {
-            --wdth: 95%;
-        }
-        .boardFormField {
-            --hght: 28px;
-            min-height: var(--hght) !important;
-            max-height: var(--hght) !important;
-            input {
-                padding-left: 10px !important;
-                min-height: var(--hght) !important;
-                &.nameField {
-                    max-width: 70px !important;
-                }
-            }
         }
         .itemContent {
             --tag_height: 22px;
@@ -270,6 +283,11 @@ html {
     }
    
     @container (max-width: #{$mobileBreakPoint435}) {
+        .isPWA {
+            .dndBoardListContext {
+                --dnd_offset: 290px !important;
+            }
+        }
         .stockMetricLabel {
             font-size: 15px;
         }

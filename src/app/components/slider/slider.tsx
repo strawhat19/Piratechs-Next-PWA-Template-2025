@@ -109,7 +109,10 @@ export default function Slider({
             {showPaginationDots && (
                 <div className={`paginationDots`}>
                     {children.map((c: any, ci: number) => (
-                        <div key={ci} className={`paginationDot cursorPointer`} onClick={(e) => onPaginationDotClick(e, c, ci)}>
+                        <div key={ci} className={`paginationDot cursorPointer relative`} onClick={(e) => onPaginationDotClick(e, c, ci)}>
+                            <span className={`paginationDotIndex absoluteCenter`}>
+                                {ci + 1}
+                            </span>
                             {activeSlideIndex == ci ? <CircleTwoTone /> : <Circle />}
                         </div>
                     ))}

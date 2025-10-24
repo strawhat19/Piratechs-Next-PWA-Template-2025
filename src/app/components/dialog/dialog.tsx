@@ -26,36 +26,44 @@ function SimpleDialog(props: SimpleDialogProps) {
         <div style={{ flex: 1 }} className={`dialogContent`}>
           <div className={`dialogRow dialogHeader`}>
             <DialogTitle className={`dialogTitle flexCenter gap15`}>
-              <strong>{selected?.name}</strong>
-              <StatusTag item={selected} />
+              <div className={`dialogRow dialogField dialogTitleIndex`}>
+                <h4 className={`main`}>
+                  <strong>#</strong>
+                </h4>
+                <p>{selected?.number}</p>
+              </div>
+              <strong className={`dialogTitleName lineClamp1`}>
+                {selected?.name}
+              </strong>
+              <StatusTag item={selected} disabled={false} />
             </DialogTitle>
-            <div className={`dialogDefaultTitlePadding`}>
+            <div className={`dialogCloseButton`}>
               <Icon_Button title={``} onClick={onClose}>
                 <Close style={{ fontSize: 20 }} className={`linkHover cursorPointer`} />
               </Icon_Button>
             </div>
           </div>
           <div style={{ flex: 1 }} className={`dialogCenterContent w100 mxauto dialogDefaultTitlePadding`}>
-            <div className={`dialogFieldGroup gap15 dialogRow`}>
-              <div className={`dialogRow dialogField gap15`}>
-                <h4 className={`main`}>
-                  <strong>#</strong>
-                </h4>
-                <p>{selected?.number}</p>
-              </div>
-              <div className={`dialogRow dialogField gap15`}>
-                <h4 className={`main`}>
-                  <strong>Type</strong>
-                </h4>
-                <p>{selected?.type}</p>
-              </div>
-            </div>
-            <div className={`dialogFieldGroup gap15 dialogRow`}>
+            <div className={`dialogFieldGroup gap15 dialogRow simpleFieldGroup`}>
               <div className={`dialogRow dialogField gap15`}>
                 <h4 className={`main`}>
                   <strong>Title</strong>
                 </h4>
                 <p>{selected?.name}</p>
+              </div>
+            </div>
+            <div className={`dialogFieldGroup gap15 dialogRow simpleFieldGroup`}>
+              <div className={`dialogRow dialogField gap15`}>
+                <h4 className={`main`}>
+                  <strong>Created</strong>
+                </h4>
+                <p>{String(selected?.created)}</p>
+              </div>
+              <div className={`dialogRow dialogField gap15`}>
+                <h4 className={`main`}>
+                  <strong>Updated</strong>
+                </h4>
+                <p>{String(selected?.updated)}</p>
               </div>
               <div className={`dialogRow dialogField gap15`}>
                 <h4 className={`main`}>

@@ -4,7 +4,7 @@ import { Delete } from '@mui/icons-material';
 import { Types } from '@/shared/types/types';
 import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
-import StatusTag, { Status, statuses } from '../status/status';
+import StatusTag, { Status } from '../status/status';
 
 export const type = Types.Item;
 
@@ -31,20 +31,20 @@ export class Item {
 };
 
 export default function ItemComponent({
-  id,
-  item,
-  onClick,
-  onDelete,
-  setItems,
-  itemIndex,
+    id,
+    item,
+    onClick,
+    onDelete,
+    itemIndex,
+    statusChange,
 }: {
-  item: Item;
-  id: string;
-  setItems: any;
-  itemIndex: number;
-  onDelete: () => void;
-  onClick: (e: any) => void;
-//   children: React.ReactNode;
+    item: Item;
+    id: string;
+    itemIndex: number;
+    onDelete: () => void;
+      statusChange?: any;
+    onClick: (e: any) => void;
+    //   children: React.ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
@@ -62,11 +62,6 @@ export default function ItemComponent({
     border: `1px solid var(--background)`,
     transform: CSS.Transform.toString(transform),
   };
-
-  const statusChange = (e: any, itm: Item) => {
-    itm.status = statuses[itm.status].transition;
-    setItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
-  }
 
   return (
     <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>

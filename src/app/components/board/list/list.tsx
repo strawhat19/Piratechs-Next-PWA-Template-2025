@@ -1,12 +1,13 @@
 'use client';
 
 import BoardForm from '../form/board-form';
+import { statuses } from '../status/status';
 import Logo from '@/app/components/logo/logo';
 import ItemComponent, { Item, type } from '../item/item';
 import { useContext, useMemo, useCallback } from 'react';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { State } from '@/app/components/container/container';
-import { constants, genID, randomNumber } from '@/shared/scripts/constants';
+import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -42,7 +43,19 @@ export default function ListComponent({
       let newTitle = boardForm?.name == `` ? `${type} ${newIndex}` : boardForm?.name;
       let newDescription = boardForm?.description == `` ? newTitle : boardForm?.description;
       let newID = genID(type, newIndex, newTitle);
-      let updatedItems = [...prev, new Item({ type, imageURLs: images, id: newID?.id, name: newTitle, number: newIndex, description: newDescription })];
+      let updatedItems = [
+        ...prev, 
+        new Item({ 
+          type, 
+          id: newID?.id, 
+          name: newTitle, 
+          number: newIndex, 
+          imageURLs: images, 
+          created: newID?.date, 
+          updated: newID?.date, 
+          description: newDescription, 
+        }),
+      ];
       return updatedItems;
     });
   };
@@ -51,13 +64,23 @@ export default function ListComponent({
     setBoardItems((prev: Item[]) => prev.filter(i => i.id !== id));
   };
 
+  const statusChange = (e: any, itm: Item) => {
+    let { date } = getIDParts();
+    itm.updated = date;
+    itm.status = statuses[itm.status].transition;
+    setBoardItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
+  }
+
   const onItemClick = (e: any, item: Item | any) => {
     let clicked = e?.target;
     if (clicked) {
       let clickedClasses = String(clicked?.className);
       if (clickedClasses && (clickedClasses.length > 0)) {
         if (!clickedClasses.includes(`itemButton`)) {
-          setSelected(item);
+          setSelected({
+            ...item,
+            statusChange,
+          });
         }
       }
     }
@@ -93,7 +116,7 @@ export default function ListComponent({
                   id={item.id} 
                   key={item.id} 
                   itemIndex={itemIndex}
-                  setItems={setBoardItems} 
+                  statusChange={statusChange}
                   onDelete={() => deleteItem(item.id)} 
                   onClick={(e: any) => onItemClick(e, item)} 
                 />
