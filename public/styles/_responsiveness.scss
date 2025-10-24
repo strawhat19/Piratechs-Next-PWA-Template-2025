@@ -285,7 +285,7 @@ html {
     @container (max-width: #{$mobileBreakPoint435}) {
         .isPWA {
             .boardComponent {
-                top: 2px;
+                top: 0;
                 .dndBoardListContext {
                     --dnd_offset: 260px !important;
                 }
