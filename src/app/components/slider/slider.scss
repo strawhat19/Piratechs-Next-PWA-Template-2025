@@ -8,6 +8,12 @@
     // }
 // }
 
+.boardListPaginationDots {
+    top: 10px;
+    z-index: 2;
+    position: relative;
+}
+
 .paginationDots {
     width: 100%;
     display: flex;

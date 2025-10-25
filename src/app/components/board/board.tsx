@@ -12,8 +12,11 @@ export default function Board() {
     return <>
         <div className={`boardComponent`}>
             <Slider 
+                spaceBetween={1}
                 showButtons={false} 
                 className={`boardsListsSlider`} 
+                paginationClass={`boardListPaginationDots`}
+                slidesPerView={width >= 1540 ? 3 : (width >= 1045 ? 2 : 1)}
                 showPaginationDots={width > constants?.breakpoints?.tabletSmall && height > constants?.breakpoints?.tabletSmall} 
             >
                 <SwiperSlide>

@@ -165,8 +165,11 @@ html {
     }
 
     @container (min-width: #{$mobileBreakPoint875 + 1}) {
-        .dndBoardListContext {
-            --dnd_offset: 290px !important;
+        .boardComponent {
+            top: 22px;
+            .dndBoardListContext {
+                --dnd_offset: 250px !important;
+            }
         }
     }
 

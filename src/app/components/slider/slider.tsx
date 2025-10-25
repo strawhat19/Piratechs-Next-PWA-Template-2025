@@ -10,6 +10,7 @@ import { useRef, useState } from 'react';
 import { Autoplay } from 'swiper/modules';
 // import { EffectCards } from 'swiper/modules';
 // import { State } from '../container/container';
+import { generateArray } from '@/shared/scripts/constants';
 import { Circle, CircleTwoTone } from '@mui/icons-material';
 
 export default function Slider({ 
@@ -21,6 +22,7 @@ export default function Slider({
     startingSlideIndex = 0,
     showPaginationDots = false,
     className = `sliderComponent`, 
+    paginationClass = `paginationClass`, 
 }: any) {
     let swiperRef = useRef<any>(null);
     let [activeSlideIndex, setActiveSlideIndex] = useState(startingSlideIndex);
@@ -107,8 +109,8 @@ export default function Slider({
             )}
 
             {showPaginationDots && (
-                <div className={`paginationDots`}>
-                    {children.map((c: any, ci: number) => (
+                <div className={`paginationDots ${paginationClass}`}>
+                    {generateArray(Math.floor(Math.round(children?.length / slidesPerView)), null).map((c: any, ci: number) => (
                         <div key={ci} className={`paginationDot cursorPointer relative`} onClick={(e) => onPaginationDotClick(e, c, ci)}>
                             <span className={`paginationDotIndex absoluteCenter`}>
                                 {ci + 1}
