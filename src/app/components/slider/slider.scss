@@ -1,13 +1,3 @@
-// .stocksComponentSlider {
-    // max-height: var(--stockSliderHeight);
-    // .sliderButton {
-    //     max-height: var(--stockSliderHeight);
-    // }
-    // .swiper {
-    //     max-height: var(--stockSliderHeight);
-    // }
-// }
-
 .boardListPaginationDots {
     top: 10px;
     z-index: 2;
@@ -24,16 +14,22 @@
     align-items: center;
     justify-content: center;
     .paginationDot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         svg {
-            path { fill: #04397b; }
+            --circlr: var(--navy);
+            path { fill: var(--circlr); }
             &:has(circle) {
-                circle { fill: #04397b; }
-                path { fill: var(--main); }
+                circle { opacity: 1; fill: var(--circlr); }
+                path { fill: var(--blueneonDark); transform-origin: center; transform: scale(1.2); }
             }
         }
         .paginationDotIndex {
+            display: flex;
             font-size: 13px;
-            padding-top: 3px;
+            align-items: center;
+            justify-content: center;
         }
     }
 }
@@ -74,3 +70,13 @@
     font-size: 24px !important; 
     min-width: unset !important;
 }
+
+// .stocksComponentSlider {
+    // max-height: var(--stockSliderHeight);
+    // .sliderButton {
+    //     max-height: var(--stockSliderHeight);
+    // }
+    // .swiper {
+    //     max-height: var(--stockSliderHeight);
+    // }
+// }

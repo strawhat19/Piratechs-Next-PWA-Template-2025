@@ -9,21 +9,34 @@ import { StateGlobals } from '@/shared/global-context';
 
 export default function Board() {
     const { width, height } = useContext<any>(StateGlobals);
+
+    const getSlidesPerView = (wd: number = width): number => {
+        if (wd >= 1540) {
+            return wd > 1920 ? 4 : 3;
+        } else {
+            return wd >= 1045 ? 2 : 1;
+        }
+    }
+
     return <>
         <div className={`boardComponent`}>
             <Slider 
                 spaceBetween={1}
                 showButtons={false} 
                 className={`boardsListsSlider`} 
+                showPaginationDots={width >= 501} 
+                slidesPerView={getSlidesPerView()}
                 paginationClass={`boardListPaginationDots`}
-                slidesPerView={width >= 1540 ? 3 : (width >= 1045 ? 2 : 1)}
-                showPaginationDots={width > constants?.breakpoints?.tabletSmall && height > constants?.breakpoints?.tabletSmall} 
+                // showPaginationDots={width > constants?.breakpoints?.tabletSmall && height > constants?.breakpoints?.tabletSmall} 
             >
                 <SwiperSlide>
                     <ListComponent />
                 </SwiperSlide>
                 <SwiperSlide>
                     <ListComponent title={`Active`} />
+                </SwiperSlide>
+                <SwiperSlide>
+                    <ListComponent title={`Blocked`} />
                 </SwiperSlide>
                 <SwiperSlide>
                     <ListComponent title={`Complete`} />

@@ -1,6 +1,5 @@
 'use client';
 
-
 import { toast } from 'react-toastify';
 import { User } from '@/shared/types/models/User';
 import { Item } from '@/app/components/board/item/item';

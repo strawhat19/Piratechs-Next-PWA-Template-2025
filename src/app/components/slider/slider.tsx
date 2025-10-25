@@ -31,6 +31,12 @@ export default function Slider({
         setActiveSlideIndex(e?.activeIndex);
     }
 
+    const getDotsNumToShow = () => {
+        let slidesLen = children?.length ?? 0;
+        let dotsToShow = Math.ceil(slidesLen / slidesPerView);
+        return dotsToShow;
+    }
+
     const getSwiper = () => {
         let swiperInstance = null;
         if (swiperRef?.current && swiperRef?.current?.swiper) {
@@ -108,10 +114,10 @@ export default function Slider({
                 </Button>
             )}
 
-            {showPaginationDots && (
+            {showPaginationDots && children?.length > 1 && (
                 <div className={`paginationDots ${paginationClass}`}>
-                    {generateArray(Math.floor(Math.round(children?.length / slidesPerView)), null).map((c: any, ci: number) => (
-                        <div key={ci} className={`paginationDot cursorPointer relative`} onClick={(e) => onPaginationDotClick(e, c, ci)}>
+                    {generateArray(getDotsNumToShow(), null).map((c: any, ci: number) => (
+                        <div key={ci} className={`paginationDot cursorPointer relative ${getDotsNumToShow() > 1 ? `` : `invisible`}`} onClick={(e) => onPaginationDotClick(e, c, ci)}>
                             <span className={`paginationDotIndex absoluteCenter`}>
                                 {ci + 1}
                             </span>
