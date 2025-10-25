@@ -13,7 +13,7 @@ export default function StockAccount() {
                 <strong>Account</strong>
                 <div className={`subMetric flex column gap5`}>
                     Rakib
-                    {width >= constants.breakpoints.mobile && <>
+                    {width >= constants?.breakpoints?.mobile && <>
                         <div className={`subMetric flex column gap5`}>
                             <strong>Number</strong>
                             <div className={`subMetric`}>

@@ -21,9 +21,20 @@ export const imagesObject = {
 
 export default function ImagesCarousel({ mobileSize = `300px`, desktopSize = `650px`, imageURLs = Object.values(imagesObject.vertical) }) {
     let { width, smallScreen } = useContext<any>(StateGlobals);
-    let [images, setImages] = useState(imageURLs);
+
+    let [images, ] = useState(imageURLs);
+
+    // const getSlidesPerView = (wd: number = width): number => {
+    //     let { pc, tabletMed, desktop } = constants?.breakpoints;
+    //     if (wd >= pc) {
+    //         return wd > desktop ? 4 : 3;
+    //     } else {
+    //         return wd >= tabletMed ? 2 : 1;
+    //     }
+    // }
+
     return (
-        <Slider className={`imagesCarousel`} slidesPerView={(smallScreen || width <= constants?.breakpoints?.mobile) ? 2.25 : 3.33} spaceBetween={15} showButtons={false}>
+        <Slider className={`imagesCarousel`} slidesPerView={(smallScreen || width <= constants?.breakpoints?.mobile) ? 2.25 : (width >= constants?.breakpoints?.desktop ? 5 : 3.33)} spaceBetween={15} showButtons={false}>
             {images?.map((img, imgIndex) => (
                 <SwiperSlide key={imgIndex}>
                     <Img 

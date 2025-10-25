@@ -8,7 +8,7 @@ export default function CityStateCountry({ city, state, country }: any) {
     let { width } = useContext<any>(StateGlobals);
     return (
         <div className={`locationComponent cityStateCountry`}>
-            {city ? `${city}` : ``}{state ? `${city ? `, ` : ``} ${state}` : ``}{width >= constants.breakpoints.notebook ? `${(city || state) ? `, ` : ``} ${country}` : ``}
+            {city ? `${city}` : ``}{state ? `${city ? `, ` : ``} ${state}` : ``}{width >= constants?.breakpoints?.notebook ? `${(city || state) ? `, ` : ``} ${country}` : ``}
         </div>
     )
 }

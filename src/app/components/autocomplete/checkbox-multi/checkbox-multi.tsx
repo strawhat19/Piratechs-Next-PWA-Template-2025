@@ -70,7 +70,7 @@ export default function CheckboxMulti({
                             className={`${tagProps?.className} checkboxMultiTag`}
                             style={{ background: `var(--bg)`, padding: `3px 0 10px`, borderRadius: 15 }}
                         >
-                            <Stock {...option} linkable={false} showCompanyName={width >= constants.breakpoints.mobile}>
+                            <Stock {...option} linkable={false} showCompanyName={width >= constants?.breakpoints?.mobile}>
                                 <IconButton className={`checkboxMultiTagDeleteBtn`} onClick={onDelete} style={{ padding: 0, maxHeight: 30 }}>
                                     <Cancel />
                                 </IconButton>
@@ -98,7 +98,7 @@ export default function CheckboxMulti({
                         {option?.emojis && option.emojis?.length > 0 ? option?.emojis[0] : (
                             option?.image && option?.image != `` ? (
                                 option?.type == Types.Stock ? (
-                                    <Stock {...option} linkable={false} showCompanyName={width >= constants.breakpoints.mobile} />
+                                    <Stock {...option} linkable={false} showCompanyName={width >= constants?.breakpoints?.mobile} />
                                 ) : (
                                     <Img 
                                         height={25} 
@@ -111,19 +111,19 @@ export default function CheckboxMulti({
                             ) : <></>
                         )}
                         {option?.type == Types.Stock ? <>
-                            {width >= constants.breakpoints.mobile && <>
+                            {width >= constants?.breakpoints?.mobile && <>
                                 <span style={{ color: `var(--links)` }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {width >= constants.breakpoints.notebook ? `52w L: ` : ``}<IconText dollarSign number={option?.low} className={`stockSeachResultPrice`} />
+                                    {width >= constants?.breakpoints?.notebook ? `52w L: ` : ``}<IconText dollarSign number={option?.low} className={`stockSeachResultPrice`} />
                                 </span>
                                 <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                 <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                    {width >= constants.breakpoints.notebook ? `52w H: ` : ``}<IconText dollarSign number={option?.high} className={`stockSeachResultPrice`} />
+                                    {width >= constants?.breakpoints?.notebook ? `52w H: ` : ``}<IconText dollarSign number={option?.high} className={`stockSeachResultPrice`} />
                                 </span>
-                                {width >= constants.breakpoints.laptop && <>
+                                {width >= constants?.breakpoints?.laptop && <>
                                     <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                     <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                        {width >= constants.breakpoints.laptop ? (
+                                        {width >= constants?.breakpoints?.laptop ? (
                                             <IconText 
                                                 icon={<Person style={{ fontSize: 20, color: `var(--links)` }} />} 
                                                 text={option?.ceo && option?.ceo != `` ? option?.ceo : `Unknown`} 
@@ -132,7 +132,7 @@ export default function CheckboxMulti({
                                     </span>
                                     <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                     <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
-                                        {width >= constants.breakpoints.laptop ? (
+                                        {width >= constants?.breakpoints?.laptop ? (
                                             <IconText 
                                                 decimalPlaces={0} 
                                                 number={option?.employees} 
@@ -140,7 +140,7 @@ export default function CheckboxMulti({
                                             />
                                         ) : ``}
                                     </span>
-                                    {width >= constants.breakpoints.computer && <>
+                                    {width >= constants?.breakpoints?.computer && <>
                                         <span style={{ color: `var(--links)`, marginLeft: 8 }}> - </span>
                                         <span className={`font`} style={{ color: `white`, fontWeight: `bolder`, marginLeft: 8 }}>
                                             <CityStateCountry {...{ city: option?.city, state: option?.state, country: option?.country }} />
