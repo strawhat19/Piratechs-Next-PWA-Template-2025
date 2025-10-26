@@ -192,7 +192,7 @@ html {
         .boardPage {
             &:has(.menuExpanded) {
                 .dndBoardListContext {
-                    --listOffset: 416px !important;
+                    --listOffset: 414px !important;
                 }
             }
         }
@@ -229,6 +229,9 @@ html {
             width: 100%;
         }
         .itemEndContainer {
+            width: 100%;
+        }
+        .itemDateTag {
             width: 100%;
         }
         .itemDescription {
@@ -304,13 +307,13 @@ html {
         .isPWA {
             .boardComponent {
                 .dndBoardListContext {
-                    --listOffset: 311px !important;
+                    --listOffset: 309px !important;
                 }
             }
             &:has(.menuExpanded) {
                 .boardComponent {
                     .dndBoardListContext {
-                        --listOffset: 436px !important;
+                        --listOffset: 434px !important;
                     }
                 }
             }

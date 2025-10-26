@@ -87,6 +87,8 @@ export default function ItemComponent({
         willChange: `transform`
     };
 
+    // ${isDragging ? `swiper-no-swiping` : ``}
+
   return (
     <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>
       <div className={`itemInner`} onClick={onClick}>
