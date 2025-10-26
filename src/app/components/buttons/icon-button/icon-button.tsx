@@ -6,12 +6,14 @@ export default function Icon_Button({
     children, 
     url = ``, 
     onClick = () => {}, 
+    style = { position: `relative`, },
     className = `iconButtonComponent`, 
 }: any) {
     const router = useRouter();
     return (
         <Tooltip title={title} arrow>
             <IconButton 
+                style={style}
                 size={`small`} 
                 className={`iconButton p0 ${className}`} 
                 onClick={url != `` ? () => router.push(url) : onClick}

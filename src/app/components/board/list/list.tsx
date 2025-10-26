@@ -79,6 +79,7 @@ export default function ListComponent({
       let clickedClasses = String(clicked?.className);
       if (clickedClasses && (clickedClasses.length > 0)) {
         if (!clickedClasses.includes(`itemButton`)) {
+          console.log(`Item`, item);
           setSelected({
             ...item,
             statusChange,
@@ -103,7 +104,7 @@ export default function ListComponent({
       <div className={`boardListTitle listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`}>
         <Logo label={title} />
         <span className={`flexCenter gap5`}>
-          <Icon_Button title={`List Settings`}>
+          <Icon_Button title={`List Settings`} style={{ marginRight: 5 }}>
             <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
           </Icon_Button>
           <span className={`main`}>

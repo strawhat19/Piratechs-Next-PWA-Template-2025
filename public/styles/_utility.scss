@@ -59,7 +59,7 @@
 .gap35 { gap: 35px; grid-gap: 35px; }
 .gap15I { gap: 15px !important; grid-gap: 15px !important; }
 
-.width100 { width: 100%; }
+.width100, .fullWidth { width: 100%; }
 .w75 { width: 75%; min-width: 75%; max-width: 75%; }
 .w80 { width: 80%; min-width: 80%; max-width: 80%; }
 .w85 { width: 85%; min-width: 85%; max-width: 85%; }

@@ -166,7 +166,7 @@ html {
 
     @container (min-width: #{$mobileBreakPoint875 + 1}) {
         .boardComponent {
-            top: 22px;
+            // top: 22px;
             .dndBoardListContext {
                 --dnd_offset: 250px !important;
             }
@@ -175,7 +175,7 @@ html {
 
     @container (max-width: #{$mobileBreakPoint875}) and (min-width: 501px) {
         .boardComponent {
-            top: 20px;
+            // top: 20px;
             .boardListPaginationDots {
                 top: 8px;
             }
@@ -198,6 +198,9 @@ html {
         }
         .boardComponent {
             --wdth: 95%;
+            .boardTopRow {
+                width: 95% !important;
+            }
         }
         .boardFormField {
             --hght: 28px;
@@ -221,7 +224,6 @@ html {
         }
         .listTitle {
             padding: 2px 10px 0 !important;
-            margin: 25px auto 0 !important;
         }
         .formRow {
             padding: 7px 10px 10px !important;
@@ -297,7 +299,7 @@ html {
     @container (max-width: #{$mobileBreakPoint435}) {
         .isPWA {
             .boardComponent {
-                top: 0;
+                // top: 0;
                 .dndBoardListContext {
                     --dnd_offset: 260px !important;
                 }

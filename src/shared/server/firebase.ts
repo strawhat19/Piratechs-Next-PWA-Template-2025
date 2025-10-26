@@ -1,8 +1,8 @@
 import { User } from '../types/models/User';
 import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
-import { logToast } from '../scripts/constants';
 import { getFirestore } from 'firebase/firestore';
+import { apiRoutes, logToast } from '../scripts/constants';
 import { GoogleAuthProvider, browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
 
 export enum Tables {
@@ -35,6 +35,8 @@ export const auth = getAuth(firebaseApp);
 
 setPersistence(auth, browserLocalPersistence);
 
+export const usersAPI = apiRoutes.users.url;
+
 export const userConverter = {
   toFirestore: (usr: User) => {
     return JSON.parse(JSON.stringify(usr));
@@ -46,7 +48,7 @@ export const userConverter = {
 }
 
 export const addUserToDatabase = async (usr: User) => {
-  const res = await fetch(`/api/users`, {
+  const res = await fetch(usersAPI, {
     method: `POST`,
     body: JSON.stringify(usr),
     headers: { [`Content-Type`]: `application/json` },
@@ -60,7 +62,7 @@ export const addUserToDatabase = async (usr: User) => {
 }
 
 export const updateUserInDatabase = async (id: string, updates: Partial<User>) => {
-  const res = await fetch(`/api/users/${id}`, {
+  const res = await fetch(usersAPI + `/` + id, {
     method: `PATCH`,
     body: JSON.stringify(updates),
     headers: { [`Content-Type`]: `application/json` },

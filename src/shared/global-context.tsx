@@ -9,7 +9,7 @@ import { imagesObject } from '@/app/components/slider/images-carousel/images-car
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { updateUserInDatabase, auth, renderFirebaseAuthErrorMessage } from '@/shared/server/firebase';
-import { capWords, constants, debounce, devEnv, genID, getIDParts, isInStandaloneMode, logToast, randomNumber } from '@/shared/scripts/constants';
+import { apiRoutes, capWords, constants, debounce, devEnv, genID, getIDParts, isInStandaloneMode, logToast, randomNumber } from '@/shared/scripts/constants';
 
 export const StateGlobals = createContext({});
 
@@ -80,7 +80,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     const refreshUsers = async () => {
         setUsersLoading(true);
         try {
-            const res = await fetch(`/api/users`, {
+            const res = await fetch(apiRoutes.users.url, {
                 method: `GET`,
                 cache: `no-store`,
                 headers: { [`Accept`]: `application/json` },

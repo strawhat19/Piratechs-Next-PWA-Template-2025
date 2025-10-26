@@ -35,6 +35,9 @@ export const constants = {
 }
 
 export const apiRoutes = {
+  users: {
+    url: `/api/users`,
+  },
   stocks: {
     url: `/api/stocks`,
     routes: {
