@@ -5,13 +5,16 @@
     grid-gap: 10px;
     flex-direction: column;
 
-    --boardOffset: 170px;
-    --boardHeight: calc(100dvh - var(--boardOffset));
-    @supports (height: 100svh) {
-        --boardHeight: calc(100svh - var(--boardOffset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    }
-    min-height: var(--boardHeight);
-    max-height: var(--boardHeight);
+    top: 33px;
+    position: relative;
+
+    // --boardOffset: 170px;
+    // --boardHeight: calc(100dvh - var(--boardOffset));
+    // @supports (height: 100svh) {
+    //     --boardHeight: calc(100svh - var(--boardOffset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    // }
+    // min-height: var(--boardHeight);
+    // max-height: var(--boardHeight);
 
     .boardTopComponent {
         padding: 0 5px;

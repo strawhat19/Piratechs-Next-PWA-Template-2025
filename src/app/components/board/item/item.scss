@@ -16,4 +16,9 @@
             max-width: 106px !important;
         }
     }
+    .itemName {
+        padding-bottom: 3px;
+        stroke-linecap: round;
+        border-bottom: 2px solid var(--main);
+    }
 }

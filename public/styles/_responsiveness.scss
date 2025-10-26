@@ -4,6 +4,7 @@ $mobileBreakPoint425: 425px;
 $mobileBreakPoint435: 435px;
 $mobileBreakPoint450: 450px;
 $mobileBreakPoint480: 480px;
+$mobileBreakPoint5: 500px;
 $mobileBreakPoint515: 515px;
 $mobileBreakPoint585: 585px;
 $mobileBreakPoint6: 687px;
@@ -12,6 +13,7 @@ $mobileBreakPoint7: 768px;
 $mobileBreakPoint875: 875px;
 
 $tabletBreakPoint9: 992px;
+$tabletBreakPoint1045: 1080px;
 $tabletBreakPoint10: 1080px;
 
 $laptopBreakPoint12: 1200px;
@@ -164,18 +166,16 @@ html {
         }
     }
 
-    @container (min-width: #{$mobileBreakPoint875 + 1}) {
+    @container (max-width: #{$tabletBreakPoint1045}) {
         .boardComponent {
-            // top: 22px;
-            .dndBoardListContext {
-                --dnd_offset: 250px !important;
+            .boardTopComponent {
+                padding: 0 7px;
             }
         }
-    }
+    }   
 
     @container (max-width: #{$mobileBreakPoint875}) and (min-width: 501px) {
         .boardComponent {
-            // top: 20px;
             .boardListPaginationDots {
                 top: 8px;
             }
@@ -192,14 +192,8 @@ html {
         .boardPage {
             &:has(.menuExpanded) {
                 .dndBoardListContext {
-                    --dnd_offset: 365px !important;
+                    --listOffset: 422px !important;
                 }
-            }
-        }
-        .boardComponent {
-            --wdth: 95%;
-            .boardTopRow {
-                width: 95% !important;
             }
         }
         .boardFormField {
@@ -287,6 +281,13 @@ html {
         }
     }
 
+    @container (max-width: #{$mobileBreakPoint5}) {
+        .boardComponent {
+            top: 15px;
+            --wdth: 97%;
+        }
+    }
+
     @container (max-width: #{$mobileBreakPoint480}) {
         .logoText {
             font-size: 18px;
@@ -299,15 +300,14 @@ html {
     @container (max-width: #{$mobileBreakPoint435}) {
         .isPWA {
             .boardComponent {
-                // top: 0;
                 .dndBoardListContext {
-                    --dnd_offset: 260px !important;
+                    --listOffset: 317px !important;
                 }
             }
             &:has(.menuExpanded) {
                 .boardComponent {
                     .dndBoardListContext {
-                        --dnd_offset: 385px !important;
+                        --listOffset: 442px !important;
                     }
                 }
             }
