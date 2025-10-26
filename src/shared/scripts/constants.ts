@@ -57,6 +57,47 @@ export const isInStandaloneMode = () => {
   return window.matchMedia(`(display-mode: standalone)`).matches;
 }
 
+export const isDate = (str: string): boolean => {
+  const timestamp = Date.parse(str);
+  return !isNaN(timestamp);
+}
+
+export const getDefaultDateTime = () => {
+  let now = new Date();
+  let day = now.getDate();
+  let hour = now.getHours();
+  let minute = now.getMinutes();
+  let month = now.getMonth() + 1;
+  let xm = hour >= 12 ? `PM` : `AM`;
+  let year = now.getFullYear() % 100;
+  hour = hour % 12 || 12;
+  return {
+    time: { xm, hour, minute, },
+    date: { day, year, month, },
+  };
+}
+
+export const parseDateFromStr = (dateStr: string) => {
+  let rtn: any = getDefaultDateTime();
+  let validDateStr = isDate(dateStr);
+  if (validDateStr) {
+    let [time, xm, date] = dateStr?.split(` `);
+    if (xm) rtn.time.xm = xm;
+    if (time) {
+      let [hour, minute] = time?.split(`:`);
+      if (hour) rtn.time.hour = hour;
+      if (minute) rtn.time.minute = minute;
+    }
+    if (date) {
+      let [month, day, year] = date?.split(`/`);
+      if (month) rtn.date.month = month;
+      if (day) rtn.date.day = day;
+      if (year) rtn.date.year = year;
+    }
+  }
+  return rtn;
+}
+
 export const shuffleArray = (array: any[]): any[] => {
   let currentIndex = array.length, randomIndex;
   while (currentIndex != 0) {

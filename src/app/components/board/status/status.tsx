@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import { Button, Tooltip } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
 import { Check, Circle, List } from '@mui/icons-material';
+import { isDate, parseDateFromStr } from '@/shared/scripts/constants';
 
 export const statusIconSize = 14;
 export const statusLineHeight = 1.4;
@@ -41,6 +42,7 @@ export default function StatusTag({
     item, 
     style = {}, 
     label = ``,
+    dateTag = false,
     showIcon = true,
     disabled = true, 
     thiccBtn = false,
@@ -50,7 +52,38 @@ export default function StatusTag({
     className = `statusTagComponent`, 
 }: any) {
     let { selected } = useContext<any>(StateGlobals);
+
     const getLabel = () => label != `` ? label : (currentStatus ? item?.status : statuses[item?.status].transition);
+
+    const getDateFromLabel = () => {
+        let lbl = getLabel();
+        if (lbl && lbl != ``) {
+            let lblIsDate = isDate(lbl);
+            if (lblIsDate) {
+                let dateObj = parseDateFromStr(lbl);
+                if (dateObj) {
+                    let { time, date } = dateObj;
+                    let { hour, xm, minute } = time;
+                    let { month, day, year } = date;
+                    return (
+                        <div className={`dateTag`}>
+                            <span>{hour}</span>
+                            <span className={`main`}>:</span>
+                            <span>{minute}</span> 
+                            <span> {xm}</span>
+                            <span> {month}</span>
+                            <span className={`main`}>/</span>
+                            <span>{day}</span>
+                            <span className={`main`}>/</span>
+                            <span>{year}</span>
+                        </div>
+                    )
+                }
+            }
+        }
+        return lbl;
+    }
+
     return (
         <Tooltip placement={`top`} title={disabled ? `` : `Change Status from "${item?.status}" to "${statuses[item?.status]?.transition}"`} arrow>
             <Button
@@ -82,7 +115,7 @@ export default function StatusTag({
                         </span>
                     )}
                     <span className={`tagName`} style={{ fontSize: getLabel()?.length > 7 ? (getLabel()?.length > 10 ? 11 : 12) : 14 }}>
-                        <i>{getLabel()}</i>
+                        <i>{dateTag ? getDateFromLabel() : getLabel()}</i>
                     </span>
                 </div>
             </Button>

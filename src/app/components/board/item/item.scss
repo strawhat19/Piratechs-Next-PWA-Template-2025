@@ -9,6 +9,17 @@
     background: var(--navy);
     border: 1px solid var(--background);
     transition: opacity var(--transition);
+    .itemInner {
+        flex: 1 1 0%;
+        display: flex;
+        grid-gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .borderedItmField {
+        stroke-linecap: round;
+        border-bottom: 2px solid var(--main);
+    }
     .itemStart {
         flex: 1;
         display: flex;
@@ -25,6 +36,11 @@
             .itemTypeIcon {
                 max-height: 15px;
             }
+            &.itemNumberIndex {
+                &.medItmIndx {
+                    @extend .borderedItmField;
+                }
+            }
         }
         img {
             object-fit: cover;
@@ -34,12 +50,22 @@
     }
     .itemName {
         padding-bottom: 3px;
-        stroke-linecap: round;
-        border-bottom: 2px solid var(--main);
+        @extend .borderedItmField;
     }
     .itemEndContainer {
         display: flex;
         grid-gap: 10px;
         flex-direction: column;
+    }
+    .itemDeleteButton {
+        padding: 0px;
+        color: inherit;
+        cursor: pointer;
+        min-width: 35px;
+        max-width: 35px;
+        min-height: 35px;
+        border-radius: 4px;
+        background: var(--bg);
+        border: 0px solid rgb(68, 68, 68);
     }
 }

@@ -192,7 +192,7 @@ html {
         .boardPage {
             &:has(.menuExpanded) {
                 .dndBoardListContext {
-                    --listOffset: 420px !important;
+                    --listOffset: 416px !important;
                 }
             }
         }
@@ -304,13 +304,13 @@ html {
         .isPWA {
             .boardComponent {
                 .dndBoardListContext {
-                    --listOffset: 315px !important;
+                    --listOffset: 311px !important;
                 }
             }
             &:has(.menuExpanded) {
                 .boardComponent {
                     .dndBoardListContext {
-                        --listOffset: 440px !important;
+                        --listOffset: 436px !important;
                     }
                 }
             }

@@ -89,13 +89,15 @@ export default function ItemComponent({
 
   return (
     <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>
-      <div className={`itemInner`} style={{ flex: 1, display: `flex`, alignItems: `center`, justifyContent: `space-between`, gap: 10 }} onClick={onClick}>
+      <div className={`itemInner`} onClick={onClick}>
         <div className={`itemTypeIndexImages flexCenter gap5`}>
             <div className={`itemBadges`}>
-                <div aria-hidden className={`itemTypeIndex flexCenter justifyCenter gap5`}>
-                    <span className={`itemTypeIcon main`}>
-                        {item?.type[0]}
-                    </span> 
+                <div aria-hidden className={`itemTypeIndex flexCenter justifyCenter gap5 itemNumberIndex ${item?.number < 10 ? `smallItmIndx` : `medItmIndx`}`}>
+                    {item?.number < 10 && (
+                        <span className={`itemTypeIcon main`}>
+                            {item?.type[0]}
+                        </span>
+                    )} 
                     <span className={`itemIndex`}>
                         <i>{item?.number}</i>
                     </span> 
@@ -120,14 +122,17 @@ export default function ItemComponent({
                         <strong className={`itemName lineClamp2`}>
                             {item?.name}
                         </strong>
-                        {(startW > smallStartW) && <StatusTag 
-                            item={item} 
-                            showIcon={false}
-                            label={item?.updated}
-                            style={{ marginLeft: 15 }} 
-                            className={`itemNameDateTag itemDateTag`}
-                            icon={<DateRangeSharp style={{ fontSize: 18 }} />}
-                        />}
+                        {(startW > smallStartW) && (
+                            <StatusTag 
+                                item={item} 
+                                dateTag={true}
+                                showIcon={false}
+                                label={item?.updated}
+                                style={{ marginLeft: 15 }} 
+                                className={`itemNameDateTag itemDateTag`}
+                                icon={<DateRangeSharp style={{ fontSize: 18 }} />}
+                            />
+                        )}
                     </h3>
                 </div>
                 <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
@@ -135,14 +140,17 @@ export default function ItemComponent({
                 </div>
             </div>
             <div className={`itemEndContainer`}>
-                {(startW <= smallStartW) && <StatusTag 
-                    item={item} 
-                    showIcon={false}
-                    label={item?.updated}
-                    style={{ marginLeft: 15 }} 
-                    className={`itemEndDateTag itemDateTag`}
-                    icon={<DateRangeSharp style={{ fontSize: 18 }} />}
-                />}
+                {(startW <= smallStartW) && (
+                    <StatusTag 
+                        item={item} 
+                        dateTag={true}
+                        showIcon={false}
+                        label={item?.updated}
+                        style={{ marginLeft: 15 }} 
+                        className={`itemEndDateTag itemDateTag`}
+                        icon={<DateRangeSharp style={{ fontSize: 18 }} />}
+                    />
+                )}
                 <div className={`itemEnd flexCenter gap10`}>
                     <StatusTag item={item} disabled={false} thiccBtn={true} onClick={(e: any) => statusChange(e, item)} />
                     <Tooltip placement={`top`} title={`Delete Item #${item?.number} "${item?.name}"`} arrow>
@@ -150,17 +158,6 @@ export default function ItemComponent({
                             onClick={onDelete}
                             aria-label={`Delete`}
                             className={`itemButton itemDeleteButton`}
-                            style={{
-                                padding: 0, 
-                                minWidth: 35,
-                                maxWidth: 35,
-                                minHeight: 35, 
-                                borderRadius: 4,
-                                color: `inherit`,
-                                cursor: `pointer`, 
-                                background: `var(--bg)`, 
-                                border: `0px solid #444`, 
-                            }}
                         >
                             <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
                         </Button>

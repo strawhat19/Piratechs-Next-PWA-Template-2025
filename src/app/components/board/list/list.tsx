@@ -6,9 +6,9 @@ import Logo from '@/app/components/logo/logo';
 import { Settings } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
 import ItemComponent, { Item, type } from '../item/item';
-import { useContext, useMemo, useCallback } from 'react';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import Icon_Button from '../../buttons/icon-button/icon-button';
+import { useContext, useMemo, useCallback, useRef } from 'react';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -17,6 +17,7 @@ import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, u
 export default function ListComponent({
   title = `To Do`,
 }: any) {
+  const listScroll = useRef(null);
   const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(StateGlobals);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -35,6 +36,10 @@ export default function ListComponent({
     // const { active, activatorEvent } = e;
     // console.log(`onDragStart`, { e, active, activatorEvent });
   }, []);
+
+  const scrollListTo = () => {
+    
+  }
 
   const addItem = () => {
     setBoardItems((prev: any) => {
@@ -112,7 +117,7 @@ export default function ListComponent({
           </span> Item(s)
         </span>
       </div>
-      <div className={`dndBoardListContext dndContainer componentContainer`}>
+      <div ref={listScroll} className={`dndBoardListContext dndContainer componentContainer`}>
         <DndContext sensors={sensors} modifiers={modifiers} onDragStart={onDragStart} onDragEnd={onDragEnd}>
           <SortableContext items={boardItems} strategy={verticalListSortingStrategy}>
             <div className={`itemsGrid`} style={{ display: `grid`, gap: 8 }}>
