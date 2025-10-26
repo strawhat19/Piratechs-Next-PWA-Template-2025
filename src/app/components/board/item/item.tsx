@@ -2,11 +2,13 @@ import './item.scss';
 
 import Img from '../../image/image';
 import { CSS } from '@dnd-kit/utilities';
-import { DateRangeSharp, Delete } from '@mui/icons-material';
 import { Types } from '@/shared/types/types';
 import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import StatusTag, { Status } from '../status/status';
+import { StateGlobals } from '@/shared/global-context';
+import { DateRangeSharp, Delete } from '@mui/icons-material';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 export const type = Types.Item;
 
@@ -48,22 +50,42 @@ export default function ItemComponent({
     onClick: (e: any) => void;
     //   children: React.ReactNode;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+    const smallStartW = 300;
+    const itemStartEl = useRef(null);
+    const { width } = useContext<any>(StateGlobals);
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
-  const style: React.CSSProperties = {
-    gap: 10,
-    transition,
-    cursor: `grab`,
-    display: `flex`,
-    borderRadius: 8,
-    userSelect: `none`,
-    alignItems: `center`,
-    padding: `0 9px 0 7px`,
-    background: `var(--navy)`,
-    opacity: isDragging ? 0.85 : 1,
-    border: `1px solid var(--background)`,
-    transform: CSS.Transform.toString(transform),
-  };
+    const [startW, setStartW] = useState(smallStartW);
+
+    const detectItemSizes = () => {
+        if (itemStartEl != null) {
+            let itmStrt: any = itemStartEl?.current;
+            if (itmStrt) {
+                let itmStrtW = itmStrt?.clientWidth;
+                setStartW(itmStrtW);
+            }
+        }
+    }
+
+    useEffect(() => {
+        detectItemSizes();
+    }, [width])
+
+    const scale = isDragging ? 1.04 : 1;
+    const transformStr = CSS.Transform.toString(transform);
+    const style: React.CSSProperties = {
+        transition,
+        // opacity: isDragging ? 0.95 : 1,
+        transform: transformStr
+            ? `${transformStr} scale(${scale})`
+            : `scale(${scale})`,
+        transformOrigin: `center center`,
+        zIndex: isDragging ? 9 : `auto`,
+        boxShadow: isDragging
+            ? `0 10px 24px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.2)`
+            : `none`,
+        willChange: `transform`
+    };
 
   return (
     <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>
@@ -92,47 +114,58 @@ export default function ItemComponent({
             )}
         </div>
         <div className={`itemContent width100 itemNameStatusDescriptionEnd flexCenter gap5 spaceBetween`}>
-            <div className={`itemNameStatusDescription`} style={{ flex: 1, gap: 8, display: `flex`, flexDirection: `column` }}>
+            <div ref={itemStartEl} className={`itemStart itemNameStatusDescription`}>
                 <div className={`itemNameStatus`} style={{ flex: 1 }}>
                     <h3 className={`itemNameStatusRow flexCenter`}>
                         <strong className={`itemName lineClamp2`}>
                             {item?.name}
                         </strong>
-                        <StatusTag 
+                        {(startW > smallStartW) && <StatusTag 
                             item={item} 
                             showIcon={false}
                             label={item?.updated}
                             style={{ marginLeft: 15 }} 
+                            className={`itemNameDateTag itemDateTag`}
                             icon={<DateRangeSharp style={{ fontSize: 18 }} />}
-                        />
+                        />}
                     </h3>
                 </div>
                 <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
                     {item?.description}
                 </div>
             </div>
-            <div className={`itemEnd flexCenter gap10`}>
-                <StatusTag item={item} disabled={false} thiccBtn={true} onClick={(e: any) => statusChange(e, item)} />
-                <Tooltip placement={`top`} title={`Delete Item #${item?.number} "${item?.name}"`} arrow>
-                    <Button
-                        onClick={onDelete}
-                        aria-label={`Delete`}
-                        className={`itemButton itemDeleteButton`}
-                        style={{
-                            padding: 0, 
-                            minWidth: 35,
-                            maxWidth: 35,
-                            minHeight: 35, 
-                            borderRadius: 4,
-                            color: `inherit`,
-                            cursor: `pointer`, 
-                            background: `var(--bg)`, 
-                            border: `0px solid #444`, 
-                        }}
-                    >
-                        <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
-                    </Button>
-                </Tooltip>
+            <div className={`itemEndContainer`}>
+                {(startW <= smallStartW) && <StatusTag 
+                    item={item} 
+                    showIcon={false}
+                    label={item?.updated}
+                    style={{ marginLeft: 15 }} 
+                    className={`itemEndDateTag itemDateTag`}
+                    icon={<DateRangeSharp style={{ fontSize: 18 }} />}
+                />}
+                <div className={`itemEnd flexCenter gap10`}>
+                    <StatusTag item={item} disabled={false} thiccBtn={true} onClick={(e: any) => statusChange(e, item)} />
+                    <Tooltip placement={`top`} title={`Delete Item #${item?.number} "${item?.name}"`} arrow>
+                        <Button
+                            onClick={onDelete}
+                            aria-label={`Delete`}
+                            className={`itemButton itemDeleteButton`}
+                            style={{
+                                padding: 0, 
+                                minWidth: 35,
+                                maxWidth: 35,
+                                minHeight: 35, 
+                                borderRadius: 4,
+                                color: `inherit`,
+                                cursor: `pointer`, 
+                                background: `var(--bg)`, 
+                                border: `0px solid #444`, 
+                            }}
+                        >
+                            <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
+                        </Button>
+                    </Tooltip>
+                </div>
             </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ import { constants } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
 
 export default function Board() {
-    const { width } = useContext<any>(StateGlobals);
+    const { width, loaded, usersLoading } = useContext<any>(StateGlobals);
 
     const getSlidesPerView = (wd: number = width): number => {
         let slidesInView = 1;
@@ -55,27 +55,31 @@ export default function Board() {
                     </div>
                 </div>
             </div>
-            <Slider 
-                spaceBetween={1}
-                showButtons={false} 
-                className={`boardsListsSlider`} 
-                showPaginationDots={width >= 501} 
-                slidesPerView={getSlidesPerView()}
-                paginationClass={`boardListPaginationDots`}
-            >
-                <SwiperSlide>
-                    <ListComponent />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <ListComponent title={`Active`} />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <ListComponent title={`Blocked`} />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <ListComponent title={`Complete`} />
-                </SwiperSlide>
-            </Slider>
+            {/* {(usersLoading || !loaded) ? ( */}
+                {/* // <div>Loading</div> */}
+            {/* // ) : ( */}
+                <Slider 
+                    spaceBetween={1}
+                    showButtons={false} 
+                    className={`boardsListsSlider`} 
+                    showPaginationDots={width >= 501} 
+                    slidesPerView={getSlidesPerView()}
+                    paginationClass={`boardListPaginationDots`}
+                >
+                    <SwiperSlide>
+                        <ListComponent />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <ListComponent title={`Active`} />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <ListComponent title={`Blocked`} />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <ListComponent title={`Complete`} />
+                    </SwiperSlide>
+                </Slider>
+            {/* // )} */}
         </div>
     </>
 }

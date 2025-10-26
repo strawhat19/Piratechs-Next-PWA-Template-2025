@@ -112,6 +112,19 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         }
     }
 
+    const onResize = (force = false) => {
+        const windowWidth = window?.innerWidth;
+        const windowHeight = window?.innerHeight;
+        setSmallScreen(windowWidth <= constants?.breakpoints?.mobile);
+        if (force) {
+            setWidth(windowWidth);
+            setHeight(windowHeight);
+        } else {
+            setWidth((prevWidth?: number) => prevWidth !== windowWidth ? windowWidth : prevWidth);
+            setHeight((prevHeight?: number) => prevHeight !== windowHeight ? windowHeight : prevHeight);
+        }
+    }
+
     const onSignIn = (usr: User, showSuccess = false) => {
         if (user != null) return;
         setUser(usr);
@@ -192,14 +205,6 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (typeof window != `undefined`) {
             let isOnPWA = isInStandaloneMode();
             setIsPWA(isOnPWA);
-        }
-
-        const onResize = () => {
-            const windowWidth = window?.innerWidth;
-            const windowHeight = window?.innerHeight;
-            setSmallScreen(windowWidth <= constants?.breakpoints?.mobile);
-            setWidth((prevWidth?: number) => prevWidth !== windowWidth ? windowWidth : prevWidth);
-            setHeight((prevHeight?: number) => prevHeight !== windowHeight ? windowHeight : prevHeight);
         }
 
         const debouncedResize = debounce(onResize, 5);

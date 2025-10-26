@@ -1,4 +1,20 @@
 .itemComponent {
+    cursor: grab;
+    display: flex;
+    grid-gap: 10px;
+    user-select: none;
+    border-radius: 8px;
+    align-items: center;
+    padding: 0 9px 0 7px;
+    background: var(--navy);
+    border: 1px solid var(--background);
+    transition: opacity var(--transition);
+    .itemStart {
+        flex: 1;
+        display: flex;
+        grid-gap: 8px;
+        flex-direction: column;
+    }
     .itemTypeIndexImages {
         .itemTypeIndex {
             width: auto; 
@@ -20,5 +36,10 @@
         padding-bottom: 3px;
         stroke-linecap: round;
         border-bottom: 2px solid var(--main);
+    }
+    .itemEndContainer {
+        display: flex;
+        grid-gap: 10px;
+        flex-direction: column;
     }
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import './tag.scss';
+
 import { useContext } from 'react';
 import { Button, Tooltip } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
@@ -79,7 +81,7 @@ export default function StatusTag({
                             {icon != undefined ? icon : (currentStatus ? statuses[item?.status]?.icon : statuses[item?.status]?.iconTransition)}
                         </span>
                     )}
-                    <span className={`tagName`} style={{ maxHeight: 18, fontWeight: 300, fontSize: getLabel()?.length > 7 ? (getLabel()?.length > 10 ? 11 : 12) : 14, lineHeight: 1.4 }}>
+                    <span className={`tagName`} style={{ fontSize: getLabel()?.length > 7 ? (getLabel()?.length > 10 ? 11 : 12) : 14 }}>
                         <i>{getLabel()}</i>
                     </span>
                 </div>
