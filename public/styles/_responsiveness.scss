@@ -153,7 +153,7 @@ html {
     $itm_hght: 35px;
     .itemButton {
         background: var(--bg) !important;
-        &:not(.currentStatusTag) {
+        &.thiccBtn {
             min-height: $itm_hght;
             &.itemDeleteButton {
                 min-width: 40px !important;

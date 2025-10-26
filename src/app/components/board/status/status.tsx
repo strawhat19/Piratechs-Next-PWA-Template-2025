@@ -38,33 +38,49 @@ export const statuses: any = {
 export default function StatusTag({ 
     item, 
     style = {}, 
+    label = ``,
+    showIcon = true,
     disabled = true, 
+    thiccBtn = false,
+    icon = undefined,
     onClick = () => {}, 
     currentStatus = true, 
     className = `statusTagComponent`, 
 }: any) {
     let { selected } = useContext<any>(StateGlobals);
+    const getLabel = () => label != `` ? label : (currentStatus ? item?.status : statuses[item?.status].transition);
     return (
-        <Tooltip placement={`top`} title={currentStatus ? `` : `Change Status from "${item?.status}" to "${statuses[item?.status]?.transition}"`} arrow>
+        <Tooltip placement={`top`} title={disabled ? `` : `Change Status from "${item?.status}" to "${statuses[item?.status]?.transition}"`} arrow>
             <Button
                 onClick={selected != null && selected?.statusChange ? (e) => selected?.statusChange(e, selected) : onClick}
                 disabled={disabled}
-                className={`statusTag ${currentStatus ? `currentStatusTag` : `changeStatusTag`} flexCenter itemButton ${className} ${disabled ? `pointerEventsNone` : ``}`}
+                className={`
+                    statusTag 
+                    flexCenter 
+                    itemButton 
+                    ${className} 
+                    ${thiccBtn ? `thiccBtn` : ``} 
+                    ${disabled ? `pointerEventsNone` : ``} 
+                    ${currentStatus ? `currentStatusTag` : `changeStatusTag`}  
+                `}
                 style={{
                     ...style,
                     borderRadius: 4, 
                     color: `inherit`,
                     cursor: `pointer`,
-                    padding: `0 10px`, 
+                    minWidth: `fit-content`,
                     border: `0px solid #444`, 
+                    padding: `0 ${thiccBtn ? `10px` : `5px`}`, 
                 }}
             >
                 <div className={`tagContent flexCenter gap5 pointerEventsNone`}>
-                    <span className={`tagIcon main flexCenter`} style={{ maxHeight: 18 }}>
-                        {currentStatus ? statuses[item?.status]?.icon : statuses[item?.status]?.iconTransition}
-                    </span>
-                    <span className={`tagName`} style={{ maxHeight: 18, fontWeight: 300, fontSize: 14, lineHeight: 1.4 }}>
-                        <i>{currentStatus ? item?.status : statuses[item?.status].transition}</i>
+                    {showIcon && (
+                        <span className={`tagIcon main flexCenter`} style={{ maxHeight: 18 }}>
+                            {icon != undefined ? icon : (currentStatus ? statuses[item?.status]?.icon : statuses[item?.status]?.iconTransition)}
+                        </span>
+                    )}
+                    <span className={`tagName`} style={{ maxHeight: 18, fontWeight: 300, fontSize: getLabel()?.length > 7 ? (getLabel()?.length > 10 ? 11 : 12) : 14, lineHeight: 1.4 }}>
+                        <i>{getLabel()}</i>
                     </span>
                 </div>
             </Button>

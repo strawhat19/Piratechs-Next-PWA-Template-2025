@@ -1,6 +1,7 @@
 .imagesCarousel {
-    .swiper-slide {
+    .imagesCarouselSlide {
         overflow: hidden;
         border-radius: 6px;
+        min-width: fit-content;
     }
 }

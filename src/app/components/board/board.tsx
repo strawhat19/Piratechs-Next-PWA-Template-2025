@@ -11,11 +11,22 @@ export default function Board() {
     const { width } = useContext<any>(StateGlobals);
 
     const getSlidesPerView = (wd: number = width): number => {
-        if (wd >= constants?.breakpoints?.pc) {
-            return wd > constants?.breakpoints?.desktop ? 4 : 3;
+        let slidesInView = 1;
+        let { desktop, tabletMed, pc } = constants?.breakpoints ?? {};
+        
+        if (wd >= pc) {
+            if (wd > desktop) {
+                slidesInView = 4;
+            } else {
+                slidesInView = 3;
+            }
         } else {
-            return wd >= constants?.breakpoints?.tabletMed ? 2 : 1;
+            if (wd >= tabletMed) {
+                slidesInView = 2;
+            }
         }
+
+        return slidesInView;
     }
 
     return <>

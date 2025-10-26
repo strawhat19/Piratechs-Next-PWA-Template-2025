@@ -11,6 +11,7 @@ export const constants = {
     tabletLarge: 1092,
     notebook: 1200,
     laptop: 1366,
+    smallpc: 1500,
     pc: 1540,
     computer: 1600,
     desktop: 1920,
@@ -51,6 +52,17 @@ export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g,
 export const isInStandaloneMode = () => {
   if (typeof window === `undefined`) return false;
   return window.matchMedia(`(display-mode: standalone)`).matches;
+}
+
+export const shuffleArray = (array: any[]): any[] => {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex != 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
 }
 
 export const logToast = (message: string, content: any, error = false, data: any = null) => {

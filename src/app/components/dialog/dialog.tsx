@@ -84,7 +84,7 @@ function SimpleDialog(props: SimpleDialogProps) {
                   <h4>
                     <strong>Images</strong> <span className={`main`} style={{ fontSize: 12 }}><i>({selected?.imageURLs.length})</i></span>
                   </h4>
-                  <ImagesCarousel imageURLs={selected?.imageURLs} desktopSize={`350px`} />
+                  <ImagesCarousel imageURLs={selected?.imageURLs} heightContainer={`dialogContent`} />
                 </div>
               )}
             </div>

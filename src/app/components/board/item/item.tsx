@@ -1,6 +1,8 @@
+import './item.scss';
+
 import Img from '../../image/image';
 import { CSS } from '@dnd-kit/utilities';
-import { Delete } from '@mui/icons-material';
+import { DateRangeSharp, Delete } from '@mui/icons-material';
 import { Types } from '@/shared/types/types';
 import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
@@ -67,25 +69,23 @@ export default function ItemComponent({
     <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>
       <div className={`itemInner`} style={{ flex: 1, display: `flex`, alignItems: `center`, justifyContent: `space-between`, gap: 10 }} onClick={onClick}>
         <div className={`itemTypeIndexImages flexCenter gap5`}>
-            <div
-                aria-hidden
-                title={`Drag`}
-                className={`itemTypeIndex flexCenter gap5`}
-                style={{
-                    height: 25, 
-                    fontSize: 12,
-                    width: `auto`, 
-                    borderRadius: 4, 
-                    border: `0px solid #555`, 
-                }}
-            >
-                <span className={`itemTypeIcon main`}>
-                    ⇅
-                </span> 
-                <span className={`itemIndex`}>
-                    {itemIndex + 1}
-                    {/* {item?.number} */}
-                </span>
+            <div className={`itemBadges`}>
+                <div aria-hidden className={`itemTypeIndex flexCenter justifyCenter gap5`}>
+                    <span className={`itemTypeIcon main`}>
+                        {item?.type[0]}
+                    </span> 
+                    <span className={`itemIndex`}>
+                        <i>{item?.number}</i>
+                    </span> 
+                </div>
+                <div aria-hidden className={`itemTypeIndex flexCenter gap5`}>
+                    <span className={`itemTypeIcon main`}>
+                        ⇅
+                    </span> 
+                    <span className={`itemIndex`}>
+                        {itemIndex + 1}
+                    </span>
+                </div>
             </div>
             {item?.imageURLs?.length > 0 && (
                 <Img alt={item?.name} src={item?.imageURLs[0]} width={`auto`} height={`160px`} />
@@ -98,7 +98,13 @@ export default function ItemComponent({
                         <strong className={`itemName lineClamp2`}>
                             {item?.name}
                         </strong>
-                        <StatusTag item={item} style={{ marginLeft: 15 }} />
+                        <StatusTag 
+                            item={item} 
+                            showIcon={false}
+                            label={item?.updated}
+                            style={{ marginLeft: 15 }} 
+                            icon={<DateRangeSharp style={{ fontSize: 18 }} />}
+                        />
                     </h3>
                 </div>
                 <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
@@ -106,7 +112,7 @@ export default function ItemComponent({
                 </div>
             </div>
             <div className={`itemEnd flexCenter gap10`}>
-                <StatusTag item={item} disabled={false} currentStatus={false} onClick={(e: any) => statusChange(e, item)} />
+                <StatusTag item={item} disabled={false} thiccBtn={true} onClick={(e: any) => statusChange(e, item)} />
                 <Tooltip placement={`top`} title={`Delete Item #${item?.number} "${item?.name}"`} arrow>
                     <Button
                         onClick={onDelete}
@@ -114,7 +120,10 @@ export default function ItemComponent({
                         className={`itemButton itemDeleteButton`}
                         style={{
                             padding: 0, 
-                            borderRadius: 4, 
+                            minWidth: 35,
+                            maxWidth: 35,
+                            minHeight: 35, 
+                            borderRadius: 4,
                             color: `inherit`,
                             cursor: `pointer`, 
                             background: `var(--bg)`, 

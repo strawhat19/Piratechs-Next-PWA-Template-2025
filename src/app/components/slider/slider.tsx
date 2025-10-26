@@ -64,7 +64,7 @@ export default function Slider({
     }
 
     return <>
-        <div className={`slider ${className}`}>
+        <div className={`slider ${className} ${children?.length > 1 ? `multi-slider` : `single-slider`}`}>
             {showButtons && (
                 <Button className={`sliderButton`} onClick={() => slide(-1)}>
                     {`<`}

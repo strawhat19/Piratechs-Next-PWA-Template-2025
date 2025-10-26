@@ -1,0 +1,19 @@
+.itemComponent {
+    .itemTypeIndexImages {
+        .itemTypeIndex {
+            width: auto; 
+            height: 25px; 
+            border: none; 
+            font-size: 12px;
+            border-radius: 4px; 
+            .itemTypeIcon {
+                max-height: 15px;
+            }
+        }
+        img {
+            object-fit: cover;
+            object-position: center;
+            max-width: 106px !important;
+        }
+    }
+}
