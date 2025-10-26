@@ -24,17 +24,15 @@ export default function ImagesCarousel({ mobileSize = `300px`, desktopSize = `65
 
     let [images, ] = useState(imageURLs);
 
-    // const getSlidesPerView = (wd: number = width): number => {
-    //     let { pc, tabletMed, desktop } = constants?.breakpoints;
-    //     if (wd >= pc) {
-    //         return wd > desktop ? 4 : 3;
-    //     } else {
-    //         return wd >= tabletMed ? 2 : 1;
-    //     }
-    // }
+    const getSlidesPerView = (wd: number = width, isSmall: boolean = smallScreen): number => {
+        let { desktop, mobile } = constants?.breakpoints ?? {};
+        if (isSmall || wd <= mobile) return 2.25;
+        if (wd > desktop) return 6;
+        return 3.33;
+    };
 
     return (
-        <Slider className={`imagesCarousel`} slidesPerView={(smallScreen || width <= constants?.breakpoints?.mobile) ? 2.25 : (width >= constants?.breakpoints?.desktop ? 5 : 3.33)} spaceBetween={15} showButtons={false}>
+        <Slider className={`imagesCarousel`} slidesPerView={getSlidesPerView()} spaceBetween={15} showButtons={false}>
             {images?.map((img, imgIndex) => (
                 <SwiperSlide key={imgIndex}>
                     <Img 
