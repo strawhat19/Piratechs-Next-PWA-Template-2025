@@ -9,6 +9,7 @@ import StatusTag, { Status } from '../status/status';
 import { StateGlobals } from '@/shared/global-context';
 import { DateRangeSharp, Delete } from '@mui/icons-material';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { constants } from '@/shared/scripts/constants';
 
 export const type = Types.Item;
 
@@ -52,7 +53,7 @@ export default function ItemComponent({
 }) {
     const smallStartW = 300;
     const itemStartEl = useRef(null);
-    const { width } = useContext<any>(StateGlobals);
+    const { width, isPWA } = useContext<any>(StateGlobals);
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
     const [startW, setStartW] = useState(smallStartW);
@@ -114,7 +115,7 @@ export default function ItemComponent({
                 </div>
             </div>
             {item?.imageURLs?.length > 0 && (
-                <Img alt={item?.name} src={item?.imageURLs[0]} width={`auto`} height={`160px`} />
+                <Img alt={item?.name} src={item?.imageURLs[0]} className={`itemImage`} width={`auto`} height={(isPWA && width <= constants.breakpoints.mobile) ? `153px` : `160px`} />
             )}
         </div>
         <div className={`itemContent width100 itemNameStatusDescriptionEnd flexCenter gap5 spaceBetween`}>

@@ -49,6 +49,8 @@
         }
     }
     .itemName {
+        top: -3px;
+        position: relative;
         padding-bottom: 3px;
         @extend .borderedItmField;
     }

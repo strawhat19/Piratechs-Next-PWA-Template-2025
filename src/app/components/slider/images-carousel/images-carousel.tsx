@@ -55,6 +55,8 @@ export default function ImagesCarousel({
     height = undefined,
     heightContainer = ``,
     imageURLs = shuffledDefaultImages, 
+    className = `imageCarouselComponent`,
+    imageClassName = `imageCarouselImage`,
 }: any) {
     let { width, height: windowHeight, smallScreen } = useContext<any>(StateGlobals);
 
@@ -96,7 +98,7 @@ export default function ImagesCarousel({
     };
 
     return (
-        <Slider className={`imagesCarousel`} slidesPerView={getSlidesPerView()} spaceBetween={15} showButtons={false}>
+        <Slider className={`imagesCarousel ${className}`} slidesPerView={getSlidesPerView()} spaceBetween={15} showButtons={false}>
             {imagesURLs?.map((imgURL: string, imgIndex: number) => (
                 <SwiperSlide key={imgIndex} className={`imagesCarouselSlide`}>
                     <Img 
@@ -104,6 +106,7 @@ export default function ImagesCarousel({
                         alt={`Image`} 
                         width={`auto`} 
                         height={heightToUse} 
+                        className={imageClassName}
                     />
                 </SwiperSlide>
             ))}

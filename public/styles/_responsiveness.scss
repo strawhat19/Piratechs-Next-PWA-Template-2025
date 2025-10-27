@@ -183,6 +183,18 @@ html {
     }
 
     @container (max-width: #{$mobileBreakPoint7}) {
+        .isPWA {
+            main {
+                padding-top: 15px;
+            }
+        }
+        .galleryPage {
+            &:has(.menuExpanded) {
+                .galleryCarousel, .galleryCarouselImage {
+                    max-height: 460px;
+                }
+            }
+        }
         .dialogContent {
             --space: 12px;
             .dialogTitleName {
@@ -232,7 +244,10 @@ html {
             width: 100%;
         }
         .itemDateTag {
-            width: 100%;
+            max-width: fit-content;
+        }
+        .tagName {
+            font-weight: bold;
         }
         .itemDescription {
             font-size: 14px;
@@ -259,7 +274,7 @@ html {
                 width: 100%;
                 grid-gap: 7px;
                 .itemButton {
-                    --tag_height: 28px;
+                    --tag_height: 22px;
                     min-height: var(--tag_height) !important;
                 }
                 .statusTag  {

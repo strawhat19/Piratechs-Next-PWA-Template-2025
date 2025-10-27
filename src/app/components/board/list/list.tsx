@@ -24,6 +24,7 @@ export default function ListComponent({
   const mobileSensors = useSensors(
     // useSensor(MouseSensor),
     useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 5 } })
+    // useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
   );
   const sensors = (isPWA || width <= constants?.breakpoints?.mobile) ? mobileSensors : desktopSensors;
 
