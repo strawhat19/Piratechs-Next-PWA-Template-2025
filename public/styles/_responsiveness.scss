@@ -183,15 +183,22 @@ html {
     }
 
     @container (max-width: #{$mobileBreakPoint7}) {
-        .isPWA {
-            main {
-                padding-top: 15px;
-            }
-        }
         .galleryPage {
             &:has(.menuExpanded) {
                 .galleryCarousel, .galleryCarouselImage {
                     max-height: 460px;
+                }
+            }
+        }
+        .isPWA {
+            main {
+                padding-top: 15px;
+            }
+            .galleryPage {
+                &:has(.menuExpanded) {
+                    .galleryCarousel, .galleryCarouselImage {
+                        max-height: 450px;
+                    }
                 }
             }
         }
