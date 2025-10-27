@@ -194,10 +194,10 @@ html {
             main {
                 padding-top: 15px;
             }
-            .galleryPage {
+            &.galleryPage {
                 &:has(.menuExpanded) {
                     .galleryCarousel, .galleryCarouselImage {
-                        max-height: 420px !important;
+                        max-height: 450px !important;
                     }
                 }
             }
