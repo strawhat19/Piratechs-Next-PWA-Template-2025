@@ -99,7 +99,7 @@ export default function ItemComponent({
                 if (width > xsDevice) {
                     itemImgHeight = `153px`;
                 } else {
-                    itemImgHeight = `147px`;
+                    itemImgHeight = `149px`;
                 }
             }
         } else {
