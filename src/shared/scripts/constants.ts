@@ -3,6 +3,7 @@ import { Roles, Types } from '../types/types';
 
 export const constants = {
   breakpoints: {
+    xsDevice: 435,
     smallPhone: 678,
     mobile: 768,
     tabletSmall: 875,

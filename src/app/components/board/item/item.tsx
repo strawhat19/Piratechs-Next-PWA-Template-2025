@@ -7,9 +7,9 @@ import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import StatusTag, { Status } from '../status/status';
 import { StateGlobals } from '@/shared/global-context';
+import { constants } from '@/shared/scripts/constants';
 import { DateRangeSharp, Delete } from '@mui/icons-material';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { constants } from '@/shared/scripts/constants';
 
 export const type = Types.Item;
 
@@ -53,7 +53,8 @@ export default function ItemComponent({
 }) {
     const smallStartW = 300;
     const itemStartEl = useRef(null);
-    const { width, isPWA } = useContext<any>(StateGlobals);
+    const { mobile, xsDevice } = constants?.breakpoints;
+    const { width, height, isPWA } = useContext<any>(StateGlobals);
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
     const [startW, setStartW] = useState(smallStartW);
@@ -88,10 +89,30 @@ export default function ItemComponent({
         willChange: `transform`
     };
 
-    // ${isDragging ? `swiper-no-swiping` : ``}
+    const getItemImageHeight = () => {
+        let itemImgHeight = `160px`;
+        let largeHt = height >= 800;
+        let isMobile = width <= mobile;
+        
+        if (isMobile) {
+            if (isPWA) {
+                if (width > xsDevice) {
+                    itemImgHeight = `153px`;
+                } else {
+                    itemImgHeight = `140px`;
+                }
+            }
+        } else {
+            if (largeHt) {
+                itemImgHeight = `189px`;
+            }
+        }
+
+        return itemImgHeight;
+    }
 
   return (
-    <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping`} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping ${isDragging ? `draggingItem` : `notDraggingItem`}`} style={style} {...attributes} {...listeners}>
       <div className={`itemInner`} onClick={onClick}>
         <div className={`itemTypeIndexImages flexCenter gap5`}>
             <div className={`itemBadges`}>
@@ -115,7 +136,13 @@ export default function ItemComponent({
                 </div>
             </div>
             {item?.imageURLs?.length > 0 && (
-                <Img alt={item?.name} src={item?.imageURLs[0]} className={`itemImage`} width={`auto`} height={(isPWA && width <= constants.breakpoints.mobile) ? `153px` : `160px`} />
+                <Img 
+                    width={`auto`} 
+                    alt={item?.name} 
+                    className={`itemImage`} 
+                    src={item?.imageURLs[0]} 
+                    height={getItemImageHeight()} 
+                />
             )}
         </div>
         <div className={`itemContent width100 itemNameStatusDescriptionEnd flexCenter gap5 spaceBetween`}>

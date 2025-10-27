@@ -18,6 +18,7 @@ export default function ListComponent({
   title = `To Do`,
 }: any) {
   const listScroll = useRef(null);
+  const { mobile } = constants?.breakpoints;
   const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(StateGlobals);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -26,7 +27,7 @@ export default function ListComponent({
     useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 5 } })
     // useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
   );
-  const sensors = (isPWA || width <= constants?.breakpoints?.mobile) ? mobileSensors : desktopSensors;
+  const sensors = (isPWA || width <= mobile) ? mobileSensors : desktopSensors;
 
   const imageURLs = Object.values(imagesObject.vertical);
 
@@ -38,8 +39,13 @@ export default function ListComponent({
     // console.log(`onDragStart`, { e, active, activatorEvent });
   }, []);
 
-  const scrollListTo = () => {
-    
+  const scrollListTo = (bottom = true) => {
+    if (listScroll && listScroll != null && listScroll?.current) {
+      let listEl: any = listScroll?.current;
+      if (listEl) {
+        listEl.scrollTop = bottom ? listEl.scrollHeight : 0;
+      }
+    }
   }
 
   const addItem = () => {
@@ -66,6 +72,9 @@ export default function ListComponent({
       ];
       return updatedItems;
     });
+    setTimeout(() => {
+      scrollListTo();
+    }, 250)
   };
 
   const deleteItem = (id: string) => {
@@ -98,7 +107,10 @@ export default function ListComponent({
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
+    let { date } = getIDParts();
     setBoardItems((prev: Item[]) => {
+      let thisItm = prev?.find(i => i?.id == active?.id);
+      if (thisItm) thisItm.updated = date;
       const oldIndex = prev.findIndex(i => i.id === active.id);
       const newIndex = prev.findIndex(i => i.id === over.id);
       return arrayMove(prev, oldIndex, newIndex);
