@@ -45,6 +45,7 @@
         img {
             object-fit: cover;
             object-position: center;
+            min-width: 106px !important;
             max-width: 106px !important;
         }
     }
