@@ -197,7 +197,7 @@ html {
             .galleryPage {
                 &:has(.menuExpanded) {
                     .galleryCarousel, .galleryCarouselImage {
-                        max-height: 450px !important;
+                        max-height: 420px !important;
                     }
                 }
             }
