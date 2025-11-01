@@ -3,7 +3,8 @@ import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
 import { apiRoutes, logToast } from '../scripts/constants';
-import { GoogleAuthProvider, browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
+import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
+import { Board } from '../types/models/Board';
 
 export enum Tables {
   users = `users`,
@@ -36,6 +37,7 @@ export const auth = getAuth(firebaseApp);
 setPersistence(auth, browserLocalPersistence);
 
 export const usersAPI = apiRoutes.users.url;
+export const boardsAPI = apiRoutes.boards.url;
 
 export const userConverter = {
   toFirestore: (usr: User) => {
@@ -62,10 +64,15 @@ export const addUserToDatabase = async (usr: User) => {
 }
 
 export const updateUserInDatabase = async (id: string, updates: Partial<User>) => {
+  const currentUser = auth.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
   const res = await fetch(usersAPI + `/` + id, {
     method: `PATCH`,
     body: JSON.stringify(updates),
-    headers: { [`Content-Type`]: `application/json` },
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
   });
   if (!res.ok) {
     let message = `Error on Update User (${res.status})`;
@@ -74,7 +81,6 @@ export const updateUserInDatabase = async (id: string, updates: Partial<User>) =
   }
   return res.json();
 }
-
 export const renderFirebaseAuthErrorMessage = (erMsg: string) => {
   let erMsgQuery = erMsg?.toLowerCase();
   if (erMsgQuery.includes(`invalid-email`)) {
@@ -94,15 +100,55 @@ export const renderFirebaseAuthErrorMessage = (erMsg: string) => {
   }
 }
 
-// export const boardConverter = {
-//   toFirestore: (brd: Board) => {
-//     return JSON.parse(JSON.stringify(brd));
-//   },
-//   fromFirestore: (snapshot: any, options: any) => {
-//     const data = snapshot.data(options);
-//     return new Board(data);
-//   }
-// }
+export const boardConverter = {
+  toFirestore: (brd: Board) => {
+    return JSON.parse(JSON.stringify(brd));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new Board(data);
+  }
+}
+
+export const addBoardToDatabase = async (brd: Board, user: User) => {
+  const currentUser = auth.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(boardsAPI, {
+    method: `POST`,
+    body: JSON.stringify({ ...brd, props: user?.properties }),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Create Board (${res.status})`;
+    logToast(`Error Adding Board to Database ${Tables.boards} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const deleteBoardFromDatabase = async (brd: Board, user: User) => {
+  const currentUser = auth.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const filteredIDs = user?.boardIDs?.length > 0 ? user?.boardIDs?.filter(bid => bid != brd?.id) : [];
+  const selectedID = filteredIDs?.length > 0 ? filteredIDs[0] : ``;
+  const res = await fetch(boardsAPI, {
+    method: `DELETE`,
+    body: JSON.stringify({ ...brd, props: user?.properties, selectedID }),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Delete Board (${res.status})`;
+    logToast(`Error Deleting Board from Database ${Tables.boards} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
 
 // export const listConverter = {
 //   toFirestore: (lst: List) => {

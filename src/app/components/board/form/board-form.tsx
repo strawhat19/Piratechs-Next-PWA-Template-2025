@@ -6,6 +6,7 @@ import { StateGlobals } from '@/shared/global-context';
 export default function BoardForm({ 
     onClick, 
     boardSearch = false,
+    newBoardForm = false,
     showIconButton = true,
 }: any) {    
     const { width, boardItems, boardForm, setBoardForm } = useContext<any>(StateGlobals);
@@ -25,14 +26,16 @@ export default function BoardForm({
     }
 
     return (
-        <div className={`formRow boardListFormContainer boardFormContainer`}>
+        <div className={`formRow boardListFormContainer boardFormContainer ${newBoardForm ? `newBoardForm` : ``}`}>
             <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
                 {boardSearch ? <>
                     <input name={`search`} type={`search`} className={`searchField`} placeholder={`Search...`} required />
                 </> : <>
                     <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} required />
-                    <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} />
-                    <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
+                    {!newBoardForm && <>
+                        <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} />
+                        <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
+                    </>}
                 </>}
                 {(showIconButton && (!boardSearch || (boardSearch && width > 768))) && (
                     <Tooltip placement={`top`} title={boardSearch ? `` : `+ Add Item #${boardItems.length + 1}`} arrow>

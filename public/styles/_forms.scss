@@ -7,6 +7,13 @@
     border-radius: 8px;
     align-items: center;
     background: var(--bg);
+    &.newBoardForm {
+        padding-right: 0;
+        padding-top: 3px;
+        .nameField {
+            max-width: 100% !important;
+        }
+    }
     .boardForm {
         gap: 8px;
         display: flex;

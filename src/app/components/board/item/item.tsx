@@ -2,38 +2,17 @@ import './item.scss';
 
 import Img from '../../image/image';
 import { CSS } from '@dnd-kit/utilities';
+import StatusTag from '../status/status';
 import { Types } from '@/shared/types/types';
 import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
-import StatusTag, { Status } from '../status/status';
+import { Item } from '@/shared/types/models/Item';
 import { StateGlobals } from '@/shared/global-context';
 import { constants } from '@/shared/scripts/constants';
 import { DateRangeSharp, Delete } from '@mui/icons-material';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 export const type = Types.Item;
-
-export class Item { 
-    onClick: any;
-    id: string = ``; 
-    uid: string = ``;
-    name: string = ``; 
-    uuid: string = ``;
-    number: number = 0; 
-    rating: number = 5;
-    urls: string[] = []; 
-    tags: string[] = []; 
-    itemIndex?: number = 0; 
-    imageURLs: string[] = []; 
-    description: string = ``; 
-    type: Types | string = type;
-    created: Date | string = ``;
-    updated: Date | string = ``;
-    status: Status | string = Status.ToDo;
-    constructor(data: Partial<Item>) {
-        Object.assign(this, data);
-    }
-};
 
 export default function ItemComponent({
     id,

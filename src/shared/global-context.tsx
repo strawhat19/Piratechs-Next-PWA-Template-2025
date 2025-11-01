@@ -1,20 +1,20 @@
 'use client';
 
 import { toast } from 'react-toastify';
+import { Item } from './types/models/Item';
+import { Board } from './types/models/Board';
 import { User } from '@/shared/types/models/User';
-import { Item } from '@/app/components/board/item/item';
-import { AuthStates, Types } from '@/shared/types/types';
-import { createContext, useEffect, useMemo, useState } from 'react';
-import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
+import { AuthStates } from '@/shared/types/types';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { updateUserInDatabase, auth, renderFirebaseAuthErrorMessage } from '@/shared/server/firebase';
-import { apiRoutes, capWords, constants, debounce, devEnv, genID, getIDParts, isInStandaloneMode, logToast, randomNumber } from '@/shared/scripts/constants';
+import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter } from '@/shared/server/firebase';
+import { apiRoutes, capWords, constants, debounce, devEnv, getIDParts, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
 
 export const StateGlobals = createContext({});
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
-export const defaultUserData = { id: `default`, boards: [], lists: [], items: [], tasks: [], shared: [], friends: [], teams: [], tags: [], points: 0, };
 
 export const getPageName = (path: string) => {
     let pageName = `Home`;
@@ -31,7 +31,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [user, setUser] = useState<User | null>(null);
     let [usersLoading, setUsersLoading] = useState(true);
 
-    let [userData, setUserData] = useState(defaultUserData);
+    // let [boards, setBoards] = useState<Board[]>([]);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -47,38 +47,38 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [stockPositions, setStockPositions] = useState([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 
-    let type = Types.Item;
-    let imageURLs = Object.values(imagesObject.vertical);
+    // let type = Types.Item;
+    // let imageURLs = Object.values(imagesObject.vertical);
     
     let [boardForm, setBoardForm] = useState<Partial<Item | any>>({ name: ``, description: ``, imageURL: `` });
     let [boardItems, setBoardItems] = useState<Item[]>(() => [
-        new Item({ 
-            number: 1, 
-            name: `First Item`, 
-            id: genID(type, 1, `First`)?.id, 
-            created: genID(type, 1, `First`)?.date, 
-            updated: genID(type, 1, `First`)?.date, 
-            imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
-            description: `This is First Item in the Board List Component`, 
-        }),
-        new Item({ 
-            number: 2, 
-            name: `Second Item`, 
-            id: genID(type, 2, `Second`)?.id, 
-            created: genID(type, 2, `Second`)?.date, 
-            updated: genID(type, 2, `Second`)?.date, 
-            imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
-            description: `This is Second Item in the Board List Component`, 
-        }),
-        new Item({ 
-            number: 3, 
-            name: `Third Item`, 
-            id: genID(type, 3, `Third`)?.id, 
-            created: genID(type, 3, `Third`)?.date, 
-            updated: genID(type, 3, `Third`)?.date, 
-            imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
-            description: `This is Third Item in the Board List Component`,
-        }),
+        // new Item({ 
+        //     number: 1, 
+        //     name: `First Item`, 
+        //     id: genID(type, 1, `First`)?.id, 
+        //     created: genID(type, 1, `First`)?.date, 
+        //     updated: genID(type, 1, `First`)?.date, 
+        //     imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
+        //     description: `This is First Item in the Board List Component`, 
+        // }),
+        // new Item({ 
+        //     number: 2, 
+        //     name: `Second Item`, 
+        //     id: genID(type, 2, `Second`)?.id, 
+        //     created: genID(type, 2, `Second`)?.date, 
+        //     updated: genID(type, 2, `Second`)?.date, 
+        //     imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
+        //     description: `This is Second Item in the Board List Component`, 
+        // }),
+        // new Item({ 
+        //     number: 3, 
+        //     name: `Third Item`, 
+        //     id: genID(type, 3, `Third`)?.id, 
+        //     created: genID(type, 3, `Third`)?.date, 
+        //     updated: genID(type, 3, `Third`)?.date, 
+        //     imageURLs: [imageURLs[randomNumber(imageURLs?.length)]], 
+        //     description: `This is Third Item in the Board List Component`,
+        // }),
     ]);
 
     const refreshUsers = async () => {
@@ -136,12 +136,21 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (showSuccess && loaded == false) {
             logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
         }
-        setLoaded(true);
+        // refreshUserData(usr = user);
+        // getUserData(usr);
     }
 
+    // const getUserData = (usr = user) => {
+    //     // console.log(`Get User Data`, usr);
+    // }
+
     const onSignOut = async () => {
+        // if (user != null) {
+        //     await updateUserInDatabase(user.id, { signedIn: false }).then(async () => {
+        //         // refreshUsers();
+        //     }).catch(error => onSignInError(error));
+        // }
         setUser(null);
-        setUserData(defaultUserData);
         setAuthState(AuthStates.Next);
         await signOut(auth);
     }
@@ -167,18 +176,84 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             if (userCredential != null) {
                 let existingUser = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
                 if (existingUser) {
-                    const { date } = getIDParts();
-                    await updateUserInDatabase(existingUser?.id, { signedIn: true, lastSignIn: date, lastAuthenticated: date, updated: date, }).then(async () => {
-                        // refreshUsers();
-                        // let usr = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
-                        // if (usr) {
-                        //     onSignIn(usr);
-                        // } else onSignOut();
-                    }).catch(error => onSignInError(error));
+                    // const { date } = getIDParts();
+                    // await updateUserInDatabase(existingUser?.id, { 
+                    //     updated: date, 
+                    //     signedIn: true, 
+                    //     lastSignIn: date, 
+                    //     uid: existingUser?.uid,
+                    //     lastAuthenticated: date, 
+                    // }).then(async () => {
+                    //     // refreshUsers();
+                    //     // let usr = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
+                    //     // if (usr) {
+                    //     //     onSignIn(usr);
+                    //     // } else onSignOut();
+                    // }).catch(error => onSignInError(error));
                 } else onSignOut();
             }
         }).catch(error => onSignInError(error));
     }
+
+    useEffect(() => {
+        if (user != null) {
+            const usersDB = collection(db, Tables.users).withConverter(userConverter);
+            const usersDBQuery = query(usersDB, where(`friendIDs`, `array-contains`, user?.id));
+
+            const usersDBQueryListener = onSnapshot(usersDBQuery, usersDBDocs => {
+                const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
+                const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
+                console.log(`Users DB Update`, {dbUsers, dbUser});
+                setUsers(dbUsers);
+                setUser(dbUser);
+                setLoaded(true);
+            });
+
+            return () => {
+                usersDBQueryListener();
+            }
+        }
+    }, [user?.id]);
+
+    const boardsUnsubRef = useRef<null | (() => void)>(null);
+
+    const stopBoardsListener = () => {
+        if (boardsUnsubRef.current) {
+            boardsUnsubRef.current();
+            boardsUnsubRef.current = null;
+        }
+    };
+
+    useEffect(() => {
+        if (!user?.id) {
+            stopBoardsListener();
+            return;
+        }
+
+        const boardsDB = collection(db, Tables.boards).withConverter(boardConverter);
+        const boardsDBQuery = query(boardsDB, where(`userIDs`, `array-contains`, user?.id));
+
+        const boardsDBQueryListener = onSnapshot(boardsDBQuery, boardsDBDocs => {
+            const boards = boardsDBDocs.docs.map(d => new Board(d.data()));
+            const selectedBoard = boards.find(b => b?.id === (user as any)?.selectedID) ?? boards[0];
+            console.log(`Boards DB Update`, {boards, board: selectedBoard});
+            setUser(prev =>
+                prev ? new User({
+                    ...prev,
+                    data: { 
+                        ...(prev as any).data, 
+                        boards, 
+                        board: selectedBoard, 
+                    },
+                }) : prev
+            );
+            setLoaded(true);
+        });
+
+        boardsUnsubRef.current = boardsDBQueryListener;
+
+        return () => stopBoardsListener();
+    }, [user?.id, (user as any)?.selectedID]);
 
     useEffect(() => {
         let listenForUserAuthChanges: any = null;
@@ -190,7 +265,6 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                         onSignIn(thisUser, true);
                     }
                 } else {
-                    console.log(`Users`, users);
                     setLoaded(true);
                 }
             });
@@ -229,8 +303,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         users, setUsers,
         width, setWidth,
         height, setHeight,
-        userData, setUserData,
         usersLoading, setUsersLoading,
+
+        // boards, setBoards,
 
         isPWA, setIsPWA,
         loaded, setLoaded,
@@ -249,10 +324,11 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         boardForm, setBoardForm,
         boardItems, setBoardItems,
     }), [
-        user, users, userData, usersLoading, width, height, selected, loaded, isDevEnv, 
+        user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
         boardForm, boardItems,
+        // boards,
     ]);
 
     return (

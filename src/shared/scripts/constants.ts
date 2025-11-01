@@ -39,6 +39,9 @@ export const apiRoutes = {
   users: {
     url: `/api/users`,
   },
+  boards: {
+    url: `/api/boards`,
+  },
   stocks: {
     url: `/api/stocks`,
     routes: {
@@ -138,8 +141,10 @@ export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url) =>
   }
 }
 
-export const generateArray = (length: number, itemData: any, includeIndexData = false, Model: any = undefined) => {
-  let generatedArray = Array.from({ length }, (_, index) => {
+export const generateArray = (length: number, itemData: any, includeIndexData = false, Model: any = undefined): any[] => {
+  let generatedArray: any[] = [];
+  if (!length || typeof length != `number` || length == 0) return generatedArray;
+  generatedArray = Array.from({ length }, (_, index) => {
     if (includeIndexData) {
       let number = index + 1;
       let name = `${itemData?.type ?? Types.Data} ${number}`;

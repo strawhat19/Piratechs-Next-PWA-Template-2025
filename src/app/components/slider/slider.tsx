@@ -31,7 +31,7 @@ export default function Slider({
         setActiveSlideIndex(e?.activeIndex);
     }
 
-    const getDotsNumToShow = () => {
+    const getDotsNumToShow = (): number => {
         let slidesLen = children?.length ?? 0;
         let dotsToShow = Math.ceil(slidesLen / slidesPerView);
         return dotsToShow;

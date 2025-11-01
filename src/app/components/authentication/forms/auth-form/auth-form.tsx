@@ -85,6 +85,8 @@ export default function AuthForm({ style = { opacity: 1 } }: any) {
                             avatar: avatar ?? ``,
                         }); 
 
+                        newUser.friendIDs = [newUser?.id];
+
                         await addUserToDatabase(newUser).then(async () => {
                             logToast(`Created User`, newUser?.name, false, newUser);
                             form.reset();

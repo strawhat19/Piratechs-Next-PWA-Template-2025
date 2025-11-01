@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { tokenRequired } from '../../boards/route';
 import { db, Tables, userConverter } from '@/shared/server/firebase';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
@@ -23,6 +24,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
 
 export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
+    tokenRequired(req);
     const { id } = await ctx.params;
     const updates = await req.json();
 
@@ -41,6 +43,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
 
 export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
+    tokenRequired(_req);
     const { id } = await ctx.params;
     const userRef = doc(db, Tables.users, id);
     await deleteDoc(userRef);

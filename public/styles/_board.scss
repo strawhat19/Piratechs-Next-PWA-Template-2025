@@ -8,6 +8,10 @@
     top: 33px;
     position: relative;
 
+    &.boardLists_1 {
+        top: 15px;
+    }
+
     // --boardOffset: 170px;
     // --boardHeight: calc(100dvh - var(--boardOffset));
     // @supports (height: 100svh) {

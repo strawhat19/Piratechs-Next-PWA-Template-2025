@@ -25,15 +25,40 @@ export enum Roles {
   Owners = `Owners`,
 }
 
+export const item = { tasks: [] };
+export const board = { 
+  lists: [],
+  name: `Board`,
+  default: true,
+  type: Types.Board,
+};
+
+export const defaultUserData = { 
+  item, 
+  board, 
+  boards: [], 
+  lists: [], 
+  items: [], 
+  tasks: [], 
+  shared: [], 
+  friends: [], 
+  teams: [], 
+  tags: [], 
+};
+
 export class User extends Data {
   color?: string;
   phone?: string;
   avatar?: string;
   z_token?: string;
+  selectedID: string = ``;
+  boardIDs: string[] = [];
   type: Types = Types.User;
+  friendIDs?: string[] = [];
   verified?: boolean = true;
   signedIn?: boolean = false;
   anonymous?: boolean = false;
+  data?: any = defaultUserData;
   role: Roles | string = Roles.Subscribers;
   provider: Providers | string = Providers.Firebase;
   lastSignIn?: Date | string | any = getIDParts()?.date;

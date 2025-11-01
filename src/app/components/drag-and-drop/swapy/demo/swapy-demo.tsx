@@ -6,12 +6,11 @@ import { Menu } from '@mui/icons-material';
 import { User } from '@/shared/types/models/User';
 import Loader from '@/app/components/loaders/loader';
 import { StateGlobals } from '@/shared/global-context';
-import { generateArray } from '@/shared/scripts/constants';
 import { createSwapy, utils, type SlotItemMap } from 'swapy';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 const identifierKey = `id`;
-const initialUsers = generateArray(7, new User({ }), true, User);
+// const initialUsers = generateArray(7, new User({ }), true, User);
 
 export default function SwapyDemo({ label = `User` }) {
   const { loaded } = useContext<any>(StateGlobals);
@@ -19,7 +18,7 @@ export default function SwapyDemo({ label = `User` }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const swapyRef = useRef<ReturnType<typeof createSwapy> | null>(null);
 
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [slotItemMap, setSlotItemMap] = useState<SlotItemMap | any>(utils.initSlotItemMap(users, identifierKey));
 
   const slottedItems = useMemo(() => utils.toSlottedItems(users, identifierKey, slotItemMap), [users, slotItemMap]);
