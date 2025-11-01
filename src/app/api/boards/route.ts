@@ -9,9 +9,6 @@ export const dynamic = `force-dynamic`;
 export const GET = async (req: Request) => {
   try {
     const token = tokenRequired(req);
-    // const usersDatabase = collection(db, Tables.users)?.withConverter(userConverter);
-    // const usersDocs = await getDocs(usersDatabase);
-    // const users = usersDocs.docs.map(doc => new User(doc.data()));
     return NextResponse.json(token);
   } catch (error) {
     return NextResponse.json({ error: `Error on Get Token` }, { status: 500 });

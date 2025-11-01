@@ -80,7 +80,10 @@ export const tokenRequired = (req: Request) => {
   if (!token) {
     return unauthorized();
   }
-  return token;
+  return {
+    token,
+    header: authHeader,
+  };
 }
 
 export const getDefaultDateTime = () => {
