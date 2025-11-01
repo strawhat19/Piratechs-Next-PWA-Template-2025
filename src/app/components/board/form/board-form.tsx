@@ -11,6 +11,8 @@ export default function BoardForm({
 }: any) {    
     const { width, boardItems, boardForm, setBoardForm } = useContext<any>(StateGlobals);
 
+    const submitButtonShowing = () => showIconButton && (!boardSearch || (boardSearch && width > 768));
+
     const updateForm = (e: any) => {
         const formField = e?.target;
         setBoardForm((prevFormData: any) => ({ ...prevFormData, [formField?.name]: formField?.value }));
@@ -20,8 +22,12 @@ export default function BoardForm({
         e?.preventDefault();
         const form = e?.target;
         const formData = new FormData(form);
+        const hasSubmitBtn = submitButtonShowing();
         const formValues: any = Object.fromEntries(formData?.entries());
         setBoardForm(formValues);
+        if (!hasSubmitBtn) {
+            onClick();
+        }
         form?.reset();
     }
 
@@ -37,7 +43,7 @@ export default function BoardForm({
                         <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
                     </>}
                 </>}
-                {(showIconButton && (!boardSearch || (boardSearch && width > 768))) && (
+                {submitButtonShowing() && (
                     <Tooltip placement={`top`} title={boardSearch ? `` : `+ Add Item #${boardItems.length + 1}`} arrow>
                         <Button
                             type={`submit`}

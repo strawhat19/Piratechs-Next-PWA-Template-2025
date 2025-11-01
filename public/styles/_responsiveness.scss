@@ -228,8 +228,16 @@ html {
             }
         }
         .Toastify__toast-container {
+            width: 96%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0 !important;
+            margin-bottom: 75px !important;
             .Toastify__toast {
                 width: 95%;
+                padding-top: 5px;
+                margin-top: 15px;
+                padding-bottom: 10px;
             }
         }
         .itemInner {

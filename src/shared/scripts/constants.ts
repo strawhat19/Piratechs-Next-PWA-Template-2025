@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import { Roles, Types } from '../types/types';
+import { NextResponse } from 'next/server';
 
 export const constants = {
   breakpoints: {
@@ -66,6 +67,22 @@ export const isDate = (str: string): boolean => {
   return !isNaN(timestamp);
 }
 
+export const unauthorized = (message = `Unauthorized`) => {
+  return NextResponse.json({ code: 401, error: message }, { status: 401 });
+}
+
+export const tokenRequired = (req: Request) => {
+  const authHeader = req.headers.get(`authorization`) || req.headers.get(`Authorization`);
+  if (!authHeader?.startsWith(`Bearer `)) {
+    return unauthorized(`Missing Bearer Token`);
+  }
+  const token = authHeader.slice(`Bearer `.length).trim();
+  if (!token) {
+    return unauthorized();
+  }
+  return token;
+}
+
 export const getDefaultDateTime = () => {
   let now = new Date();
   let day = now.getDate();
@@ -113,17 +130,27 @@ export const shuffleArray = (array: any[]): any[] => {
   return array;
 }
 
-export const logToast = (message: string, content: any, error = false, data: any = null) => {
+export const logToast = (message: string, content: any, error = false, data: any = null, duration?: any, info?: any) => {
+  let props = {};
   let sendMsg = typeof content == `string` ? content : ``;
   if (dev()) {
     if (data != null) console.log(message, content, data);
     else console.log(message, content);
   }
-  if (error == false) {
-    toast.success(message + ` ` + sendMsg);
-  } else {
-    toast.error(message + ` ` + sendMsg);
+  if (duration) {
+    props = { autoClose: duration };
   }
+  let toastMsg;
+  if (info) {
+    toastMsg = toast.info(message + ` ` + sendMsg, props);
+  } else {
+    if (error == false) {
+      toastMsg = toast.success(message + ` ` + sendMsg, props);
+    } else {
+      toastMsg = toast.error(message + ` ` + sendMsg, props);
+    }
+  }
+  return toastMsg;
 }
 
 export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url) => {

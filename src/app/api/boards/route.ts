@@ -1,24 +1,22 @@
 import { NextResponse } from 'next/server';
+import { tokenRequired } from '@/shared/scripts/constants';
 import { arrayRemove, arrayUnion, doc, writeBatch } from 'firebase/firestore';
 import { boardConverter, db, Tables, userConverter } from '@/shared/server/firebase';
 
 export const runtime = `nodejs`;
 export const dynamic = `force-dynamic`;
 
-function unauthorized(message = `Unauthorized`) {
-  return NextResponse.json({ code: 401, error: message }, { status: 401 });
-}
-
-function tokenRequired(req: Request) {
-    const authHeader = req.headers.get(`authorization`) || req.headers.get(`Authorization`);
-    if (!authHeader?.startsWith(`Bearer `)) {
-      return unauthorized(`Missing Bearer Token`);
-    }
-    const token = authHeader.slice(`Bearer `.length).trim();
-    if (!token) {
-        return unauthorized();
-    }
-}
+export const GET = async (req: Request) => {
+  try {
+    const token = tokenRequired(req);
+    // const usersDatabase = collection(db, Tables.users)?.withConverter(userConverter);
+    // const usersDocs = await getDocs(usersDatabase);
+    // const users = usersDocs.docs.map(doc => new User(doc.data()));
+    return NextResponse.json(token);
+  } catch (error) {
+    return NextResponse.json({ error: `Error on Get Token` }, { status: 500 });
+  }
+};
 
 export const POST = async (req: Request) => {
   try {
@@ -30,14 +28,14 @@ export const POST = async (req: Request) => {
     if (!id || !userID || !updated || !props) {
       return NextResponse.json(
         { 
-            code: 400,
-            error: `Invalid Request Body`,
-            expectedFormat: {
-                props: 1,
-                updated: `2:55 PM 11/1/25`,
-                id: `Board_1_Todos_2_55_PM_11_1_25_E4HEvN2vc`,
-                userID: `User_1_Rakib1_11_36_PM_10_22_25_fjOQm4OD8`,
-            }
+          code: 400,
+          error: `Invalid Request Body`,
+          expectedFormat: {
+            props: 1,
+            updated: `2:55 PM 11/1/25`,
+            id: `Board_1_Todos_2_55_PM_11_1_25_E4HEvN2vc`,
+            userID: `User_1_Rakib1_11_36_PM_10_22_25_fjOQm4OD8`,
+          }
         },
         { status: 400 }
       );

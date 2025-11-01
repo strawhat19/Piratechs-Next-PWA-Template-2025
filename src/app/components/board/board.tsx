@@ -57,9 +57,13 @@ export default function Board() {
         let { name } = boardForm;
         let data = createData(name, Types.Board, user, user?.data?.boards);
         let newBoard = new BoardModel(data);
-        logToast(`Adding Board`, newBoard);
+        logToast(`Adding Board`, newBoard, undefined, undefined, undefined, true);
         newBoard.properties = countPropertiesInObject(newBoard);
         await addBoardToDatabase(newBoard, user).then(async response => {
+            setTimeout(() => {
+                toast?.dismiss();
+                logToast(`Added Board`, newBoard);
+            }, 500);
             return response;
         }).catch(signUpAndSeedError => {
             let errorMessage = `Error on Create Board`;
@@ -70,8 +74,12 @@ export default function Board() {
     }
 
     const deleteBoard = async (brd: BoardModel) => {
-        logToast(`Deleting Board`, brd);
+        logToast(`Deleting Board`, brd, undefined, undefined, undefined, true);
         await deleteBoardFromDatabase(brd, user).then(async response => {
+            setTimeout(() => {
+                toast?.dismiss();
+                logToast(`Deleted Board`, brd);
+            }, 500);
             return response;
         }).catch(signUpAndSeedError => {
             let errorMessage = `Error on Delete Board`;

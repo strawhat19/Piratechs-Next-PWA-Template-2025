@@ -61,7 +61,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </li>
                 </>}
                 {Object.entries(routes).map(([path, config]) => (
-                    <li key={path} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
+                    <li key={path} onClick={() => setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
                         <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
                             {config.icons.mui}
                             <span className={`linkText`}>

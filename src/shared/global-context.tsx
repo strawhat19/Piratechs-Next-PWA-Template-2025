@@ -10,7 +10,7 @@ import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter } from '@/shared/server/firebase';
-import { apiRoutes, capWords, constants, debounce, devEnv, getIDParts, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
+import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
 
 export const StateGlobals = createContext({});
 
@@ -31,7 +31,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [user, setUser] = useState<User | null>(null);
     let [usersLoading, setUsersLoading] = useState(true);
 
-    // let [boards, setBoards] = useState<Board[]>([]);
+    let [boards, setBoards] = useState<Board[]>([]);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -136,20 +136,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (showSuccess && loaded == false) {
             logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
         }
-        // refreshUserData(usr = user);
-        // getUserData(usr);
     }
 
-    // const getUserData = (usr = user) => {
-    //     // console.log(`Get User Data`, usr);
-    // }
-
     const onSignOut = async () => {
-        // if (user != null) {
-        //     await updateUserInDatabase(user.id, { signedIn: false }).then(async () => {
-        //         // refreshUsers();
-        //     }).catch(error => onSignInError(error));
-        // }
         setUser(null);
         setAuthState(AuthStates.Next);
         await signOut(auth);
@@ -176,44 +165,11 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             if (userCredential != null) {
                 let existingUser = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
                 if (existingUser) {
-                    // const { date } = getIDParts();
-                    // await updateUserInDatabase(existingUser?.id, { 
-                    //     updated: date, 
-                    //     signedIn: true, 
-                    //     lastSignIn: date, 
-                    //     uid: existingUser?.uid,
-                    //     lastAuthenticated: date, 
-                    // }).then(async () => {
-                    //     // refreshUsers();
-                    //     // let usr = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
-                    //     // if (usr) {
-                    //     //     onSignIn(usr);
-                    //     // } else onSignOut();
-                    // }).catch(error => onSignInError(error));
+                    dev() && console.log(`Found Existing User`, existingUser);
                 } else onSignOut();
             }
         }).catch(error => onSignInError(error));
     }
-
-    useEffect(() => {
-        if (user != null) {
-            const usersDB = collection(db, Tables.users).withConverter(userConverter);
-            const usersDBQuery = query(usersDB, where(`friendIDs`, `array-contains`, user?.id));
-
-            const usersDBQueryListener = onSnapshot(usersDBQuery, usersDBDocs => {
-                const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
-                const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
-                console.log(`Users DB Update`, {dbUsers, dbUser});
-                setUsers(dbUsers);
-                setUser(dbUser);
-                setLoaded(true);
-            });
-
-            return () => {
-                usersDBQueryListener();
-            }
-        }
-    }, [user?.id]);
 
     const boardsUnsubRef = useRef<null | (() => void)>(null);
 
@@ -223,6 +179,20 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             boardsUnsubRef.current = null;
         }
     };
+
+    const refreshUserBoards = (selectedBoard: Board, usr: User | null = user) => {
+        setUser(prev => {
+            let userToUse = usr ? usr : prev;
+            return userToUse ? new User({
+                ...userToUse,
+                data: { 
+                    ...(userToUse as any).data, 
+                    boards, 
+                    board: selectedBoard, 
+                },
+            }) : userToUse;
+        });
+    }
 
     useEffect(() => {
         if (!user?.id) {
@@ -235,18 +205,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
         const boardsDBQueryListener = onSnapshot(boardsDBQuery, boardsDBDocs => {
             const boards = boardsDBDocs.docs.map(d => new Board(d.data()));
+            setBoards(boards);
             const selectedBoard = boards.find(b => b?.id === (user as any)?.selectedID) ?? boards[0];
-            console.log(`Boards DB Update`, {boards, board: selectedBoard});
-            setUser(prev =>
-                prev ? new User({
-                    ...prev,
-                    data: { 
-                        ...(prev as any).data, 
-                        boards, 
-                        board: selectedBoard, 
-                    },
-                }) : prev
-            );
+            refreshUserBoards(selectedBoard);
             setLoaded(true);
         });
 
@@ -254,6 +215,28 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
         return () => stopBoardsListener();
     }, [user?.id, (user as any)?.selectedID]);
+
+    useEffect(() => {
+        if (user != null) {
+            const usersDB = collection(db, Tables.users).withConverter(userConverter);
+            const usersDBQuery = query(usersDB, where(`friendIDs`, `array-contains`, user?.id));
+
+            const usersDBQueryListener = onSnapshot(usersDBQuery, usersDBDocs => {
+                const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
+                const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
+                const selectedBoard = boards.find(b => b?.id === (user as any)?.selectedID) ?? boards[0];
+                setUsers(dbUsers);
+                let usr = dbUser;
+                delete usr?.data;
+                refreshUserBoards(selectedBoard, usr);
+                setLoaded(true);
+            });
+
+            return () => {
+                usersDBQueryListener();
+            }
+        }
+    }, [user?.id, boards]);
 
     useEffect(() => {
         let listenForUserAuthChanges: any = null;
@@ -305,7 +288,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         height, setHeight,
         usersLoading, setUsersLoading,
 
-        // boards, setBoards,
+        boards, setBoards,
 
         isPWA, setIsPWA,
         loaded, setLoaded,
@@ -328,7 +311,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
         boardForm, boardItems,
-        // boards,
+        boards,
     ]);
 
     return (

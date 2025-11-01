@@ -1,24 +1,10 @@
 import { NextResponse } from 'next/server';
+import { tokenRequired } from '@/shared/scripts/constants';
 import { db, Tables, userConverter } from '@/shared/server/firebase';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 export const runtime = `nodejs`;
 export const dynamic = `force-dynamic`;
-
-function unauthorized(message = `Unauthorized`) {
-  return NextResponse.json({ code: 401, error: message }, { status: 401 });
-}
-
-function tokenRequired(req: Request) {
-  const authHeader = req.headers.get(`authorization`) || req.headers.get(`Authorization`);
-  if (!authHeader?.startsWith(`Bearer `)) {
-    return unauthorized(`Missing Bearer Token`);
-  }
-  const token = authHeader.slice(`Bearer `.length).trim();
-  if (!token) {
-    return unauthorized();
-  }
-}
 
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
