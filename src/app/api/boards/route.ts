@@ -5,7 +5,7 @@ import { boardConverter, db, Tables, userConverter } from '@/shared/server/fireb
 export const runtime = `nodejs`;
 export const dynamic = `force-dynamic`;
 
-export function unauthorized(message = `Unauthorized`) {
+function unauthorized(message = `Unauthorized`) {
   return NextResponse.json({ code: 401, error: message }, { status: 401 });
 }
 
