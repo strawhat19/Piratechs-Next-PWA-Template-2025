@@ -1,14 +1,16 @@
 'use client';
 
+import './list.scss';
+
 import BoardForm from '../form/board-form';
 import { statuses } from '../status/status';
 import Logo from '@/app/components/logo/logo';
-import { Settings } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
 import ItemComponent, { Item, type } from '../item/item';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { useContext, useMemo, useCallback, useRef } from 'react';
+import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -121,13 +123,16 @@ export default function ListComponent({
     <div className={`listComponent dndBoardList`}>
       <div className={`boardListTitle listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`}>
         <Logo label={title} />
-        <span className={`flexCenter gap5`}>
+        <span className={`listTitleRowData flexCenter gap5`}>
           <Icon_Button title={`List Settings`} style={{ marginRight: 5 }}>
             <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
           </Icon_Button>
           <span className={`main`}>
             {boardItems.length}
           </span> Item(s)
+          <Icon_Button size={22} title={`Lists`} style={{ marginLeft: 5, marginRight: 2, }}>
+            <ArrowDropDownTwoTone className={`arrowIcon`} style={{ fontSize: 20 }} />
+          </Icon_Button>
         </span>
       </div>
       <div ref={listScroll} className={`dndBoardListContext dndContainer componentContainer`}>

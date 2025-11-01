@@ -47,10 +47,10 @@ export default function Container({
                     autoClose={3_500}
                     newestOnTop={true}
                     pauseOnHover={false}
-                    position={`top-right`}
                     hideProgressBar={false}
                     pauseOnFocusLoss={false}
                     style={{ marginTop: 75 }}
+                    position={(isPWA || width <= constants?.breakpoints?.mobile) ? `bottom-right` : `top-right`}
                 />
             </main>
             {showPageFooter && <Footer />}

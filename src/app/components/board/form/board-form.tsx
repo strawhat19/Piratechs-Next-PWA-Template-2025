@@ -6,6 +6,7 @@ import { StateGlobals } from '@/shared/global-context';
 export default function BoardForm({ 
     onClick, 
     boardSearch = false,
+    showIconButton = true,
 }: any) {    
     const { width, boardItems, boardForm, setBoardForm } = useContext<any>(StateGlobals);
 
@@ -33,7 +34,7 @@ export default function BoardForm({
                     <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} />
                     <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
                 </>}
-                {(!boardSearch || (boardSearch && width > 768)) && (
+                {(showIconButton && (!boardSearch || (boardSearch && width > 768))) && (
                     <Tooltip placement={`top`} title={boardSearch ? `` : `+ Add Item #${boardItems.length + 1}`} arrow>
                         <Button
                             type={`submit`}

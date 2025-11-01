@@ -14,6 +14,7 @@ import { apiRoutes, capWords, constants, debounce, devEnv, genID, getIDParts, is
 export const StateGlobals = createContext({});
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
+export const defaultUserData = { id: `default`, boards: [], lists: [], items: [], tasks: [], shared: [], friends: [], teams: [], tags: [], points: 0, };
 
 export const getPageName = (path: string) => {
     let pageName = `Home`;
@@ -29,6 +30,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [user, setUser] = useState<User | null>(null);
     let [usersLoading, setUsersLoading] = useState(true);
+
+    let [userData, setUserData] = useState(defaultUserData);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -46,6 +49,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     let type = Types.Item;
     let imageURLs = Object.values(imagesObject.vertical);
+    
     let [boardForm, setBoardForm] = useState<Partial<Item | any>>({ name: ``, description: ``, imageURL: `` });
     let [boardItems, setBoardItems] = useState<Item[]>(() => [
         new Item({ 
@@ -137,6 +141,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     const onSignOut = async () => {
         setUser(null);
+        setUserData(defaultUserData);
         setAuthState(AuthStates.Next);
         await signOut(auth);
     }
@@ -224,6 +229,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         users, setUsers,
         width, setWidth,
         height, setHeight,
+        userData, setUserData,
         usersLoading, setUsersLoading,
 
         isPWA, setIsPWA,
@@ -243,7 +249,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         boardForm, setBoardForm,
         boardItems, setBoardItems,
     }), [
-        user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
+        user, users, userData, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
         boardForm, boardItems,

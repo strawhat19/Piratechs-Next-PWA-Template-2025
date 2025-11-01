@@ -51,8 +51,10 @@
             @supports (height: 100svh) {
                 --listHeight: calc(100svh - var(--listOffset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
             }
-            min-height: var(--listHeight);
-            max-height: var(--listHeight);
+            & {
+                min-height: var(--listHeight);
+                max-height: var(--listHeight);
+            }
         }
         
         .boardFormContainer {

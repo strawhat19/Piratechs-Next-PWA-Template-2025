@@ -6,13 +6,13 @@ import Slider from '../slider/slider';
 import ListComponent from './list/list';
 import BoardForm from './form/board-form';
 import { SwiperSlide } from 'swiper/react';
-import { Settings } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
 import { constants } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
+import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
 
 export default function Board() {
-    const { width, loaded, usersLoading } = useContext<any>(StateGlobals);
+    const { width } = useContext<any>(StateGlobals);
 
     const getSlidesPerView = (wd: number = width): number => {
         let slidesInView = 1;
@@ -41,7 +41,7 @@ export default function Board() {
                         <Logo label={`Board`} />
                     </div>
                     <div className={`boardTopMid fullWidth`}>
-                        <BoardForm boardSearch={true} />
+                        <BoardForm boardSearch={true} showIconButton={width >= constants?.breakpoints?.mobile} />
                     </div>
                     <div className={`boardTopEnd fitMin flexCenter gap5`}>
                         <Icon_Button title={`Board Settings`} style={{ marginRight: 5 }}>
@@ -52,12 +52,15 @@ export default function Board() {
                                 {4}
                             </span> List(s)
                         </>}
+                        <Icon_Button size={25} title={`Boards`} style={{ marginLeft: 5, marginRight: 5, }}>
+                            <ArrowDropDownTwoTone className={`arrowIcon`} style={{ fontSize: 20 }} />
+                        </Icon_Button>
                     </div>
                 </div>
             </div>
-            {/* {(usersLoading || !loaded) ? ( */}
-                {/* // <div>Loading</div> */}
-            {/* // ) : ( */}
+            {/* {(usersLoading || !loaded) ? (
+                <div>Loading</div>
+            ) : ( */}
                 <Slider 
                     spaceBetween={1}
                     showButtons={false} 
@@ -79,7 +82,7 @@ export default function Board() {
                         <ListComponent title={`Complete`} />
                     </SwiperSlide>
                 </Slider>
-            {/* // )} */}
+            {/* )} */}
         </div>
     </>
 }
