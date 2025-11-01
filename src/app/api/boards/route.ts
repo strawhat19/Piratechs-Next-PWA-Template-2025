@@ -9,7 +9,7 @@ function unauthorized(message = `Unauthorized`) {
   return NextResponse.json({ code: 401, error: message }, { status: 401 });
 }
 
-export function tokenRequired(req: Request) {
+function tokenRequired(req: Request) {
     const authHeader = req.headers.get(`authorization`) || req.headers.get(`Authorization`);
     if (!authHeader?.startsWith(`Bearer `)) {
       return unauthorized(`Missing Bearer Token`);
