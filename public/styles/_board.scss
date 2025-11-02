@@ -1,5 +1,13 @@
-.boardComponent {
+:root {
     --wdth: 98%;
+    --listOffset: 300px;
+    --listHeight: calc(100dvh - var(--listOffset));
+    @supports (height: 100svh) {
+        --listHeight: calc(100svh - var(--listOffset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    }
+}
+
+.boardComponent {
     width: 100%;
     display: flex;
     grid-gap: 10px;
@@ -12,19 +20,10 @@
         top: 15px;
     }
 
-    // --boardOffset: 170px;
-    // --boardHeight: calc(100dvh - var(--boardOffset));
-    // @supports (height: 100svh) {
-    //     --boardHeight: calc(100svh - var(--boardOffset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    // }
-    // min-height: var(--boardHeight);
-    // max-height: var(--boardHeight);
-
     .boardTopComponent {
         padding: 0 5px;
         .boardTopRow {
             width: 100% !important;
-            // justify-content: center;
         }
     }    
 
@@ -34,35 +33,32 @@
         padding: 2px 10px 0;
     }
 
-    .dndBoardList {
-        width: 100%;
-        overflow-x: hidden !important;
-        .dndBoardListContext {
-            padding: 10px;
-            max-width: 100%;
-            color: #eaeaea;
-            overflow-y: auto;
-            margin: 10px auto;
-            border-radius: 8px;
-            width: var(--wdth);
-            font-family: var(--font);
-            border: 1px solid var(--bg);
-            background: var(--background);
-            overflow-x: hidden !important;
+}
 
-            --listOffset: 300px;
-            --listHeight: calc(100dvh - var(--listOffset));
-            @supports (height: 100svh) {
-                --listHeight: calc(100svh - var(--listOffset) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-            }
-            & {
-                min-height: var(--listHeight);
-                max-height: var(--listHeight);
-            }
-        }
-        
-        .boardFormContainer {
-            width: var(--wdth);
-        }
+.dndBoardList {
+    width: 100%;
+    overflow-x: hidden !important;
+    
+}
+
+.boardFormContainer {
+    width: var(--wdth);
+}
+
+.dndBoardListContext {
+    padding: 10px;
+    max-width: 100%;
+    color: #eaeaea;
+    overflow-y: auto;
+    margin: 10px auto;
+    border-radius: 8px;
+    width: var(--wdth);
+    font-family: var(--font);
+    border: 1px solid var(--bg);
+    background: var(--background);
+    overflow-x: hidden !important;
+    & {
+        min-height: var(--listHeight);
+        max-height: var(--listHeight);
     }
 }

@@ -33,17 +33,19 @@ export const board = {
   type: Types.Board,
 };
 
+export const defaultLists = [{ name: `To Do` }, { name: `Active` }, { name: `Blocked` }, { name: `Complete` }];
+
 export const defaultUserData = { 
   item, 
   board, 
-  boards: [], 
-  lists: [], 
+  tags: [], 
   items: [], 
+  teams: [], 
   tasks: [], 
   shared: [], 
+  boards: [], 
   friends: [], 
-  teams: [], 
-  tags: [], 
+  lists: defaultLists, 
 };
 
 export class User extends Data {

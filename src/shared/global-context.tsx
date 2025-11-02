@@ -3,7 +3,7 @@
 import { toast } from 'react-toastify';
 import { Item } from './types/models/Item';
 import { Board } from './types/models/Board';
-import { User } from '@/shared/types/models/User';
+import { defaultLists, User } from '@/shared/types/models/User';
 import { AuthStates } from '@/shared/types/types';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -188,11 +188,20 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 data: { 
                     ...(userToUse as any).data, 
                     boards, 
-                    board: selectedBoard, 
+                    board: {
+                        ...selectedBoard,
+                        lists: defaultLists,
+                    }, 
                 },
             }) : userToUse;
         });
     }
+
+    useEffect(() => {
+        if (user != null) {
+            dev() && console.log(`User`, user);
+        }
+    }, [user])
 
     useEffect(() => {
         if (!user?.id) {

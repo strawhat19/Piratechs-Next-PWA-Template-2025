@@ -15,7 +15,7 @@ import { createData } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
 import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
 import { addBoardToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
-import { constants, countPropertiesInObject, logToast } from '@/shared/scripts/constants';
+import { constants, countPropertiesInObject, dev, logToast } from '@/shared/scripts/constants';
 
 export default function Board() {
     const { user, width, loaded, usersLoading, boardForm } = useContext<any>(StateGlobals);
@@ -25,7 +25,9 @@ export default function Board() {
     useEffect(() => {
         if (user != null) {
             if (user?.data?.board?.lists) {
-                setLists(user?.data?.board?.lists);
+                let lsts = user?.data?.board?.lists;
+                dev() && console.log(`Lists`, lsts);
+                setLists(lsts);
             }
         }
     }, [user?.data?.board])
@@ -91,6 +93,18 @@ export default function Board() {
 
     return <>
         <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``}`}>
+            {(user?.data?.boards?.length == 0 ||  lists?.length == 0) && (
+                <div className={`boardBottomComponent boardTopComponent`}>
+                    <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>
+                        <div className={`boardTopStart fitMin`}>
+                            <Logo label={`New Board`} />
+                        </div>
+                        <div className={`boardTopMid fullWidth`}>
+                            <BoardForm onClick={addBoard} newBoardForm={true} showIconButton={width >= constants?.breakpoints?.mobile} />
+                        </div>
+                    </div>
+                </div>
+            )}
             {(usersLoading || !loaded) ? (
                 <Loader height={450} label={`Board Loading`} style={{ maxWidth: `calc(var(--wdth) + 1%)`, margin: `0 auto` }} />
             ) : (
@@ -134,16 +148,6 @@ export default function Board() {
                             ))}
                         </Slider>
                     </> : <></>}
-                    <div className={`boardBottomComponent boardTopComponent`}>
-                        <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>
-                            <div className={`boardTopStart fitMin`}>
-                                <Logo label={`New Board`} />
-                            </div>
-                            <div className={`boardTopMid fullWidth`}>
-                                <BoardForm onClick={addBoard} newBoardForm={true} showIconButton={width >= constants?.breakpoints?.mobile} />
-                            </div>
-                        </div>
-                    </div>
                 </>
             )}
         </div>
