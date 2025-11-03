@@ -233,7 +233,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     useEffect(() => {
         if (user != null) {
             const usersDB = collection(db, Tables.users).withConverter(userConverter);
-            const usersDBQuery = query(usersDB, where(`friendIDs`, `array-contains`, user?.id));
+            const usersDBQuery = query(usersDB, where(`userIDs`, `array-contains`, user?.id));
 
             const usersDBQueryListener = onSnapshot(usersDBQuery, usersDBDocs => {
                 const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));

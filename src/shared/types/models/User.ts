@@ -42,10 +42,10 @@ export const defaultUserData = {
   items: [], 
   teams: [], 
   tasks: [], 
+  lists: [], 
   shared: [], 
   boards: [], 
   friends: [], 
-  lists: defaultLists, 
 };
 
 export class User extends Data {
@@ -55,8 +55,8 @@ export class User extends Data {
   z_token?: string;
   selectedID: string = ``;
   boardIDs: string[] = [];
+  userIDs?: string[] = [];
   type: Types = Types.User;
-  friendIDs?: string[] = [];
   verified?: boolean = true;
   signedIn?: boolean = false;
   anonymous?: boolean = false;

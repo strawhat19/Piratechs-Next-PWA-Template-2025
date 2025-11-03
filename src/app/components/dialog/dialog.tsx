@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { Button } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import { Close } from '@mui/icons-material';
+import { Types } from '@/shared/types/types';
 import StatusTag from '../board/status/status';
 import { Item } from '@/shared/types/models/Item';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -35,7 +36,7 @@ function SimpleDialog(props: SimpleDialogProps) {
               <strong className={`dialogTitleName lineClamp1`}>
                 {selected?.name}
               </strong>
-              <StatusTag item={selected} disabled={false} />
+              {selected?.type == Types.Item && <StatusTag item={selected} disabled={false} />}
             </DialogTitle>
             <div className={`dialogCloseButton`}>
               <Icon_Button title={``} onClick={onClose}>
@@ -45,21 +46,33 @@ function SimpleDialog(props: SimpleDialogProps) {
           </div>
           <div style={{ flex: 1 }} className={`dialogCenterContent w100 mxauto dialogDefaultTitlePadding`}>
             <div className={`dialogFieldGroup gap15 dialogRow simpleFieldGroup`}>
-              <div className={`dialogRow dialogField gap15`}>
+              <div className={`dialogRow dialogField gap15 smallDataField`}>
                 <h4 className={`main`}>
                   <strong>Title</strong>
                 </h4>
                 <p>{selected?.name}</p>
               </div>
+              <div className={`dialogRow dialogField gap15 smallDataField`}>
+                <h4 className={`main`}>
+                  <strong>Type</strong>
+                </h4>
+                <p>{selected?.type}</p>
+              </div>
+              <div className={`dialogRow dialogField gap15`}>
+                <h4 className={`main`}>
+                  <strong>Author</strong>
+                </h4>
+                <p>{selected?.createdBy}</p>
+              </div>
             </div>
             <div className={`dialogFieldGroup gap15 dialogRow simpleFieldGroup`}>
-              <div className={`dialogRow dialogField gap15`}>
+              <div className={`dialogRow dialogField gap15 smallDataField`}>
                 <h4 className={`main`}>
                   <strong>Created</strong>
                 </h4>
                 <p>{String(selected?.created)}</p>
               </div>
-              <div className={`dialogRow dialogField gap15`}>
+              <div className={`dialogRow dialogField gap15 smallDataField`}>
                 <h4 className={`main`}>
                   <strong>Updated</strong>
                 </h4>
@@ -73,12 +86,14 @@ function SimpleDialog(props: SimpleDialogProps) {
               </div>
             </div>
             <div className={`dialogFieldGroup gap15 dialogRow column mt15`}>
-              <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
-                <h4 className={`main`}>
-                  <strong>Description</strong>
-                </h4>
-                <p>{selected?.description}</p>
-              </div>
+              {selected?.description && selected?.description != `` && (
+                <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
+                  <h4 className={`main`}>
+                    <strong>Description</strong>
+                  </h4>
+                  <p>{selected?.description}</p>
+                </div>
+              )}
               {selected?.imageURLs?.length > 0 && (
                 <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
                   <h4>

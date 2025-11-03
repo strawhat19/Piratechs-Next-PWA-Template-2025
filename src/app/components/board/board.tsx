@@ -19,15 +19,17 @@ import { constants, dev, errorToast, logToast } from '@/shared/scripts/constants
 import { addBoardToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
 
 export default function Board() {
-    const { user, width, loaded, usersLoading, boardForm } = useContext<any>(StateGlobals);
+    const { user, width, loaded, usersLoading, boardForm, setSelected } = useContext<any>(StateGlobals);
 
-    let [lists, setLists] = useState([]);
+    let [lists, setLists] = useState<List[]>([]);
+    let [board, setBoard] = useState(user?.data?.board);
     let [showAddLists, setShowAddLists] = useState(false);
 
     useEffect(() => {
         if (user != null) {
             let brd = user?.data?.board;
             if (brd) {
+                setBoard(brd);
                 if (brd?.lists) {
                     let lsts = brd?.lists;
                     let hasLists = lsts && lsts?.length > 0;
@@ -104,6 +106,11 @@ export default function Board() {
         }
     }
 
+    const manageBoard = (e?: any) => {
+        setSelected(board);
+        console.log(`Manage Board`, board);
+    }
+
     return <>
         <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``}`}>
             {(user?.data?.boards?.length == 0 ||  lists?.length == 0) && (
@@ -127,11 +134,11 @@ export default function Board() {
                 <Loader height={450} label={`Board Loading`} style={{ maxWidth: `calc(var(--wdth) + 1%)`, margin: `0 auto` }} />
             ) : (
                 <>
-                    {(user != null && user?.data?.board?.userID) ? <>
+                    {(user != null && board?.userID) ? <>
                         <div className={`boardTopComponent`}>
                             <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>
                                 <div className={`boardTopStart fitMin`}>
-                                    <Logo label={user?.data?.board?.name} />
+                                    <Logo label={board?.name} />
                                 </div>
                                 <div className={`boardTopMid fullWidth`}>
                                     <BoardForm 
@@ -144,7 +151,7 @@ export default function Board() {
                                     />
                                 </div>
                                 <div className={`boardTopEnd fitMin flexCenter gap5`}>
-                                    <Icon_Button title={`Board Settings`} style={{ marginRight: 5 }}>
+                                    <Icon_Button title={`Board Settings`} style={{ marginRight: 5 }} onClick={manageBoard}>
                                         <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
                                     </Icon_Button>
                                     {width > 768 && <>
@@ -155,8 +162,8 @@ export default function Board() {
                                     <Icon_Button 
                                         size={25}  
                                         title={`Delete Board`}  
+                                        onClick={() => deleteBoard(board)}  
                                         style={{ marginLeft: 5, marginRight: 5, }} 
-                                        onClick={() => deleteBoard(user?.data?.board)}  
                                     >
                                         <Delete className={`deleteIcon`} style={{ fontSize: 16 }} />
                                         {/* <ArrowDropDownTwoTone className={`arrowIcon`} style={{ fontSize: 20 }} /> */}
