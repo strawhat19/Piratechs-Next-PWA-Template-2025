@@ -1,5 +1,6 @@
+import { User } from './User';
 import { Types } from '../types';
-import { capWords, genID } from '@/shared/scripts/constants';
+import { capWords, countPropertiesInObject, genID, logToast } from '@/shared/scripts/constants';
 
 export class Properties { 
     uid?: string;
@@ -30,7 +31,7 @@ export const generateProperties = (name: string, type = Types.Data, array: any[]
     return rtn;
 }
 
-export const createData = (name: string, type: Types = Types.Data, user: any, array: any[] = []) => {
+export const createProperties = (name: string, type: Types = Types.Data, user: any, array: any[] = []) => {
     name = capWords(name);
     let props = generateProperties(name, type, array);
     let { id, date, uuid } = props;
@@ -46,4 +47,14 @@ export const createData = (name: string, type: Types = Types.Data, user: any, ar
         updatedBy: user?.id,
     };
     return newData;
+}
+
+export const generateModel = (name: string, type: Types, user: User, models: any[], Model: any, log = false) => {
+    let data = createProperties(name, type, user, models);
+    let newModel = new Model(data);
+    newModel.properties = countPropertiesInObject(newModel);
+    if (log) {
+        logToast(`Generated ${type}`, newModel, undefined, undefined, undefined, true);
+    }
+    return newModel;
 }

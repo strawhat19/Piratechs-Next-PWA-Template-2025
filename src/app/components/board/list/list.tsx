@@ -155,7 +155,7 @@ export default function ListComponent({
           </SortableContext>
         </DndContext>
       </div>
-      <BoardForm onClick={addItem} />
+      <BoardForm onClick={addItem} className={`addItemForm`} />
     </div>
   );
 }

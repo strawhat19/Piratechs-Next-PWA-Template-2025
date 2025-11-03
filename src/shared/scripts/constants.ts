@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
-import { Roles, Types } from '../types/types';
 import { NextResponse } from 'next/server';
+import { Roles, Types } from '../types/types';
 
 export const constants = {
   breakpoints: {
@@ -84,6 +84,11 @@ export const tokenRequired = (req: Request) => {
     token,
     header: authHeader,
   };
+}
+
+export const errorToast = (errorMessage: string, data: any) => {
+  console.log(errorMessage, data);
+  toast.error(errorMessage);
 }
 
 export const getDefaultDateTime = () => {

@@ -5,9 +5,11 @@ import { StateGlobals } from '@/shared/global-context';
 
 export default function BoardForm({ 
     onClick, 
-    boardSearch = false,
-    newBoardForm = false,
-    showIconButton = true,
+    boardSearch = false, 
+    newDataForm = false, 
+    placeholder = `Name`, 
+    showIconButton = true,  
+    className = `boardFormComponent`, 
 }: any) {    
     const { width, boardItems, boardForm, setBoardForm } = useContext<any>(StateGlobals);
 
@@ -32,13 +34,13 @@ export default function BoardForm({
     }
 
     return (
-        <div className={`formRow boardListFormContainer boardFormContainer ${newBoardForm ? `newBoardForm` : ``}`}>
+        <div className={`formRow boardListFormContainer boardFormContainer ${className} ${newDataForm ? `newDataForm` : ``}`}>
             <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
                 {boardSearch ? <>
                     <input name={`search`} type={`search`} className={`searchField`} placeholder={`Search...`} required />
                 </> : <>
-                    <input name={`name`} type={`text`} className={`nameField`} placeholder={`Name`} required />
-                    {!newBoardForm && <>
+                    <input name={`name`} type={`text`} className={`nameField`} placeholder={placeholder} required />
+                    {!newDataForm && <>
                         <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} />
                         <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
                     </>}

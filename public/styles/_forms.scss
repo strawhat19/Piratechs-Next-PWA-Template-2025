@@ -1,3 +1,10 @@
+.listForm {
+    &.listSearch {
+        top: -2px;
+        position: relative;
+    }
+}
+
 .boardFormContainer {
     --hght: 25px;
     gap: 8px;
@@ -7,7 +14,7 @@
     border-radius: 8px;
     align-items: center;
     background: var(--bg);
-    &.newBoardForm {
+    &.newDataForm {
         padding-right: 0;
         padding-top: 3px;
         .nameField {

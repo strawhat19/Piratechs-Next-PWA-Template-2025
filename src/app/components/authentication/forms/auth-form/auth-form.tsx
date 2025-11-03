@@ -10,7 +10,7 @@ import AvatarComponent from '@/app/components/avatar/avatar';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { AuthStates, Providers, Roles, Types } from '@/shared/types/types';
 import { addUserToDatabase, auth, renderFirebaseAuthErrorMessage } from '@/shared/server/firebase';
-import { findHighestNumberInArrayByKey, logToast, stringNoSpaces } from '@/shared/scripts/constants';
+import { errorToast, findHighestNumberInArrayByKey, logToast, stringNoSpaces } from '@/shared/scripts/constants';
 
 const { Next, Sign_Up, Sign_In, Sign_Out } = AuthStates;
 
@@ -93,8 +93,7 @@ export default function AuthForm({ style = { opacity: 1 } }: any) {
                             signInUser(email, password);
                         }).catch(signUpAndSeedError => {
                             let errorMessage = `Error on Sign Up & Set Default Data`;
-                            console.log(errorMessage, signUpAndSeedError);
-                            toast.error(errorMessage);
+                            errorToast(errorMessage, signUpAndSeedError);
                             return;
                         });
                     }

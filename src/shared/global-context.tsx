@@ -3,7 +3,7 @@
 import { toast } from 'react-toastify';
 import { Item } from './types/models/Item';
 import { Board } from './types/models/Board';
-import { defaultLists, User } from '@/shared/types/models/User';
+import { User } from '@/shared/types/models/User';
 import { AuthStates } from '@/shared/types/types';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -30,8 +30,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [user, setUser] = useState<User | null>(null);
     let [usersLoading, setUsersLoading] = useState(true);
-
+    
     let [boards, setBoards] = useState<Board[]>([]);
+    let [dataLoading, setDataLoading] = useState(true);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -180,6 +181,14 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         }
     };
 
+    useEffect(() => {
+        if (user != null) {
+            if (!dataLoading && loaded == false) {
+                dev() && console.log(`User`, user);
+            }
+        }
+    }, [user, loaded, dataLoading])
+
     const refreshUserBoards = (selectedBoard: Board, usr: User | null = user) => {
         setUser(prev => {
             let userToUse = usr ? usr : prev;
@@ -190,18 +199,14 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                     boards, 
                     board: {
                         ...selectedBoard,
-                        lists: defaultLists,
+                        lists: [],
                     }, 
                 },
             }) : userToUse;
         });
+        setUsersLoading(false);
+        setDataLoading(false);
     }
-
-    useEffect(() => {
-        if (user != null) {
-            dev() && console.log(`User`, user);
-        }
-    }, [user])
 
     useEffect(() => {
         if (!user?.id) {
@@ -298,6 +303,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         usersLoading, setUsersLoading,
 
         boards, setBoards,
+        dataLoading, setDataLoading,
 
         isPWA, setIsPWA,
         loaded, setLoaded,
@@ -319,8 +325,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         stocks, histories, stockOrders, stocksAcc, stockPositions,
-        boardForm, boardItems,
-        boards,
+        boardForm, boardItems, boards, dataLoading,
     ]);
 
     return (

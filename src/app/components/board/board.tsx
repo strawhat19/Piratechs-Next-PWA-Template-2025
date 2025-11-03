@@ -8,26 +8,35 @@ import ListComponent from './list/list';
 import BoardForm from './form/board-form';
 import { SwiperSlide } from 'swiper/react';
 import { Types } from '@/shared/types/types';
+import { List } from '@/shared/types/models/List';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import Icon_Button from '../buttons/icon-button/icon-button';
-import { createData } from '@/shared/types/models/Properties';
+import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
-import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
+import { ArrowDropDownTwoTone, Delete, Settings } from '@mui/icons-material';
+import { constants, dev, errorToast, logToast } from '@/shared/scripts/constants';
 import { addBoardToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
-import { constants, countPropertiesInObject, dev, logToast } from '@/shared/scripts/constants';
 
 export default function Board() {
     const { user, width, loaded, usersLoading, boardForm } = useContext<any>(StateGlobals);
 
     let [lists, setLists] = useState([]);
+    let [showAddLists, setShowAddLists] = useState(false);
 
     useEffect(() => {
         if (user != null) {
-            if (user?.data?.board?.lists) {
-                let lsts = user?.data?.board?.lists;
-                dev() && console.log(`Lists`, lsts);
-                setLists(lsts);
+            let brd = user?.data?.board;
+            if (brd) {
+                if (brd?.lists) {
+                    let lsts = brd?.lists;
+                    let hasLists = lsts && lsts?.length > 0;
+                    setShowAddLists(!hasLists);
+                    if (hasLists) {
+                        dev() && console.log(`Lists`, lsts);
+                    }
+                    setLists(lsts);
+                }
             }
         }
     }, [user?.data?.board])
@@ -57,10 +66,7 @@ export default function Board() {
 
     const addBoard = async (e?: any) => {
         let { name } = boardForm;
-        let data = createData(name, Types.Board, user, user?.data?.boards);
-        let newBoard = new BoardModel(data);
-        logToast(`Adding Board`, newBoard, undefined, undefined, undefined, true);
-        newBoard.properties = countPropertiesInObject(newBoard);
+        let newBoard = generateModel(name, Types.Board, user, user?.data?.boards, BoardModel);
         await addBoardToDatabase(newBoard, user).then(async response => {
             setTimeout(() => {
                 toast?.dismiss();
@@ -69,8 +75,7 @@ export default function Board() {
             return response;
         }).catch(signUpAndSeedError => {
             let errorMessage = `Error on Create Board`;
-            console.log(errorMessage, signUpAndSeedError);
-            toast.error(errorMessage);
+            errorToast(errorMessage, signUpAndSeedError);
             return;
         });
     }
@@ -85,22 +90,35 @@ export default function Board() {
             return response;
         }).catch(signUpAndSeedError => {
             let errorMessage = `Error on Delete Board`;
-            console.log(errorMessage, signUpAndSeedError);
-            toast.error(errorMessage);
+            errorToast(errorMessage, signUpAndSeedError);
             return;
         });
+    }
+
+    const addList = async (e?: any) => {
+        let { name } = boardForm;
+        if (showAddLists) {
+            logToast(`Adding List`, name, undefined, undefined, undefined, true);
+            let newList = generateModel(name, Types.List, user, lists, List);
+            logToast(`Added List`, newList);
+        }
     }
 
     return <>
         <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``}`}>
             {(user?.data?.boards?.length == 0 ||  lists?.length == 0) && (
-                <div className={`boardBottomComponent boardTopComponent`}>
+                <div className={`addBoardFormContainer boardTopComponent`}>
                     <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>
                         <div className={`boardTopStart fitMin`}>
                             <Logo label={`New Board`} />
                         </div>
                         <div className={`boardTopMid fullWidth`}>
-                            <BoardForm onClick={addBoard} newBoardForm={true} showIconButton={width >= constants?.breakpoints?.mobile} />
+                            <BoardForm 
+                                onClick={addBoard} 
+                                newDataForm={true} 
+                                className={`addBoardForm`} 
+                                showIconButton={width >= constants?.breakpoints?.mobile} 
+                            />
                         </div>
                     </div>
                 </div>
@@ -116,7 +134,14 @@ export default function Board() {
                                     <Logo label={user?.data?.board?.name} />
                                 </div>
                                 <div className={`boardTopMid fullWidth`}>
-                                    <BoardForm boardSearch={true} showIconButton={width >= constants?.breakpoints?.mobile} />
+                                    <BoardForm 
+                                        onClick={addList}
+                                        newDataForm={showAddLists} 
+                                        boardSearch={!showAddLists} 
+                                        placeholder={showAddLists ? `List Name` : undefined} 
+                                        showIconButton={width >= constants?.breakpoints?.mobile} 
+                                        className={`listForm ${showAddLists ? `addListForm` : `listSearch`}`} 
+                                    />
                                 </div>
                                 <div className={`boardTopEnd fitMin flexCenter gap5`}>
                                     <Icon_Button title={`Board Settings`} style={{ marginRight: 5 }}>
@@ -127,8 +152,14 @@ export default function Board() {
                                             {lists?.length}
                                         </span> List(s)
                                     </>}
-                                    <Icon_Button onClick={() => deleteBoard(user?.data?.board)} size={25} title={`Boards`} style={{ marginLeft: 5, marginRight: 5, }}>
-                                        <ArrowDropDownTwoTone className={`arrowIcon`} style={{ fontSize: 20 }} />
+                                    <Icon_Button 
+                                        size={25}  
+                                        title={`Delete Board`}  
+                                        style={{ marginLeft: 5, marginRight: 5, }} 
+                                        onClick={() => deleteBoard(user?.data?.board)}  
+                                    >
+                                        <Delete className={`deleteIcon`} style={{ fontSize: 16 }} />
+                                        {/* <ArrowDropDownTwoTone className={`arrowIcon`} style={{ fontSize: 20 }} /> */}
                                     </Icon_Button>
                                 </div>
                             </div>
