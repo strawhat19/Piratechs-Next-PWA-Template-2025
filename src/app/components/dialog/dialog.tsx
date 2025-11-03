@@ -36,9 +36,10 @@ function SimpleDialog(props: SimpleDialogProps) {
               <strong className={`dialogTitleName lineClamp1`}>
                 {selected?.name}
               </strong>
-              {selected?.type == Types.Item && <StatusTag item={selected} disabled={false} />}
+              {selected?.type == Types.Item && <StatusTag item={selected} disabled={false} className={`thiccTag`} />}
             </DialogTitle>
             <div className={`dialogCloseButton`}>
+              <StatusTag title={`Delete ${selected?.type}`} item={selected} disabled={false} className={`thiccTag`} />
               <Icon_Button title={``} onClick={onClose}>
                 <Close style={{ fontSize: 20 }} className={`linkHover cursorPointer`} />
               </Icon_Button>

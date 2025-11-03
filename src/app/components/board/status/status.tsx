@@ -40,6 +40,7 @@ export const statuses: any = {
 
 export default function StatusTag({ 
     item, 
+    title,
     style = {}, 
     label = ``,
     dateTag = false,
@@ -85,7 +86,7 @@ export default function StatusTag({
     }
 
     return (
-        <Tooltip placement={`top`} title={disabled ? `` : `Change Status from "${item?.status}" to "${statuses[item?.status]?.transition}"`} arrow>
+        <Tooltip placement={`top`} title={disabled ? `` : (title ? title : `Change Status from "${item?.status}" to "${statuses[item?.status]?.transition}"`)} arrow>
             <Button
                 onClick={selected != null && selected?.statusChange ? (e) => selected?.statusChange(e, selected) : onClick}
                 disabled={disabled}
