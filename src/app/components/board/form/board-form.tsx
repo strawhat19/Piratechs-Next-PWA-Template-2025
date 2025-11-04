@@ -24,9 +24,15 @@ export default function BoardForm({
         setBoardForm((prevFormData: any) => ({ ...prevFormData, [formField?.name]: formField?.value }));
     }
 
+    const isDisabled = () => {
+        let isDisabled = false;
+        isDisabled = disabled || (!boardSearch && boardForm?.name == ``);
+        return isDisabled;
+    }
+
     const onItemFormSubmit = (e: any) => {
         e?.preventDefault();
-        const dsbld = boardForm?.name == `` || disabled;
+        const dsbld = isDisabled();
         if (dsbld) return;
         const form = e?.target;
         const formData = new FormData(form);
@@ -57,8 +63,8 @@ export default function BoardForm({
                         <Button
                             type={`submit`}
                             onClick={onClick}
-                            disabled={disabled || boardForm?.name == ``}
-                            className={`fontI boardFormField ${(disabled || boardForm?.name == ``) ? `disabled` : ``}`}
+                            disabled={isDisabled()}
+                            className={`fontI boardFormField ${boardSearch ? `boardSearchButton` : ``} ${isDisabled() ? `disabled` : ``}`}
                             style={{
                                 width: `100%`,
                                 maxWidth: `fit-content`,

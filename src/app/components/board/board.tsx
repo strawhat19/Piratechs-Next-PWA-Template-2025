@@ -104,24 +104,23 @@ export default function Board() {
 
     const addList = async (e?: any) => {
         let { name } = boardForm;
-        if (showAddLists) {
-            logToast(`Adding List`, name, undefined, undefined, undefined, true);
-            let newList: List = generateModel(name, Types.List, user, lists, List);
-            newList.boardID = board?.id;
-            newList.boardIDs = [board?.id];
-            newList.properties = countPropertiesInObject(newList);
-            await addListToDatabase(newList, user).then(async response => {
-                setTimeout(() => {
-                    toast?.dismiss();
-                    logToast(`Added List`, newList);
-                }, 500);
-                return response;
-            }).catch(error => {
-                let errorMessage = `Error on Create List`;
-                errorToast(errorMessage, error);
-                return;
-            });
-        }
+        if (!showAddLists) return;
+        logToast(`Adding List`, name, undefined, undefined, undefined, true);
+        let newList: List = generateModel(name, Types.List, user, lists, List);
+        newList.boardID = board?.id;
+        newList.boardIDs = [board?.id];
+        newList.properties = countPropertiesInObject(newList);
+        await addListToDatabase(newList, user).then(async response => {
+            setTimeout(() => {
+                toast?.dismiss();
+                logToast(`Added List`, newList);
+            }, 500);
+            return response;
+        }).catch(error => {
+            let errorMessage = `Error on Create List`;
+            errorToast(errorMessage, error);
+            return;
+        });
     }
 
     const manageBoard = (e?: any) => {
@@ -198,9 +197,9 @@ export default function Board() {
                             slidesPerView={getSlidesPerView()}
                             paginationClass={`boardListPaginationDots`}
                         >
-                            {lists?.map((l: any, li: number) => (
+                            {lists?.map((l: List, li: number) => (
                                 <SwiperSlide key={li}>
-                                    <ListComponent title={l?.name} />
+                                    <ListComponent list={l} title={l?.name} />
                                 </SwiperSlide>
                             ))}
                         </Slider>

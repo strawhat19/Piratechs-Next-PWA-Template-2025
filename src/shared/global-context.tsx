@@ -221,6 +221,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 const itemsQuery = query(itemsRef, where(`listIDs`, `array-contains`, list?.id));
                 return onSnapshot(itemsQuery, itemSnap => {
                     const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
+                    const updatedLists = lists?.map(l => new List({ ...l, items: items?.filter(i => i?.listID == l?.id) }));
+                    setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, lists: updatedLists } }) : prev);
                     items.forEach((item: Item) => {
                         const tasksRef = collection(db, Tables.tasks).withConverter(taskConverter);
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));

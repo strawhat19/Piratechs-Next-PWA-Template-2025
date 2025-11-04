@@ -42,6 +42,7 @@ setPersistence(auth, browserLocalPersistence);
 export const usersAPI = apiRoutes.users.url;
 export const boardsAPI = apiRoutes.boards.url;
 export const listsAPI = apiRoutes.lists.url;
+export const itemsAPI = apiRoutes.items.url;
 
 export const userConverter = {
   toFirestore: (usr: User) => {
@@ -193,6 +194,25 @@ export const itemConverter = {
     const data = snapshot.data(options);
     return new Item(data);
   }
+}
+
+export const addItemToDatabase = async (itm: Item, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(itemsAPI, {
+    method: `POST`,
+    body: JSON.stringify(itm),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Create Item (${res.status})`;
+    logToast(`Error Adding Item to Database ${Tables.items} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
 }
 
 export const taskConverter = {

@@ -1,4 +1,5 @@
 import { Data } from './Data';
+import { Board } from './Board';
 import { Types } from '../types';
 import { capWords, countPropertiesInObject, genID, getIDParts, isValid } from '@/shared/scripts/constants';
 
@@ -49,6 +50,7 @@ export const defaultUserData = {
 };
 
 export class User extends Data {
+  board?: Board;
   color?: string;
   phone?: string;
   avatar?: string;

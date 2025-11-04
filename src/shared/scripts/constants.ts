@@ -46,6 +46,9 @@ export const apiRoutes = {
   lists: {
     url: `/api/lists`,
   },
+  items: {
+    url: `/api/items`,
+  },
   stocks: {
     url: `/api/stocks`,
     routes: {

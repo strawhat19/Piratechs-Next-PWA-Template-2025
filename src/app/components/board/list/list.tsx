@@ -2,6 +2,7 @@
 
 import './list.scss';
 
+import { toast } from 'react-toastify';
 import BoardForm from '../form/board-form';
 import { statuses } from '../status/status';
 import Logo from '@/app/components/logo/logo';
@@ -9,20 +10,22 @@ import { Item } from '@/shared/types/models/Item';
 import ItemComponent, { type } from '../item/item';
 import { StateGlobals } from '@/shared/global-context';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { addItemToDatabase } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { useContext, useMemo, useCallback, useRef } from 'react';
 import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
-import { constants, genID, getIDParts, randomNumber } from '@/shared/scripts/constants';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { constants, countPropertiesInObject, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
 
 export default function ListComponent({
+  list,
   title = `To Do`,
 }: any) {
   const listScroll = useRef(null);
   const { mobile } = constants?.breakpoints;
-  const { width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(StateGlobals);
+  const { user, width, boardForm, isPWA, setSelected, boardItems, setBoardItems } = useContext<any>(StateGlobals);
 
   const desktopSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
   const mobileSensors = useSensors(
@@ -51,33 +54,48 @@ export default function ListComponent({
     }
   }
 
-  const addItem = () => {
-    setBoardItems((prev: any) => {
-      let newIndex = prev.length + 1;
-      let randomImage = imageURLs[randomNumber(imageURLs?.length)];
-      let newImageURL = boardForm?.imageURL == `` ? randomImage : boardForm?.imageURL;
-      let images = [newImageURL]?.filter(val => val != ``);
-      let newTitle = boardForm?.name == `` ? `${type} ${newIndex}` : boardForm?.name;
-      let newDescription = boardForm?.description == `` ? newTitle : boardForm?.description;
-      let newID = genID(type, newIndex, newTitle);
-      let updatedItems = [
-        ...prev, 
-        new Item({ 
-          type, 
-          id: newID?.id, 
-          name: newTitle, 
-          number: newIndex, 
-          imageURLs: images, 
-          created: newID?.date, 
-          updated: newID?.date, 
-          description: newDescription, 
-        }),
-      ];
-      return updatedItems;
+  const addItem = async (e?: any) => {
+    let number = list?.itemIDs?.length + 1;
+    let randomImage = imageURLs[randomNumber(imageURLs?.length)];
+    let name = boardForm?.name == `` ? `${type} ${number}` : boardForm?.name;
+    let imageURL = boardForm?.imageURL == `` ? randomImage : boardForm?.imageURL;
+    let imagesURLs = [imageURL]?.filter(val => val != ``);
+    let description = boardForm?.description == `` ? name : boardForm?.description;
+    let newItemID = genID(type, number, name);
+    let newItem = new Item({ 
+      type,
+      name, 
+      number, 
+      description, 
+      userID: user?.id,
+      listID: list?.id,
+      id: newItemID?.id, 
+      userIDs: [user?.id],
+      listIDs: [list?.id],
+      createdBy: user?.id,
+      updatedBy: user?.id,
+      imageURLs: imagesURLs, 
+      uuid: newItemID?.uuid,
+      created: newItemID?.date, 
+      updated: newItemID?.date, 
+      boardID: user?.data?.board?.id,
+      boardIDs: [user?.data?.board?.id],
     });
-    setTimeout(() => {
-      scrollListTo();
-    }, 250)
+    newItem.properties = countPropertiesInObject(newItem);
+    await addItemToDatabase(newItem, user).then(async response => {
+      setTimeout(() => {
+        toast?.dismiss();
+        logToast(`Added Item`, newItem);
+        setTimeout(() => {
+          scrollListTo();
+        }, 250)
+      }, 500);
+      return response;
+    }).catch(error => {
+      let errorMessage = `Error on Create Item`;
+      errorToast(errorMessage, error);
+      return;
+    });
   };
 
   const deleteItem = (id: string) => {
