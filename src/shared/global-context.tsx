@@ -7,6 +7,7 @@ import { Task } from './types/models/Task';
 import { Board } from './types/models/Board';
 import { User } from '@/shared/types/models/User';
 import { AuthStates } from '@/shared/types/types';
+import { defaultBoardForm } from '@/app/components/board/form/board-form';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
@@ -53,7 +54,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     // let type = Types.Item;
     // let imageURLs = Object.values(imagesObject.vertical);
     
-    let [boardForm, setBoardForm] = useState<Partial<Item | any>>({ name: ``, description: ``, imageURL: `` });
+    let [boardForm, setBoardForm] = useState<Partial<Item | any>>(defaultBoardForm);
     let [boardItems, setBoardItems] = useState<Item[]>(() => [
         // new Item({ 
         //     number: 1, 
@@ -186,7 +187,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     useEffect(() => {
         if (user != null) {
             if (!dataLoading) {
-                dev() && console.log(`User`, user);
+                if (user?.data?.board?.id) {
+                    dev() && console.log(`User`, user);
+                }
             }
         }
     }, [user, dataLoading])
@@ -225,13 +228,13 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));
                         onSnapshot(tasksQuery, taskSnap => {
                             const tasks = taskSnap.docs.map(d => new Task({ ...d.data(), board: selectedBoard, list, item }));
-                            dev() && console.log(`Tasks for Item "${item?.name}"`, tasks);
+                            dev() && tasks?.length > 0 && console.log(`Tasks for Item "${item?.name}"`, tasks);
                         });
                     });
-                    dev() && console.log(`Items for List "${list?.name}"`, items);
+                    dev() && items?.length > 0 && console.log(`Items for List "${list?.name}"`, items);
                 });
             });
-            dev() && console.log(`Lists for Board "${selectedBoard?.name}"`, lists);
+            dev() && lists?.length > 0 && console.log(`Lists for Board "${selectedBoard?.name}"`, lists);
             return () => unsubItemsArr.forEach(unsub => unsub());
         });
         return () => unsubLists();

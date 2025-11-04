@@ -9,18 +9,19 @@ import BoardForm from './form/board-form';
 import { SwiperSlide } from 'swiper/react';
 import { Types } from '@/shared/types/types';
 import { List } from '@/shared/types/models/List';
+import { Delete, Settings } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
-import { ArrowDropDownTwoTone, Delete, Settings } from '@mui/icons-material';
-import { constants, dev, errorToast, logToast } from '@/shared/scripts/constants';
+import { constants, errorToast, logToast } from '@/shared/scripts/constants';
 import { addBoardToDatabase, addListToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
 
 export default function Board() {
     const { user, width, loaded, usersLoading, boardForm, setSelected } = useContext<any>(StateGlobals);
 
+    let [loading, setLoading] = useState(false);
     let [lists, setLists] = useState<List[]>([]);
     let [board, setBoard] = useState(user?.data?.board);
     let [showAddLists, setShowAddLists] = useState(false);
@@ -34,9 +35,6 @@ export default function Board() {
                     let lsts = brd?.lists;
                     let hasLists = lsts && lsts?.length > 0;
                     setShowAddLists(!hasLists);
-                    if (hasLists) {
-                        dev() && console.log(`Lists for Board from Component`, lsts);
-                    }
                     setLists(lsts);
                 }
             }
@@ -83,18 +81,21 @@ export default function Board() {
     }
 
     const deleteBoard = async (brd: BoardModel) => {
+        setLoading(true);
         logToast(`Deleting Board`, brd, undefined, undefined, undefined, true);
         await deleteBoardFromDatabase(brd, user).then(async response => {
             setTimeout(() => {
                 toast?.dismiss();
                 setLists([]);
                 setBoard(null);
+                setLoading(false);
                 logToast(`Deleted Board`, brd);
             }, 500);
             return response;
         }).catch(error => {
             let errorMessage = `Error on Delete Board`;
             errorToast(errorMessage, error);
+            setLoading(false);
             return;
         });
     }
@@ -125,8 +126,8 @@ export default function Board() {
     }
 
     return <>
-        <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``} ${lists?.length > 0 ? `hasLists` : `noLists`}`}>
-            {(user?.data?.boards?.length == 0 ||  lists?.length == 0) && (
+        <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``} ${(!loading && lists?.length > 0) ? `hasLists` : `noLists`}`}>
+            {(!loading && (user?.data?.boards?.length == 0 && lists?.length == 0)) && (
                 <div className={`addBoardFormContainer boardTopComponent`}>
                     <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>
                         <div className={`boardTopStart fitMin`}>
@@ -143,7 +144,7 @@ export default function Board() {
                     </div>
                 </div>
             )}
-            {(usersLoading || !loaded) ? (
+            {(loading || usersLoading || !loaded) ? (
                 <Loader height={450} label={`Board Loading`} style={{ maxWidth: `calc(var(--wdth) + 1%)`, margin: `0 auto` }} />
             ) : (
                 <>
@@ -155,7 +156,8 @@ export default function Board() {
                                 </div>
                                 <div className={`boardTopMid fullWidth`}>
                                     <BoardForm 
-                                        onClick={addList}
+                                        autoFocus={true} 
+                                        onClick={addList} 
                                         newDataForm={showAddLists} 
                                         boardSearch={!showAddLists} 
                                         placeholder={showAddLists ? `List Name` : undefined} 

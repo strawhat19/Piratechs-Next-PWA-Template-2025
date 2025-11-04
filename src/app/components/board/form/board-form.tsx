@@ -3,8 +3,12 @@ import { Button, Tooltip } from '@mui/material';
 import { Add, Search } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
 
+export const defaultBoardForm = { name: ``, description: ``, imageURL: `` };
+
 export default function BoardForm({ 
     onClick, 
+    disabled = false,
+    autoFocus = false,
     boardSearch = false, 
     newDataForm = false, 
     placeholder = `Name`, 
@@ -22,6 +26,8 @@ export default function BoardForm({
 
     const onItemFormSubmit = (e: any) => {
         e?.preventDefault();
+        const dsbld = boardForm?.name == `` || disabled;
+        if (dsbld) return;
         const form = e?.target;
         const formData = new FormData(form);
         const hasSubmitBtn = submitButtonShowing();
@@ -30,6 +36,7 @@ export default function BoardForm({
         if (!hasSubmitBtn) {
             onClick();
         }
+        setBoardForm(defaultBoardForm);
         form?.reset();
     }
 
@@ -37,7 +44,7 @@ export default function BoardForm({
         <div className={`formRow boardListFormContainer boardFormContainer ${className} ${newDataForm ? `newDataForm` : ``}`}>
             <form className={`boardListForm boardForm boardFormField`} onInput={(e) => updateForm(e)} onSubmit={(e) => onItemFormSubmit(e)}>
                 {boardSearch ? <>
-                    <input name={`search`} type={`search`} className={`searchField`} placeholder={`Search...`} required />
+                    <input name={`search`} type={`search`} className={`searchField`} placeholder={`Search...`} autoFocus={autoFocus} required />
                 </> : <>
                     <input name={`name`} type={`text`} className={`nameField`} placeholder={placeholder} required />
                     {!newDataForm && <>
@@ -50,8 +57,8 @@ export default function BoardForm({
                         <Button
                             type={`submit`}
                             onClick={onClick}
-                            disabled={boardForm?.name == ``}
-                            className={`fontI boardFormField ${boardForm?.name == `` ? `disabled` : ``}`}
+                            disabled={disabled || boardForm?.name == ``}
+                            className={`fontI boardFormField ${(disabled || boardForm?.name == ``) ? `disabled` : ``}`}
                             style={{
                                 width: `100%`,
                                 maxWidth: `fit-content`,
