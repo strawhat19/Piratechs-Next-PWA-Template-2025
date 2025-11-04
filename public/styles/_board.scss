@@ -7,6 +7,17 @@
     }
 }
 
+.boardPage {
+    &:has(.hasLists) {
+        --wdth: 99%;
+    }
+    footer {
+        .footerInner {
+            width: var(--wdth);
+        }
+    }
+}
+
 .boardComponent {
     width: 100%;
     display: flex;

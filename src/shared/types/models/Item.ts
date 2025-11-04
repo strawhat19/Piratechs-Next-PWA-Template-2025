@@ -1,11 +1,21 @@
+import { List } from './List';
+import { User } from './User';
+import { Task } from './Task';
+import { Board } from './Board';
 import { Types } from '../types';
 import { Properties } from './Properties';
 import { Status } from '@/app/components/board/status/status';
 
 export class Item extends Properties { 
-    onClick: any;
+    list?: List;
+    onClick?: any;
+    board?: Board;
+    users?: User[];
+    tasks?: Task[];
     urls: string[] = []; 
     taskIDs: string[] = [];
+    listIDs?: string[] = [];
+    boardIDs: string[] = [];
     imageURLs: string[] = []; 
     type: Types | string = Types.Item;
     status: Status | string = Status.ToDo;

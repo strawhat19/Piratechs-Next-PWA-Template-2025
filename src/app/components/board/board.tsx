@@ -16,7 +16,7 @@ import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
 import { ArrowDropDownTwoTone, Delete, Settings } from '@mui/icons-material';
 import { constants, dev, errorToast, logToast } from '@/shared/scripts/constants';
-import { addBoardToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
+import { addBoardToDatabase, addListToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
 
 export default function Board() {
     const { user, width, loaded, usersLoading, boardForm, setSelected } = useContext<any>(StateGlobals);
@@ -35,7 +35,7 @@ export default function Board() {
                     let hasLists = lsts && lsts?.length > 0;
                     setShowAddLists(!hasLists);
                     if (hasLists) {
-                        dev() && console.log(`Lists`, lsts);
+                        dev() && console.log(`Lists for Board from Component`, lsts);
                     }
                     setLists(lsts);
                 }
@@ -75,9 +75,9 @@ export default function Board() {
                 logToast(`Added Board`, newBoard);
             }, 500);
             return response;
-        }).catch(signUpAndSeedError => {
+        }).catch(error => {
             let errorMessage = `Error on Create Board`;
-            errorToast(errorMessage, signUpAndSeedError);
+            errorToast(errorMessage, error);
             return;
         });
     }
@@ -87,12 +87,14 @@ export default function Board() {
         await deleteBoardFromDatabase(brd, user).then(async response => {
             setTimeout(() => {
                 toast?.dismiss();
+                setLists([]);
+                setBoard(null);
                 logToast(`Deleted Board`, brd);
             }, 500);
             return response;
-        }).catch(signUpAndSeedError => {
+        }).catch(error => {
             let errorMessage = `Error on Delete Board`;
-            errorToast(errorMessage, signUpAndSeedError);
+            errorToast(errorMessage, error);
             return;
         });
     }
@@ -101,8 +103,19 @@ export default function Board() {
         let { name } = boardForm;
         if (showAddLists) {
             logToast(`Adding List`, name, undefined, undefined, undefined, true);
-            let newList = generateModel(name, Types.List, user, lists, List);
-            logToast(`Added List`, newList);
+            let newList: List = generateModel(name, Types.List, user, lists, List);
+            newList.boardIDs = [board?.id];
+            await addListToDatabase(newList, user).then(async response => {
+                setTimeout(() => {
+                    toast?.dismiss();
+                    logToast(`Added List`, newList);
+                }, 500);
+                return response;
+            }).catch(error => {
+                let errorMessage = `Error on Create List`;
+                errorToast(errorMessage, error);
+                return;
+            });
         }
     }
 
@@ -112,7 +125,7 @@ export default function Board() {
     }
 
     return <>
-        <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``}`}>
+        <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``} ${lists?.length > 0 ? `hasLists` : `noLists`}`}>
             {(user?.data?.boards?.length == 0 ||  lists?.length == 0) && (
                 <div className={`addBoardFormContainer boardTopComponent`}>
                     <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>

@@ -1,10 +1,13 @@
 import { User } from '../types/models/User';
+import { List } from '../types/models/List';
+import { Item } from '../types/models/Item';
+import { Task } from '../types/models/Task';
 import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
-import { getFirestore } from 'firebase/firestore';
-import { apiRoutes, logToast } from '../scripts/constants';
-import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
 import { Board } from '../types/models/Board';
+import { getFirestore } from 'firebase/firestore';
+import { apiRoutes, getIDParts, logToast } from '../scripts/constants';
+import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
 
 export enum Tables {
   users = `users`,
@@ -38,6 +41,7 @@ setPersistence(auth, browserLocalPersistence);
 
 export const usersAPI = apiRoutes.users.url;
 export const boardsAPI = apiRoutes.boards.url;
+export const listsAPI = apiRoutes.lists.url;
 
 export const userConverter = {
   toFirestore: (usr: User) => {
@@ -64,7 +68,7 @@ export const addUserToDatabase = async (usr: User) => {
 }
 
 export const updateUserInDatabase = async (id: string, updates: Partial<User>) => {
-  const currentUser = auth.currentUser;
+  const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
   const res = await fetch(usersAPI + `/` + id, {
     method: `PATCH`,
@@ -81,6 +85,7 @@ export const updateUserInDatabase = async (id: string, updates: Partial<User>) =
   }
   return res.json();
 }
+
 export const renderFirebaseAuthErrorMessage = (erMsg: string) => {
   let erMsgQuery = erMsg?.toLowerCase();
   if (erMsgQuery.includes(`invalid-email`)) {
@@ -111,11 +116,11 @@ export const boardConverter = {
 }
 
 export const addBoardToDatabase = async (brd: Board, user: User) => {
-  const currentUser = auth.currentUser;
+  const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(boardsAPI, {
     method: `POST`,
-    body: JSON.stringify({ ...brd, props: user?.properties }),
+    body: JSON.stringify(brd),
     headers: { 
       Authorization: `Bearer ${token}`,
       [`Content-Type`]: `application/json`, 
@@ -130,13 +135,14 @@ export const addBoardToDatabase = async (brd: Board, user: User) => {
 }
 
 export const deleteBoardFromDatabase = async (brd: Board, user: User) => {
-  const currentUser = auth.currentUser;
+  const { date } = getIDParts();
+  const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const filteredIDs = user?.boardIDs?.length > 0 ? user?.boardIDs?.filter(bid => bid != brd?.id) : [];
   const selectedID = filteredIDs?.length > 0 ? filteredIDs[0] : ``;
   const res = await fetch(boardsAPI, {
     method: `DELETE`,
-    body: JSON.stringify({ ...brd, props: user?.properties, selectedID }),
+    body: JSON.stringify({ ...brd, selectedID, updated: date }),
     headers: { 
       Authorization: `Bearer ${token}`,
       [`Content-Type`]: `application/json`, 
@@ -150,22 +156,51 @@ export const deleteBoardFromDatabase = async (brd: Board, user: User) => {
   return res.json();
 }
 
-// export const listConverter = {
-//   toFirestore: (lst: List) => {
-//     return JSON.parse(JSON.stringify(lst));
-//   },
-//   fromFirestore: (snapshot: any, options: any) => {
-//     const data = snapshot.data(options);
-//     return new List(data);
-//   }
-// }
+export const listConverter = {
+  toFirestore: (lst: List) => {
+    return JSON.parse(JSON.stringify(lst));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new List(data);
+  }
+}
 
-// export const itemConverter = {
-//   toFirestore: (itm: Item) => {
-//     return JSON.parse(JSON.stringify(itm));
-//   },
-//   fromFirestore: (snapshot: any, options: any) => {
-//     const data = snapshot.data(options);
-//     return new Item(data);
-//   }
-// }
+export const addListToDatabase = async (lst: List, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(listsAPI, {
+    method: `POST`,
+    body: JSON.stringify(lst),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Create List (${res.status})`;
+    logToast(`Error Adding List to Database ${Tables.lists} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const itemConverter = {
+  toFirestore: (itm: Item) => {
+    return JSON.parse(JSON.stringify(itm));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new Item(data);
+  }
+}
+
+export const taskConverter = {
+  toFirestore: (tsk: Task) => {
+    return JSON.parse(JSON.stringify(tsk));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new Task(data);
+  }
+}

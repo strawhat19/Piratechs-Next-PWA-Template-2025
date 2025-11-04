@@ -43,6 +43,9 @@ export const apiRoutes = {
   boards: {
     url: `/api/boards`,
   },
+  lists: {
+    url: `/api/lists`,
+  },
   stocks: {
     url: `/api/stocks`,
     routes: {

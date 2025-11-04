@@ -1,22 +1,22 @@
-import { User } from './User';
+import { List } from './List';
 import { Item } from './Item';
-import { Task } from './Task';
 import { Board } from './Board';
 import { Types } from '../types';
 import { Properties } from './Properties';
 import { Status } from '@/app/components/board/status/status';
 
-export class List extends Properties { 
+export class Task extends Properties { 
+    item?: Item;
+    list?: List;
     onClick?: any;
     board?: Board;
-    users?: User[];
-    items?: Item[];
-    tasks?: Task[];
-    itemIDs: string[] = [];
+    urls: string[] = []; 
+    itemIDs?: string[] = [];
     boardIDs: string[] = [];
-    type: Types | string = Types.List;
-    status: Status | string = Status.Active;
-    constructor(data: Partial<List>) {
+    imageURLs: string[] = []; 
+    type: Types | string = Types.Task;
+    status: Status | string = Status.ToDo;
+    constructor(data: Partial<Task>) {
         super(data);
         Object.assign(this, data);
     }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { tokenRequired } from '@/shared/scripts/constants';
-import { arrayRemove, arrayUnion, doc, writeBatch } from 'firebase/firestore';
 import { boardConverter, db, Tables, userConverter } from '@/shared/server/firebase';
+import { arrayRemove, arrayUnion, collection, doc, getDocs, increment, query, where, writeBatch } from 'firebase/firestore';
 
 export const runtime = `nodejs`;
 export const dynamic = `force-dynamic`;
@@ -20,15 +20,14 @@ export const POST = async (req: Request) => {
     tokenRequired(req);
 
     const body = await req.json();
-    const { id, userID, updated, props } = body || {};
+    const { id, userID, updated } = body || {};
 
-    if (!id || !userID || !updated || !props) {
+    if (!id || !userID || !updated) {
       return NextResponse.json(
         { 
           code: 400,
           error: `Invalid Request Body`,
           expectedFormat: {
-            props: 1,
             updated: `2:55 PM 11/1/25`,
             id: `Board_1_Todos_2_55_PM_11_1_25_E4HEvN2vc`,
             userID: `User_1_Rakib1_11_36_PM_10_22_25_fjOQm4OD8`,
@@ -47,8 +46,8 @@ export const POST = async (req: Request) => {
     batch.update(userRef, {
       updated,
       selectedID: id,
-      properties: props + 1,
       boardIDs: arrayUnion(id),
+      properties: increment(1),
     });
 
     await batch.commit();
@@ -64,15 +63,14 @@ export const DELETE = async (req: Request) => {
     tokenRequired(req);
 
     const body = await req.json();
-    const { id, userID, updated, props, selectedID } = body || {};
+    const { id, userID, updated, selectedID } = body || {};
 
-    if (!id || !userID || !updated || isNaN(props) || typeof selectedID != `string`) {
+    if (!id || !userID || !updated || typeof selectedID != `string`) {
       return NextResponse.json(
         {
           code: 400,
           error: 'Invalid Request Body',
           expectedFormat: {
-            props: 15,
             userID: `User_1_...`,
             updated: `2:55 PM 11/1/25`,
             id: `Board_1_Todos_2_55_PM_11_1_25_XXXX`,
@@ -88,26 +86,32 @@ export const DELETE = async (req: Request) => {
     const boardRef = doc(db, Tables.boards, String(id)).withConverter(boardConverter as any);
     const userRef  = doc(db, Tables.users, String(userID)).withConverter(userConverter as any);
 
+    const listsQuery = query(collection(db, Tables.lists), where(`boardIDs`, `array-contains`, id));
+    const listsSnapshot = await getDocs(listsQuery);
+
+    for (const listDoc of listsSnapshot.docs) {
+      const listRef = doc(db, Tables.lists, listDoc?.id);
+      batch.delete(listRef);
+    }
+
     batch.delete(boardRef);
 
-    const userUpdates: Record<string, any> = {
+    batch.update(userRef, {
       updated,
       selectedID,
       boardIDs: arrayRemove(id),
-      properties: Math.max(0, props - 1),
-    };
-
-    batch.update(userRef, userUpdates);
+      properties: increment(-1),
+    });
 
     await batch.commit();
 
     return NextResponse.json(
-      { ok: true, removedBoardId: id, userID, updated, selectedID: userUpdates.selectedID },
+      { ok: true, id, userID, updated, selectedID },
       { status: 200 }
     );
   } catch (error: any) {
     return NextResponse.json(
-      { error: String(error?.message || error), message: 'Error on Delete Board' },
+      { error: String(error?.message || error), message: `Error on Delete Board` },
       { status: 500 }
     );
   }

@@ -1,7 +1,9 @@
 'use client';
 
 import { toast } from 'react-toastify';
+import { List } from './types/models/List';
 import { Item } from './types/models/Item';
+import { Task } from './types/models/Task';
 import { Board } from './types/models/Board';
 import { User } from '@/shared/types/models/User';
 import { AuthStates } from '@/shared/types/types';
@@ -183,11 +185,11 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     useEffect(() => {
         if (user != null) {
-            if (!dataLoading && loaded == false) {
+            if (!dataLoading) {
                 dev() && console.log(`User`, user);
             }
         }
-    }, [user, loaded, dataLoading])
+    }, [user, dataLoading])
 
     const refreshUserBoards = (selectedBoard: Board, usr: User | null = user) => {
         setUser(prev => {
@@ -197,16 +199,43 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 data: { 
                     ...(userToUse as any).data, 
                     boards, 
-                    board: {
-                        ...selectedBoard,
-                        lists: [],
-                    }, 
+                    board: selectedBoard, 
                 },
             }) : userToUse;
         });
         setUsersLoading(false);
         setDataLoading(false);
     }
+
+    useEffect(() => {
+        let selectedBoard: Board = user?.data?.board;
+        if (!selectedBoard?.id) return;
+        const listsRef = collection(db, Tables.lists);
+        const listsQuery = query(listsRef, where(`boardIDs`, `array-contains`, selectedBoard?.id));
+        const unsubLists = onSnapshot(listsQuery, listSnap => {
+            const lists = listSnap.docs.map(d => new List({ ...d.data(), board: selectedBoard }));
+            setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
+            const unsubItemsArr = lists.map((list: List) => {
+                const itemsRef = collection(db, Tables.items);
+                const itemsQuery = query(itemsRef, where(`listIDs`, `array-contains`, list?.id));
+                return onSnapshot(itemsQuery, itemSnap => {
+                    const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
+                    items.forEach((item: Item) => {
+                        const tasksRef = collection(db, Tables.tasks);
+                        const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));
+                        onSnapshot(tasksQuery, taskSnap => {
+                            const tasks = taskSnap.docs.map(d => new Task({ ...d.data(), board: selectedBoard, list, item }));
+                            dev() && console.log(`Tasks for Item "${item?.name}"`, tasks);
+                        });
+                    });
+                    dev() && console.log(`Items for List "${list?.name}"`, items);
+                });
+            });
+            dev() && console.log(`Lists for Board "${selectedBoard?.name}"`, lists);
+            return () => unsubItemsArr.forEach(unsub => unsub());
+        });
+        return () => unsubLists();
+    }, [user?.data?.board?.id]);
 
     useEffect(() => {
         if (!user?.id) {
