@@ -11,6 +11,7 @@ export class Task extends Properties {
     onClick?: any;
     board?: Board;
     urls: string[] = []; 
+    boardID: string = ``;
     itemIDs?: string[] = [];
     boardIDs: string[] = [];
     imageURLs: string[] = []; 

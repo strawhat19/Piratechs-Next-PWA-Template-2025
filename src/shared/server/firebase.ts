@@ -139,10 +139,10 @@ export const deleteBoardFromDatabase = async (brd: Board, user: User) => {
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const filteredIDs = user?.boardIDs?.length > 0 ? user?.boardIDs?.filter(bid => bid != brd?.id) : [];
-  const selectedID = filteredIDs?.length > 0 ? filteredIDs[0] : ``;
+  const boardID = filteredIDs?.length > 0 ? filteredIDs[0] : ``;
   const res = await fetch(boardsAPI, {
     method: `DELETE`,
-    body: JSON.stringify({ ...brd, selectedID, updated: date }),
+    body: JSON.stringify({ ...brd, boardID, updated: date }),
     headers: { 
       Authorization: `Bearer ${token}`,
       [`Content-Type`]: `application/json`, 

@@ -13,6 +13,7 @@ export class Item extends Properties {
     users?: User[];
     tasks?: Task[];
     urls: string[] = []; 
+    boardID: string = ``;
     taskIDs: string[] = [];
     listIDs?: string[] = [];
     boardIDs: string[] = [];

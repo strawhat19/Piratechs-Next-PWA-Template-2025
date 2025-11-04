@@ -53,7 +53,7 @@ export class User extends Data {
   phone?: string;
   avatar?: string;
   z_token?: string;
-  selectedID: string = ``;
+  boardID: string = ``;
   boardIDs: string[] = [];
   userIDs?: string[] = [];
   type: Types = Types.User;

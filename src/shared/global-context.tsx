@@ -12,7 +12,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter } from '@/shared/server/firebase';
+import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
 import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
 
 export const StateGlobals = createContext({});
@@ -197,13 +197,11 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     const refreshUserBoards = (selectedBoard: Board, usr: User | null = user) => {
         setUser(prev => {
             let userToUse = usr ? usr : prev;
+            let updBoards = { boards, board: selectedBoard };
+            dev() && boards?.length > 0 && console.log(`Boards`, updBoards);
             return userToUse ? new User({
                 ...userToUse,
-                data: { 
-                    ...(userToUse as any).data, 
-                    boards, 
-                    board: selectedBoard, 
-                },
+                data: { ...(userToUse as any).data, ...updBoards },
             }) : userToUse;
         });
         setUsersLoading(false);
@@ -213,18 +211,18 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     useEffect(() => {
         let selectedBoard: Board = user?.data?.board;
         if (!selectedBoard?.id) return;
-        const listsRef = collection(db, Tables.lists);
+        const listsRef = collection(db, Tables.lists).withConverter(listConverter);
         const listsQuery = query(listsRef, where(`boardIDs`, `array-contains`, selectedBoard?.id));
         const unsubLists = onSnapshot(listsQuery, listSnap => {
             const lists = listSnap.docs.map(d => new List({ ...d.data(), board: selectedBoard }));
             setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
             const unsubItemsArr = lists.map((list: List) => {
-                const itemsRef = collection(db, Tables.items);
+                const itemsRef = collection(db, Tables.items).withConverter(itemConverter);
                 const itemsQuery = query(itemsRef, where(`listIDs`, `array-contains`, list?.id));
                 return onSnapshot(itemsQuery, itemSnap => {
                     const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
                     items.forEach((item: Item) => {
-                        const tasksRef = collection(db, Tables.tasks);
+                        const tasksRef = collection(db, Tables.tasks).withConverter(taskConverter);
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));
                         onSnapshot(tasksQuery, taskSnap => {
                             const tasks = taskSnap.docs.map(d => new Task({ ...d.data(), board: selectedBoard, list, item }));
@@ -252,7 +250,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         const boardsDBQueryListener = onSnapshot(boardsDBQuery, boardsDBDocs => {
             const boards = boardsDBDocs.docs.map(d => new Board(d.data()));
             setBoards(boards);
-            const selectedBoard = boards.find(b => b?.id === (user as any)?.selectedID) ?? boards[0];
+            const selectedBoard = boards.find(b => b?.id === (user as any)?.boardID) ?? boards[0];
             refreshUserBoards(selectedBoard);
             setLoaded(true);
         });
@@ -260,7 +258,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         boardsUnsubRef.current = boardsDBQueryListener;
 
         return () => stopBoardsListener();
-    }, [user?.id, (user as any)?.selectedID]);
+    }, [user?.id, (user as any)?.boardID]);
 
     useEffect(() => {
         if (user != null) {
@@ -270,7 +268,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             const usersDBQueryListener = onSnapshot(usersDBQuery, usersDBDocs => {
                 const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
                 const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
-                const selectedBoard = boards.find(b => b?.id === (user as any)?.selectedID) ?? boards[0];
+                const selectedBoard = boards.find(b => b?.id === (user as any)?.boardID) ?? boards[0];
                 setUsers(dbUsers);
                 let usr = dbUser;
                 delete usr?.data;

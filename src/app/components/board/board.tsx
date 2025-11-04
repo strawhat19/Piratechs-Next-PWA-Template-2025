@@ -15,7 +15,7 @@ import { useContext, useEffect, useState } from 'react';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
-import { constants, errorToast, logToast } from '@/shared/scripts/constants';
+import { constants, countPropertiesInObject, errorToast, logToast } from '@/shared/scripts/constants';
 import { addBoardToDatabase, addListToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
 
 export default function Board() {
@@ -66,7 +66,9 @@ export default function Board() {
 
     const addBoard = async (e?: any) => {
         let { name } = boardForm;
-        let newBoard = generateModel(name, Types.Board, user, user?.data?.boards, BoardModel);
+        let newBoard: BoardModel = generateModel(name, Types.Board, user, user?.data?.boards, BoardModel);
+        newBoard.boardID = newBoard?.id;
+        newBoard.properties = countPropertiesInObject(newBoard);
         await addBoardToDatabase(newBoard, user).then(async response => {
             setTimeout(() => {
                 toast?.dismiss();
@@ -105,7 +107,9 @@ export default function Board() {
         if (showAddLists) {
             logToast(`Adding List`, name, undefined, undefined, undefined, true);
             let newList: List = generateModel(name, Types.List, user, lists, List);
+            newList.boardID = board?.id;
             newList.boardIDs = [board?.id];
+            newList.properties = countPropertiesInObject(newList);
             await addListToDatabase(newList, user).then(async response => {
                 setTimeout(() => {
                     toast?.dismiss();

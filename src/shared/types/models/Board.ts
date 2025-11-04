@@ -12,6 +12,7 @@ export class Board extends Properties {
     lists?: List[];
     items?: Item[];
     tasks?: Task[];
+    boardID: string = ``;
     listIDs: string[] = [];
     type: Types | string = Types.Board;
     status: Status | string = Status.Active;

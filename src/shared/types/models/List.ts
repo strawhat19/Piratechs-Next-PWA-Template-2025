@@ -12,6 +12,7 @@ export class List extends Properties {
     users?: User[];
     items?: Item[];
     tasks?: Task[];
+    boardID: string = ``;
     itemIDs: string[] = [];
     boardIDs: string[] = [];
     type: Types | string = Types.List;
