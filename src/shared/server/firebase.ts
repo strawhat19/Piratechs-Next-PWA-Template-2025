@@ -186,6 +186,46 @@ export const addListToDatabase = async (lst: List, user: User) => {
   return res.json();
 }
 
+export const updateListInDatabase = async (id: string, updates: Partial<List>) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
+  const res = await fetch(listsAPI + `/` + id, {
+    method: `PATCH`,
+    body: JSON.stringify(updates),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Update List (${res.status})`;
+    logToast(`Error Updating List in Database ${Tables.lists} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const deleteListFromDatabase = async (lst: List, user: User) => {
+  const { date: updated } = getIDParts();
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const id = lst?.id;
+  const res = await fetch(listsAPI + `/` + id, {
+    method: `DELETE`,
+    body: JSON.stringify({ ...lst, updated }),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Delete List (${res.status})`;
+    logToast(`Error Deleting List from Database ${Tables.items} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
 export const itemConverter = {
   toFirestore: (itm: Item) => {
     return JSON.parse(JSON.stringify(itm));
@@ -210,6 +250,25 @@ export const addItemToDatabase = async (itm: Item, user: User) => {
   if (!res.ok) {
     let message = `Error on Create Item (${res.status})`;
     logToast(`Error Adding Item to Database ${Tables.items} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const deleteItemFromDatabase = async (itm: Item, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(itemsAPI, {
+    method: `DELETE`,
+    body: JSON.stringify(itm),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Delete Item (${res.status})`;
+    logToast(`Error Deleting Item from Database ${Tables.items} - ${message}`, res, true);
     return;
   }
   return res.json();

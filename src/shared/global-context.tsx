@@ -188,7 +188,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (user != null) {
             if (!dataLoading) {
                 if (user?.data?.board?.id) {
-                    dev() && console.log(`User`, user);
+                    // dev() && console.log(`User`, user);
                 }
             }
         }
@@ -198,7 +198,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         setUser(prev => {
             let userToUse = usr ? usr : prev;
             let updBoards = { boards, board: selectedBoard };
-            dev() && boards?.length > 0 && console.log(`Boards`, updBoards);
+            // dev() && boards?.length > 0 && console.log(`Boards`, updBoards);
             return userToUse ? new User({
                 ...userToUse,
                 data: { ...(userToUse as any).data, ...updBoards },

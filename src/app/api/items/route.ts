@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { tokenRequired } from '@/shared/scripts/constants';
-import { arrayUnion, doc, increment, writeBatch } from 'firebase/firestore';
-import { boardConverter, db, itemConverter, listConverter, Tables, userConverter } from '@/shared/server/firebase';
+import { getIDParts, tokenRequired } from '@/shared/scripts/constants';
+import { arrayRemove, arrayUnion, collection, doc, getDocs, increment, query, where, writeBatch } from 'firebase/firestore';
+import { boardConverter, db, itemConverter, listConverter, Tables, taskConverter, userConverter } from '@/shared/server/firebase';
 
 export const runtime = `nodejs`;
 export const dynamic = `force-dynamic`;
@@ -51,5 +51,63 @@ export const POST = async (req: Request) => {
     return NextResponse.json(body, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error, message: `Error on Create Item` }, { status: 500 });
+  }
+};
+
+export const DELETE = async (req: Request) => {
+  try {
+    tokenRequired(req);
+
+    const body = await req.json();
+    const { id, listID } = body || {};
+
+    if (!id || typeof listID != `string`) {
+      return NextResponse.json(
+        {
+          code: 400,
+          error: `Invalid Request Body`,
+          expectedFormat: {
+            id: `Item_1_Todos_2_55_PM_11_1_25_XXXX`,
+            listID: `List_1_Todos_2_55_PM_11_1_25_XXXX`,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const batch = writeBatch(db);
+
+    const { date: updated } = getIDParts();
+
+    const itemRef = doc(db, Tables.items, String(id)).withConverter(itemConverter as any);
+    const listRef  = doc(db, Tables.lists, String(listID)).withConverter(listConverter as any);
+
+    const tasksDB = collection(db, Tables.tasks).withConverter(taskConverter as any);
+    const tasksQuery = query(tasksDB, where(`itemID`, `==`, id));
+    const tasksSnapshot = await getDocs(tasksQuery);
+    for (const taskDoc of tasksSnapshot.docs) {
+      const taskRef = doc(db, Tables.tasks, taskDoc?.id);
+      batch.delete(taskRef);
+    }
+
+    batch.update(listRef, {
+      updated,
+      itemIDs: arrayRemove(id),
+      properties: increment(-1),
+    });
+
+    batch.delete(itemRef);
+
+    await batch.commit();
+
+    return NextResponse.json(
+      { ok: true, id, updated, listID },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: String(error?.message || error), message: `Error on Delete Item` },
+      { status: 500 }
+    );
   }
 };

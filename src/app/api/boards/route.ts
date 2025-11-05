@@ -69,7 +69,7 @@ export const DELETE = async (req: Request) => {
       return NextResponse.json(
         {
           code: 400,
-          error: 'Invalid Request Body',
+          error: `Invalid Request Body`,
           expectedFormat: {
             updated: `2:55 PM 11/1/25`,
             id: `Board_1_Todos_2_55_PM_11_1_25_XXXX`,

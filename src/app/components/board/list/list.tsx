@@ -4,24 +4,25 @@ import './list.scss';
 
 import { toast } from 'react-toastify';
 import BoardForm from '../form/board-form';
-import { statuses } from '../status/status';
 import Logo from '@/app/components/logo/logo';
+import { List } from '@/shared/types/models/List';
 import { Item } from '@/shared/types/models/Item';
 import ItemComponent, { type } from '../item/item';
 import { StateGlobals } from '@/shared/global-context';
+import StatusTag, { statuses } from '../status/status';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { addItemToDatabase, db, itemConverter, Tables } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useContext, useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { addItemToDatabase, db, deleteItemFromDatabase, itemConverter, listConverter, Tables, updateListInDatabase } from '@/shared/server/firebase';
 import { constants, countPropertiesInObject, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
 
 export default function ListComponent({
-  list,
+  list: listObj,
   title = `To Do`,
 }: any) {
   const listScroll = useRef(null);
@@ -41,33 +42,42 @@ export default function ListComponent({
   const modifiers = useMemo(() => [restrictToVerticalAxis], []);
 
   const [items, setItems] = useState<Item[]>([]);
+  const [list, setList] = useState<List>(listObj);
 
   useEffect(() => {
+    if (!listObj?.id) return;
+
+    let latestList = listObj;
+    const listDocRef = doc(db, Tables.lists, String(listObj.id)).withConverter(listConverter as any);
+    const unsubList = onSnapshot(listDocRef, snap => {
+      if (!snap.exists()) {
+        setList(listObj);
+        return;
+      }
+      latestList = snap.data();
+      console.log({latestList});
+      setList(latestList);
+    });
+
     const itemsRef = collection(db, Tables.items).withConverter(itemConverter);
-    const itemsQuery = query(itemsRef, where(`listID`, `==`, list?.id));
+    const itemsQuery = query(itemsRef, where(`listID`, `==`, latestList?.id));
     const unsubItemsArr = onSnapshot(itemsQuery, itemSnap => {
-      const ordItms: Item[] = [];
-      const itms = itemSnap.docs.map(d => new Item({ ...d.data(), board: user?.data.board, list }));
-      list?.itemIDs?.forEach((id: string) => {
+      const listsOrderedItems: Item[] = [];
+      const itms = itemSnap.docs.map(d => new Item({ ...d.data(), board: user?.data.board, list: latestList, }));
+      latestList?.itemIDs?.forEach((id: string) => {
         let itm = itms?.find(i => i?.id == id);
         if (itm) {
-          ordItms.push(itm);
+          listsOrderedItems.push(itm);
         }
       })
-      setItems(ordItms);
+      setItems(listsOrderedItems);
     })
+
     return () => {
+      unsubList();
       unsubItemsArr();
     }
   }, [])
-
-  // useEffect(() => {
-  //   let brdItms = user?.data?.items;
-  //   let brdLstItms = brdItms && Array.isArray(brdItms) ? brdItms : [];
-  //   let filtBrdLstItms = brdLstItms?.length > 0 ? brdLstItms?.filter(i => i?.listID == list?.id) : brdLstItms;
-  //   let itms = list?.items && Array.isArray(list?.items) ? list?.items : filtBrdLstItms;
-  //   setItems(itms);
-  // }, [list, list?.items, user?.data?.lists, user?.data?.items])
 
   const onDragStart = useCallback((e: DragStartEvent) => {
     // keep or log if you want; the key is to ALWAYS pass this prop
@@ -112,10 +122,11 @@ export default function ListComponent({
       boardIDs: [user?.data?.board?.id],
     });
     newItem.properties = countPropertiesInObject(newItem);
+    setList(prev => ({ ...prev, itemIDs: [...prev?.itemIDs, newItem?.id] }));
     await addItemToDatabase(newItem, user).then(async response => {
       setTimeout(() => {
         toast?.dismiss();
-        logToast(`Added Item`, newItem);
+        logToast(`Added Item`, {newItem, list});
         setTimeout(() => {
           scrollListTo();
         }, 250)
@@ -128,8 +139,21 @@ export default function ListComponent({
     });
   };
 
-  const deleteItem = (id: string) => {
-    // setBoardItems((prev: Item[]) => prev.filter(i => i.id !== id));
+  const deleteItem = async (itm: Item) => {
+    setItems((prev: Item[]) => prev.filter(i => i.id !== itm?.id));
+    toast.info(`Deleting Item`);
+    await deleteItemFromDatabase(itm, user)?.then(async response => {
+      setTimeout(() => {
+        toast?.dismiss();
+        logToast(`Deleted Item`, response);
+      }, 500);
+      return response;
+    })?.catch(error => {
+      toast?.dismiss();
+      let errorMessage = `Error on Delete Item`;
+      errorToast(errorMessage, error);
+      return;
+    });
   };
 
   const statusChange = (e: any, itm: Item) => {
@@ -155,15 +179,30 @@ export default function ListComponent({
     }
   }
 
-  const onDragEnd = useCallback((e: DragEndEvent) => {
+  const onDragEnd = useCallback(async (e: DragEndEvent) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
-    // let { date } = getIDParts();
-    let currentArr: string[] = list?.itemIDs;
-    let oldI = currentArr?.findIndex(i => i == active?.id);
-    let newII = currentArr?.findIndex(i => i == over?.id);
-    // let updArr = arrayMove(currentArr, oldI, newII);
+    let { date: updated } = getIDParts();
+    toast.info(`Updating List`);
+    console.log({list});
+    let itmIDs: string[] = list?.itemIDs;
+    let oldI = itmIDs?.findIndex(i => i == active?.id);
+    let newII = itmIDs?.findIndex(i => i == over?.id);
+    let itemIDs = arrayMove(itmIDs, oldI, newII);
     setItems(prev => arrayMove(prev, oldI, newII));
+    let id = list?.id;
+    let updates = { updated, itemIDs };
+    await updateListInDatabase(id, updates)?.then(async response => {
+      setTimeout(() => {
+        toast?.dismiss();
+        logToast(`Updated List`, { id, ...updates });
+      }, 500);
+      return response;
+    })?.catch(error => {
+      let errorMessage = `Error on Update List`;
+      errorToast(errorMessage, error);
+      return;
+    });
   }, []);
 
   return (
@@ -171,6 +210,12 @@ export default function ListComponent({
       <div className={`boardListTitle listTitle boardListFormContainer boardFormContainer flexCenter gap5 spaceBetween`}>
         <Logo label={title} />
         <span className={`listTitleRowData flexCenter gap5`}>
+          <StatusTag 
+            item={list} 
+            dateTag={true}
+            label={list?.updated}
+            className={`listDateTag`}
+          />
           <Icon_Button title={`List Settings`} style={{ marginRight: 5 }}>
             <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
           </Icon_Button>
@@ -194,7 +239,7 @@ export default function ListComponent({
                     key={item?.id} 
                     itemIndex={itemIndex}
                     statusChange={statusChange}
-                    onDelete={() => deleteItem(item?.id)} 
+                    onDelete={() => deleteItem(item)} 
                     onClick={(e: any) => onItemClick(e, item)} 
                   />
                 ))}

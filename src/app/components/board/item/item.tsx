@@ -168,7 +168,7 @@ export default function ItemComponent({
                             aria-label={`Delete`}
                             className={`itemButton itemDeleteButton`}
                         >
-                            <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main`} />
+                            <Delete style={{ fontSize: 18 }} className={`itemDeleteIcon main pointerEventsNoneI`} />
                         </Button>
                     </Tooltip>
                 </div>
