@@ -59,7 +59,7 @@ export default function BoardForm({
                     </>}
                 </>}
                 {submitButtonShowing() && (
-                    <Tooltip placement={`top`} title={boardSearch ? `` : `+ Add Item #${boardItems.length + 1}`} arrow>
+                    <Tooltip placement={`top`} title={(boardSearch || isDisabled()) ? `` : `+ Add Item #${boardItems.length + 1}`} arrow>
                         <Button
                             type={`submit`}
                             onClick={onClick}

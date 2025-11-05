@@ -39,7 +39,7 @@ export default function Board() {
                 }
             }
         }
-    }, [user?.data?.board])
+    }, [user?.data?.board, user?.data?.lists])
 
     const getSlidesPerView = (wd: number = width): number => {
         let slidesInView = 1;

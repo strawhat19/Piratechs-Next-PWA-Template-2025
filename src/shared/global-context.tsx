@@ -12,8 +12,8 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
 import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
+import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
 
 export const StateGlobals = createContext({});
 
@@ -222,7 +222,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 return onSnapshot(itemsQuery, itemSnap => {
                     const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
                     const updatedLists = lists?.map(l => new List({ ...l, items: items?.filter(i => i?.listID == l?.id) }));
-                    setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, lists: updatedLists } }) : prev);
+                    setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, lists: updatedLists, items } }) : prev);
                     items.forEach((item: Item) => {
                         const tasksRef = collection(db, Tables.tasks).withConverter(taskConverter);
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));
@@ -231,10 +231,10 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                             dev() && tasks?.length > 0 && console.log(`Tasks for Item "${item?.name}"`, tasks);
                         });
                     });
-                    dev() && items?.length > 0 && console.log(`Items for List "${list?.name}"`, items);
+                    // dev() && items?.length > 0 && console.log(`Items for List "${list?.name}"`, items);
                 });
             });
-            dev() && lists?.length > 0 && console.log(`Lists for Board "${selectedBoard?.name}"`, lists);
+            // dev() && lists?.length > 0 && console.log(`Lists for Board "${selectedBoard?.name}"`, lists);
             return () => unsubItemsArr.forEach(unsub => unsub());
         });
         return () => unsubLists();
