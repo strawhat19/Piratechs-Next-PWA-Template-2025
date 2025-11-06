@@ -122,6 +122,7 @@ export default function ListComponent({
       boardIDs: [user?.data?.board?.id],
     });
     newItem.properties = countPropertiesInObject(newItem);
+    setItems(prev => [ ...prev, newItem ]);
     setList(prev => ({ ...prev, itemIDs: [...prev?.itemIDs, newItem?.id] }));
     await addItemToDatabase(newItem, user).then(async response => {
       setTimeout(() => {
@@ -184,14 +185,15 @@ export default function ListComponent({
     if (!over || active.id === over.id) return;
     let { date: updated } = getIDParts();
     toast.info(`Updating List`);
-    console.log({list});
-    let itmIDs: string[] = list?.itemIDs;
+    // console.log({list});
+    let itmIDs: string[] = items?.map(i => i?.id);
     let oldI = itmIDs?.findIndex(i => i == active?.id);
     let newII = itmIDs?.findIndex(i => i == over?.id);
     let itemIDs = arrayMove(itmIDs, oldI, newII);
     setItems(prev => arrayMove(prev, oldI, newII));
     let id = list?.id;
     let updates = { updated, itemIDs };
+    console.log(`onDragEnd`, {updates, id, itmIDs, itemIDs});
     await updateListInDatabase(id, updates)?.then(async response => {
       setTimeout(() => {
         toast?.dismiss();
@@ -248,7 +250,7 @@ export default function ListComponent({
           ) : <></>}
         </DndContext>
       </div>
-      <BoardForm onClick={addItem} className={`addItemForm`} />
+      <BoardForm onClick={addItem} className={`addItemForm`} autoFocus={true} />
     </div>
   );
 }
