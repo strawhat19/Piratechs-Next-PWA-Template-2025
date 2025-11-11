@@ -3,23 +3,32 @@ import './dialog.scss';
 import { useContext } from 'react';
 import { Button } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import { Close } from '@mui/icons-material';
 import { Types } from '@/shared/types/types';
-import StatusTag from '../board/status/status';
+import { dev } from '@/shared/scripts/constants';
+import { List } from '@/shared/types/models/List';
 import { Item } from '@/shared/types/models/Item';
+import { Task } from '@/shared/types/models/Task';
+import { Board } from '@/shared/types/models/Board';
+import { Close, Delete } from '@mui/icons-material';
 import DialogTitle from '@mui/material/DialogTitle';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import ImagesCarousel from '../slider/images-carousel/images-carousel';
+import StatusTag, { statusIconSize, statusLineHeight } from '../board/status/status';
 
 export interface SimpleDialogProps {
   open: boolean;
-  selected: Item;
   onClose: () => void;
+  selected: Board | List | Item | Task | any;
 }
 
 function SimpleDialog(props: SimpleDialogProps) {
   const { open, selected, onClose } = props;
+
+  const deleteSelected = (e: any, selected: Board | List | Item | Task | any) => {
+    selected?.delete(selected);
+    onClose();
+  }
 
   return (
     <Dialog onClose={onClose} open={open}>
@@ -39,7 +48,16 @@ function SimpleDialog(props: SimpleDialogProps) {
               {selected?.type == Types.Item && <StatusTag item={selected} disabled={false} className={`thiccTag`} />}
             </DialogTitle>
             <div className={`dialogCloseButton`}>
-              <StatusTag title={`Delete ${selected?.type}`} item={selected} disabled={false} className={`thiccTag`} />
+              <StatusTag 
+                item={selected} 
+                disabled={false} 
+                label={`Delete`} 
+                style={{ marginRight: 25 }} 
+                title={`Delete ${selected?.type}`} 
+                className={`thiccTag deleteDialogTag`} 
+                onClick={(e: any) => deleteSelected(e, selected)}
+                icon={<Delete style={{ fontSize: statusIconSize + 3, lineHeight: statusLineHeight }} />}
+              />
               <Icon_Button title={``} onClick={onClose}>
                 <Close style={{ fontSize: 20 }} className={`linkHover cursorPointer`} />
               </Icon_Button>

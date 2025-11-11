@@ -21,7 +21,7 @@ export default function BoardForm({
 
     const updateForm = (e: any) => {
         const formField = e?.target;
-        setBoardForm((prevFormData: any) => ({ ...prevFormData, [formField?.name]: formField?.value }));
+        setBoardForm((prevFormData: any) => ({ ...prevFormData, form: className, [formField?.name]: formField?.value }));
     }
 
     const isDisabled = () => {

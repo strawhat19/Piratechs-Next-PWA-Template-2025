@@ -18,8 +18,8 @@ import { useContext, useMemo, useCallback, useRef, useState, useEffect } from 'r
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { constants, countPropertiesInObject, dev, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
 import { addItemToDatabase, db, deleteItemFromDatabase, itemConverter, listConverter, Tables, updateListInDatabase } from '@/shared/server/firebase';
-import { constants, countPropertiesInObject, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
 
 export default function ListComponent({
   list: listObj,
@@ -55,7 +55,6 @@ export default function ListComponent({
         return;
       }
       latestList = snap.data();
-      console.log({latestList});
       setList(latestList);
     });
 
@@ -185,7 +184,6 @@ export default function ListComponent({
     if (!over || active.id === over.id) return;
     let { date: updated } = getIDParts();
     toast.info(`Updating List`);
-    // console.log({list});
     let itmIDs: string[] = items?.map(i => i?.id);
     let oldI = itmIDs?.findIndex(i => i == active?.id);
     let newII = itmIDs?.findIndex(i => i == over?.id);
@@ -193,7 +191,6 @@ export default function ListComponent({
     setItems(prev => arrayMove(prev, oldI, newII));
     let id = list?.id;
     let updates = { updated, itemIDs };
-    console.log(`onDragEnd`, {updates, id, itmIDs, itemIDs});
     await updateListInDatabase(id, updates)?.then(async response => {
       setTimeout(() => {
         toast?.dismiss();
@@ -205,7 +202,7 @@ export default function ListComponent({
       errorToast(errorMessage, error);
       return;
     });
-  }, []);
+  }, [items]);
 
   return (
     <div className={`listComponent dndBoardList`}>
@@ -250,7 +247,7 @@ export default function ListComponent({
           ) : <></>}
         </DndContext>
       </div>
-      <BoardForm onClick={addItem} className={`addItemForm`} autoFocus={true} />
+      <BoardForm onClick={addItem} className={`addItemForm`} autoFocus={true} disabled={!boardForm?.form?.includes(`addItemForm`)} />
     </div>
   );
 }

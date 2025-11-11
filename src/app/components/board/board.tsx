@@ -33,7 +33,7 @@ export default function Board() {
                 setBoard(brd);
                 if (brd?.lists) {
                     let lsts = brd?.lists;
-                    let hasLists = lsts && lsts?.length > 0;
+                    let hasLists = lsts && lsts?.length > 3;
                     setShowAddLists(!hasLists);
                     setLists(lsts);
                 }
@@ -124,7 +124,7 @@ export default function Board() {
     }
 
     const manageBoard = (e?: any) => {
-        setSelected(board);
+        setSelected({...board, delete: deleteBoard});
         console.log(`Manage Board`, board);
     }
 
@@ -163,6 +163,7 @@ export default function Board() {
                                         onClick={addList} 
                                         newDataForm={showAddLists} 
                                         boardSearch={!showAddLists} 
+                                        disabled={!boardForm?.form?.includes(`listForm`)} 
                                         placeholder={showAddLists ? `List Name` : undefined} 
                                         showIconButton={width >= constants?.breakpoints?.mobile} 
                                         className={`listForm ${showAddLists ? `addListForm` : `listSearch`}`} 
