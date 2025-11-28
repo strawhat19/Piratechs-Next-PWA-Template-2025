@@ -34,7 +34,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     return (
         <div className={`stocksScrollContainer w100 h100 ${className}`}>
-            {loading ? <Loader height={35} label={`Stocks Loading`} className={`topBarLoader`} /> : <>
+            {(loading || stocks?.length == 0) ? <Loader height={35} label={`Stocks Loading`} className={`topBarLoader`} /> : <>
                 <Slider className={`stocksCarousel`} autoplay slidesPerView={12} spaceBetween={15} showButtons={false}>
                     {stocks?.map((stock: any, stockIndex: number) => (
                         <SwiperSlide key={stockIndex} className={`stockSlide`}>
