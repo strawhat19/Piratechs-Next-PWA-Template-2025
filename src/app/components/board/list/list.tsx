@@ -19,7 +19,7 @@ import { imagesObject } from '@/app/components/slider/images-carousel/images-car
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { constants, countPropertiesInObject, dev, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
-import { addItemToDatabase, db, deleteItemFromDatabase, itemConverter, listConverter, Tables, updateListInDatabase } from '@/shared/server/firebase';
+import { addItemToDatabase, db, deleteItemFromDatabase, itemConverter, listConverter, Tables, updateItemInDatabase, updateListInDatabase } from '@/shared/server/firebase';
 
 export default function ListComponent({
   list: listObj,
@@ -156,11 +156,19 @@ export default function ListComponent({
     });
   };
 
-  const statusChange = (e: any, itm: Item) => {
+  const statusChange = async (e: any, itm: Item) => {
+    toast.info(`Updating Item`);
     let { date } = getIDParts();
-    itm.updated = date;
-    itm.status = statuses[itm.status].transition;
-    // setBoardItems((prevItems: Item[]) => prevItems?.map((it: Item) => it?.id == itm?.id ? new Item(itm) : it));
+    let newStatus = statuses[itm.status].transition;
+    let updates = { status: newStatus, updated: date };
+    setItems((prev: Item[]) => prev.map(i => (i.id == itm?.id ? ({ ...i, ...updates }) : i)));
+    await updateItemInDatabase({ id: itm?.id, ...updates }, user)?.then(data => {
+      setTimeout(() => {
+        toast?.dismiss();
+        logToast(`Updated Item`, data);
+      }, 500);
+      return data;
+    });
   }
 
   const onItemClick = (e: any, item: Item | any) => {
@@ -169,7 +177,7 @@ export default function ListComponent({
       let clickedClasses = String(clicked?.className);
       if (clickedClasses && (clickedClasses.length > 0)) {
         if (!clickedClasses.includes(`itemButton`)) {
-          console.log(`Item`, item);
+          dev() && console.log(`Item Click`, item);
           setSelected({
             ...item,
             statusChange,

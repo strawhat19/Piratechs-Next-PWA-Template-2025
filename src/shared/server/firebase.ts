@@ -255,6 +255,25 @@ export const addItemToDatabase = async (itm: Item, user: User) => {
   return res.json();
 }
 
+export const updateItemInDatabase = async (updates: Partial<Item>, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(itemsAPI + `/` + updates?.id, {
+    method: `PATCH`,
+    body: JSON.stringify(updates),
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`, 
+    },
+  });
+  if (!res.ok) {
+    let message = `Error on Create Item (${res.status})`;
+    logToast(`Error Updating Item in Database ${Tables.items} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
 export const deleteItemFromDatabase = async (itm: Item, user: User) => {
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
