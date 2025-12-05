@@ -19,6 +19,11 @@ export const StateGlobals = createContext({});
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
 
+export const getFirstNumber = (str: string): number | null => {
+  const match = str.match(/-?\d+(\.\d+)?/);
+  return match ? Number(match[0]) : null;
+}
+
 export const getPageName = (path: string) => {
     let pageName = `Home`;
     if (path != `/`) {
@@ -188,7 +193,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (user != null) {
             if (!dataLoading) {
                 if (user?.data?.board?.id) {
-                    // dev() && console.log(`User`, user);
+                    dev() && console.log(`User`, user);
                 }
             }
         }
@@ -215,14 +220,14 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         const listsQuery = query(listsRef, where(`boardIDs`, `array-contains`, selectedBoard?.id));
         const unsubLists = onSnapshot(listsQuery, listSnap => {
             const lists = listSnap.docs.map(d => new List({ ...d.data(), board: selectedBoard }));
-            setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
+            setUser(prev => prev ? ({ ...prev, lists, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
             const unsubItemsArr = lists.map((list: List) => {
                 const itemsRef = collection(db, Tables.items).withConverter(itemConverter);
                 const itemsQuery = query(itemsRef, where(`listIDs`, `array-contains`, list?.id));
                 return onSnapshot(itemsQuery, itemSnap => {
                     const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
                     const updatedLists = lists?.map(l => new List({ ...l, items: items?.filter(i => i?.listID == l?.id) }));
-                    setUser(prev => prev ? ({ ...prev, data: { ...prev?.data, lists: updatedLists, items } }) : prev);
+                    setUser(prev => prev ? ({ ...prev, items, lists: updatedLists, data: { ...prev?.data, lists: updatedLists, items } }) : prev);
                     items.forEach((item: Item) => {
                         const tasksRef = collection(db, Tables.tasks).withConverter(taskConverter);
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));

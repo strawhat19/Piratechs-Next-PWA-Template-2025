@@ -8,7 +8,7 @@ import Logo from '@/app/components/logo/logo';
 import { List } from '@/shared/types/models/List';
 import { Item } from '@/shared/types/models/Item';
 import ItemComponent, { type } from '../item/item';
-import { StateGlobals } from '@/shared/global-context';
+import { getFirstNumber, StateGlobals } from '@/shared/global-context';
 import StatusTag, { statuses } from '../status/status';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import Icon_Button from '../../buttons/icon-button/icon-button';
@@ -18,8 +18,9 @@ import { useContext, useMemo, useCallback, useRef, useState, useEffect } from 'r
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { constants, countPropertiesInObject, dev, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
+import { capWords, constants, countPropertiesInObject, dev, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
 import { addItemToDatabase, db, deleteItemFromDatabase, itemConverter, listConverter, Tables, updateItemInDatabase, updateListInDatabase } from '@/shared/server/firebase';
+import { Types } from '@/shared/types/types';
 
 export default function ListComponent({
   list: listObj,
@@ -94,12 +95,19 @@ export default function ListComponent({
   }
 
   const addItem = async (e?: any) => {
-    let number = list?.itemIDs?.length + 1;
+    let useRandomImg = false;
+    let useNameAsDescription = false;
+    let listItmIDX = list?.itemIDs?.length;
+    let listsItemsIDs = user?.lists?.flatMap((l: List) => l?.itemIDs);
+    let listsItemsIDNumbers = listsItemsIDs?.map((itID: string) => getFirstNumber(itID));
+    let listsItemNumbers = [listItmIDX, ...listsItemsIDNumbers];
+    let number = Math.max(...listsItemNumbers) + 1;
     let randomImage = imageURLs[randomNumber(imageURLs?.length)];
-    let name = boardForm?.name == `` ? `${type} ${number}` : boardForm?.name;
-    let imageURL = boardForm?.imageURL == `` ? randomImage : boardForm?.imageURL;
+    let formName = boardForm?.name == `` ? `${type} ${number}` : boardForm?.name;
+    let name = capWords(formName);
+    let imageURL = (boardForm?.imageURL == `` && useRandomImg) ? randomImage : boardForm?.imageURL;
     let imagesURLs = [imageURL]?.filter(val => val != ``);
-    let description = boardForm?.description == `` ? name : boardForm?.description;
+    let description = (boardForm?.description == `` && useNameAsDescription) ? name : boardForm?.description;
     let newItemID = genID(type, number, name);
     let newItem = new Item({ 
       type,
@@ -126,7 +134,7 @@ export default function ListComponent({
     await addItemToDatabase(newItem, user).then(async response => {
       setTimeout(() => {
         toast?.dismiss();
-        logToast(`Added Item`, {newItem, list});
+        logToast(`Added Item`, {newItem, list, listsItemNumbers});
         setTimeout(() => {
           scrollListTo();
         }, 250)
