@@ -8,8 +8,8 @@ import { Button, Tooltip } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { Item } from '@/shared/types/models/Item';
 import { StateGlobals } from '@/shared/global-context';
-import { constants } from '@/shared/scripts/constants';
 import { DateRangeSharp, Delete } from '@mui/icons-material';
+import { constants, isValid } from '@/shared/scripts/constants';
 import { useContext, useEffect, useRef, useState } from 'react';
 
 export const type = Types.Item;
@@ -91,7 +91,7 @@ export default function ItemComponent({
     }
 
   return (
-    <div ref={setNodeRef} className={`itemComponent draggableItem swiper-no-swiping ${isDragging ? `draggingItem` : `notDraggingItem`}`} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} className={`itemComponent itemStatus_${item?.status} draggableItem swiper-no-swiping ${isDragging ? `draggingItem` : `notDraggingItem`}`} style={style} {...attributes} {...listeners}>
       <div className={`itemInner`} onClick={onClick}>
         <div className={`itemTypeIndexImages flexCenter gap5`}>
             <div className={`itemBadges`}>
@@ -144,9 +144,11 @@ export default function ItemComponent({
                         )}
                     </h3>
                 </div>
-                <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
-                    {item?.description}
-                </div>
+                {isValid(item?.description) && <>
+                    <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
+                        {item?.description}
+                    </div>
+                </>}
             </div>
             <div className={`itemEndContainer`}>
                 {(startW <= smallStartW) && (

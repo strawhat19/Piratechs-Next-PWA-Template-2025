@@ -15,8 +15,9 @@ import { useContext, useEffect, useState } from 'react';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { constants, countPropertiesInObject, errorToast, logToast } from '@/shared/scripts/constants';
-import { addBoardToDatabase, addListToDatabase, deleteBoardFromDatabase } from '@/shared/server/firebase';
+import { addBoardToDatabase, addListToDatabase, boardConverter, db, deleteBoardFromDatabase, listConverter, Tables } from '@/shared/server/firebase';
 
 export default function Board() {
     const { user, width, loaded, usersLoading, boardForm, setSelected } = useContext<any>(StateGlobals);
@@ -25,6 +26,41 @@ export default function Board() {
     let [lists, setLists] = useState<List[]>([]);
     let [board, setBoard] = useState(user?.data?.board);
     let [showAddLists, setShowAddLists] = useState(false);
+
+    useEffect(() => {
+        if (!board?.id) return;
+
+        let latestBoard = board;
+        let boardID = String(board?.id);
+        const boardDocRef = doc(db, Tables.boards, boardID).withConverter(boardConverter as any);
+        const unsubBoard = onSnapshot(boardDocRef, snap => {
+            if (!snap.exists()) {
+                setBoard(board);
+                return;
+            }
+            latestBoard = snap.data();
+            setBoard(latestBoard);
+        });
+
+        const listssRef = collection(db, Tables.lists).withConverter(listConverter as any);
+        const listsQuery = query(listssRef, where(`boardID`, `==`, boardID));
+        const unsubListsArr = onSnapshot(listsQuery, listSnap => {
+            const listsOrderedItems: List[] = [];
+            const lsts = listSnap.docs.map(d => new List({ ...d.data(), board: latestBoard, }));
+            latestBoard?.listIDs?.forEach((id: string) => {
+                let lst = lsts?.find(i => i?.id == id);
+                if (lst) {
+                    listsOrderedItems.push(lst);
+                }
+            })
+            setLists(listsOrderedItems);
+        })
+
+        return () => {
+            unsubBoard();
+            unsubListsArr();
+        }
+    }, [])
 
     useEffect(() => {
         if (user != null) {

@@ -9,6 +9,24 @@
     background: var(--navy);
     border: 1px solid var(--background);
     transition: opacity var(--transition);
+    &.itemStatus_Active {
+        background: var(--blueactivedark);
+        .itemName {
+            font-style: italic;
+            padding-right: 5px;
+        }
+    }
+    &.itemStatus_Done {
+        font-weight: 700;
+        background: white;
+        color: var(--background);
+        .itemName {
+            font-style: italic;
+            padding-right: 5px;
+            text-decoration: line-through;
+            text-decoration-color: var(--background);
+        }
+    }
     .itemInner {
         flex: 1 1 0%;
         display: flex;
@@ -54,6 +72,7 @@
         position: relative;
         padding-bottom: 3px;
         @extend .borderedItmField;
+        transition: var(--transition);
     }
     .itemEndContainer {
         display: flex;
