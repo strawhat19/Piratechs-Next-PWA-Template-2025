@@ -14,7 +14,9 @@ export default function StockPositions({ getStock }: any) {
                     <strong>
                         Positions <span className={`main stockMetricCount`}>({stockPositions?.length})</span>
                     </strong>
-                    <StockSearch stcks={stocks?.filter((s: any) => stockPositions?.map((sp: any) => sp?.symbol)?.includes(s?.symbol))} />
+                    {stocks && Array.isArray(stocks) && (
+                        <StockSearch stcks={stocks?.filter((s: any) => stockPositions?.map((sp: any) => sp?.symbol)?.includes(s?.symbol))} />
+                    )}
                 </div>
                 <div className={`positionsContainer stockMetricTableContainer`}>
                     {stockPositions?.length > 0 ? stockPositions?.map((pos: any, posIndex: number) => (

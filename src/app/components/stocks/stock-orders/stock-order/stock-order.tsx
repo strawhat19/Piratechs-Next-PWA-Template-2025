@@ -15,7 +15,7 @@ export default function StockOrder({ order, getStock, className = `stockOrderCom
                 </div>
                 <div className={`stockOrderStatValue stockColValue subMetric`}>
                     <Stock 
-                        {...getStock(order?.symbol)} 
+                        {...getStock(order)} 
                         linkClass={stockAlignmentCenter ? `` : `justifyStart`} 
                         className={`stockOrder stkOrd ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />

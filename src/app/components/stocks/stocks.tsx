@@ -10,7 +10,9 @@ import StockOrders from './stock-orders/stock-orders';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import StockAccount from './stock-account/stock-account';
+import { Stock } from '@/shared/types/models/stocks/Stock';
 import StockPositions from './stock-positions/stock-positions';
+import { Position } from '@/shared/types/models/stocks/Position';
 import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export const stockTableAlignmentCenter = false;
@@ -22,9 +24,10 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     const [loading, setLoading] = useState(true);
 
-    const getStock = (symbol: string) => {
-        let stock = stocks?.find((s: any) => s?.symbol == symbol);
-        return stock;
+    const getStock = (stk: Stock | any) => {
+        let symbol = stk?.symbol;
+        let stck = stocks?.length > 0 ? stocks?.find((s: any) => s?.symbol == symbol) : stk;
+        return stck;
     }
 
     const refreshStocksAccount = () => {
@@ -44,11 +47,12 @@ export default function Stocks({ className = `stocksComponent` }) {
     const refreshStockPositions = () => {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.positions;
-            getAPIServerData(apiServerRoute)?.then(poss => {
-                poss?.sort((posA: any, posB: any) => positionProfitLoss(posB) - positionProfitLoss(posA));
-                setStockPositions(poss);
+            getAPIServerData(apiServerRoute)?.then((alpaca_positions: Position[]) => {
+                let positions = alpaca_positions?.map((p: Position) => new Position(p));
+                let sortedPositions = positions?.sort((posA: Position, posB: Position) => positionProfitLoss(posB) - positionProfitLoss(posA));
+                setStockPositions(sortedPositions);
                 setLoading(false);
-                console.log(`Positions`, poss);
+                console.log(`Positions`, sortedPositions);
             });
         } else {
             setLoading(false);

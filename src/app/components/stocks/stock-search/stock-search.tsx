@@ -10,7 +10,7 @@ export default function StockSearch({ loading, stcks }: any) {
     const [stocksToDisplay, setStocksToDisplay] = useState(stcks ?? stocks);
     return (
         <div className={`stocksSearchField`} style={{ paddingBottom: 15 }}>
-            {(loading || stocksToDisplay?.length == 0) ? (
+            {(!Array.isArray(stocks) || !stocks || loading || stocksToDisplay?.length == 0) ? (
                 <Loader height={40} label={`Stocks Search Loading`} style={{ [`--animation-delay`]: `${2 * 0.15}s` }} />
             ) : (
                 <CheckboxMulti optionsToUse={stocksToDisplay} placeholder={`Stocks (${stocksToDisplay?.length})`} />

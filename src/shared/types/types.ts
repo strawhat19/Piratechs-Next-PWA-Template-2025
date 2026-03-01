@@ -28,6 +28,7 @@ export enum Types {
   Upload = `Upload`,
   Message = `Message`,
   Feature = `Feature`,
+  Position = `Position`,
   Notification = `Notification`,
 }
 

@@ -1,4 +1,5 @@
-import { Types } from '../types';
+import { Symbols } from './Symbols';
+import { Types } from '../../types';
 import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
 
 // changes = 0,
@@ -37,11 +38,11 @@ export class Stock {
     label?: string;
     value?: string;
     number?: number;
+    equity?: number;
     type: Types = Types.Stock;
 
     state: string = `CA`;
     country: string = `US`;
-    symbol: string = `AAPL`;
     changes: number = 0.12;
     price: number = 213.88;
     currency: string = `USD`;
@@ -54,6 +55,7 @@ export class Stock {
     website: string = `https://www.apple.com`;
     industry: string = `Consumer Electronics`;
     description: string = appleCompanyDescription;
+    symbol: string | keyof typeof Symbols = Symbols.AAPL;
     image: string = `https://images.financialmodelingprep.com/symbol/AAPL.png`;
 
     zip?: number = 95014;

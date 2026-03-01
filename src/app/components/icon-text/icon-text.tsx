@@ -18,13 +18,15 @@ export default function IconText({
     text = ``, 
     number = 0, 
     showIcon = true, 
+    fontWeight = 400,
     decimalPlaces = 2,
     dollarSign = false, 
+    profitLoss = false,
     className = `iconTextComponent`, 
     icon = <BarChart color={`success`} />, 
 }) {
     return (
-        <div className={`iconTextContainer fit ${className}`}>
+        <div className={`iconTextContainer fit ${className}`} style={profitLoss ? { fontWeight, color: number > 0 ? `var(--success)` : (number < 0 ? `var(--main)` : undefined) } : { fontWeight }}>
             {text == `` ? <>
                 {showIcon ? (
                     dollarSign ? (
@@ -32,7 +34,7 @@ export default function IconText({
                             $
                         </strong>
                     ) : icon
-                ) : <></>} {numberFormatWithCommas(number, decimalPlaces) ?? `0${decimalPlaces > 0 ? `.00` : ``}`}
+                ) : <></>} {profitLoss ? (number > 0 ? `+` : ``) : ``}{numberFormatWithCommas(number, decimalPlaces) ?? `0${decimalPlaces > 0 ? `.00` : ``}`}
             </> : <>
                 {showIcon ? icon : <></>} {text}
             </>}
