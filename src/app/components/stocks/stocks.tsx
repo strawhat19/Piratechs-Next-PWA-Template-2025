@@ -14,6 +14,7 @@ import { Stock } from '@/shared/types/models/stocks/Stock';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
 import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { Order } from '@/shared/types/models/stocks/Order';
 
 export const stockTableAlignmentCenter = false;
 
@@ -63,10 +64,11 @@ export default function Stocks({ className = `stocksComponent` }) {
     const refreshStockOrders = () => {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.orders;
-            getAPIServerData(apiServerRoute)?.then(ordrs => {
-                setStockOrders(ordrs);
+            getAPIServerData(apiServerRoute)?.then((alpaca_orders: Order[]) => {
+                let orders = alpaca_orders?.map((p: Order) => new Order(p));
+                setStockOrders(orders);
                 setLoading(false);
-                console.log(`Orders`, ordrs);
+                console.log(`Orders`, orders);
             });
         } else {
             setLoading(false);

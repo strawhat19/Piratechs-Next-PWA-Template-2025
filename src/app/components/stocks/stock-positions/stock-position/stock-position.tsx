@@ -30,7 +30,7 @@ export default function StockPostion({ position, getStock, className = `stockPos
                     {position?.qty}
                 </div>
             </div> */}
-            <div className={`stockPositionStat flex gap5 column alignCenter fitMin`}>
+            <div className={`avgEquityCol stockPositionStat flex gap5 column alignCenter fitMin`}>
                 <div className={`stockPositionStatLabel main`}>
                     <strong>Average Equity</strong> 
                 </div>
@@ -45,9 +45,9 @@ export default function StockPostion({ position, getStock, className = `stockPos
                     </div>
                 </div>
             </div>
-            <div className={`stockOrderStat flex gap5 column alignCenter`}>
+            <div className={`currentEquityCol stockOrderStat flex gap5 column alignCenter`}>
                 <div className={`stockPositionStatLabel main`}>
-                    <strong>Profit / Loss</strong> 
+                    <strong>Current Equity</strong> 
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                     <div className={`flex alignCenter gap5`}>
@@ -60,9 +60,9 @@ export default function StockPostion({ position, getStock, className = `stockPos
                     </div>
                 </div>
             </div>
-            <div className={`stockOrderStat flex gap5 column alignCenter`}>
+            <div className={`profitLossCol stockOrderStat flex gap5 column alignCenter`}>
                 <div className={`stockPositionStatLabel main`}>
-                    <strong>+/-</strong> 
+                    <strong>Profit / Loss</strong> 
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                     <div className={`flex alignCenter gap5`}>

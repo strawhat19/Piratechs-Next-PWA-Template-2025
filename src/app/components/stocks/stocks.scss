@@ -1,3 +1,15 @@
+.avgEquityCol {
+    min-width: 225px;
+}
+
+.currentEquityCol {
+    min-width: 240px;
+}
+
+.profitLossCol {
+    min-width: 125px;
+}
+
 .stockMetricsSingleColumnCentered {
     justify-content: center;
     grid-template-columns: repeat(1, auto) !important;
