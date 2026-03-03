@@ -3,15 +3,21 @@
 import { useContext } from 'react';
 import StockOrder from './stock-order/stock-order';
 import { StateGlobals } from '@/shared/global-context';
+import StockSearch from '../stock-search/stock-search';
 
 export default function StockOrders({ getStock }: any) {
-    const { stockOrders } = useContext<any>(StateGlobals);
+    const { stocks, stockOrders } = useContext<any>(StateGlobals);
     return (
         <div className={`stockMetrics stockMetricsTableContainer stockMetrics_account_orders w100 h100`}>
             <div className={`stockMetric stockMetric_orders flex column gap15I`}>
-                <strong className={`stockTableRow`}>
-                    Orders <span className={`main stockMetricCount`}>({stockOrders?.length})</span>
-                </strong>
+                <div className={`stockTableRow stockTableSearchRow`}>
+                    <strong>
+                        Orders <span className={`main stockMetricCount`}>({stockOrders?.length})</span>
+                    </strong>
+                    {stocks && Array.isArray(stocks) && (
+                        <StockSearch stcks={stocks?.filter((s: any) => stockOrders?.map((sp: any) => sp?.symbol)?.includes(s?.symbol))} />
+                    )}
+                </div>
                 <div className={`ordersContainer stockMetricTableContainer`}>
                     {stockOrders?.length > 0 ? stockOrders?.map((ord: any, ordIndex: number) => (
                         <StockOrder key={ordIndex} order={ord} getStock={getStock} />

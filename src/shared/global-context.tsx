@@ -7,6 +7,7 @@ import { Task } from './types/models/Task';
 import { Board } from './types/models/Board';
 import { User } from '@/shared/types/models/User';
 import { AuthStates } from '@/shared/types/types';
+import { Stock } from './types/models/stocks/Stock';
 import { defaultBoardForm } from '@/app/components/board/form/board-form';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -16,6 +17,8 @@ import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMo
 import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
 
 export const StateGlobals = createContext({});
+
+export const sampleStocksDB = sampleStocks?.map((s: Stock | any) => new Stock(s));
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
 
@@ -51,8 +54,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
     let [histories, setHistories] = useState([]);
-    let [stocks, setStocks] = useState(sampleStocks);
     let [stockOrders, setStockOrders] = useState([]);
+    let [stocks, setStocks] = useState(sampleStocksDB);
     let [stockPositions, setStockPositions] = useState([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
 

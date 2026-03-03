@@ -1,5 +1,5 @@
 import { Types } from '../../types';
-import { Symbols } from './Symbols';
+import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Position {
     change?: number = 0;
@@ -14,8 +14,8 @@ export class Position {
     totalProfitLoss?: number = 500;
     quantity_available?: number = 0.1;
     type?: Types | string = Types.Position;
-    name?: Symbols | string | any = Symbols.LMT;
     id?: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
+    name?: keyof typeof popularStocks | string | any = popularStocks.LMT;
 
     side: string = `long`;
     exchange: string = `NYSE`;
@@ -33,8 +33,8 @@ export class Position {
     unrealized_plpc: string | number = `0.54704`;
     unrealized_intraday_pl: string | number = `0`;
     unrealized_intraday_plpc: string | number = `0`;
-    symbol: string | keyof typeof Symbols = Symbols.LMT;
     asset_id: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
+    symbol: string | keyof typeof popularStocks = popularStocks.LMT;
 
     constructor(data: Partial<Position>) {
         Object.assign(this, data);
@@ -50,6 +50,6 @@ export class Position {
         this.profitLoss = this?.price - this?.average;
         this.quantity_available = Number(this.qty_available);
         this.totalProfitLoss = this?.equity - this?.profitLoss;
-        this.name = String(Symbols[this.symbol as keyof typeof Symbols]);
+        this.name = String(popularStocks[this.symbol as keyof typeof popularStocks]);
     }
 }

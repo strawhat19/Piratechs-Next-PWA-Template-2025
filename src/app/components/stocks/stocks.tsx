@@ -84,7 +84,7 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     return (
         <div className={`stocksContainer w95 ${className}`}>
-            <StockSearch stcks={stocks} {...{loading}} />
+            <StockSearch stcks={stocks} className={`mainStockSearch`} {...{loading}} />
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
                 <Slider className={`stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
                     <SwiperSlide>

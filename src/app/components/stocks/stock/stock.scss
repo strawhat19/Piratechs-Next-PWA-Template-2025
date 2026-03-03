@@ -1,3 +1,7 @@
+.mainStockSearch {
+    padding-bottom: 15px;
+}
+
 .stockFlex {
     display: flex;
     grid-gap: 10px;
@@ -16,11 +20,12 @@
 
 .stockTableSearchRow {
     display: flex;
+    padding-top: 5px;
+    min-height: 40px;
     align-items: center;
     justify-content: space-between;
     .stocksSearchField {
         width: 85%;
-        max-height: 10px;
     }
 }
 

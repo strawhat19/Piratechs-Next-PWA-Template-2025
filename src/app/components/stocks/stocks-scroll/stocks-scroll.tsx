@@ -15,8 +15,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocks = () => {
-        if (getRealStocks) {
+    const refreshStocks = (getReal = false) => {
+        if (getReal && getRealStocks) {
             getAPIServerData()?.then(stocksData => {
                 setStocks(stocksData);
                 setLoading(false);

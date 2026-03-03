@@ -1,6 +1,5 @@
-import { Symbols } from './Symbols';
 import { Types } from '../../types';
-import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
+import { appleCompanyDescription, popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 // changes = 0,
 // zip = 95014,
@@ -55,7 +54,7 @@ export class Stock {
     website: string = `https://www.apple.com`;
     industry: string = `Consumer Electronics`;
     description: string = appleCompanyDescription;
-    symbol: string | keyof typeof Symbols = Symbols.AAPL;
+    symbol: string | keyof typeof popularStocks = popularStocks.AAPL;
     image: string = `https://images.financialmodelingprep.com/symbol/AAPL.png`;
 
     zip?: number = 95014;
