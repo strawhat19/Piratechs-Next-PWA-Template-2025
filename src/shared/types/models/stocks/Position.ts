@@ -1,14 +1,16 @@
+import { Stock } from './Stock';
 import { Types } from '../../types';
+import { RobinhoodStockPosition } from './robinhood/RobinhoodStockPosition';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Position {
     change?: number = 0;
+    quantity: number = 0.1;
     equity?: number = 6.56;
     cost?: number = 425.38;
     last?: number = 658.08;
     price?: number = 658.08;
     value?: number = 65.808;
-    quantity?: number = 0.1;
     profitLoss?: number = 500;
     average?: number = 425.38;
     totalProfitLoss?: number = 500;
@@ -16,6 +18,12 @@ export class Position {
     type?: Types | string = Types.Position;
     id?: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
     name?: keyof typeof popularStocks | string | any = popularStocks.LMT;
+
+    // Robinhood
+    url?: string;
+    account_type?: string;
+    created_at?: string | Date;
+    updated_at?: string | Date;
 
     side: string = `long`;
     exchange: string = `NYSE`;
@@ -36,10 +44,29 @@ export class Position {
     asset_id: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
     symbol: string | keyof typeof popularStocks = popularStocks.LMT;
 
-    constructor(data: Partial<Position>) {
-        Object.assign(this, data);
+    constructor(data: Partial<Position> | Partial<RobinhoodStockPosition> | any, stock?: Stock) {
+        if (data?.type != Types.RobinhoodStockPosition) {
+            Object.assign(this, data);
+        }
         this.id = this.asset_id;
-        this.quantity = Number(this.qty);
+        if (data?.type == Types.RobinhoodStockPosition) {
+            let d: RobinhoodStockPosition = data;
+            this.url = d?.url;
+            this.side = d?.side;
+            this.type = d?.type;
+            this.symbol = d?.symbol;
+            this.id = d?.instrument_id;
+            this.created_at = d?.created_at;
+            this.updated_at = d?.updated_at;
+            this.asset_id = d?.instrument_id;
+            this.cost_basis = d?.clearing_cost_basis;
+            this.current_price = Number(stock?.price);
+            this.avg_entry_price = d?.average_buy_price;
+            this.account_type = d?.brokerage_account_type;
+            this.qty_available = d?.shares_available_for_sells;
+            this.qty = String(d?.quantity)?.split(``).slice(0, 5)?.join(``);
+        }
+        this.quantity = Number(Number(this.qty)?.toFixed(2));
         this.cost = Number(this.cost_basis);
         this.last = Number(this.lastday_price);
         this.value = Number(this.market_value);
@@ -51,5 +78,8 @@ export class Position {
         this.quantity_available = Number(this.qty_available);
         this.totalProfitLoss = this?.equity - this?.profitLoss;
         this.name = String(popularStocks[this.symbol as keyof typeof popularStocks]);
+        if (this?.type == Types.RobinhoodStockPosition) {
+            this.unrealized_pl = Number(this.qty) * Number(this.profitLoss);
+        }
     }
 }

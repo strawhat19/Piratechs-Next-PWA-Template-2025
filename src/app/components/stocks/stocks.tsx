@@ -11,17 +11,18 @@ import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import StockAccount from './stock-account/stock-account';
 import { Stock } from '@/shared/types/models/stocks/Stock';
+import { Order } from '@/shared/types/models/stocks/Order';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
 import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
-import { Order } from '@/shared/types/models/stocks/Order';
+import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
 
 export const stockTableAlignmentCenter = false;
 
 export const positionProfitLoss = (position: any) => position?.current_price - position?.avg_entry_price;
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders } = useContext<any>(StateGlobals);
+    const { width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood } = useContext<any>(StateGlobals);
 
     const [loading, setLoading] = useState(true);
 
@@ -29,6 +30,23 @@ export default function Stocks({ className = `stocksComponent` }) {
         let symbol = stk?.symbol;
         let stck = stocks?.length > 0 ? stocks?.find((s: any) => s?.symbol == symbol) : stk;
         return stck;
+    }
+
+    const refreshRobinhood = () => {
+        if (getRealStocks) {
+            let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
+            getAPIServerData(apiServerRoute)?.then(acc => {
+                let modPositions = acc?.stocks?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition(p));
+                let updPosiitons = modPositions?.map((mp: RobinhoodStockPosition) => new Position(mp, getStock(mp)));
+                let ac = { ...acc, stocks: { ...acc?.stocks, positions: updPosiitons } }
+                setRobinhood(ac);
+                setLoading(false);
+                console.log(`Robinhood Account`, ac);
+            });
+        } else {
+            setLoading(false);
+            console.log(`Robinhood Account`, robinhood);
+        }
     }
 
     const refreshStocksAccount = () => {
@@ -77,6 +95,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     }
 
     useEffect(() => {
+        refreshRobinhood();
         refreshStocksAccount();
         refreshStockPositions();
         refreshStockOrders();

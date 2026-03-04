@@ -8,6 +8,8 @@ import { Board } from './types/models/Board';
 import { User } from '@/shared/types/models/User';
 import { AuthStates } from '@/shared/types/types';
 import { Stock } from './types/models/stocks/Stock';
+import { Order } from './types/models/stocks/Order';
+import { Position } from './types/models/stocks/Position';
 import { defaultBoardForm } from '@/app/components/board/form/board-form';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -54,10 +56,11 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
     let [histories, setHistories] = useState([]);
-    let [stockOrders, setStockOrders] = useState([]);
-    let [stocks, setStocks] = useState(sampleStocksDB);
-    let [stockPositions, setStockPositions] = useState([]);
+    let [robinhood, setRobinhood] = useState(null);
+    let [stockOrders, setStockOrders] = useState<Order[]>([]);
+    let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
+    let [stockPositions, setStockPositions] = useState<Position[]>([]);
 
     // let type = Types.Item;
     // let imageURLs = Object.values(imagesObject.vertical);
@@ -354,6 +357,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         menuExpanded, setMenuExpanded,
         
         stocks, setStocks,
+        robinhood, setRobinhood,
         stocksAcc, setStocksAcc,
         histories, setHistories,
         stockOrders, setStockOrders,

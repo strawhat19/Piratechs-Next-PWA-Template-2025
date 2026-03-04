@@ -1,0 +1,56 @@
+import { Types } from '@/shared/types/types';
+
+export class RobinhoodStockPosition {
+    url = `https://api.robinhood.com/positions/814497780/450dfc6d-5510-4d40-abfb-f633b7d9be3e/`;
+    instrument = `https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/`;
+    instrument_id = `450dfc6d-5510-4d40-abfb-f633b7d9be3e`;
+    symbol = `AAPL`;
+    account = `https://api.robinhood.com/accounts/814497780/`;
+    account_number = `814497780`;
+    brokerage_account_type: string = `individual`;
+    average_buy_price = `193.0465`;
+    pending_average_buy_price = `193.0465`;
+    quantity: string | number = `0.10000000`;
+    intraday_average_buy_price = `0.0000`;
+    intraday_quantity = `0.00000000`;
+    shares_available_for_exercise = `0.10000000`;
+    shares_available_for_sells = `0.10000000`;
+    shares_held_for_buys = `0.00000000`;
+    shares_held_for_sells = `0.00000000`;
+    shares_held_for_stock_grants = `0.00000000`;
+    shares_held_for_options_collateral = `0.00000000`;
+    shares_held_for_options_events = `0.00000000`;
+    shares_held_for_asset_transfer = `0.00000000`;
+    shares_pending_from_options_events = `0.00000000`;
+    shares_available_for_closing_short_position = `0.00000000`;
+    ipo_allocated_quantity = `0.00000000`;
+    ipo_dsp_allocated_quantity = `0.00000000`;
+    avg_cost_affected = false;
+    avg_cost_affected_reason = null;
+    is_primary_account = true;
+    updated_at = `2025-06-27T19:55:42.311563Z`;
+    created_at = `2021-04-16T17:44:32.162297Z`;
+    instrument_is_halted = false;
+    clearing_cost_basis = `18.92`;
+    clearing_average_cost = `189.20`;
+    clearing_running_quantity = `0.100000`;
+    clearing_intraday_cost_basis = `0.00`;
+    clearing_intraday_realized_gain_loss = null;
+    clearing_interday_net_proceeds = null;
+    clearing_interday_close_quantity = null;
+    clearing_intraday_running_quantity = `0.000000`;
+    clearing_direction = `debit`;
+    custom_tax_lot_selection_eligible = true;
+    has_selectable_lots = false;
+    fetch_tax_lot_related_info = false;
+    is_pnl_accurate = true;
+    validated_short_quantity = `0.00000000`;
+    side: string = `long`;
+    type: string | Types = `long`;
+    fracs_liquidation_placed_at = null;
+    constructor(data: Partial<RobinhoodStockPosition>) {
+        Object.assign(this, data);
+        this.side = this.type;
+        this.type = Types.RobinhoodStockPosition;
+    }
+}

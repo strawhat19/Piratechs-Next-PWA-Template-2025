@@ -37,6 +37,9 @@
 .slider {
     width: 100%;
     --stockSliderHeight: 535px;
+    @media (min-height: 700px) {
+        --stockSliderHeight: 675px;
+    }
     &:has(.sliderButton) {
         gap: 15px;
         display: grid;
@@ -75,13 +78,3 @@
     font-size: 24px !important; 
     min-width: unset !important;
 }
-
-// .stocksComponentSlider {
-    // max-height: var(--stockSliderHeight);
-    // .sliderButton {
-    //     max-height: var(--stockSliderHeight);
-    // }
-    // .swiper {
-    //     max-height: var(--stockSliderHeight);
-    // }
-// }

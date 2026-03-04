@@ -65,6 +65,7 @@ export class Stock {
     employees?: number = 164000;
     lastDividend?: number = 1.01;
     wentPublic?: string = `1980-12-12`;
+    quantity?: string | number = 95014;
     marketCap?: number = 3194468904000;
 
     constructor(data: Partial<Stock>) {

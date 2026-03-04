@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function StocksPage() {
     return (
-        <Container className={`stocksPage`} topBarComponent={<StocksScroll />}>
+        <Container className={`stocksPage`} mainClassName={`stocksMainContainer`} topBarComponent={<StocksScroll />}>
             <Stocks />
         </Container>
     )

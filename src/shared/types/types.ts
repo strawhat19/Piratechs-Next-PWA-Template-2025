@@ -31,6 +31,8 @@ export enum Types {
   Feature = `Feature`,
   Position = `Position`,
   Notification = `Notification`,
+  RobinhoodStock = `RobinhoodStock`,
+  RobinhoodStockPosition = `RobinhoodStockPosition`,
 }
 
 export enum AuthStates {

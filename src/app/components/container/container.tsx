@@ -21,6 +21,7 @@ export default function Container({
     showPageLogo = true, 
     showPageFooter = true, 
     topBarComponent = null, 
+    mainClassName = `mainClassName`,
     className = `containerComponent`,
 }: any) {
     const pathname = usePathname();
@@ -35,7 +36,7 @@ export default function Container({
                 </TopBar>
             )}
             <Header />
-            <main className={`container`} aria-hidden={true}>
+            <main className={`container ${mainClassName}`} aria-hidden={true}>
                 {showPageLogo && <Logo label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
                 {children}
                 <DialogComponent />

@@ -55,6 +55,7 @@ export const apiRoutes = {
       orders: `/api/stocks/orders`,
       account: `/api/stocks/account`,
       positions: `/api/stocks/positions`,
+      robinhood: `/api/stocks/robinhood`,
     }
   }
 }

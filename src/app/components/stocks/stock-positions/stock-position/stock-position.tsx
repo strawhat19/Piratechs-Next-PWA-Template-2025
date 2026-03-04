@@ -41,7 +41,7 @@ export default function StockPostion({ position, getStock, className = `stockPos
                         <IconText dollarSign number={position?.avg_entry_price} />
                     </div>
                     <div className={`flex alignCenter gap5`}>
-                        = <IconText dollarSign number={position?.equity} />
+                         = <IconText dollarSign number={position?.equity} />
                     </div>
                 </div>
             </div>
