@@ -17,6 +17,7 @@ const routes = {
 }
 
 const nextConfig: NextConfig = {
+  turbopack: {},
   devIndicators: false,
   reactStrictMode: true,
   allowedDevOrigins: [
