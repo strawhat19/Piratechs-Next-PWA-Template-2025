@@ -14,8 +14,8 @@ import { Stock } from '@/shared/types/models/stocks/Stock';
 import { Order } from '@/shared/types/models/stocks/Order';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
-import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
+import { apiRoutes, constants, dev, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export const stockTableAlignmentCenter = false;
 
@@ -36,12 +36,12 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
             getAPIServerData(apiServerRoute)?.then(acc => {
-                let modPositions = acc?.stocks?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition(p));
+                let modPositions = acc?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition(p));
                 let updPosiitons = modPositions?.map((mp: RobinhoodStockPosition) => new Position(mp, getStock(mp)));
-                let ac = { ...acc, stocks: { ...acc?.stocks, positions: updPosiitons } }
+                let ac = { ...acc, positions: updPosiitons };
                 setRobinhood(ac);
                 setLoading(false);
-                console.log(`Robinhood Account`, ac);
+                console.log(`Robinhood Account`, acc);
             });
         } else {
             setLoading(false);
@@ -106,9 +106,9 @@ export default function Stocks({ className = `stocksComponent` }) {
             <StockSearch stcks={stocks} className={`mainStockSearch`} {...{loading}} />
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
                 <Slider className={`stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
-                    <SwiperSlide>
+                    {/* {!dev() && <SwiperSlide>
                         <StockAccount />
-                    </SwiperSlide>
+                    </SwiperSlide>} */}
                     <SwiperSlide>
                         <StockPositions {...{getStock}} />
                     </SwiperSlide>

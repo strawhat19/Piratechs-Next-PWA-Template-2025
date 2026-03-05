@@ -61,8 +61,9 @@ export class Position {
             this.asset_id = d?.instrument_id;
             this.cost_basis = d?.clearing_cost_basis;
             this.current_price = Number(stock?.price);
-            this.avg_entry_price = d?.average_buy_price;
             this.account_type = d?.brokerage_account_type;
+            // this.avg_entry_price = d?.average_buy_price;
+            this.avg_entry_price = d?.clearing_average_cost;
             this.qty_available = d?.shares_available_for_sells;
             this.qty = String(d?.quantity)?.split(``).slice(0, 5)?.join(``);
         }
