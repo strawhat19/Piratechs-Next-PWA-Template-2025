@@ -61,7 +61,7 @@ export class Order {
             this.price = this.average;
         }
         if (this.symbol) {
-            let key = this.symbol as keyof typeof popularStocks;
+            let key: keyof typeof popularStocks = this.symbol as keyof typeof popularStocks;
             this.name = popularStocks[key] ? String(popularStocks[key]) : String(this.symbol);
         }
     }
