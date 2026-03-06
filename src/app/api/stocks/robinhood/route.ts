@@ -13,16 +13,31 @@ let robinhoodAccount = robinhoodAccounts?.main;
 export const robinhoodFetch = async (endpoint: string) => await fetch(endpoint, { method: `GET`, headers: { [`Content-Type`]: `application/json`, Authorization: `Bearer ${robinhoodAuthorizationToken}`, } });
 
 let robinhoodEndpoints = {
+  user: () => `https://api.robinhood.com/user/`,
   orders: () => `https://api.robinhood.com/orders/`,
+  user_profile: () => `https://bonfire.robinhood.com/social/user_profile/`,
+  identity: () => `https://identi.robinhood.com/user_info/address/residential/`,
   symbol: (symbol: string) => `https://api.robinhood.com/marketdata/fundamentals/?symbols=${symbol}`,
+  quotes: (stock_ids: string[]) => `https://api.robinhood.com/marketdata/quotes/?bounds=24_5&ids=${stock_ids}`,
   stocks: (symbols: string[]) => `https://api.robinhood.com/marketdata/fundamentals/?symbols=${symbols?.join(',')}`,
+  forex: (stock_id: string = apple_stock_id) => `https://api.robinhood.com/marketdata/forex/fundamentals/${stock_id}/`,
+  instruments: (stock_ids: string[]) => `https://api.robinhood.com/instruments/?active_instruments_only=false&ids=${stock_ids?.join(`,`)}`,
+  stock_unbound: (stock_id: string = apple_stock_id) => `https://api.robinhood.com/marketdata/fundamentals/${stock_id}/?include_inactive=true`,
   stock: (stock_id: string = apple_stock_id) => `https://api.robinhood.com/marketdata/fundamentals/${stock_id}/?bounds=24_5&include_inactive=true`,
   accounts: () => `https://api.robinhood.com/accounts/?default_to_all_accounts=true&include_managed=true&include_multiple_individual=true&is_default=false`,
   portfolio: (robinhood_account_id_number: number | string = robinhoodAccount?.id) => `https://api.robinhood.com/portfolios/${robinhood_account_id_number}/`,
   unified: (robinhood_account_id_number: number | string = robinhoodAccount?.id) => `https://bonfire.robinhood.com/accounts/${robinhood_account_id_number}/unified/`,
+  orders_account: (robinhood_account_id_number: number | string = robinhoodAccount?.id) => `https://api.robinhood.com/options/orders/?account_number=${robinhood_account_id_number}`,
   positions: (robinhood_account_id_number: number | string = robinhoodAccount?.id) => `https://api.robinhood.com/positions/?account_number=${robinhood_account_id_number}&nonzero=true`,
   holdings: (robinhood_account_id_number: number | string = robinhoodAccount?.id) => `https://nummus.robinhood.com/holdings/?nonzero=true&rhs_account_number=${robinhood_account_id_number}`,
   account: (robinhood_account_id_number: number | string = robinhoodAccount?.id) => `https://api.robinhood.com/portfolios/v2/performance/summary?rhsAccountNumber=${robinhood_account_id_number}`,
+  discovery_lists: () => `https://api.robinhood.com/discovery/lists/v2/9827ee00-30ef-422c-8c37-a3efaf995362/items/?owner_type=custom&fields=market_cap%2Csector%2Cpe_ratio%2Cupcoming_earnings%2Cupcoming_dividend_date%2Cupcoming_ex_dividend_date%2Cdividend_yield%2Caverage_volume_30_days%2Cmargin_initial_requirement%2Cmargin_maintenance_requirement%2Cshort_low_risk_maintenance_ratio`,
+  POST_ORDER: (payload: any = {
+    "instrument_id": "4fcaa359-857a-421c-b499-aac8b3fa94ea",
+    "price": "93.02",
+    "quantity": "14.9",
+    "side": "sell"
+}) => `https://api.robinhood.com/orders/fees/`,
 }
 
 export const getAccountPerfomancesFromAccountIDs = async (account_ids: string[] | number[]): Promise<any[]> => {
