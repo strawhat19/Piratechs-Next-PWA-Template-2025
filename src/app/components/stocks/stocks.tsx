@@ -34,19 +34,24 @@ export default function Stocks({ className = `stocksComponent` }) {
     const refreshRobinhood = () => {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
-            getAPIServerData(apiServerRoute)?.then((accs: any[]) => {
-                let modAccs = accs?.map(acc => {
-                    let modPositions = Array.isArray(acc?.positions) && acc?.positions?.length > 0 ? acc?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition(p)) : [];
-                    let updPosiitons = Array.isArray(modPositions) && modPositions?.length > 0 ? modPositions?.map((mp: RobinhoodStockPosition) => new Position(mp, getStock(mp))) : [];
-                    let ac = { ...acc, positions: updPosiitons };
-                    return ac;
-                });
-                setRobinhood(modAccs);
-                // let holdings = modAccs?.flatMap(acc => acc?.holdings);
-                let positions = modAccs?.flatMap(acc => acc?.positions);
-                setStockPositions(positions);
-                console.log(`Robinhood Accounts`, modAccs);
-                setLoading(false);
+            getAPIServerData(apiServerRoute)?.then((accs: any) => {
+                // if (!Array.isArray(accs)) accs = 
+                if (Array.isArray(accs)) {
+                    let modAccs = accs?.map(acc => {
+                        let account_type = acc?.account_type;
+                        let modPositions = Array.isArray(acc?.positions) && acc?.positions?.length > 0 ? acc?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition({ ...p, account_type })) : [];
+                        let updPosiitons = Array.isArray(modPositions) && modPositions?.length > 0 ? modPositions?.map((mp: RobinhoodStockPosition) => new Position({ ...mp, account_type }, getStock({ ...mp, account_type }))) : [];
+                        let ac = { ...acc, positions: updPosiitons };
+                        return ac;
+                    });
+                    setRobinhood(modAccs);
+                    // let holdings = modAccs?.flatMap(acc => acc?.holdings);
+                    let positions: Position[] = modAccs?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
+                    setStockPositions(positions);
+                    console.log(`Robinhood Accounts`, modAccs);
+                    console.log(`Robinhood Positions`, positions);
+                    setLoading(false);
+                }
             });
         } else {
             setLoading(false);

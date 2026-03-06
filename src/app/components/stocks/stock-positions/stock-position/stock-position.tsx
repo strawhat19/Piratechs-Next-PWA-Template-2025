@@ -2,46 +2,38 @@
 
 import { useState } from 'react';
 import Stock from '../../stock/stock';
-// import { Badge } from '@mui/material';
 import IconText from '../../../icon-text/icon-text';
-import { positionProfitLoss, stockTableAlignmentCenter } from '../../stocks';
+import { stockTableAlignmentCenter } from '../../stocks';
 
-export default function StockPostion({ position, getStock, className = `stockPositionComponent` }: any) {
+export default function StockPostion({ position, getStock, index = 1, className = `stockPositionComponent` }: any) {
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
     return (
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
                 <div className={`stockPositionStatLabel main`}>
-                    <strong>Stock</strong> 
+                    <strong>Stock ({index + 1})</strong> 
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric`}>
                     <Stock 
                         {...getStock(position)} 
+                        symbol={position?.symbol}
                         linkClass={stockAlignmentCenter ? `` : `justifyStart`}  
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
                 </div>
             </div>
-            {/* <div className={`stockPositionStat flex gap5 column alignCenter`}>
-                <div className={`stockPositionStatLabel main`}>
-                    <strong>Qty</strong> 
-                </div>
-                <div className={`stockPositionStatValue stockColValue subMetric`}>
-                    {position?.qty}
-                </div>
-            </div> */}
             <div className={`avgEquityCol stockPositionStat flex gap5 column alignCenter fitMin`}>
                 <div className={`stockPositionStatLabel main`}>
                     <strong>Average Equity</strong> 
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric`}>
                     <div className={`flex alignCenter gap5`}>
-                        <span>{position?.qty}</span>
+                        <span>{position?.quantity}</span>
                         <span>x</span>
-                        <IconText dollarSign number={position?.avg_entry_price} />
-                    </div>
-                    <div className={`flex alignCenter gap5`}>
-                         = <IconText dollarSign number={position?.equity} />
+                        <IconText dollarSign number={position?.average} /> 
+                    </div> 
+                    <div className={`flex alignCenter gap5`} style={{ marginLeft: 5 }}>
+                        = <IconText dollarSign number={position?.equity} />
                     </div>
                 </div>
             </div>
@@ -51,12 +43,12 @@ export default function StockPostion({ position, getStock, className = `stockPos
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                     <div className={`flex alignCenter gap5`}>
-                        <span>{position?.qty}</span>
+                        <span>{position?.quantity}</span>
                         <span>x</span>
-                        <IconText dollarSign number={position?.profitLoss} />
-                    </div>
+                        <IconText dollarSign number={position?.price} /> 
+                    </div> 
                     <div className={`flex alignCenter gap5`}>
-                        = <IconText dollarSign number={position?.unrealized_pl} />
+                        = <IconText dollarSign number={position?.current} />
                     </div>
                 </div>
             </div>

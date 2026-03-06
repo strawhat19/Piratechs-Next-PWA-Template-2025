@@ -6,10 +6,11 @@ import Stock from '../stock/stock';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
+import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
-import { sampleStocksDB, StateGlobals } from '@/shared/global-context';
+import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
-import { sampleStockProfiles, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { stocks, setStocks } = useContext<any>(StateGlobals);
@@ -19,18 +20,21 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const refreshStocks = (getReal = false) => {
         if (getReal && getRealStocks) {
             getAPIServerData()?.then(stocksData => {
-                setStocks(stocksData);
+                let stocksToSet = stocksData?.map((s: any) => new StockModel(s));
+                setStocks(stocksToSet);
                 setLoading(false);
-                console.log(`Stocks`, stocksData);
+                console.log(`Stocks`, stocksToSet);
             });
         } else {
-            setLoading(false);
-            console.log(`Stocks`, {
-                stocks,
-                sampleStocks,
-                sampleStocksDB,
-                sampleStockProfiles,
-            });
+            // let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
+            // getAPIServerData(apiServerRoute)?.then((stks: any) => {
+            //     let modStks = stks?.map((s: any) => new StockModel(s));
+                setLoading(false);
+                console.log(`Stocks`, {
+                    stocks,
+                    popularStocks,
+                });
+            // })
         }
     }
 

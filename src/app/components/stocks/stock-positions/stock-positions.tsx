@@ -20,7 +20,7 @@ export default function StockPositions({ getStock }: any) {
                 </div>
                 <div className={`positionsContainer stockMetricTableContainer`}>
                     {stockPositions?.length > 0 ? stockPositions?.map((pos: any, posIndex: number) => (
-                        <StockPostion key={posIndex} position={pos} getStock={getStock} />
+                        <StockPostion key={posIndex} position={pos} getStock={getStock} index={posIndex} />
                     )) : <></>}
                 </div>
             </div>

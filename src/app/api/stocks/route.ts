@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { tokenRequired } from '@/shared/scripts/constants';
-import { popularStocks, sampleStockProfiles } from '@/shared/server/database/samples/stocks/stocks';
+import { popularStocks, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 
-const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY_OFFICIAL;
+const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
 
 const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
@@ -44,7 +43,7 @@ export const getStocks = async (getRealStocks = false, symbols: string[] = uniqu
     let results = await Promise.all(requests);
     stocksFromAPI = results.filter(Boolean);
   }
-  let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : sampleStockProfiles;
+  let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : sampleStocks;
   return stocks;
 }
 
@@ -58,39 +57,3 @@ export const GET = async (req: Request) => {
     return NextResponse.json({ error, ok: false, status: `Error`, message: `Failed to Get Stocks` }, { status: 500 });
   }
 };
-
-// Legacy
-// if (Array.isArray(fmpAPIStocksResult)) {
-//   fmpAPIStocksResult = fmpAPIStocksResult?.map((stock, stockIndex) => {
-//     let { 
-//       range,
-//       symbol, 
-//       website, 
-//       volAvg: volume, 
-//       companyName: name, 
-//       lastDiv: lastDividend, 
-//       exchangeShortName: exchange, 
-//       fullTimeEmployees: employees, 
-//     } = stock;
-//     delete stock.website;
-//     let cleanedStock = { ...stock, name, exchange, employees, volume, lastDividend };
-//     let [low, high] = range?.split(`-`);
-//     let updatedStock = { 
-//       ...cleanedStock, 
-//       id: symbol, 
-//       label: name, 
-//       value: symbol,
-//       type: Types.Stock,
-//       low: parseFloat(low), 
-//       high: parseFloat(high),
-//       number: stockIndex + 1,
-//       ...(website && website != `` && { website }), 
-//     };
-//     return updatedStock;
-//   });
-//   if (fmpAPIStocksResult[0]?.symbol) {
-//     fmpAPIStocksResult.sort((a: any, b: any) => a?.symbol?.localeCompare(b?.symbol));
-//   } else if (fmpAPIStocksResult[0]?.companyName) {
-//     fmpAPIStocksResult.sort((a: any, b: any) => a?.companyName?.localeCompare(b?.companyName));
-//   }
-// }

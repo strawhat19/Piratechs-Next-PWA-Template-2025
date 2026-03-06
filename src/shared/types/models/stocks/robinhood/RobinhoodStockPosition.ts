@@ -7,6 +7,7 @@ export class RobinhoodStockPosition {
     symbol = `AAPL`;
     account = `https://api.robinhood.com/accounts/814497780/`;
     account_number = `814497780`;
+    account_type: string = `individual`;
     brokerage_account_type: string = `individual`;
     average_buy_price = `193.0465`;
     pending_average_buy_price = `193.0465`;

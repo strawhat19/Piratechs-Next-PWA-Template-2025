@@ -13,6 +13,7 @@ export class Position {
     value?: number = 65.808;
     profitLoss?: number = 500;
     average?: number = 425.38;
+    current?: number = 525.25;
     totalProfitLoss?: number = 500;
     quantity_available?: number = 0.1;
     type?: Types | string = Types.Position;
@@ -21,9 +22,9 @@ export class Position {
 
     // Robinhood
     url?: string;
-    account_type?: string;
     created_at?: string | Date;
     updated_at?: string | Date;
+    account_type?: string = `individual`;
 
     side: string = `long`;
     exchange: string = `NYSE`;
@@ -77,10 +78,12 @@ export class Position {
         this.equity = this?.quantity * this?.average;
         this.profitLoss = this?.price - this?.average;
         this.quantity_available = Number(this.qty_available);
-        this.totalProfitLoss = this?.equity - this?.profitLoss;
-        this.name = String(popularStocks[this.symbol as keyof typeof popularStocks]);
+        let foundSymbolName = popularStocks[this.symbol as keyof typeof popularStocks];
+        this.name = foundSymbolName ? String(foundSymbolName) : this.name;
         if (this?.type == Types.RobinhoodStockPosition) {
-            this.unrealized_pl = Number(this.qty) * Number(this.profitLoss);
+            this.unrealized_pl = Number(this.qty) * Number(this.price);
         }
+        this.current = this.quantity * this.price;
+        this.totalProfitLoss = this.current - this.equity;
     }
 }
