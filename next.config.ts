@@ -20,20 +20,9 @@ const nextConfig: NextConfig = {
   turbopack: {},
   devIndicators: false,
   reactStrictMode: true,
-  allowedDevOrigins: [
-    `local-origin.dev`, 
-    `*.local-origin.dev`,
-    `http://localhost:3000`,
-    `http://127.0.0.1:3000`,
-    `http://192.168.1.125:3000`,
-  ],
   rewrites: async () => Object.keys(routes).map(key => ({ source: `/${key}`, destination: `/pages/${key}` })),
+  allowedDevOrigins: [`local-origin.dev`, `*.local-origin.dev`, `http://localhost:3000`, `http://127.0.0.1:3000`, `http://192.168.1.125:3000`],
   redirects: async () => Object.entries(routes).flatMap(([key, route]) => route.redirects.map(alias => ({ source: `/${alias}`, destination: `/${key}`, permanent: true }))),
 };
 
-export default withPWA({
-  dest: `public`,
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV !== `production`,
-})(nextConfig as any);
+export default withPWA({ dest: `public`, register: true, skipWaiting: true, disable: process.env.NODE_ENV !== `production` })(nextConfig as any);

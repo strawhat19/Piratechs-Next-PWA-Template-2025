@@ -74,23 +74,19 @@ export const isDate = (str: string): boolean => {
   return !isNaN(timestamp);
 }
 
-export const unauthorized = (message = `Unauthorized`) => {
-  return NextResponse.json({ code: 401, error: message }, { status: 401 });
+export const unauthorized = (req: Request, returnResponse: boolean = true, message: string = `Unauthorized`) => {
+  if (returnResponse) {
+    return NextResponse.json({ code: 401, error: message }, { status: 401 });
+  }
+  return null;
 }
 
-export const tokenRequired = (req: Request) => {
+export const tokenRequired = (req: Request, returnResponse: boolean = true) => {
   const authHeader = req.headers.get(`authorization`) || req.headers.get(`Authorization`);
-  if (!authHeader?.startsWith(`Bearer `)) {
-    return unauthorized(`Missing Bearer Token`);
-  }
+  if (!authHeader?.startsWith(`Bearer `)) return unauthorized(req, returnResponse, `Missing Bearer Token`);
   const token = authHeader.slice(`Bearer `.length).trim();
-  if (!token) {
-    return unauthorized();
-  }
-  return {
-    token,
-    header: authHeader,
-  };
+  if (!token) return unauthorized(req, returnResponse);
+  return { token, header: authHeader };
 }
 
 export const errorToast = (errorMessage: string, data: any) => {

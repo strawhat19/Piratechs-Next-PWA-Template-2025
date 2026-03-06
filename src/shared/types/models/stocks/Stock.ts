@@ -1,36 +1,6 @@
 import { Types } from '../../types';
 import { appleCompanyDescription, popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
-// changes = 0,
-// zip = 95014,
-// state = `CA`, 
-// country = `US`,
-// children = null,
-// symbol = `AAPL`, 
-// linkable = true,
-// currency = `USD`,
-// price = 99999.99, 
-// low = price,
-// high = price,
-// volume = 53248283,
-// employees = 164000,
-// exchange = `NASDAQ`,
-// name = `Apple Inc.`,
-// lastDividend = 1.01,
-// sector = `Technology`,
-// range = `169.21-260.1`,
-// IPODate = `1980-12-12`,
-// ceo = `Timothy D. Cook`,
-// showCompanyName = true,
-// phone = `(408) 996-1010`,
-// marketCap = 3195217187580,
-// className = `stockComponent`, 
-// address = `One Apple Park Way`,
-// industry = `Consumer Electronics`,
-// website = `https://www.apple.com`,
-// description = appleCompanyDescription,
-// logo = `https://images.financialmodelingprep.com/symbol/${symbol}.png`, 
-
 export class Stock {
     id?: string;
     name?: string;
@@ -72,3 +42,34 @@ export class Stock {
         Object.assign(this, data);
     }
 }
+
+// Legacy
+// changes = 0,
+// zip = 95014,
+// low = price,
+// high = price,
+// state = `CA`, 
+// country = `US`,
+// symbol = `AAPL`, 
+// children = null,
+// linkable = true,
+// currency = `USD`,
+// price = 99999.99, 
+// volume = 53248283,
+// employees = 164000,
+// exchange = `NASDAQ`,
+// name = `Apple Inc.`,
+// lastDividend = 1.01,
+// sector = `Technology`,
+// range = `169.21-260.1`,
+// IPODate = `1980-12-12`,
+// showCompanyName = true,
+// ceo = `Timothy D. Cook`,
+// phone = `(408) 996-1010`,
+// marketCap = 3195217187580,
+// className = `stockComponent`, 
+// address = `One Apple Park Way`,
+// industry = `Consumer Electronics`,
+// website = `https://www.apple.com`,
+// description = appleCompanyDescription,
+// logo = `https://images.financialmodelingprep.com/symbol/${symbol}.png`, 

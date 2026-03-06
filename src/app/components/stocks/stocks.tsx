@@ -9,13 +9,12 @@ import StockSearch from './stock-search/stock-search';
 import StockOrders from './stock-orders/stock-orders';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
-import StockAccount from './stock-account/stock-account';
 import { Stock } from '@/shared/types/models/stocks/Stock';
 import { Order } from '@/shared/types/models/stocks/Order';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
+import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
-import { apiRoutes, constants, dev, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export const stockTableAlignmentCenter = false;
 
@@ -35,17 +34,23 @@ export default function Stocks({ className = `stocksComponent` }) {
     const refreshRobinhood = () => {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
-            getAPIServerData(apiServerRoute)?.then(acc => {
-                let modPositions = acc?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition(p));
-                let updPosiitons = modPositions?.map((mp: RobinhoodStockPosition) => new Position(mp, getStock(mp)));
-                let ac = { ...acc, positions: updPosiitons };
-                setRobinhood(ac);
+            getAPIServerData(apiServerRoute)?.then((accs: any[]) => {
+                let modAccs = accs?.map(acc => {
+                    let modPositions = Array.isArray(acc?.positions) && acc?.positions?.length > 0 ? acc?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition(p)) : [];
+                    let updPosiitons = Array.isArray(modPositions) && modPositions?.length > 0 ? modPositions?.map((mp: RobinhoodStockPosition) => new Position(mp, getStock(mp))) : [];
+                    let ac = { ...acc, positions: updPosiitons };
+                    return ac;
+                });
+                setRobinhood(modAccs);
+                // let holdings = modAccs?.flatMap(acc => acc?.holdings);
+                let positions = modAccs?.flatMap(acc => acc?.positions);
+                setStockPositions(positions);
+                console.log(`Robinhood Accounts`, modAccs);
                 setLoading(false);
-                console.log(`Robinhood Account`, acc);
             });
         } else {
             setLoading(false);
-            console.log(`Robinhood Account`, robinhood);
+            console.log(`Robinhood Accounts`, robinhood);
         }
     }
 

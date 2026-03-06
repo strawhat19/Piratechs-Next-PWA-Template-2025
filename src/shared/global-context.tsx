@@ -56,7 +56,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
     let [histories, setHistories] = useState([]);
-    let [robinhood, setRobinhood] = useState(null);
+    let [robinhood, setRobinhood] = useState([]);
     let [stockOrders, setStockOrders] = useState<Order[]>([]);
     let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);

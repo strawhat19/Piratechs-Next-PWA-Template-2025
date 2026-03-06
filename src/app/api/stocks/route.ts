@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { tokenRequired } from '@/shared/scripts/constants';
+import { popularStocks, sampleStockProfiles } from '@/shared/server/database/samples/stocks/stocks';
 
-const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
+const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY_OFFICIAL;
 
 const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
@@ -26,25 +27,31 @@ const fmpRoutes = {
   },
 }
 
-export const getStocks = async (symbols: string[] = uniquePopularStockSymbols): Promise<any[]> => {
-  let requests = (symbols || []).map(async (symbol: any) => {
-    try {
-      let [profileRes, quoteRes] = await Promise.all([ fetch(fmpRoutes.company.profileData(symbol), { cache: `no-store` }), fetch(fmpRoutes.symbols.symbolQuote(symbol), { cache: `no-store` })]);
-      if (!profileRes.ok || !quoteRes.ok) return null;
-      let [profileJson, quoteJson] = await Promise.all([ profileRes.json(), quoteRes.json() ]);
-      let profile = Array.isArray(profileJson) ? profileJson[0] : profileJson;
-      let quote = Array.isArray(quoteJson) ? quoteJson[0] : quoteJson;
-      let stock = { ...profile, ...quote };
-      return stock;
-    } catch { return null; }
-  });
-  let results = await Promise.all(requests);
-  let stocks = results.filter(Boolean);
+export const getStocks = async (getRealStocks = false, symbols: string[] = uniquePopularStockSymbols): Promise<any[]> => {
+  let stocksFromAPI = [];
+  if (getRealStocks) {
+    let requests = (symbols || []).map(async (symbol: any) => {
+      try {
+        let [profileRes, quoteRes] = await Promise.all([ fetch(fmpRoutes.company.profileData(symbol), { cache: `no-store` }), fetch(fmpRoutes.symbols.symbolQuote(symbol), { cache: `no-store` })]);
+        if (!profileRes.ok || !quoteRes.ok) return null;
+        let [profileJson, quoteJson] = await Promise.all([ profileRes.json(), quoteRes.json() ]);
+        let profile = Array.isArray(profileJson) ? profileJson[0] : profileJson;
+        let quote = Array.isArray(quoteJson) ? quoteJson[0] : quoteJson;
+        let stock = { ...profile, ...quote };
+        return stock;
+      } catch { return null; }
+    });
+    let results = await Promise.all(requests);
+    stocksFromAPI = results.filter(Boolean);
+  }
+  let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : sampleStockProfiles;
   return stocks;
 }
 
-export const GET = async () => {
+export const GET = async (req: Request) => {
   try {
+    // let token = tokenRequired(req, false);
+    // if (!token) return NextResponse.json({ ok: false, status: `Error`, message: `Missing Authorization Token` }, { status: 401 });
     let stocks = await getStocks();
     return NextResponse.json(stocks);
   } catch (error) {

@@ -6,9 +6,10 @@ import Stock from '../stock/stock';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
-import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
+import { sampleStocksDB, StateGlobals } from '@/shared/global-context';
 import { getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { sampleStockProfiles, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { stocks, setStocks } = useContext<any>(StateGlobals);
@@ -24,7 +25,12 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             });
         } else {
             setLoading(false);
-            console.log(`Stocks`, stocks);
+            console.log(`Stocks`, {
+                stocks,
+                sampleStocks,
+                sampleStocksDB,
+                sampleStockProfiles,
+            });
         }
     }
 
