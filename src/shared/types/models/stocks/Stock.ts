@@ -1,4 +1,4 @@
-import { Types } from '../../types';
+import { RobinhoodAccountTypes, Types } from '../../types';
 import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Stock {
@@ -7,7 +7,7 @@ export class Stock {
     
     type: Types = Types.Stock;
     source?: string = `Alpaca`;
-    account_type?: string = `individual`;
+    account_type?: RobinhoodAccountTypes | string = RobinhoodAccountTypes.individual;
 
     created_at?: string | Date = `2026-03-06T22:59:51Z`;
     updated_at?: string | Date = `2026-03-06T22:59:51Z`;
@@ -81,7 +81,7 @@ export class Stock {
 
     constructor(data: Partial<Stock> = {}) {
         Object.assign(this, data);
-        if (data?.source && data?.source == `Robinhood`) {
+        if (data?.source && data?.source == Types.Robinhood) {
             this.source = data?.source;
             let dividend: any = data?.lastDividend ? data?.lastDividend : this.dividend;
             this.paysDividends = dividend > 0;

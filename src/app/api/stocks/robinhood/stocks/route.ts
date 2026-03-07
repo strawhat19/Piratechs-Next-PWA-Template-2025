@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getStocksFromSymbols } from '../route';
+import { sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 
-const untrackedSymbols = [ `MSTR`, `MIELY`, `ABNB`, `ABSI`, `ABT`, `ADSK`, `AMC`, `AMCX`, `AMKBY`, `ANF`, `APP`, `ATLN`, `AUID`, `AVAX`, `AVD`, `AVGO`, `BATRK`, `BB`, `BBWI`, `BBY`, `BCH`, `BGL`, `BIIB`, `BMY`, `BOE`, `BRK.A`, `BRK.B`, `BROS`, `BRR`, `BTG`, `CCEP`, `CDXS`, `CISO`, `CL`, `CMCSA`, `CMG`, `CNXC`, `COKE`, `COMP`, `CRVO`, `CRWD`, `CTM`, `CYN`, `DG`, `DGNX`, `DJT`, `DNA`, `DOGE`, `EQX`, `FGL`, `FUN`, `GLOB`, `GME`, `GNLN`, `GRPN`, `GRRR`, `H`, `HAL`, `HTCO`, `HUHU`, `IBO`, `ICON`, `IRT`, `JHX`, `KDP`, `KHC`, `KR`, `LLY`, `LOW`, `LYFT`, `M`, `MARA`, `MCD`, `MDLZ`, `NAKA`, `NAMM`, `NGG`, `NSRGY`, `NU`, `NVO`, `ORKLY`, `ORLY`, `PEPE`, `PHUN`, `PLNT`, `QBTS`, `QS`, `QSR`, `RCT`, `S`, `SHEL`, `SHIB`, `SMCI`, `SPCE`, `STRA`, `TEAM`, `TMC`, `TOI`, `TRIP`, `UAA`, `UCAR`, `UNP`, `UPS`, `VIA`, `VLRS`, `VOYG`, `VSNT`, `W`, `WDFC`, `WEN`, `WING`, `XELB` ];
+let stockSymbols = [ ...new Set(sampleStocks?.map(s => s?.symbol)) ]?.sort();
 
 export const GET = async (req: Request) => {
-let stocks: any[] = [];
+let stocks: any[] = sampleStocks;
   try {
-    stocks = await getStocksFromSymbols(untrackedSymbols);
+    stocks = await getStocksFromSymbols(stockSymbols);
     return NextResponse.json(stocks);
   } catch (error) {
     return NextResponse.json({ error: `Robinhood` }, { status: 500 });

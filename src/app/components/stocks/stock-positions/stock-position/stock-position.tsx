@@ -2,10 +2,24 @@
 
 import { useState } from 'react';
 import Stock from '../../stock/stock';
+import { Types } from '@/shared/types/types';
 import IconText from '../../../icon-text/icon-text';
 import { stockTableAlignmentCenter } from '../../stocks';
+import { Position } from '@/shared/types/models/stocks/Position';
 
-export default function StockPostion({ position, getStock, index = 1, className = `stockPositionComponent` }: any) {
+export class StockPositionProps { 
+    getStock: any; 
+    index: number = 1; 
+    position: Position | null = null; 
+    className?: string = `stockPositionComponent`; 
+}
+
+export default function StockPostion({ 
+    position, 
+    getStock, 
+    index = 1, 
+    className = `stockPositionComponent`, 
+}: StockPositionProps) {
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
     return (
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className}`}>
@@ -20,6 +34,11 @@ export default function StockPostion({ position, getStock, index = 1, className 
                         linkClass={stockAlignmentCenter ? `` : `justifyStart`}  
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
+                    {position?.type == Types.RobinhoodStockPosition && (
+                        <div className={`badge positionAccountType`} style={{ marginLeft: 10 }}>
+                            {position?.account_type}
+                        </div>
+                    )}
                 </div>
             </div>
             <div className={`avgEquityCol stockPositionStat flex gap5 column alignCenter fitMin`}>

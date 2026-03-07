@@ -61,6 +61,13 @@ export const apiRoutes = {
   }
 }
 
+export const average = (numbers: (number | null | undefined)[]): number => {
+  const valid = numbers.filter((n): n is number => typeof n === 'number' && !isNaN(n));
+  if (valid.length === 0) return 0;
+  const avg = valid.reduce((sum, n) => sum + n, 0) / valid.length;
+  return avg;
+}
+
 export const randomNumber = (max: number): number => Math.floor(Math.random() * max);
 export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
 export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g, `_`)?.replaceAll(/[\s,:/]/g, `-`).replaceAll(/-/g, `_`);

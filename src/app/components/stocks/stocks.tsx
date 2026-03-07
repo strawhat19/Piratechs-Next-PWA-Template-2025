@@ -9,12 +9,14 @@ import StockSearch from './stock-search/stock-search';
 import StockOrders from './stock-orders/stock-orders';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
+import StockAccount from './stock-account/stock-account';
 import { Stock } from '@/shared/types/models/stocks/Stock';
 import { Order } from '@/shared/types/models/stocks/Order';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
 import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
+import { RobinhoodAccountTypes } from '@/shared/types/types';
 
 export const stockTableAlignmentCenter = false;
 
@@ -25,38 +27,10 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     const [loading, setLoading] = useState(true);
 
-    const getStock = (stk: Stock | any) => {
+    const getStock = (stk: Stock | Position | any) => {
         let symbol = stk?.symbol;
         let stck = stocks?.length > 0 ? stocks?.find((s: any) => s?.symbol == symbol) : stk;
         return stck;
-    }
-
-    const refreshRobinhood = () => {
-        if (getRealStocks) {
-            let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
-            getAPIServerData(apiServerRoute)?.then((accs: any) => {
-                // if (!Array.isArray(accs)) accs = 
-                if (Array.isArray(accs)) {
-                    let modAccs = accs?.map(acc => {
-                        let account_type = acc?.account_type;
-                        let modPositions = Array.isArray(acc?.positions) && acc?.positions?.length > 0 ? acc?.positions?.map((p: RobinhoodStockPosition) => new RobinhoodStockPosition({ ...p, account_type })) : [];
-                        let updPosiitons = Array.isArray(modPositions) && modPositions?.length > 0 ? modPositions?.map((mp: RobinhoodStockPosition) => new Position({ ...mp, account_type }, getStock({ ...mp, account_type }))) : [];
-                        let ac = { ...acc, positions: updPosiitons };
-                        return ac;
-                    });
-                    setRobinhood(modAccs);
-                    // let holdings = modAccs?.flatMap(acc => acc?.holdings);
-                    let positions: Position[] = modAccs?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
-                    setStockPositions(positions);
-                    console.log(`Robinhood Accounts`, modAccs);
-                    console.log(`Robinhood Positions`, positions);
-                    setLoading(false);
-                }
-            });
-        } else {
-            setLoading(false);
-            console.log(`Robinhood Accounts`, robinhood);
-        }
     }
 
     const refreshStocksAccount = () => {
@@ -77,7 +51,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.positions;
             getAPIServerData(apiServerRoute)?.then((alpaca_positions: Position[]) => {
-                let positions = alpaca_positions?.map((p: Position) => new Position(p));
+                let positions = alpaca_positions?.map((p: Position) => new Position({ ...p, stock: getStock(p) }));
                 let sortedPositions = positions?.sort((posA: Position, posB: Position) => positionProfitLoss(posB) - positionProfitLoss(posA));
                 setStockPositions(sortedPositions);
                 setLoading(false);
@@ -104,23 +78,67 @@ export default function Stocks({ className = `stocksComponent` }) {
         }
     }
 
+    const postGetRobinhood = (robinhoodAccounts: any[] = robinhood) => {
+        let holdings = robinhoodAccounts?.flatMap(acc => acc?.holdings);
+        let positions: Position[] = robinhoodAccounts?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
+        setStockPositions(positions);
+        console.log(`Robinhood Holdings`, holdings);
+        console.log(`Robinhood Positions`, positions);
+        console.log(`Robinhood Accounts`, robinhoodAccounts);
+        setLoading(false);
+    }
+
+    const refreshRobinhood = (getRealRobinhood = true) => {
+        if (getRealRobinhood && getRealStocks) {
+            let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
+            getAPIServerData(apiServerRoute)?.then((accs: any) => {
+                if (Array.isArray(accs)) {
+                    let modAccs = accs?.map((acc: any) => {
+                        let account_type: RobinhoodAccountTypes | string = (RobinhoodAccountTypes as any)[acc?.account_type];
+                        let modPositions = Array.isArray(acc?.positions) && acc?.positions?.length > 0 ? (
+                            acc?.positions?.map((p: RobinhoodStockPosition) => {
+                                let modPosition = { ...p, account_type };
+                                return new RobinhoodStockPosition(modPosition);
+                            })
+                        ) : [];
+                        let updPosiitons = Array.isArray(modPositions) && modPositions?.length > 0 ? (
+                            modPositions?.map((mp: RobinhoodStockPosition) => {
+                                let modPosition = { ...mp, account_type };
+                                let positionModel = new Position(modPosition, getStock(modPosition));
+                                positionModel.stock = positionModel?.getStock(stocks);
+                                return positionModel;
+                            })
+                        ) : [];
+                        let ac = { ...acc, positions: updPosiitons };
+                        return ac;
+                    });
+                    setRobinhood(modAccs);
+                    postGetRobinhood(modAccs);
+                }
+            });
+        } else postGetRobinhood();
+    }
+
     useEffect(() => {
-        refreshRobinhood();
         refreshStocksAccount();
         refreshStockPositions();
         refreshStockOrders();
     }, [])
+
+    useEffect(() => {
+        refreshRobinhood();
+    }, [stocks])
 
     return (
         <div className={`stocksContainer w95 ${className}`}>
             <StockSearch stcks={stocks} className={`mainStockSearch`} {...{loading}} />
             {loading ? <Loader height={250} label={`Account Loading`} /> : <>
                 <Slider className={`stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
-                    {/* {!dev() && <SwiperSlide>
-                        <StockAccount />
-                    </SwiperSlide>} */}
                     <SwiperSlide>
                         <StockPositions {...{getStock}} />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <StockAccount />
                     </SwiperSlide>
                     <SwiperSlide>
                         <StockOrders {...{getStock}} />

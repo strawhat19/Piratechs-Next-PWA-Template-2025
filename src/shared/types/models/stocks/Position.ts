@@ -1,5 +1,5 @@
 import { Stock } from './Stock';
-import { Types } from '../../types';
+import { RobinhoodAccountTypes, Types } from '../../types';
 import { RobinhoodStockPosition } from './robinhood/RobinhoodStockPosition';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -14,6 +14,7 @@ export class Position {
     profitLoss?: number = 500;
     average?: number = 425.38;
     current?: number = 525.25;
+    stock?: Stock | null = null;
     totalProfitLoss?: number = 500;
     quantity_available?: number = 0.1;
     type?: Types | string = Types.Position;
@@ -24,7 +25,7 @@ export class Position {
     url?: string;
     created_at?: string | Date;
     updated_at?: string | Date;
-    account_type?: string = `individual`;
+    account_type?: RobinhoodAccountTypes | string = RobinhoodAccountTypes.individual;
 
     side: string = `long`;
     exchange: string = `NYSE`;
@@ -85,5 +86,12 @@ export class Position {
         }
         this.current = this.quantity * this.price;
         this.totalProfitLoss = this.current - this.equity;
+        this.account_type = (RobinhoodAccountTypes as any)[this.account_type as any] ?? this.account_type;
+    }
+
+    getStock(stocksArr: Stock[]) {
+        let positionStock = stocksArr?.find(s => s?.symbol == this.symbol);
+        this.stock = positionStock;
+        return positionStock;
     }
 }

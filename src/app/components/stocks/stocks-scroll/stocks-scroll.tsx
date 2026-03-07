@@ -9,15 +9,24 @@ import { SwiperSlide } from 'swiper/react';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
-import { getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { apiRoutes, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { stocks, setStocks } = useContext<any>(StateGlobals);
 
     const [loading, setLoading] = useState(true);
 
-    const refreshStocks = (getReal = false) => {
+    const finishStocksLoading = (newStocks: any[] = []) => {
+        setLoading(false);
+        console.log(`Stocks`, {
+            stocks,
+            popularStocks,
+            ...(newStocks && newStocks?.length > 0 && { newStocks }),
+        });
+    }
+
+    const refreshStocks = (getReal = false, getRobinhood = true) => {
         if (getReal && getRealStocks) {
             getAPIServerData()?.then(stocksData => {
                 let stocksToSet = stocksData?.map((s: any) => new StockModel(s));
@@ -26,15 +35,14 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 console.log(`Stocks`, stocksToSet);
             });
         } else {
-            // let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
-            // getAPIServerData(apiServerRoute)?.then((stks: any) => {
-            //     let modStks = stks?.map((s: any) => new StockModel(s));
-                setLoading(false);
-                console.log(`Stocks`, {
-                    stocks,
-                    popularStocks,
-                });
-            // })
+            if (getRobinhood) {
+                let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
+                getAPIServerData(apiServerRoute)?.then((stks: any) => {
+                    let modStks = stks?.map((s: any) => new StockModel(s));
+                    setStocks(modStks);
+                    finishStocksLoading(modStks);
+                })
+            } else finishStocksLoading();
         }
     }
 

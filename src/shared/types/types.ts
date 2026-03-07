@@ -15,6 +15,11 @@ export enum Roles {
   Owner = `Owner`,
 }
 
+export enum RobinhoodAccountTypes {
+  individual = `Individual`,
+  ira_traditional = `IRA Traditional`,
+}
+
 export enum Types {
   Data = `Data`,
   User = `User`,
@@ -30,6 +35,7 @@ export enum Types {
   Message = `Message`,
   Feature = `Feature`,
   Position = `Position`,
+  Robinhood = `Robinhood`,
   Notification = `Notification`,
   RobinhoodStock = `RobinhoodStock`,
   RobinhoodStockPosition = `RobinhoodStockPosition`,

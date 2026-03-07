@@ -81,6 +81,14 @@
 .cursorAuto { cursor: auto !important; }
 .transition { transition: var(--transition); }
 
+.badge {
+    padding: 0 10px;
+    font-weight: bold;
+    border-radius: 15px;
+    filter: brightness(1.15);
+    background: var(--buttons);
+}
+
 .flexCenter {
     @extend .flex; 
     @extend .alignCenter; 

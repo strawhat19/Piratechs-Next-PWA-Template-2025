@@ -1,4 +1,4 @@
-import { Types } from '@/shared/types/types';
+import { RobinhoodAccountTypes, Types } from '@/shared/types/types';
 
 export class RobinhoodStockPosition {
     url = `https://api.robinhood.com/positions/814497780/450dfc6d-5510-4d40-abfb-f633b7d9be3e/`;
@@ -7,8 +7,8 @@ export class RobinhoodStockPosition {
     symbol = `AAPL`;
     account = `https://api.robinhood.com/accounts/814497780/`;
     account_number = `814497780`;
-    account_type: string = `individual`;
-    brokerage_account_type: string = `individual`;
+    account_type: RobinhoodAccountTypes | string = RobinhoodAccountTypes.individual;
+    brokerage_account_type: RobinhoodAccountTypes | string = RobinhoodAccountTypes.individual;
     average_buy_price = `193.0465`;
     pending_average_buy_price = `193.0465`;
     quantity: string | number = `0.10000000`;

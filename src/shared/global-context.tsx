@@ -17,6 +17,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
 import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
+import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
 
 export const StateGlobals = createContext({});
 
@@ -56,10 +57,10 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
     let [histories, setHistories] = useState([]);
-    let [robinhood, setRobinhood] = useState([]);
     let [stockOrders, setStockOrders] = useState<Order[]>([]);
     let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
+    let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
 
     // let type = Types.Item;

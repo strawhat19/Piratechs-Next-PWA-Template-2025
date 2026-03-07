@@ -26,7 +26,7 @@ export default function IconText({
     icon = <BarChart color={`success`} />, 
 }) {
     return (
-        <div className={`iconTextContainer fit ${className}`} style={profitLoss ? { fontWeight, color: number > 0 ? `var(--success)` : (number < 0 ? `var(--main)` : undefined) } : { fontWeight }}>
+        <div className={`iconTextContainer fit ${className}`} style={profitLoss ? { fontWeight, color: number > 0 ? `var(--success)` : (number < 0 ? `red` : undefined) } : { fontWeight }}>
             {text == `` ? <>
                 {showIcon ? (
                     dollarSign ? (
