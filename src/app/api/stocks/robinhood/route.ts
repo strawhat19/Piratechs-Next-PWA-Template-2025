@@ -70,7 +70,7 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
           }
         }
       } catch (err) { instrument = {}; }
-      let { ask_price: price, previous_close: previousClose, state: stock_quote_state, updated_at, last_trade_price: lastTradePrice, ask_size: size } = quote;
+      let { ask_price: price, previous_close: previousClose, state: stock_quote_state, updated_at, last_trade_price: lastTradePrice, ask_size: size, last_extended_hours_trade_price: lastExtendedHoursTradePrice, last_non_reg_trade_price: lastNonRegTradePrice } = quote;
       let { country, list_date: ipoDate, account_type_tradabilities } = instrument;
       let { open, high, low, volume, average_volume: volAvg, high_52_weeks: yearHigh, float, low_52_weeks: yearLow, market_cap: marketCap, description, ceo, headquarters_city: city, headquarters_state: state, sector, industry, num_employees: employees, year_founded: founded, dividend_yield } = stockFromSymbol;
       let active = stock_quote_state == `active`;
@@ -90,20 +90,23 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
       marketCap = Number(marketCap);
       previousClose = Number(previousClose);
       lastTradePrice = Number(lastTradePrice);
+      lastNonRegTradePrice = Number(lastNonRegTradePrice);
+      lastExtendedHoursTradePrice = Number(lastExtendedHoursTradePrice);
       let website = `https://www.google.com/search?q=${symbol}`;
       let data = { ...instrument, ...quote, ...stockFromSymbol };
       // let sources = { instrument, quote, stock: stockFromSymbol };
       let address = data?.address ?? `${city}, ${state}, ${country}`;
       let close = previousClose;
-      price = price > high ? lastTradePrice : price;
+      // price = price > high ? lastTradePrice : price;
       // price = price > high ? getAverage([open, close, lastTradePrice]) : price;
+      price = price > high ? getAverage([lastNonRegTradePrice, lastExtendedHoursTradePrice, lastTradePrice]) : price;
       let image = data?.image ?? `https://images.financialmodelingprep.com/symbol/${symbol}.png`;
       let logo = image;
       let url = website;
       let changes = open / close;
       let equity = price;
       let wentPublic = ipoDate;
-      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size };
+      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice };
       return stock;
     } catch { return null; }
   });
