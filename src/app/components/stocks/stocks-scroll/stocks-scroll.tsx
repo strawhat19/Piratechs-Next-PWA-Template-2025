@@ -14,8 +14,8 @@ import { apiRoutes, getAPIServerData, getRealStocks } from '@/shared/scripts/con
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { stocks, setStocks } = useContext<any>(StateGlobals);
-
     const [loading, setLoading] = useState(true);
+    // const socketRef = useRef<WebSocket | null>(null);
 
     const finishStocksLoading = (newStocks: any[] = []) => {
         setLoading(false);
@@ -64,3 +64,70 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         </div>
     )
 }
+
+// Legacy Socket
+// useEffect(() => {
+//     if (!stocks?.length) return;
+
+//     const ws = new WebSocket(`wss://api.robinhood.com/marketdata/streaming/legend/v2/`);
+//     socketRef.current = ws;
+
+//     ws.onopen = () => {
+//         console.log(`Robinhood WS connected`);
+
+//         // Replace this with the actual message Robinhood expects.
+//         // Example only:
+//         ws.send(JSON.stringify({
+//             type: `subscribe`,
+//             symbols: stocks.map((s: any) => s.symbol).filter(Boolean),
+//         }));
+//     };
+
+//     ws.onmessage = (event) => {
+//         try {
+//             const data = JSON.parse(event.data);
+//             console.log(`Robinhood WS message`, data);
+
+//             // setStocks((prevStocks: any[] = []) => {
+//             //     return prevStocks.map((stock: any) => {
+//             //         const symbol = stock?.symbol;
+
+//             //         // Adjust these fields to match Robinhood`s real payload
+//             //         const update = Array.isArray(data)
+//             //             ? data.find((item: any) => item?.symbol === symbol)
+//             //             : data?.symbol === symbol
+//             //                 ? data
+//             //                 : null;
+
+//             //         if (!update) return stock;
+
+//             //         return new StockModel({
+//             //             ...stock,
+//             //             price: update.price ?? stock.price,
+//             //             changes: update.changes ?? stock.changes,
+//             //             last: update.last ?? stock.last,
+//             //         });
+//             //     });
+//             // });
+//         } catch (error) {
+//             console.error(`Failed to parse WS message`, error, event.data);
+//         }
+//     };
+
+//     ws.onerror = (error) => {
+//         console.error(`Robinhood WS error`, error);
+//     };
+
+//     ws.onclose = (event) => {
+//         console.log(`Robinhood WS closed`, {
+//             code: event.code,
+//             reason: event.reason,
+//             wasClean: event.wasClean,
+//         });
+//     };
+
+//     return () => {
+//         ws.close();
+//         socketRef.current = null;
+//     };
+// }, [stocks?.length]);

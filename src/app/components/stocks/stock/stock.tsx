@@ -64,7 +64,7 @@ export default function Stock({
                     <div className={`stock ${className}`}>
                         <div className={`stockRow stockTopRow`}>
                             <div className={`stockRow stockSymbol stockText`}>
-                                {symbol}
+                                <strong>{symbol}</strong>
                             </div>
                             <div className={`stockImage`}>
                                 {imageErrored ? <BarChart style={{ color: `var(--links)` }} /> : (
@@ -91,7 +91,7 @@ export default function Stock({
                                     }} />
                                 )}
                             </div>
-                            {showCompanyName && (
+                            {showCompanyName && (name != symbol) && (
                                 <div className={`stockRow stockSymbol stockName stockText`}>
                                     {name}
                                 </div>

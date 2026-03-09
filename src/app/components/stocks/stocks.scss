@@ -1,3 +1,18 @@
+.stockPositionStatLabel {
+    display: flex;
+    grid-gap: 15px;
+    align-items: center;
+}
+
+.stockStat {
+    font-size: 0.65em;
+    i {
+        display: flex;
+        grid-gap: 5px;
+        align-items: center;
+    }
+}
+
 .stocksMainContainer {
     padding-top: 100px;
 }

@@ -55,6 +55,7 @@ export class Stock {
     name?: string = this.symbol;
     stock_id?: string = this.symbol;
 
+    size?: number = 1;
     label?: string = this.name;
     yearLow?: number = this.low;
     company?: string = this.name;
@@ -70,6 +71,7 @@ export class Stock {
     change?: any = this.changes;
     equity?: number = this.price;
     wentPublic?: string = this.ipoDate;
+    lastTradePrice?: number = this.price;
     volAvg?: number | string = this.volume;
     changePercentage?: number = this.change;
     exchangeFullName?: string = this.exchange;

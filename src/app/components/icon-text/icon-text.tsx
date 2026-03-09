@@ -22,11 +22,12 @@ export default function IconText({
     decimalPlaces = 2,
     dollarSign = false, 
     profitLoss = false,
+    style = { opacity: 1 },
     className = `iconTextComponent`, 
     icon = <BarChart color={`success`} />, 
 }) {
     return (
-        <div className={`iconTextContainer fit ${className}`} style={profitLoss ? { fontWeight, color: number > 0 ? `var(--success)` : (number < 0 ? `red` : undefined) } : { fontWeight }}>
+        <div className={`iconTextContainer fit ${className}`} style={profitLoss ? { fontWeight, ...style, color: number > 0 ? `var(--success)` : (number < 0 ? `red` : undefined) } : { fontWeight, ...style, }}>
             {text == `` ? <>
                 {showIcon ? (
                     dollarSign ? (

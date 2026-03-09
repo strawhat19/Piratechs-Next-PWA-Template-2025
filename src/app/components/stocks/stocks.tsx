@@ -12,11 +12,11 @@ import { useContext, useEffect, useState } from 'react';
 import StockAccount from './stock-account/stock-account';
 import { Stock } from '@/shared/types/models/stocks/Stock';
 import { Order } from '@/shared/types/models/stocks/Order';
+import { RobinhoodAccountTypes } from '@/shared/types/types';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
 import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
-import { RobinhoodAccountTypes } from '@/shared/types/types';
 
 export const stockTableAlignmentCenter = false;
 

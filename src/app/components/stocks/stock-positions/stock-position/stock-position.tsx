@@ -24,8 +24,20 @@ export default function StockPostion({
     return (
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
-                <div className={`stockPositionStatLabel main`}>
-                    <strong>Stock ({index + 1})</strong> 
+                <div className={`stockPositionStatLabel`}>
+                    <strong><span className={`main`}>({index + 1}) </span> <span style={{ marginLeft: 5 }}>Stock</span></strong> 
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Low</span> <IconText dollarSign number={position?.stock?.low} /></i>
+                    </strong>
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>High</span> <IconText dollarSign number={position?.stock?.high} /></i>
+                    </strong>
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>52w Low</span> <IconText dollarSign number={position?.stock?.yearLow} /></i>
+                    </strong>
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>52w High</span> <IconText dollarSign number={position?.stock?.yearHigh} /></i>
+                    </strong>
                 </div>
                 <div className={`stockPositionStatValue stockColValue subMetric`}>
                     <Stock 
@@ -35,7 +47,7 @@ export default function StockPostion({
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
                     {position?.type == Types.RobinhoodStockPosition && (
-                        <div className={`badge positionAccountType`} style={{ marginLeft: 10 }}>
+                        <div className={`badge positionAccountType`} style={{ marginLeft: 10, fontSize: `0.85em` }}>
                             {position?.account_type}
                         </div>
                     )}
