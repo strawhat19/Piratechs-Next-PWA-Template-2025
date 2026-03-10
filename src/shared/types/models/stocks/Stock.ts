@@ -1,5 +1,5 @@
 import { RobinhoodAccountTypes, Types } from '../../types';
-import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
+import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Stock {
     number?: number = 1;
@@ -101,6 +101,7 @@ export class Stock {
                 }
             }
         }
+        this.image = (stockImages as any)[this.symbol] ?? this.image;
         this.id = this.symbol;
         this.logo = this.image;
         this.url = this.website;

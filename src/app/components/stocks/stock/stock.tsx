@@ -12,7 +12,7 @@ import { appleCompanyDescription } from '@/shared/server/database/samples/stocks
 
 export default function Stock({ 
     style = {},
-    changes = 0,
+    change = 0,
     zip = 95014,
     state = `CA`, 
     country = `US`,
@@ -52,8 +52,8 @@ export default function Stock({
             name,
             logo,
             symbol,
+            change,
             website,
-            changes,
         })
     }
 
@@ -80,14 +80,14 @@ export default function Stock({
                             </div>
                             <div className={`stockPrice stockText`}>
                                 <IconText dollarSign number={price} className={`stockText`} />
-                                {changes != 0 && (
-                                    <PlayArrow className={`changesIndicator change_${changes < 0 ? `negative` : `positive`}`} style={{ 
+                                {change != 0 && (
+                                    <PlayArrow className={`changesIndicator change_${change < 0 ? `negative` : `positive`}`} style={{ 
                                         marginRight: -5,
                                         position: `relative`, 
                                         transformOrigin: `center`, 
-                                        top: changes < 0 ? -1 : 1, 
-                                        color: changes < 0 ? `red` : `var(--success)`, 
-                                        transform: `rotate(${changes < 0 ? `90` : `270`}deg)`,
+                                        top: change < 0 ? -1 : 1, 
+                                        color: change < 0 ? `red` : `var(--success)`, 
+                                        transform: `rotate(${change < 0 ? `90` : `270`}deg)`,
                                     }} />
                                 )}
                             </div>

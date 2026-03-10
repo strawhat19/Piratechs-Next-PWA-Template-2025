@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { average as getAverage } from '@/shared/scripts/constants';
 import { RobinhoodAccountTypes, Types } from '@/shared/types/types';
-import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { popularStocks, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 import { robinhoodAccountsDefault } from '@/shared/server/database/samples/stocks/robinhood/robinhood';
 
 let apple_stock_id = `450dfc6d-5510-4d40-abfb-f633b7d9be3e`;
@@ -100,13 +100,15 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
       // price = price > high ? lastTradePrice : price;
       // price = price > high ? getAverage([open, close, lastTradePrice]) : price;
       price = price > high ? getAverage([lastNonRegTradePrice, lastExtendedHoursTradePrice, lastTradePrice]) : price;
-      let image = data?.image ?? `https://images.financialmodelingprep.com/symbol/${symbol}.png`;
+      let image = data?.image ?? (stockImages as any)[symbol] ?? `https://images.financialmodelingprep.com/symbol/${symbol}.png`;
       let logo = image;
       let url = website;
       let changes = open / close;
       let equity = price;
       let wentPublic = ipoDate;
-      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice };
+      let change = price - previousClose;
+      let changePercentage = parseFloat(((change / previousClose) * 100)?.toFixed(2));
+      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage };
       return stock;
     } catch { return null; }
   });
