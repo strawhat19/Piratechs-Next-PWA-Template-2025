@@ -37,6 +37,7 @@ export class Stock {
     
     zip?: number = 95014;
     dividend?: number = 0;
+    divYield?: any = null;
     high?: number = 260.1;
     low?: number = 169.21;
     active?: boolean = true;

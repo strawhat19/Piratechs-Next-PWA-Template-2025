@@ -41,6 +41,7 @@ let robinhoodEndpoints = {
 export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> => {
   let requests = (symbols || []).map(async (symbol: any) => {
     try {
+      let dividend = 0;
       let quote: any = {};
       let instrument: any = {};
       let source = Types.RobinhoodStock;
@@ -72,9 +73,10 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
       } catch (err) { instrument = {}; }
       let { ask_price: price, previous_close: previousClose, state: stock_quote_state, updated_at, last_trade_price: lastTradePrice, ask_size: size, last_extended_hours_trade_price: lastExtendedHoursTradePrice, last_non_reg_trade_price: lastNonRegTradePrice } = quote;
       let { country, list_date: ipoDate, account_type_tradabilities } = instrument;
-      let { open, high, low, volume, average_volume: volAvg, high_52_weeks: yearHigh, float, low_52_weeks: yearLow, market_cap: marketCap, description, ceo, headquarters_city: city, headquarters_state: state, sector, industry, num_employees: employees, year_founded: founded, dividend_yield } = stockFromSymbol;
+      let { open, high, low, volume, average_volume: volAvg, high_52_weeks: yearHigh, float, low_52_weeks: yearLow, market_cap: marketCap, description, ceo, headquarters_city: city, headquarters_state: state, sector, industry, num_employees: employees, year_founded: founded, dividend_yield: divYield } = stockFromSymbol;
       let active = stock_quote_state == `active`;
-      let paysDividends = dividend_yield != null;
+      let paysDividends = divYield != null;
+      if (paysDividends) dividend = Number(divYield);
       let account_type = account_type_tradabilities[0]?.account_type;
       account_type = (RobinhoodAccountTypes as any)[account_type as any] ?? account_type;
       low = Number(low);
@@ -108,7 +110,7 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
       let wentPublic = ipoDate;
       let change = price - previousClose;
       let changePercentage = parseFloat(((change / previousClose) * 100)?.toFixed(2));
-      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage };
+      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, dividend, divYield, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage };
       return stock;
     } catch { return null; }
   });

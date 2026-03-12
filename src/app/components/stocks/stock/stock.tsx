@@ -14,6 +14,7 @@ export default function Stock({
     style = {},
     change = 0,
     zip = 95014,
+    dividend = 0,
     state = `CA`, 
     country = `US`,
     children = null,
