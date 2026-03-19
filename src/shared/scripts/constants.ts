@@ -172,10 +172,10 @@ export const logToast = (message: string, content: any, error = false, data: any
   return toastMsg;
 }
 
-export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url, withErrorToast: boolean = false) => {
+export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url, queryParams = ``, withErrorToast: boolean = false) => {
   let APIServerRouteResult: any = {};
   try {
-    let APIServerRouteResponse = await fetch(APIServerRoute);
+    let APIServerRouteResponse = await fetch(APIServerRoute + queryParams);
     if (APIServerRouteResponse) {
       APIServerRouteResult = await APIServerRouteResponse?.json();
       return APIServerRouteResult;

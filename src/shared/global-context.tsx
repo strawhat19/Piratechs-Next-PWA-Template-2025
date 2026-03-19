@@ -39,10 +39,10 @@ export const getPageName = (path: string) => {
 }
 
 export default function GlobalProvider({ children }: { children: React.ReactNode }) {    
-    let [users, setUsers] = useState<any>([]);
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [user, setUser] = useState<User | null>(null);
+    let [users, setUsers] = useState<User[] | any>([]);
     let [usersLoading, setUsersLoading] = useState(true);
     
     let [boards, setBoards] = useState<Board[]>([]);

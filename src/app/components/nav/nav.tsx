@@ -6,14 +6,15 @@ import { usePathname } from 'next/navigation';
 import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../buttons/icon-button/icon-button';
-import AuthForm from '../authentication/forms/auth-form/auth-form';
+// import AuthForm from '../authentication/forms/auth-form/auth-form';
 
 import { 
     Menu,
     Close,
+    Person,
+    BarChart,
     Settings,
     PermMedia,
-    BarChart,
     Checklist,
 } from '@mui/icons-material';
 
@@ -41,10 +42,16 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         <nav className={`container ${className}`}>
             <ul className={`container row justifyEnd`}>
                 {className != `mobileNav` && <>
-                    {user != null ? <AuthForm style={{ position: `relative`, right: -10 }} /> : (
+                    {user == null ? <>
+                        {/* <AuthForm style={{ position: `relative`, right: -10 }} /> */}
+                        <Icon_Button title={`Settings`} url={`/settings`}>
+                            <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
+                        </Icon_Button>
+                    </> : (
                         <li className={`menuButton`}>
-                            <Icon_Button title={`Settings`} url={`/settings`}>
-                                <Settings className={`settingsIcon`} style={{ fontSize: 20 }} />
+                            Welcome, {user?.email}
+                            <Icon_Button title={`Profile`} url={`/profile`} style={{ marginLeft: 10 }}>
+                                <Person className={`settingsIcon`} style={{ fontSize: 20 }} />
                             </Icon_Button>
                         </li>
                     )}

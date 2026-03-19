@@ -18,7 +18,7 @@ const stateLabels: any = {
     [Next]: `${Sign_Up} or ${Sign_In}`,
 }
 
-export default function AuthForm({ style = { opacity: 1 } }: any) {
+export default function AuthForm({ extensionText = ``, style = { opacity: 1 } }: any) {
     let emailOrUsernameField = useRef(null);
 
     const { user, users, loaded, authState, setAuthState, signInUser, onSignOut } = useContext<any>(StateGlobals);
@@ -140,7 +140,7 @@ export default function AuthForm({ style = { opacity: 1 } }: any) {
                         <div className={`formFields`}>
                             <div className={`mainFormField formField gap10 column alignStart`}>
                                 <span className={`formFieldLabel`}>
-                                    {stateLabels[authState] ?? authState}
+                                    {stateLabels[authState] ?? authState} {extensionText}
                                 </span>
                                 <input ref={emailOrUsernameField} name={`email`} type={`email`} className={`email`} placeholder={`Email Address`} autoComplete={`off`} required />
                             </div>
