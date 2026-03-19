@@ -3,6 +3,7 @@
 }
 
 .Toastify__toast-container {
+    grid-gap: 10px;
     --toastify-toast-min-height: auto;
     --toastify-color-dark: var(--blackGlass);
     --toastify-container-width: calc(auto + 20px);

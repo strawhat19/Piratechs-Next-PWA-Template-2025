@@ -10,7 +10,7 @@ import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { apiRoutes, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { apiRoutes, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { stocks, setStocks } = useContext<any>(StateGlobals);
@@ -18,11 +18,15 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     // const socketRef = useRef<WebSocket | null>(null);
 
     const finishStocksLoading = (newStocks: any[] = []) => {
+        let hasNewStocks = newStocks && newStocks?.length > 0;
+        let stocksToSet = hasNewStocks ? newStocks : stocks;
+        setStocks(stocksToSet);
         setLoading(false);
         console.log(`Stocks`, {
             stocks,
+            stocksToSet,
             popularStocks,
-            ...(newStocks && newStocks?.length > 0 && { newStocks }),
+            ...(hasNewStocks && { newStocks }),
         });
     }
 
@@ -38,10 +42,22 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             if (getRobinhood) {
                 let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
                 getAPIServerData(apiServerRoute)?.then((stks: any) => {
-                    let modStks = stks?.map((s: any) => new StockModel(s));
-                    setStocks(modStks);
-                    finishStocksLoading(modStks);
-                })
+                    if (Array.isArray(stks) && stks?.length > 0) {
+                        let modStks = stks?.map((s: any) => new StockModel(s));
+                        setStocks(modStks);
+                        finishStocksLoading(modStks);
+                    } else {
+                        let checkTokenMsg = `Check Authorization Token`;
+                        let errorMessage = `Error on GET Robinhood Stocks`;
+                        let defaultError = `Robinhood Error, ${checkTokenMsg}`;
+                        errorToast(errorMessage + `, ${checkTokenMsg}`, defaultError);
+                        finishStocksLoading();
+                    }
+                })?.catch(error => {
+                    let errorMessage = `Error on GET Robinhood Stocks`;
+                    errorToast(errorMessage, error);
+                    finishStocksLoading();
+                });
             } else finishStocksLoading();
         }
     }

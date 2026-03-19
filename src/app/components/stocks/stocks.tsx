@@ -15,8 +15,8 @@ import { Order } from '@/shared/types/models/stocks/Order';
 import { RobinhoodAccountTypes } from '@/shared/types/types';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
-import { apiRoutes, constants, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
+import { apiRoutes, constants, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export const stockTableAlignmentCenter = false;
 
@@ -114,7 +114,17 @@ export default function Stocks({ className = `stocksComponent` }) {
                     });
                     setRobinhood(modAccs);
                     postGetRobinhood(modAccs);
+                } else {
+                    let { message: error } = accs;
+                    let checkTokenMsg = `Check Authorization Token`;
+                    let errorMessage = `Error on GET Robinhood Accounts`;
+                    errorToast(errorMessage + `, ${checkTokenMsg}`, error);
+                    postGetRobinhood();
                 }
+            })?.catch(error => {
+                let errorMessage = `Error on GET Robinhood Accounts`;
+                errorToast(errorMessage, error);
+                postGetRobinhood();
             });
         } else postGetRobinhood();
     }

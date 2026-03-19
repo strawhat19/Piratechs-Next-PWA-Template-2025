@@ -97,9 +97,9 @@ export const tokenRequired = (req: Request, returnResponse: boolean = true) => {
   return { token, header: authHeader };
 }
 
-export const errorToast = (errorMessage: string, data: any) => {
+export const errorToast = (errorMessage: string, data: any, duration: number = 5_000) => {
   console.log(errorMessage, data);
-  toast.error(errorMessage);
+  toast.error(errorMessage, { autoClose: duration });
 }
 
 export const getDefaultDateTime = () => {
@@ -172,7 +172,7 @@ export const logToast = (message: string, content: any, error = false, data: any
   return toastMsg;
 }
 
-export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url) => {
+export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url, withErrorToast: boolean = false) => {
   let APIServerRouteResult: any = {};
   try {
     let APIServerRouteResponse = await fetch(APIServerRoute);
@@ -182,7 +182,9 @@ export const getAPIServerData = async (APIServerRoute = apiRoutes.stocks.url) =>
     }
   } catch (errorOnGetAPIServerData) {
     APIServerRouteResult = errorOnGetAPIServerData;
-    console.log(`Error on Get ${APIServerRoute}`, errorOnGetAPIServerData);
+    let errorMessage = `Error on Get ${APIServerRoute}`;
+    console.log(errorMessage, errorOnGetAPIServerData);
+    if (withErrorToast) errorToast(errorMessage, errorOnGetAPIServerData);
     return APIServerRouteResult;
   }
 }
