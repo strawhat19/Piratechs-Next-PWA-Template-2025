@@ -9,7 +9,6 @@ import { SwiperSlide } from 'swiper/react';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
-import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { apiRoutes, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
@@ -17,16 +16,15 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const [loading, setLoading] = useState(true);
     // const socketRef = useRef<WebSocket | null>(null);
 
-    const finishStocksLoading = (newStocks: any[] = []) => {
-        let hasNewStocks = newStocks && newStocks?.length > 0;
-        let stocksToSet = hasNewStocks ? newStocks : stocks;
+    const finishStocksLoading = (stocksFromAPI: any[] = []) => {
+        let hasNewStocks = stocksFromAPI && stocksFromAPI?.length > 0;
+        let stocksToSet = hasNewStocks ? stocksFromAPI : stocks;
         setStocks(stocksToSet);
         setLoading(false);
         console.log(`Stocks`, {
             stocks,
             stocksToSet,
-            popularStocks,
-            ...(hasNewStocks && { newStocks }),
+            stocksFromAPI,
         });
     }
 
@@ -41,7 +39,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         } else {
             if (getRobinhood) {
                 let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
-                getAPIServerData(apiServerRoute, `?id=${user?.robinhoodToken}`)?.then((robinhoodStocks: any) => {
+                let serverRouteExtension = user != null ? `?id=${user?.robinhoodToken}` : ``;
+                getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodStocks: any) => {
                     if (Array.isArray(robinhoodStocks) && robinhoodStocks?.length > 0) {
                         let modStks = robinhoodStocks?.map((s: any) => new StockModel(s));
                         setStocks(modStks);

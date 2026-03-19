@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
 import { average as getAverage } from '@/shared/scripts/constants';
 import { RobinhoodAccountTypes, Types } from '@/shared/types/types';
-import { popularStocks, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 import { robinhoodAccountsDefault } from '@/shared/server/database/samples/stocks/robinhood/robinhood';
+import { popularStocks, sampleStocksDB, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
 let apple_stock_id = `450dfc6d-5510-4d40-abfb-f633b7d9be3e`;
 
-let robinhoodAuthorizationToken = process.env.ROBINHOOD_AUTHORIZATION_TOKEN;
 let robinhoodMainAccountIDNumber = String(process.env.ROBINHOOD_MAIN_ACCOUNT_ID_NUMBER);
+let robinhoodAuthorizationToken: string | any = process.env.ROBINHOOD_AUTHORIZATION_TOKEN;
 let robinhoodIRAAccountIDNumber = String(process.env.ROBINHOOD_TRADITIONAL_IRA_ACCOUNT_ID_NUMBER);
 
 let robinhoodAccounts = { main: { id: robinhoodMainAccountIDNumber, type: RobinhoodAccountTypes.individual }, traditional_IRA: { id: robinhoodIRAAccountIDNumber, type: RobinhoodAccountTypes.ira_traditional } };
 let robinhoodAccount = robinhoodAccounts?.main;
 
-export const robinhoodFetch = async (endpoint: string) => await fetch(endpoint, { method: `GET`, cache: `no-store`, headers: { [`Content-Type`]: `application/json`, Authorization: `Bearer ${robinhoodAuthorizationToken}`, } });
+export const robinhoodFetch = async (endpoint: string, token: string = robinhoodAuthorizationToken) => await fetch(endpoint, { method: `GET`, cache: `no-store`, headers: { [`Content-Type`]: `application/json`, Authorization: `Bearer ${token}`, } });
 
 let robinhoodEndpoints = {
   user: () => `https://api.robinhood.com/user/`,
@@ -38,21 +38,21 @@ let robinhoodEndpoints = {
   discovery_lists: () => `https://api.robinhood.com/discovery/lists/v2/9827ee00-30ef-422c-8c37-a3efaf995362/items/?owner_type=custom&fields=market_cap%2Csector%2Cpe_ratio%2Cupcoming_earnings%2Cupcoming_dividend_date%2Cupcoming_ex_dividend_date%2Cdividend_yield%2Caverage_volume_30_days%2Cmargin_initial_requirement%2Cmargin_maintenance_requirement%2Cshort_low_risk_maintenance_ratio`,
 }
 
-export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> => {
+export const getStocksFromSymbols = async (symbols: string[], token: string = robinhoodAuthorizationToken, useDBStocksDefault: boolean = false): Promise<any[]> => {
   let requests = (symbols || []).map(async (symbol: any) => {
     try {
       let dividend = 0;
       let quote: any = {};
       let instrument: any = {};
       let source = Types.RobinhoodStock;
-      let [stockSymbolRes] = await Promise.all([ robinhoodFetch(robinhoodEndpoints.symbol(symbol)) ]);
+      let [stockSymbolRes] = await Promise.all([ robinhoodFetch(robinhoodEndpoints.symbol(symbol), token) ]);
       if (!stockSymbolRes.ok) return null;
       let [stockSymbolResJson] = await Promise.all([ stockSymbolRes.json() ]);
       let stockFromSymbol = stockSymbolResJson?.results[0];
       let name = stockFromSymbol?.name ?? (popularStocks as any)[symbol] ?? symbol;
       let stock_id = stockFromSymbol?.instrument?.replaceAll(`https://api.robinhood.com/instruments/`, ``)?.replaceAll(`/`, ``);
       try {
-        let quoteRes = await robinhoodFetch(robinhoodEndpoints.quotes([stock_id]));
+        let quoteRes = await robinhoodFetch(robinhoodEndpoints.quotes([stock_id]), token);
         if (quoteRes) {
           let quoteResJson = await quoteRes.json();
           if (quoteResJson) {
@@ -62,7 +62,7 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
         }
       } catch (err) { quote = {}; }
       try {
-        let instrumentRes = await robinhoodFetch(robinhoodEndpoints.instruments([stock_id]));
+        let instrumentRes = await robinhoodFetch(robinhoodEndpoints.instruments([stock_id]), token);
         if (instrumentRes) {
           let instrumentResJson = await instrumentRes.json();
           if (instrumentResJson) {
@@ -115,14 +115,15 @@ export const getStocksFromSymbols = async (symbols: string[]): Promise<any[]> =>
     } catch { return null; }
   });
   let results = await Promise.all(requests);
-  let stocks = results.filter(Boolean);
+  let stocksFromAPI = results.filter(Boolean);
+  let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : (useDBStocksDefault ? sampleStocksDB : []);
   return stocks;
 }
 
-export const getAccountPerfomancesFromAccountIDs = async (account_ids: string[] | number[]): Promise<any[]> => {
+export const getAccountPerfomancesFromAccountIDs = async (account_ids: string[] | number[], token: string = robinhoodAuthorizationToken): Promise<any[]> => {
   let requests = (account_ids || []).map(async (account_id: any) => {
     try {
-      let res = await robinhoodFetch(robinhoodEndpoints.account(account_id));
+      let res = await robinhoodFetch(robinhoodEndpoints.account(account_id), token);
       if (!res.ok) return null;
       let accountPerformance = {};
       let accountRes = await res.json();
@@ -139,8 +140,8 @@ export const getAccountPerfomancesFromAccountIDs = async (account_ids: string[] 
   return accountPerformances;
 }
 
-export const getPositions = async (account_id: string | number = robinhoodAccount?.id) => {
-  let positionsRes = await robinhoodFetch(robinhoodEndpoints?.positions(account_id));
+export const getPositions = async (account_id: string | number = robinhoodAccount?.id, token: string = robinhoodAuthorizationToken) => {
+  let positionsRes = await robinhoodFetch(robinhoodEndpoints?.positions(account_id), token);
   if (positionsRes) {
     let positionsResl = await positionsRes?.json();
     if (positionsResl) {
@@ -151,8 +152,8 @@ export const getPositions = async (account_id: string | number = robinhoodAccoun
   }
 }
 
-export const getHoldings = async (account_id: string | number = robinhoodAccount?.id) => {
-  let holdingsRes = await robinhoodFetch(robinhoodEndpoints?.holdings(account_id));
+export const getHoldings = async (account_id: string | number = robinhoodAccount?.id, token: string = robinhoodAuthorizationToken) => {
+  let holdingsRes = await robinhoodFetch(robinhoodEndpoints?.holdings(account_id), token);
   if (holdingsRes) {
     let holdingsResl = await holdingsRes?.json();
     if (holdingsResl) {
@@ -170,11 +171,14 @@ export const getHoldings = async (account_id: string | number = robinhoodAccount
   }
 }
 
-export const GET = async () => {
+export const GET = async (req: Request) => {
+  let robinhood: any = {};
+  let { searchParams } = new URL(req.url);
+  let token = searchParams?.get(`id`) ?? ``;
+  
   try {
-    let robinhood: any = {};
 
-    let robinhoodAccountsRes = await robinhoodFetch(robinhoodEndpoints?.accounts());
+    let robinhoodAccountsRes = await robinhoodFetch(robinhoodEndpoints?.accounts(), token);
      if (robinhoodAccountsRes) {
       let robinhoodAccountsJson = await robinhoodAccountsRes?.json();
       if (robinhoodAccountsJson) {
@@ -192,7 +196,7 @@ export const GET = async () => {
 
     if (robinhood?.accounts && robinhood?.accounts?.length > 0) {
       let account_ids = robinhood?.accounts?.map((acc: any) => String(acc?.id));
-      let performances = await getAccountPerfomancesFromAccountIDs(account_ids);
+      let performances = await getAccountPerfomancesFromAccountIDs(account_ids, token);
       if (performances && Array.isArray(performances) && performances?.length > 0) {
         robinhood.accounts = await Promise.all(
           robinhood?.accounts?.map(async (acc: any) => {
@@ -200,9 +204,9 @@ export const GET = async () => {
             let positions: any = [];
             let acc_perf = performances?.find(p => p?.id == acc?.id) ?? null;
             let mod_acc = acc_perf ? { ...acc, ...acc_perf, } : acc;
-            try { positions = await getPositions(acc?.id); } catch (error) { positions = []; }
+            try { positions = await getPositions(acc?.id, token); } catch (error) { positions = []; }
             if (acc?.account_type != `ira_traditional`) {
-              try { holdings = await getHoldings(acc?.id); } catch (error) { holdings = []; }
+              try { holdings = await getHoldings(acc?.id, token); } catch (error) { holdings = []; }
             }
             mod_acc = { ...mod_acc, positions, holdings };
             return mod_acc;

@@ -1,3 +1,5 @@
+import { Stock } from '@/shared/types/models/stocks/Stock';
+
 export const sampleStockAccount = {
     id: `0ef0ba08-63be-43b1-aaae-8d917a0948b0`,
     admin_configurations: {},
@@ -15068,3 +15070,5 @@ export const sampleStocks = [
         "lastExtendedHoursTradePrice": 75.83
     }
 ]
+
+export const sampleStocksDB = sampleStocks?.map((s: Stock | any) => new Stock(s));

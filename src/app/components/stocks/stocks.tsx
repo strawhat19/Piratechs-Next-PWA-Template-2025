@@ -92,7 +92,8 @@ export default function Stocks({ className = `stocksComponent` }) {
     const refreshRobinhood = (getRealRobinhood = true) => {
         if (getRealRobinhood && getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
-            getAPIServerData(apiServerRoute, `?id=${user?.robinhoodToken}`)?.then((robinhoodAccounts: any) => {
+            let serverRouteExtension = user != null ? `?id=${user?.robinhoodToken}` : ``;
+            getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodAccounts: any) => {
                 if (Array.isArray(robinhoodAccounts)) {
                     let modAccs = robinhoodAccounts?.map((acc: any) => {
                         let account_type: RobinhoodAccountTypes | string = (RobinhoodAccountTypes as any)[acc?.account_type];

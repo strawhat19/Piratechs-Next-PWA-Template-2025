@@ -14,14 +14,12 @@ import { defaultBoardForm } from '@/app/components/board/form/board-form';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { sampleStockAccount, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
+import { sampleStockAccount, sampleStocksDB } from '@/shared/server/database/samples/stocks/stocks';
 import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
 import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
-import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
 
 export const StateGlobals = createContext({});
-
-export const sampleStocksDB = sampleStocks?.map((s: Stock | any) => new Stock(s));
 
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
 
