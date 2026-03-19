@@ -65,7 +65,7 @@ export default function Slider({
 
     return <>
         <div className={`slider ${className} ${getDotsNumToShow() > 1 ? `multi-slider` : `single-slider`}`}>
-            {showButtons && (
+            {children?.length > 1 && showButtons && (
                 <Button className={`sliderButton`} onClick={() => slide(-1)}>
                     {`<`}
                 </Button>
@@ -108,13 +108,13 @@ export default function Slider({
                 </Swiper>
             {/* )} */}
             
-            {showButtons && (
+            {children?.length > 1 && showButtons && (
                 <Button className={`sliderButton`} onClick={() => slide(1)}>
                     {`>`}
                 </Button>
             )}
 
-            {showPaginationDots && children?.length > 1 && (
+            {children?.length > 1 && showPaginationDots && (
                 <div className={`paginationDots ${paginationClass}`}>
                     {generateArray(getDotsNumToShow(), null).map((c: any, ci: number) => (
                         <div key={ci} className={`paginationDot cursorPointer relative ${getDotsNumToShow() > 1 ? `` : `invisible`}`} onClick={(e) => onPaginationDotClick(e, c, ci)}>

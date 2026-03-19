@@ -97,9 +97,9 @@ export const tokenRequired = (req: Request, returnResponse: boolean = true) => {
   return { token, header: authHeader };
 }
 
-export const errorToast = (errorMessage: string, data: any, duration: number = 5_000) => {
+export const errorToast = (errorMessage: string, data: any, duration: number = 5_000, type: `warn` | `error` = `error`) => {
   console.log(errorMessage, data);
-  toast.error(errorMessage, { autoClose: duration });
+  toast?.[type]?.(errorMessage, { autoClose: duration });
 }
 
 export const getDefaultDateTime = () => {

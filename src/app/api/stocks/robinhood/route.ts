@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { Stock } from '@/shared/types/models/stocks/Stock';
 import { average as getAverage } from '@/shared/scripts/constants';
-import { RobinhoodAccountTypes, Types } from '@/shared/types/types';
+import { DataSources, RobinhoodAccountTypes, Types } from '@/shared/types/types';
 import { robinhoodAccountsDefault } from '@/shared/server/database/samples/stocks/robinhood/robinhood';
 import { popularStocks, sampleStocksDB, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -116,7 +117,8 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
   });
   let results = await Promise.all(requests);
   let stocksFromAPI = results.filter(Boolean);
-  let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : (useDBStocksDefault ? sampleStocksDB : []);
+  let dataSourceStocks = sampleStocksDB?.map(s => new Stock({ ...s, dataSource: DataSources.database }));
+  let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : (useDBStocksDefault ? dataSourceStocks : []);
   return stocks;
 }
 

@@ -15,6 +15,11 @@ export enum Roles {
   Owner = `Owner`,
 }
 
+export enum DataSources {
+  api = `API`,
+  database = `Database`,
+}
+
 export enum RobinhoodAccountTypes {
   individual = `Individual`,
   ira_traditional = `IRA Traditional`,

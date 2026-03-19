@@ -1,4 +1,4 @@
-import { RobinhoodAccountTypes, Types } from '../../types';
+import { DataSources, RobinhoodAccountTypes, Types } from '../../types';
 import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Stock {
@@ -78,6 +78,7 @@ export class Stock {
     exchangeFullName?: string = this.exchange;
     exchangeShortName?: string = this.exchange;
     previousClose?: number | string = this.close;
+    dataSource?: DataSources | string = DataSources.api;
     fullTimeEmployees?: number | string = this.employees;
 
     range?: string = `${this.low}-${this.high}`;

@@ -122,6 +122,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 ...u,
             })) as User[];
 
+            dev() && console.log(`Users`, usersFromAPI);
+
             setUsers(usersFromAPI);
         } catch (err: any) {
             logToast(`Error on Get Users`, `Error`, true, err);

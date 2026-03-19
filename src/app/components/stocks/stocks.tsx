@@ -12,10 +12,10 @@ import { useContext, useEffect, useState } from 'react';
 import StockAccount from './stock-account/stock-account';
 import { Stock } from '@/shared/types/models/stocks/Stock';
 import { Order } from '@/shared/types/models/stocks/Order';
-import { RobinhoodAccountTypes } from '@/shared/types/types';
 import StockPositions from './stock-positions/stock-positions';
 import { Position } from '@/shared/types/models/stocks/Position';
 import AuthForm from '../authentication/forms/auth-form/auth-form';
+import { DataSources, RobinhoodAccountTypes } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
 import { apiRoutes, constants, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
@@ -27,6 +27,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood } = useContext<any>(StateGlobals);
 
     const [loading, setLoading] = useState(true);
+    const [errored, setErrored] = useState(false);
 
     const getStock = (stk: Stock | Position | any) => {
         let symbol = stk?.symbol;
@@ -83,20 +84,27 @@ export default function Stocks({ className = `stocksComponent` }) {
         let holdings = robinhoodAccounts?.flatMap(acc => acc?.holdings);
         let positions: Position[] = robinhoodAccounts?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
         setStockPositions(positions);
-        console.log(`Robinhood Holdings`, holdings);
-        console.log(`Robinhood Positions`, positions);
-        console.log(`Robinhood Accounts`, robinhoodAccounts);
         setLoading(false);
+        if (errored == false) {
+            console.log(`Robinhood Holdings`, holdings);
+            console.log(`Robinhood Positions`, positions);
+            console.log(`Robinhood Accounts`, robinhoodAccounts);
+        }
     }
 
     const refreshRobinhood = (getRealRobinhood = true) => {
         if (getRealRobinhood && getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
-            let serverRouteExtension = user != null ? `?id=${user?.robinhoodToken}` : ``;
-            getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodAccounts: any) => {
-                if (Array.isArray(robinhoodAccounts)) {
-                    let modAccs = robinhoodAccounts?.map((acc: any) => {
-                        let account_type: RobinhoodAccountTypes | string = (RobinhoodAccountTypes as any)[acc?.account_type];
+            let serverRouteExtension = user != null && user?.z_token_robinhood ? `?id=${user?.z_token_robinhood}` : ``;
+            getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodAccountsFromAPI: any) => {
+                if (Array.isArray(robinhoodAccountsFromAPI)) {
+                    let sourcedFromDB = robinhoodAccountsFromAPI?.some(rba => rba?.dataSource == DataSources.database);
+                    if (sourcedFromDB) {
+                        errorToast(`Please Refresh your Robinhood Authorization Token to get Latest Stocks Data`, `Stock Sync Needed`, undefined, `warn`);
+                    }
+                    let modAccs = robinhoodAccountsFromAPI?.map((acc: any) => {
+                        let accType = acc?.account_type;
+                        let account_type: RobinhoodAccountTypes | string = (RobinhoodAccountTypes as any)[accType];
                         let modPositions = Array.isArray(acc?.positions) && acc?.positions?.length > 0 ? (
                             acc?.positions?.map((p: RobinhoodStockPosition) => {
                                 let modPosition = { ...p, account_type };
@@ -117,15 +125,17 @@ export default function Stocks({ className = `stocksComponent` }) {
                     setRobinhood(modAccs);
                     postGetRobinhood(modAccs);
                 } else {
-                    let { message: error } = robinhoodAccounts;
+                    let { message: error } = robinhoodAccountsFromAPI;
                     let checkTokenMsg = `Check Authorization Token`;
                     let errorMessage = `Error on GET Robinhood Accounts`;
                     errorToast(errorMessage + `, ${checkTokenMsg}`, error);
+                    setErrored(true);
                     postGetRobinhood();
                 }
             })?.catch(error => {
                 let errorMessage = `Error on GET Robinhood Accounts`;
                 errorToast(errorMessage, error);
+                setErrored(true);
                 postGetRobinhood();
             });
         } else postGetRobinhood();
@@ -138,10 +148,10 @@ export default function Stocks({ className = `stocksComponent` }) {
     }, [])
 
     useEffect(() => {
-        if (user != null && user?.email) {
+        if (user != null && user?.email && errored == false) {
             refreshRobinhood();
         }
-    }, [user, stocks])
+    }, [user, stocks, errored])
 
     return (
         <div className={`stocksContainer w95 ${className}`}>
@@ -150,7 +160,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                 {loading == false ? (
                     user == null ? <>
                         <div className={`stocksSignIn`}>
-                            <AuthForm style={{ width: `100%` }} extensionText={`To View Personalized Stocks Data`} />
+                            <AuthForm style={{ width: `100%` }} extensionText={`To View Portfolio`} />
                         </div>
                     </> : <></>
                 ) : <></>}
@@ -161,9 +171,13 @@ export default function Stocks({ className = `stocksComponent` }) {
 
                 {loading == false ? (
                     user == null ? <>
-                        <div className={`stocksDashboard`}>
-                            {/* Stocks */}
-                        </div>
+                        <Slider className={`stocksDashboardSlider stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
+                            <SwiperSlide>
+                                <div className={`stocksDashboard`}>
+                                    {/* Stocks */}
+                                </div>
+                            </SwiperSlide>
+                        </Slider>
                     </> : <>
                         <Slider className={`stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
                             <SwiperSlide>

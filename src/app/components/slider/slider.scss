@@ -37,8 +37,17 @@
 .slider {
     width: 100%;
     --stockSliderHeight: 535px;
+    --stockSliderOffset_Default: 78px;
+    --stockSliderOffset: var(--stockSliderOffset_Default);
     @media (min-height: 700px) {
         --stockSliderHeight: 675px;
+    }
+    &.stocksDashboardSlider {
+        --stocksDashboardSliderHeight: calc(var(--stockSliderHeight) - var(--stockSliderOffset));
+        grid-template-rows: var(--stocksDashboardSliderHeight) !important;
+        .stockMetricTableContainer {
+            max-height: calc(var(--stocksDashboardSliderHeight) - var(--stockSliderOffset)) !important;
+        }
     }
     &:has(.sliderButton) {
         gap: 15px;
@@ -48,7 +57,7 @@
             grid-template-rows: var(--stockSliderHeight);
             .stockMetricTableContainer {
                 overflow: auto;
-                max-height: calc(var(--stockSliderHeight) - 78px);
+                max-height: calc(var(--stockSliderHeight) - var(--stockSliderOffset));
             }
         }
     }

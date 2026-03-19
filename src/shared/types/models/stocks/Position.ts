@@ -86,7 +86,7 @@ export class Position {
         }
         this.current = this.quantity * this.price;
         this.totalProfitLoss = this.current - this.equity;
-        this.account_type = (RobinhoodAccountTypes as any)[this.account_type as any] ?? this.account_type;
+        this.account_type = data?.account_type ?? (RobinhoodAccountTypes as any)[this.account_type as any] ?? this.account_type;
     }
 
     getStock(stocksArr: Stock[]) {

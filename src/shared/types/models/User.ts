@@ -67,8 +67,8 @@ export class User extends Data {
   verified?: boolean = true;
   signedIn?: boolean = false;
   anonymous?: boolean = false;
-  robinhoodToken?: string = ``;
   data?: any = defaultUserData;
+  z_token_robinhood?: string = ``;
   role: Roles | string = Roles.Subscribers;
   provider: Providers | string = Providers.Firebase;
   lastSignIn?: Date | string | any = getIDParts()?.date;

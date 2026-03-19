@@ -23,7 +23,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         setLoading(false);
         console.log(`Stocks`, {
             stocks,
-            stocksToSet,
             stocksFromAPI,
         });
     }
@@ -39,7 +38,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         } else {
             if (getRobinhood) {
                 let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
-                let serverRouteExtension = user != null ? `?id=${user?.robinhoodToken}` : ``;
+                let serverRouteExtension = user != null && user?.z_token_robinhood ? `?id=${user?.z_token_robinhood}` : ``;
                 getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodStocks: any) => {
                     if (Array.isArray(robinhoodStocks) && robinhoodStocks?.length > 0) {
                         let modStks = robinhoodStocks?.map((s: any) => new StockModel(s));
