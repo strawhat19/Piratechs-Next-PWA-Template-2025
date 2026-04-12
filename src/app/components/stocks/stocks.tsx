@@ -198,7 +198,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     }, [])
 
     useEffect(() => {
-        let recentlyUpdated = withinXSeconds(lastUpdate, 6);
+        let recentlyUpdated = withinXSeconds(lastUpdate, 5);
         if (!recentlyUpdated) {
             if (user != null && user?.email && errored == false) {
                 refreshRobinhood();

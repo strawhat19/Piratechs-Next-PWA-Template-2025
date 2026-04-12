@@ -41,6 +41,9 @@
     --stockSliderOffset: var(--stockSliderOffset_Default);
     @media (min-height: 700px) {
         --stockSliderHeight: 675px;
+        @media (max-height: 915px) {
+            --stockSliderHeight: 600px;
+        }
     }
     &.stocksDashboardSlider {
         --stocksDashboardSliderHeight: calc(var(--stockSliderHeight) - var(--stockSliderOffset));
