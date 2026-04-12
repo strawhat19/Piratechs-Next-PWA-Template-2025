@@ -97,12 +97,12 @@ export default function Stocks({ className = `stocksComponent` }) {
         setRefreshing(false);
         let validRobinHoodData = Array.isArray(holdings) && Array.isArray(positions) && Array.isArray(robinhoodAccounts);
         let validRobinHoodDataFilled = validRobinHoodData && (holdings?.length > 0 && positions?.length > 0 && robinhoodAccounts?.length > 0);
-        let validRobinHoodDataFilledFromAPI = validRobinHoodDataFilled && (
-            holdings?.some(a => a?.dataSource == DataSources.api) 
-            && positions?.some(a => a?.dataSource == DataSources.api) 
-            && robinhoodAccounts?.some(a => a?.dataSource == DataSources.api)
-        );
-        if (validRobinHoodDataFilledFromAPI) {
+        // let validRobinHoodDataFilledFromAPI = validRobinHoodDataFilled && (
+        //     holdings?.some(a => a?.dataSource == DataSources.api) 
+        //     && positions?.some(a => a?.dataSource == DataSources.api) 
+        //     && robinhoodAccounts?.some(a => a?.dataSource == DataSources.api)
+        // );
+        if (validRobinHoodDataFilled) {
             setRefreshing(false);
         }
         if (errored == false) {
@@ -198,7 +198,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     }, [])
 
     useEffect(() => {
-        let recentlyUpdated = withinXSeconds(lastUpdate, 5);
+        let recentlyUpdated = withinXSeconds(lastUpdate, 4);
         if (!recentlyUpdated) {
             if (user != null && user?.email && errored == false) {
                 refreshRobinhood();
@@ -238,8 +238,8 @@ export default function Stocks({ className = `stocksComponent` }) {
                                 />
                                 <button 
                                     type={`submit`} 
-                                    disabled={loading || refreshing || user == null || robinhoodToken?.length < 900} 
-                                    className={`br4 mh40 mw180 ${(loading || refreshing || user == null || robinhoodToken?.length < 900) ? `disabled` : ``}`} 
+                                    disabled={loading || refreshing || user == null || user?.z_token_robinhood?.length < 900} 
+                                    className={`br4 mh40 mw180 ${(loading || refreshing || user == null || user?.z_token_robinhood?.length < 900) ? `disabled` : ``}`} 
                                 >
                                     {(loading || refreshing || user == null) ? `Refreshing` : `Refresh`} Stocks
                                 </button>
