@@ -17,19 +17,13 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     // const socketRef = useRef<WebSocket | null>(null);
 
     const finishStocksLoading = (stocksFromAPI: any[] = []) => {
-        let token = user?.z_token_robinhood;
+        // let token = user?.z_token_robinhood;
         let hasNewStocks = stocksFromAPI && stocksFromAPI?.length > 0;
         let stocksToSet = hasNewStocks ? stocksFromAPI : stocks;
         setStocks(stocksToSet);
         setLoading(false);
         if (hasNewStocks) {
-            console.log(`Refresh Robinhood Stocks Finish`, {
-                token,
-                stocks,
-                stocksToSet,
-                hasNewStocks,
-                stocksFromAPI,
-            });
+            console.log(`Robinhood Stocks`, stocksFromAPI);
         }
     }
 
@@ -45,9 +39,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             if (getRobinhood && !loading && token?.length > 0) {
                 let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
                 let serverRouteExtension = user != null && token ? `?id=${token}` : ``;
-                console.log(`Refresh Robinhood Stocks`, {
-                    token,
-                });
                 getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodStocks: any) => {
                     if (Array.isArray(robinhoodStocks) && robinhoodStocks?.length > 0) {
                         let modStks = robinhoodStocks?.map((s: any) => new StockModel(s));

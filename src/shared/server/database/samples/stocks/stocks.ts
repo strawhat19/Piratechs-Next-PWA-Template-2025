@@ -57,6 +57,7 @@ export const stockImages = {
     HTCO: `https://www.sofi.com/asset-icons/EQUITY-HTCO?format=svg`,
     HUHU: `https://www.sofi.com/asset-icons/EQUITY-HUHU?format=svg`,
     RCT: `https://static.stocktitan.net/company-logo/rct-lg.png`,
+    VSNT: logosPath + `VSNT.png`,
 }
 
 export const popularStocks = {

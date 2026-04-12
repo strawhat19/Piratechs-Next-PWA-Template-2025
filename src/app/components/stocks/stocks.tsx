@@ -30,6 +30,7 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     let robinhoodTokenField = useRef(null);
 
+    const [loaded, setloaded] = useState(false);
     const [loading, setLoading] = useState(true);
     const [errored, setErrored] = useState(false);
     const [refreshing, setRefreshing] = useState(true);
@@ -89,32 +90,33 @@ export default function Stocks({ className = `stocksComponent` }) {
     }
 
     const postGetRobinhood = (robinhoodAccounts: any[] = robinhood) => {
-        let token = user?.z_token_robinhood;
+        // let token = user?.z_token_robinhood;
         let holdings = robinhoodAccounts?.flatMap(acc => acc?.holdings);
         let positions: Position[] = robinhoodAccounts?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
         setStockPositions(positions);
         setLoading(false);
-        setRefreshing(false);
+        setloaded(true);
         let validRobinHoodData = Array.isArray(holdings) && Array.isArray(positions) && Array.isArray(robinhoodAccounts);
         let validRobinHoodDataFilled = validRobinHoodData && (holdings?.length > 0 && positions?.length > 0 && robinhoodAccounts?.length > 0);
-        // let validRobinHoodDataFilledFromAPI = validRobinHoodDataFilled && (
-        //     holdings?.some(a => a?.dataSource == DataSources.api) 
-        //     && positions?.some(a => a?.dataSource == DataSources.api) 
-        //     && robinhoodAccounts?.some(a => a?.dataSource == DataSources.api)
-        // );
         if (validRobinHoodDataFilled) {
             setRefreshing(false);
         }
+        setLastUpdate(new Date()?.toLocaleString());
         if (errored == false) {
             console.log(`Robinhood Holdings`, holdings);
             console.log(`Robinhood Positions`, positions);
             console.log(`Robinhood Accounts`, robinhoodAccounts);
         }
-        console.log(`Refresh Robinhood Finish`, {
-            token,
-            lastUpdate,
-            robinhoodToken,
-        });
+        // console.log(`Refresh Robinhood Finish`, {
+        //     token,
+        //     errored,
+        //     holdings,
+        //     positions,
+        //     lastUpdate,
+        //     refreshing,
+        //     robinhoodToken,
+        //     robinhoodAccounts,
+        // });
     }
 
     const onRobinhoodTokenUpdate = (e: any) => {
@@ -135,11 +137,6 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealRobinhood && getRealStocks && (token && token?.length > 0)) {
             setRefreshing(true);
             setRobinhoodToken(token);
-            console.log(`Refresh Robinhood`, {
-                token,
-                lastUpdate,
-                robinhoodToken,
-            });
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
             let serverRouteExtension = user != null && token ? `?id=${token}` : ``;
             getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodAccountsFromAPI: any) => {
@@ -198,11 +195,13 @@ export default function Stocks({ className = `stocksComponent` }) {
     }, [])
 
     useEffect(() => {
+        let canRefresh = false;
         let recentlyUpdated = withinXSeconds(lastUpdate, 4);
-        if (!recentlyUpdated) {
-            if (user != null && user?.email && errored == false) {
+        let shouldRefresh = !recentlyUpdated || !loaded;
+        if (shouldRefresh) {
+            canRefresh = user != null && user?.email && errored == false;
+            if (canRefresh) {
                 refreshRobinhood();
-                setLastUpdate(new Date()?.toLocaleString());
             }
         }
     }, [user?.z_token_robinhood, stocks, errored])
