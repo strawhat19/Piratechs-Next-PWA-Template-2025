@@ -1,3 +1,4 @@
+.m0 { margin: 0px; }
 .m5 { margin: 5px; }
 .m10 { margin: 10px; }
 .m15 { margin: 15px; }
@@ -18,6 +19,10 @@
 .p25 { padding: 25px; }
 .p30 { padding: 30px; }
 .p35 { padding: 35px; }
+
+.b0 { border: none !important; }
+.br4 { border-radius: 4px !important; }
+.br8 { border-radius: 8px !important; }
 
 .invisible { opacity: 0; pointer-events: none; }
 .disabled { opacity: 0.33; pointer-events: none; }
@@ -71,7 +76,10 @@
 .minwunsetI { min-width: unset !important; }
 
 .h100 { --h: 100%; height: var(--h); min-height: var(--h); max-height: var(--h); }
+.mh40 { --h: 40px; height: var(--h); min-height: var(--h); max-height: var(--h); }
 .w95i { --w: 95%; width: var(--w) !important; min-width: var(--w) !important; max-width: var(--w) !important; }
+.mw165 { --w: 165px; width: var(--w) !important; min-width: var(--w) !important; max-width: var(--w) !important; }
+.mw180 { --w: 180px; width: var(--w) !important; min-width: var(--w) !important; max-width: var(--w) !important; }
 
 .hidden { display: none; }
 .fit { max-width: fit-content; }

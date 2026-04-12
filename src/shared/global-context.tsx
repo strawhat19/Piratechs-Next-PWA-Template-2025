@@ -147,7 +147,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     const onSignIn = (usr: User, showSuccess = false) => {
         if (user != null) return;
-        setUser(usr);
+        if (usr?.id != (user as any)?.id) {
+            setUser(usr);
+        }
         setAuthState(AuthStates.Sign_Out);
         if (showSuccess && loaded == false) {
             logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
@@ -200,7 +202,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (user != null) {
             if (!dataLoading) {
                 if (user?.data?.board?.id) {
-                    dev() && console.log(`User`, user);
+                    if (user?.z_token_robinhood) {
+                        dev() && console.log(`User Update`, user);
+                    }
                 }
             }
         }

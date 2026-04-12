@@ -2,7 +2,7 @@ import { Types } from '../types';
 import { capWords, countPropertiesInObject, customDate, genID, isValid } from '@/shared/scripts/constants';
 
 export class Data {
-  id!: string;
+  id!: string | number | any;
   uid!: string;
   name!: string;
   uuid!: string;

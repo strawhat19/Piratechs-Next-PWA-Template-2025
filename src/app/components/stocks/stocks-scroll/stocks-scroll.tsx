@@ -17,17 +17,23 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     // const socketRef = useRef<WebSocket | null>(null);
 
     const finishStocksLoading = (stocksFromAPI: any[] = []) => {
+        let token = user?.z_token_robinhood;
         let hasNewStocks = stocksFromAPI && stocksFromAPI?.length > 0;
         let stocksToSet = hasNewStocks ? stocksFromAPI : stocks;
         setStocks(stocksToSet);
         setLoading(false);
-        console.log(`Stocks`, {
-            stocks,
-            stocksFromAPI,
-        });
+        if (hasNewStocks) {
+            console.log(`Refresh Robinhood Stocks Finish`, {
+                token,
+                stocks,
+                stocksToSet,
+                hasNewStocks,
+                stocksFromAPI,
+            });
+        }
     }
 
-    const refreshStocks = (getReal = false, getRobinhood = true) => {
+    const refreshStocks = (getReal = false, getRobinhood = true, token = user?.z_token_robinhood) => {
         if (getReal && getRealStocks) {
             getAPIServerData()?.then(stocksData => {
                 let stocksToSet = stocksData?.map((s: any) => new StockModel(s));
@@ -36,9 +42,12 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 console.log(`Stocks`, stocksToSet);
             });
         } else {
-            if (getRobinhood) {
+            if (getRobinhood && !loading && token?.length > 0) {
                 let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
-                let serverRouteExtension = user != null && user?.z_token_robinhood ? `?id=${user?.z_token_robinhood}` : ``;
+                let serverRouteExtension = user != null && token ? `?id=${token}` : ``;
+                console.log(`Refresh Robinhood Stocks`, {
+                    token,
+                });
                 getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodStocks: any) => {
                     if (Array.isArray(robinhoodStocks) && robinhoodStocks?.length > 0) {
                         let modStks = robinhoodStocks?.map((s: any) => new StockModel(s));
@@ -62,7 +71,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     useEffect(() => {
         refreshStocks();
-    }, [])
+    }, [user?.z_token_robinhood])
 
     return (
         <div className={`stocksScrollContainer w100 h100 ${className}`}>

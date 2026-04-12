@@ -40,21 +40,23 @@ export default function Container({
             )}
             <Header />
             <main className={`container ${mainClassName}`} aria-hidden={true}>
-                <div className={`pageLogoComponentContainer`}>
-                    {pageLogoComponentContainerStartComponent && (
-                        <div className={`pageLogoComponentContainerStart pageLogoComponentContainerColumn`}>
-                            {pageLogoComponentContainerStartComponent}
+                {showPageLogo && (
+                    <div className={`pageLogoComponentContainer`}>
+                        {pageLogoComponentContainerStartComponent && (
+                            <div className={`pageLogoComponentContainerStart pageLogoComponentContainerColumn`}>
+                                {pageLogoComponentContainerStartComponent}
+                            </div>
+                        )}
+                        <div className={`pageLogoComponentContainerCenter`}>
+                            <Logo className={logoComponentClass} label={logoLabel != `` ? logoLabel : getPageName(pathname)} />
                         </div>
-                    )}
-                    <div className={`pageLogoComponentContainerCenter`}>
-                        {showPageLogo && <Logo className={logoComponentClass} label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
+                        {pageLogoComponentContainerEndComponent && (
+                            <div className={`pageLogoComponentContainerEnd pageLogoComponentContainerColumn`}>
+                                {pageLogoComponentContainerEndComponent}
+                            </div>
+                        )}
                     </div>
-                    {pageLogoComponentContainerEndComponent && (
-                        <div className={`pageLogoComponentContainerEnd pageLogoComponentContainerColumn`}>
-                            {pageLogoComponentContainerEndComponent}
-                        </div>
-                    )}
-                </div>
+                )}
                 {children}
                 <DialogComponent />
                 <ToastContainer
@@ -68,7 +70,8 @@ export default function Container({
                     hideProgressBar={false}
                     pauseOnFocusLoss={false}
                     style={{ marginTop: 75 }}
-                    position={(isPWA || width <= constants?.breakpoints?.mobile) ? `bottom-right` : `top-right`}
+                    position={`bottom-right`}
+                    // position={(isPWA || width <= constants?.breakpoints?.mobile) ? `bottom-right` : `top-right`}
                 />
             </main>
             {showPageFooter && <Footer />}

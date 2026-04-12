@@ -12,7 +12,7 @@ export default function ProfileForm() {
                     <span className={`formFieldLabel`}>
                         Robinhood Authorization Token
                     </span>
-                    <input type={`text`} name={`z_robinhood_token`} className={`z_robinhood_token`} placeholder={`Robinhood Authorization Token`} autoComplete={`off`} />
+                    <input type={`text`} name={`z_token_robinhood`} className={`z_token_robinhood`} placeholder={`Robinhood Authorization Token`} autoComplete={`off`} />
                 </div>
             </div>
         </form>
