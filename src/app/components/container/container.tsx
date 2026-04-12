@@ -23,6 +23,9 @@ export default function Container({
     topBarComponent = null, 
     mainClassName = `mainClassName`,
     className = `containerComponent`,
+    logoComponentClass = `logoComponentClass`,
+    pageLogoComponentContainerEndComponent = null, 
+    pageLogoComponentContainerStartComponent = null, 
 }: any) {
     const pathname = usePathname();
 
@@ -37,7 +40,21 @@ export default function Container({
             )}
             <Header />
             <main className={`container ${mainClassName}`} aria-hidden={true}>
-                {showPageLogo && <Logo label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
+                <div className={`pageLogoComponentContainer`}>
+                    {pageLogoComponentContainerStartComponent && (
+                        <div className={`pageLogoComponentContainerStart pageLogoComponentContainerColumn`}>
+                            {pageLogoComponentContainerStartComponent}
+                        </div>
+                    )}
+                    <div className={`pageLogoComponentContainerCenter`}>
+                        {showPageLogo && <Logo className={logoComponentClass} label={logoLabel != `` ? logoLabel : getPageName(pathname)} />}
+                    </div>
+                    {pageLogoComponentContainerEndComponent && (
+                        <div className={`pageLogoComponentContainerEnd pageLogoComponentContainerColumn`}>
+                            {pageLogoComponentContainerEndComponent}
+                        </div>
+                    )}
+                </div>
                 {children}
                 <DialogComponent />
                 <ToastContainer

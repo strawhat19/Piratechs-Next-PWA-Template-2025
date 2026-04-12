@@ -26,6 +26,17 @@ $desktopBreakPoint19: 1920px;
     display: none;
 }
 
+.pageLogoComponentContainer {
+    display: flex;
+    grid-gap: 5px;
+    align-items: center;
+    &:has(.pageLogoComponentContainerColumn) {
+        width: 98%;
+        margin: 0 auto;
+        justify-content: space-between;
+    }
+}
+
 html {
     container-type: inline-size;
 

@@ -57,8 +57,13 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
         if (quoteRes) {
           let quoteResJson = await quoteRes.json();
           if (quoteResJson) {
-            let quoteObj = quoteResJson?.results[0];
-            quote = quoteObj;
+            let quoteObj = quoteResJson?.results?.[0];
+            if (quoteObj) {
+              quote = {
+                ...quoteObj,
+                dataSource: DataSources.api,
+              };
+            }
           }
         }
       } catch (err) { quote = {}; }
@@ -67,8 +72,13 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
         if (instrumentRes) {
           let instrumentResJson = await instrumentRes.json();
           if (instrumentResJson) {
-            let instrumentObj = instrumentResJson?.results[0];
-            instrument = instrumentObj;
+            let instrumentObj = instrumentResJson?.results?.[0];
+            if (instrumentObj) {
+              instrument = {
+                ...instrumentObj,
+                dataSource: DataSources.api,
+              };
+            }
           }
         }
       } catch (err) { instrument = {}; }
@@ -96,7 +106,7 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
       lastNonRegTradePrice = Number(lastNonRegTradePrice);
       lastExtendedHoursTradePrice = Number(lastExtendedHoursTradePrice);
       let website = `https://www.google.com/search?q=${symbol}`;
-      let data = { ...instrument, ...quote, ...stockFromSymbol };
+      let data = { ...instrument, ...quote, ...stockFromSymbol, dataSource: DataSources.api };
       // let sources = { instrument, quote, stock: stockFromSymbol };
       let address = data?.address ?? `${city}, ${state}, ${country}`;
       let close = previousClose;
