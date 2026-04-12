@@ -1,3 +1,5 @@
+import { DataSources } from '@/shared/types/types';
+
 export const robinhoodAccountsDefault = [
     {
         "id": "814497780",
@@ -38,6 +40,7 @@ export const robinhoodAccountsDefault = [
         "forex": "341.65554795337714",
         "portfolio": "5671.96184628",
         "summary": "3522.323",
+        dataSource: DataSources.database,
         "positions": [
             {
                 "change": 0,
@@ -6575,7 +6578,7 @@ export const robinhoodAccountsDefault = [
                 "asset_id": "649479d5-209d-4b60-8328-8a08fd3c3436",
                 "symbol": "FGL"
             }
-        ],
+        ]?.map(p => ({ ...p, dataSource: DataSources.database, })),
         "holdings": [
             {
                 "id": "68f26260-6afd-4bef-be24-5ce01b44c983",
@@ -6745,7 +6748,7 @@ export const robinhoodAccountsDefault = [
                 "cost_basis": "25.028960584938200632",
                 "cost_quantity": "1.454474000000000000"
             }
-        ]
+        ]?.map(h => ({ ...h, dataSource: DataSources.database, }))
     },
     {
         "id": "507375913",
@@ -6784,6 +6787,7 @@ export const robinhoodAccountsDefault = [
         "equity": "7875.23947528",
         "forex": "0",
         "portfolio": "12158.02947528",
+        dataSource: DataSources.database,
         "summary": "",
         "positions": [
             {
@@ -11346,7 +11350,7 @@ export const robinhoodAccountsDefault = [
                 "asset_id": "af688240-ca80-4e54-8b8e-87826bb57c55",
                 "symbol": "BATRK"
             }
-        ],
+        ]?.map(p => ({ ...p, dataSource: DataSources.database, })),
         "holdings": []
     }
 ]

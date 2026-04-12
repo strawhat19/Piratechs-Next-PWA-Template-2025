@@ -18,6 +18,7 @@ export enum Roles {
 export enum DataSources {
   api = `API`,
   database = `Database`,
+  firebase = `Firebase`,
 }
 
 export enum RobinhoodAccountTypes {

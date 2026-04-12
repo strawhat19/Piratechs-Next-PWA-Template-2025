@@ -1,4 +1,4 @@
-import { Types } from '../../types';
+import { DataSources, Types } from '../../types';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Order {
@@ -45,6 +45,7 @@ export class Order {
     filled_avg_price: string | null = `23.91`;
     created_at: string = `2025-08-29T14:52:50.091863Z`;
     expires_at: string | null = `2025-08-29T20:00:00Z`;
+    dataSource?: DataSources | string = DataSources.api;
     filled_at: string | null = `2025-08-29T14:52:51.397299Z`;
     asset_id: string = `b02df0cc-0a0a-4ecb-8e92-201b1044ea21`;
     updated_at: string | null = `2025-08-29T14:52:51.399118Z`;

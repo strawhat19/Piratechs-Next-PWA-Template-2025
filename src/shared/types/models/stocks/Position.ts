@@ -1,5 +1,5 @@
 import { Stock } from './Stock';
-import { RobinhoodAccountTypes, Types } from '../../types';
+import { DataSources, RobinhoodAccountTypes, Types } from '../../types';
 import { RobinhoodStockPosition } from './robinhood/RobinhoodStockPosition';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -43,6 +43,7 @@ export class Position {
     unrealized_plpc: string | number = `0.54704`;
     unrealized_intraday_pl: string | number = `0`;
     unrealized_intraday_plpc: string | number = `0`;
+    dataSource?: DataSources | string = DataSources.api;
     asset_id: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
     symbol: string | keyof typeof popularStocks = popularStocks.LMT;
 

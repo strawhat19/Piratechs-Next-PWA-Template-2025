@@ -1,4 +1,4 @@
-import { Stock } from '@/shared/types/models/stocks/Stock';
+import { DataSources } from '@/shared/types/types';
 
 export const sampleStockAccount = {
     id: `0ef0ba08-63be-43b1-aaae-8d917a0948b0`,
@@ -12,6 +12,7 @@ export const sampleStockAccount = {
     currency: `USD`,
     buying_power: `200000`,
     regt_buying_power: `200000`,
+    dataSource: DataSources.database,
     daytrading_buying_power: `0`,
     effective_buying_power: `200000`,
     non_marginable_buying_power: `100000`,
@@ -15271,4 +15272,4 @@ export const sampleStocks = [
     }
 ]
 
-export const sampleStocksDB = sampleStocks?.map((s: Stock | any) => new Stock(s));
+export const sampleStocksDB = sampleStocks?.map(s => ({ ...s, dataSource: DataSources.database, }));

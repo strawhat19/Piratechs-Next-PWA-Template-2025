@@ -1,4 +1,4 @@
-import { RobinhoodAccountTypes, Types } from '@/shared/types/types';
+import { DataSources, RobinhoodAccountTypes, Types } from '@/shared/types/types';
 
 export class RobinhoodStockPosition {
     url = `https://api.robinhood.com/positions/814497780/450dfc6d-5510-4d40-abfb-f633b7d9be3e/`;
@@ -49,6 +49,7 @@ export class RobinhoodStockPosition {
     side: string = `long`;
     type: string | Types = `long`;
     fracs_liquidation_placed_at = null;
+    dataSource?: DataSources | string = DataSources.api;
     constructor(data: Partial<RobinhoodStockPosition>) {
         Object.assign(this, data);
         this.side = this.type;

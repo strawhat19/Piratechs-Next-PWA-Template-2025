@@ -56,10 +56,10 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     
     let [histories, setHistories] = useState([]);
     let [stockOrders, setStockOrders] = useState<Order[]>([]);
-    let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
     let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
+    let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB?.map((s: any) => new Stock(s)));
 
     // let type = Types.Item;
     // let imageURLs = Object.values(imagesObject.vertical);

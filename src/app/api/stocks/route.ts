@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { DataSources } from '@/shared/types/types';
 import { popularStocks, sampleStocks } from '@/shared/server/database/samples/stocks/stocks';
 
 const fmpAPIKey = process.env.FINANCIAL_MODELING_PREP_KEY;
@@ -36,7 +37,7 @@ export const getStocks = async (getRealStocks = false, symbols: string[] = uniqu
         let [profileJson, quoteJson] = await Promise.all([ profileRes.json(), quoteRes.json() ]);
         let profile = Array.isArray(profileJson) ? profileJson[0] : profileJson;
         let quote = Array.isArray(quoteJson) ? quoteJson[0] : quoteJson;
-        let stock = { ...profile, ...quote };
+        let stock = { ...profile, ...quote, dataSource: DataSources.api };
         return stock;
       } catch { return null; }
     });

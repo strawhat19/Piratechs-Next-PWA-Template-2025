@@ -2,7 +2,7 @@ import { Data } from './Data';
 import { Item } from './Item';
 import { List } from './List';
 import { Board } from './Board';
-import { Types } from '../types';
+import { DataSources, Types } from '../types';
 import { capWords, countPropertiesInObject, genID, getIDParts, isValid } from '@/shared/scripts/constants';
 
 export enum Providers { 
@@ -72,6 +72,7 @@ export class User extends Data {
   role: Roles | string = Roles.Subscribers;
   provider: Providers | string = Providers.Firebase;
   lastSignIn?: Date | string | any = getIDParts()?.date;
+  dataSource?: DataSources | string = DataSources.firebase;
   lastAuthenticated?: Date | string | any = getIDParts()?.date;
 
   constructor(data: Partial<User>) {

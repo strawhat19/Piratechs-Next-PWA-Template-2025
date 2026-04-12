@@ -17,7 +17,7 @@ import { Position } from '@/shared/types/models/stocks/Position';
 import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { DataSources, RobinhoodAccountTypes } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
-import { apiRoutes, constants, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { apiRoutes, constants, errorToast, getAPIServerData, getRealStocks, withinXSeconds } from '@/shared/scripts/constants';
 
 export const stockTableAlignmentCenter = false;
 
@@ -28,6 +28,7 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     const [loading, setLoading] = useState(true);
     const [errored, setErrored] = useState(false);
+    const [lastUpdate, setLastUpdate] = useState(new Date()?.toLocaleString());
 
     const getStock = (stk: Stock | Position | any) => {
         let symbol = stk?.symbol;
@@ -39,9 +40,10 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.account;
             getAPIServerData(apiServerRoute)?.then(acc => {
-                setStocksAcc(acc);
+                let account = { ...acc, dataSource: DataSources.api };
+                setStocksAcc(account);
                 setLoading(false);
-                console.log(`Account`, acc);
+                console.log(`Account`, account);
             });
         } else {
             setLoading(false);
@@ -148,8 +150,12 @@ export default function Stocks({ className = `stocksComponent` }) {
     }, [])
 
     useEffect(() => {
-        if (user != null && user?.email && errored == false) {
-            refreshRobinhood();
+        let recentlyUpdated = withinXSeconds(lastUpdate, 3);
+        if (!recentlyUpdated) {
+            if (user != null && user?.email && errored == false) {
+                refreshRobinhood();
+                setLastUpdate(new Date()?.toLocaleString());
+            }
         }
     }, [user, stocks, errored])
 

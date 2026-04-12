@@ -68,9 +68,18 @@ export const average = (numbers: (number | null | undefined)[]): number => {
   return avg;
 }
 
+export const isOdd = (number: number) => number % 2 != 0;
+export const isEven = (number: number) => number % 2 == 0;
 export const randomNumber = (max: number): number => Math.floor(Math.random() * max);
+export const getRandomArrayIndex = (array: any[]) => Math.floor(Math.random() * array.length);
+export const getRandomArrayValue = (array: any[]) => array[getRandomArrayIndex(array)];
+export const arraySum = (arr: number[]): number => arr.reduce((total, val) => total + Number(val), 0);
 export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
+export const is_valid_date_time_str = (date_time_str: Date | string | null) => !isNaN(Date.parse(String(date_time_str)));
+export const arraysMatch = (a: string[], b: string[]): boolean => a.length === b.length && a.every((val, idx) => val === b[idx]);
+export const normalizeDateString = (dateStr: string) => !dateStr ? null : dateStr.replace(` `, `T`).replace(/\.(\d{3})\d+/, `.$1`);
 export const stringNoSpaces = (string: string) => string?.replaceAll(/[\s,:/]/g, `_`)?.replaceAll(/[\s,:/]/g, `-`).replaceAll(/-/g, `_`);
+export const isObject = (possibleObj: any) => possibleObj != null && typeof possibleObj === `object` && Object.keys(possibleObj)?.length > 0;
 
 export const isInStandaloneMode = () => {
   if (typeof window === `undefined`) return false;
@@ -100,6 +109,84 @@ export const tokenRequired = (req: Request, returnResponse: boolean = true) => {
 export const errorToast = (errorMessage: string, data: any, duration: number = 5_000, type: `warn` | `error` = `error`) => {
   console.log(errorMessage, data);
   toast?.[type]?.(errorMessage, { autoClose: duration });
+}
+
+export const withinXSeconds = (datetime: Date | string, seconds: number = 1) => {
+  let datetime_time = new Date(datetime)?.getTime();
+  if (isNaN(datetime_time)) return false;
+  let now = Date.now();
+  let difference = Math.abs(now - datetime_time);
+  let isWithinXSeconds = difference <= (seconds * 1000);
+  return isWithinXSeconds;
+}
+
+export const overWriteObject = (a: any = {}, b: any = {}) =>
+  Object.keys(a).reduce((acc, key) => {
+      acc[key] = key in b ? b[key] : a[key];
+      return acc;
+  }, {} as any);
+
+export const sortArrayAlphabeticallyByName = (arrayWithObjectNames: any[] = [], toLowerCased: boolean = false): any[] => {
+  let sortedArrayWithObjectIDs = arrayWithObjectNames;
+  if (arrayWithObjectNames?.length > 0 && arrayWithObjectNames?.[0]?.name && typeof arrayWithObjectNames?.[0]?.name == `string`) {
+    sortedArrayWithObjectIDs = sortedArrayWithObjectIDs?.sort((a, b) => {
+      if (toLowerCased) {
+          return a?.name?.toLowerCae()?.localeCompare(b?.name?.toLowerCase());
+      } else return a?.name?.localeCompare(b?.name);
+    });
+  }
+  return sortedArrayWithObjectIDs;
+}
+
+export const sortArrayAlphabeticallyByObjectNameKeys = (arrayWithObjectNames: any[] = [], toLowerCased: boolean = false): any[] => {
+  let objectsDict = {};
+  let sortedArrayWithObjectNames = arrayWithObjectNames;
+  if (arrayWithObjectNames?.length > 0 && arrayWithObjectNames?.[0]?.id && typeof arrayWithObjectNames?.[0]?.name == `string`) {
+    arrayWithObjectNames?.forEach(obj => {
+      let objName = toLowerCased ? obj?.name?.toLowerCase() : obj?.name;
+      let objKey = stringNoSpaces(objName);
+      Object.assign(objectsDict, { 
+        [objKey]: obj, 
+      });
+    });
+  }
+  if (Object.values(objectsDict)?.length > 0) {
+    sortedArrayWithObjectNames = Object.values(objectsDict);
+  }
+  return sortedArrayWithObjectNames;
+}
+
+export const getUniqueArrayByID = (arrayWithObjectIDs: any[] = []): any[] => {
+  let objectsDict = {};
+  let uniqueArrayWithObjectIDs = arrayWithObjectIDs;
+  if (arrayWithObjectIDs?.length > 0 && arrayWithObjectIDs?.[0]?.id && typeof arrayWithObjectIDs?.[0]?.id == `string`) {
+    arrayWithObjectIDs?.forEach(obj => {
+      Object.assign(objectsDict, { 
+        [obj?.id]: obj, 
+      });
+    });
+  }
+  if (Object.values(objectsDict)?.length > 0) {
+    uniqueArrayWithObjectIDs = Object.values(objectsDict);
+  }
+  return uniqueArrayWithObjectIDs;
+}
+
+export const objectsAreEqual = (obj1: any, obj2: any) => {
+  const obj1Keys = Object.keys(obj1);
+  const obj2Keys = Object.keys(obj2);
+  if (obj1Keys.length !== obj2Keys.length) {
+    return false;
+  }
+  for (const key of obj1Keys) {
+    const val1 = obj1[key];
+    const val2 = obj2[key];
+    const areObjects = isObject(val1) && isObject(val2);
+    if (areObjects && !objectsAreEqual(val1, val2) || !areObjects && val1 !== val2) {
+      return false;
+    }
+  }
+  return JSON.stringify(obj1) == JSON.stringify(obj2);
 }
 
 export const getDefaultDateTime = () => {
