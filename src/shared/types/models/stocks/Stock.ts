@@ -6,6 +6,8 @@ export class Stock {
     number?: number = 1;
     updates?: number = 0;
     beta?: number = 1.199;
+    updated?: boolean = false;
+    tracked_updates?: number = this.updates;
     api?: StockAPIs = StockAPIs.FinancialModelingPrep;
     
     type: Types = Types.Stock;
@@ -26,6 +28,7 @@ export class Stock {
     sector: string = `Technology`;
     ceo: string = `Timothy D. Cook`;
     phone: string = `(408) 996-1010`;
+    original_price: number = this.price;
     address: string = `One Apple Park Way`;
     website: string = `https://www.apple.com`;
     industry: string = `Consumer Electronics`;
@@ -155,11 +158,19 @@ export class Stock {
         this.company = this.companyName;
     }
 
-    updateStats() {
-        this.updated_at = new Date().toISOString();
-        this.lastUpdate = new Date().toLocaleString();
+    updateUpdates() {
+        this.updated = true;
         if (typeof this.updates == `number`) {
             this.updates = this.updates + 1;
+        }
+    }
+
+    updateStats() {
+        this.updateUpdates();
+        this.updated_at = new Date().toISOString();
+        this.lastUpdate = new Date().toLocaleString();
+        if (typeof this.tracked_updates == `number`) {
+            this.tracked_updates = this.tracked_updates + 1;
         }
     }
 
@@ -223,6 +234,7 @@ export class Stock {
             if (sequence !== undefined) this.sequence = sequence;
             const timeNanoPart = toNum(event?.timeNanoPart);
             if (timeNanoPart !== undefined) this.timeNanoPart = timeNanoPart;
+            this.updateUpdates();
         };
 
         updateCommon();

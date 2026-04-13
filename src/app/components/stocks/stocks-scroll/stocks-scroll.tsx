@@ -231,6 +231,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 source: `Robinhood WS Error`,
                 message: `Stock Socket Sync Needed`,
             }, undefined, `warn`);
+            authenticate();
         };
 
         ws.onclose = (event: CloseEvent) => {
@@ -241,6 +242,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 source: `Robinhood WS Close`,
                 message: `Stock Socket Sync Needed`,
             }, undefined, `warn`);
+            authenticate();
             if (keepAliveInterval) {
                 clearInterval(keepAliveInterval);
                 keepAliveInterval = null;
