@@ -1,4 +1,3 @@
-import { withinXSeconds } from '@/shared/scripts/constants';
 import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../types';
 import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -168,6 +167,7 @@ export class Stock {
         console.log(`Stock "${this?.symbol}" ${key} Update`, {
             ...extraData,
             // key,
+            price: this.price,
             symbol: this.symbol,
             z_updates: this.updates,
             lastUpdate: this?.lastUpdate, 
@@ -175,8 +175,6 @@ export class Stock {
     }
 
     updateFromLiveEvent(event: any = {}) {
-        let logged = false;
-
         let eventType = event?.eventType;
 
         const eventSymbol = event?.eventSymbol ?? event?.symbol ?? event?.stock_id ?? event?.id;
@@ -213,11 +211,7 @@ export class Stock {
 
                 if (price !== undefined) {
                     if (this.price != price) {
-                        let within6 = withinXSeconds((this.lastUpdate as any), 6);
-                        if (!within6 && !logged) {
-                            this.logUpdate(`Price`, { price, currentPrice: this.price, eventType, });
-                            logged = true;
-                        }
+                        // this.logUpdate(`Price`, { price, currentPrice: this.price, eventType, });
                         this.price = price;
                         this.last = price;
                         this.value = price;
@@ -245,7 +239,7 @@ export class Stock {
                     if (price !== undefined && prevClose !== undefined && prevClose !== 0) {
                         const changes = price - prevClose;
                         if (changes != this.changes) {
-                            this.logUpdate(`Change`, { changes, currentChanges: this.changes, eventType, });
+                            // this.logUpdate(`Price`, { changes, currentChanges: this.changes, eventType, });
                             this.changes = changes;
                             this.change = changes;
                             this.changePercentage = (changes / prevClose) * 100;
@@ -316,7 +310,6 @@ export class Stock {
                         this.logUpdate(`Day High`, { dayHighPrice, currentDayHighPrice: this?.dayHighPrice, eventType, });
                         this.high = dayHighPrice;
                         this.dayHighPrice = dayHighPrice as any;
-                        // this.yearHigh = this.high;
                     }
                 }
 
@@ -325,7 +318,6 @@ export class Stock {
                         this.logUpdate(`Day Low`, { dayLowPrice, currentDayLowPrice: this?.dayLowPrice, eventType, });
                         this.low = dayLowPrice;
                         this.dayLowPrice = dayLowPrice as any;
-                        // this.yearLow = this.low;
                     }
                 }
 
@@ -343,12 +335,19 @@ export class Stock {
                 const livePrice = toNum(this.price);
                 if (livePrice !== undefined && prevDayClosePrice !== undefined && prevDayClosePrice !== 0) {
                     const changes = livePrice - prevDayClosePrice;
-                    this.changes = changes;
-                    this.change = changes;
-                    this.changePercentage = (changes / prevDayClosePrice) * 100;
+                    if (changes != this.changes) {
+                        // this.logUpdate(`Price`, { changes, currentChanges: this.changes, eventType, });
+                        this.changes = changes;
+                        this.change = changes;
+                        this.changePercentage = (changes / prevDayClosePrice) * 100;
+                    }
                 }
 
-                this.range = `${this.low}-${this.high}`;
+                let range = `${this.low}-${this.high}`;
+                if (range != this.range) {
+                    // this.logUpdate(`Range`, { range, currentRange: this.range, eventType, });
+                    this.range = range;
+                }
 
                 break;
             }
@@ -425,7 +424,12 @@ export class Stock {
             }
         }
 
-        this.range = `${this.low}-${this.high}`;
+        let range = `${this.low}-${this.high}`;
+        if (range != this.range) {
+            this.range = range;
+            this.logUpdate(`Price`, { z_range: range, eventType, });
+        }
+
         return this;
     }
 

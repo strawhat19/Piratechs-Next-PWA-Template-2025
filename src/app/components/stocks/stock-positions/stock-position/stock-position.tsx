@@ -39,14 +39,17 @@ export default function StockPostion({
                     <strong className={`stockStat`}>
                         <i><span className={`main`}>YearH</span> <IconText dollarSign number={position?.stock?.yearHigh} /></i>
                     </strong>
-                    <strong className={`stockStat`}>
-                        <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
-                    </strong>
                     {position?.stock?.dividend && position?.stock?.dividend > 0 ? (
                         <strong className={`stockStat`}>
                             <i><span className={`main`}>Div</span> <IconText dollarSign number={position?.stock?.dividend} /></i>
                         </strong>
                     ) : <></>}
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
+                    </strong>
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Last</span> <>{position?.stock?.lastUpdate}</></i>
+                    </strong>
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>
                     <Stock 
