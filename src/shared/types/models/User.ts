@@ -69,6 +69,7 @@ export class User extends Data {
   anonymous?: boolean = false;
   data?: any = defaultUserData;
   z_token_robinhood?: string = ``;
+  z_token_robinhood_socket?: string = ``;
   role: Roles | string = Roles.Subscribers;
   provider: Providers | string = Providers.Firebase;
   lastSignIn?: Date | string | any = getIDParts()?.date;

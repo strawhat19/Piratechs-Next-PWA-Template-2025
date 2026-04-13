@@ -39,6 +39,9 @@ export default function StockPostion({
                     <strong className={`stockStat`}>
                         <i><span className={`main`}>YearH</span> <IconText dollarSign number={position?.stock?.yearHigh} /></i>
                     </strong>
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
+                    </strong>
                     {position?.stock?.dividend && position?.stock?.dividend > 0 ? (
                         <strong className={`stockStat`}>
                             <i><span className={`main`}>Div</span> <IconText dollarSign number={position?.stock?.dividend} /></i>
@@ -52,6 +55,10 @@ export default function StockPostion({
                         linkClass={stockAlignmentCenter ? `` : `justifyStart`}  
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
+                        {/* <strong className={`stockStat`}>
+                            <i><span className={`main`}>Upd</span> <>{position?.stock?.lastUpdate}</></i>
+                        </strong> */}
+                    {/* </Stock> */}
                     {position?.type == Types.RobinhoodStockPosition && (
                        <div className={`robinhoodStockPositionAccountTypes`}>
                             {position?.merged?.map((mp, mi) => (

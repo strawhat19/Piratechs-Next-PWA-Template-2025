@@ -2,19 +2,56 @@
 
 import './stocks-scroll.scss';
 
+// import WebSocket from 'ws';
 import Stock from '../stock/stock';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 import { StateGlobals } from '@/shared/global-context';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+// import { Position } from '@/shared/types/models/stocks/Position';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
+import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { apiRoutes, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+
+const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
+const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { user, stocks, setStocks } = useContext<any>(StateGlobals);
     const [loading, setLoading] = useState(true);
-    // const socketRef = useRef<WebSocket | null>(null);
+    const socketRef = useRef<WebSocket | null>(null);
+
+    const onSocketStockDataUpdate = (channel: number, channelName: string, data: any[]) => {
+        if (data && Array.isArray(data) && data?.length > 0) {
+            if (!Array.isArray(data) || !data.length) return;
+            let updatedStocks: StockModel[] = [];
+            let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase());
+            if (!stocks || !stocks?.length || stocks?.length == 0) return;
+            setStocks((prevStocks: StockModel[]) => {
+                return prevStocks.map((stock: StockModel) => {
+                    if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
+                        const next = stock;
+                        next.updateFromLiveEventsArray(data);
+                        updatedStocks?.push(next);
+                        return next;
+                    } else return stock;
+                });
+            });
+            // if (!setStockPositions || !setStockPositions?.length || setStockPositions?.length == 0) return;
+            // updatedStocks?.forEach(s => {
+            //     setStockPositions((prevPositions: Position[]) => {
+            //         return prevPositions.map((position: Position) => {
+            //             if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
+            //                 const nextPos = new Position(position);
+            //                 nextPos.updateFromPrices(Number(s?.price));
+            //                 return nextPos;
+            //             } else return position;
+            //         });
+            //     });
+            // })
+        }
+    }
 
     const finishStocksLoading = (stocksFromAPI: any[] = []) => {
         // let token = user?.z_token_robinhood;
@@ -62,7 +99,201 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     useEffect(() => {
         refreshStocks();
-    }, [user?.z_token_robinhood])
+    }, [user?.z_token_robinhood]);
+
+    useEffect(() => {
+        if (!user?.z_token_robinhood) return;
+        if (!user?.z_token_robinhood_socket) return;
+        if (!uniquePopularStockSymbols?.length) return;
+        if (!stocks || !stocks?.length || stocks?.length == 0) return;
+
+        const channelsRequested: number[] = [];
+        const channelsSubscribed: number[] = [];
+
+        const token = user?.z_token_robinhood;
+        const socket_token = user?.z_token_robinhood_socket;
+        const symbols = uniquePopularStockSymbols.filter(Boolean);
+
+        const ws = new WebSocket(`wss://api.robinhood.com/marketdata/streaming/legend/v2/`, [`bearer`, token]);
+
+        socketRef.current = ws;
+
+        let keepAliveInterval: ReturnType<typeof setInterval> | null = null;
+
+        let didAuth = false;
+
+        const sendJson = (payload: any) => { ws.send(JSON.stringify(payload)); };
+        const authenticate = () => { if (!didAuth && ws.readyState === WebSocket.OPEN) sendJson({ type: `AUTH`, channel: 0, token: socket_token }); };
+
+        const startKeepAlive = () => {
+            if (keepAliveInterval) return;
+            keepAliveInterval = setInterval(() => { if (ws.readyState === WebSocket.OPEN) sendJson({ type: `KEEPALIVE`, channel: 0, }); }, 30_000);
+        };
+
+        ws.onopen = () => {
+            sendJson({ channel: 0, type: `SETUP`, keepaliveTimeout: 60, acceptKeepaliveTimeout: 60, version: `0.1-DXF-JS/0.5.1`, });
+        };
+
+        // const otherChannelsToRequestObj = {
+            // 3: { channel: 3, name: `TradeETH`, resets: true, add: symbols.map((symbol: string) => ({ type: `TradeETH`, symbol, })), acceptEventFields: { TradeETH: [ `price`, `dayVolume`, `eventSymbol`, `eventType`, `time`, ], } },
+            // 5: { channel: 5, name: `Candle`, add: symbols.map((symbol: string) => ({ type: `Candle`, symbol, })), acceptEventFields: { Candle: [ `close`, `eventFlags`, `eventSymbol`, `eventType`, `eventTime`, `high`, `impVolatility`, `low`, `open`, `openInterest`, `time`, `volume`, `vwap`, `sequence`, `count` ], } },
+        // };
+
+        const channelsToRequestObj = {
+            1: { channel: 1, name: `Trade`, add: symbols.map((symbol: string) => ({ type: `Trade`, symbol, })), acceptEventFields: { 
+                Trade: [ `price`, `size`, `dayVolume`, `dayTurnover`, `tickDirection`, `extendedTradingHours`, `eventSymbol`, `eventType`, `time`, `sequence`, ], 
+            } },
+            7: { channel: 7, name: `Quote`, resets: true, add: symbols.map((symbol: string) => ({ type: `Quote`, symbol, })), acceptEventFields: { 
+                Quote: [ `askPrice`, `askSize`, `askTime`, `bidPrice`, `bidSize`, `bidTime`, `askExchangeCode`, `bidExchangeCode`, `eventSymbol`, `eventType`, `sequence`, `timeNanoPart`, ], 
+            } },
+            11: { channel: 11, name: `Summary`, resets: true, add: symbols.map((symbol: string) => ({ type: `Summary`, symbol, })), acceptEventFields: { 
+                Summary: [ `dayClosePrice`, `dayOpenPrice`, `dayHighPrice`, `dayLowPrice`, `dayVolume`, `dayTurnover`, `prevDayClosePrice`, `prevDayVolume`, `openInterest`, `eventSymbol`, `eventType`, ], 
+            } },
+            13: { channel: 13, name: `Profile`, resets: true, add: symbols.map((symbol: string) => ({ type: `Profile`, symbol, })), acceptEventFields: { 
+                Profile: [  `eventSymbol`, `eventType`, `description`, `shortSaleRestriction`, `tradingStatus`, `statusReason`, `haltStartTime`, `haltEndTime`, `high52WeekPrice`, `low52WeekPrice`, `shares`, `beta`, `earningsPerShare`, `dividendFrequency`, `exDividendAmount`, `exDividendDayId`, ], 
+            } },
+        };
+
+        const channelsToRequest = Object.values(channelsToRequestObj);
+
+        ws.onmessage = (event: MessageEvent) => {
+            let data: any = event?.data;
+
+            try {
+                data = JSON.parse(data);
+            } catch {}
+
+            if (typeof data?.channel == `number`) {
+
+                let type = data?.type;
+                let typeLC = type?.toLowerCase();
+                let channel: number= Number(data?.channel);
+                let channelName = (channelsToRequestObj as any)?.[channel]?.name;
+
+                if (channelName && channelName != undefined) {
+                    let dataD = data?.data;
+                    let isData = typeLC == `feed_data` && (dataD && Array.isArray(dataD));
+                    if (isData) {
+                        onSocketStockDataUpdate(channel, channelName, dataD);
+                    } else console.log(`Robinhood WS ${channelName}`, { ...data, channel, channelName, type });
+                } else {
+                    console.log(`Robinhood WS Data`, { ...data, channel, type });
+                }
+    
+                if (data?.type === `SETUP` && data?.channel == 0) {
+                    authenticate();
+                    return;
+                }
+    
+                if (data?.type === `AUTH_STATE` && data?.channel == 0) {
+                    if (data?.state == `AUTHORIZED`) {
+                        didAuth = true;
+                        startKeepAlive();
+                        channelsToRequest?.forEach(ch => {
+                            if (!channelsRequested?.includes(ch?.channel)) {
+                                sendJson({ channel: ch?.channel, parameters: { contract: `AUTO`, }, service: `FEED`, type: `CHANNEL_REQUEST`, });
+                                channelsRequested?.push(ch?.channel);
+                            }
+                        });
+                        return;
+                    } else if (data?.state == `UNAUTHORIZED`) {
+                        authenticate();
+                    }
+                }
+    
+                if (didAuth && data?.type === `CHANNEL_OPENED` && data?.service === `FEED`) {
+                    let channelNums = Object.keys(channelsToRequestObj)?.map(s => Number(s));
+                    if (channelNums?.includes(data?.channel)) {
+                        let channel: number = data?.channel;
+                        let channelObj = (channelsToRequestObj as any)?.[channel as any];
+                        if (channelObj) {
+                            sendJson({ type: `FEED_SETUP`, channel: channel, acceptDataFormat: `FULL`, acceptAggregationPeriod: 0.25, acceptEventFields: channelObj?.acceptEventFields, });
+                            channelsToRequest?.forEach(ch => {
+                                if (!channelsSubscribed?.includes(ch?.channel)) {
+                                    let tChannelObj = (channelsToRequestObj as any)?.[ch?.channel as any];
+                                    if (tChannelObj) {
+                                        sendJson({ channel: ch?.channel, add: tChannelObj?.add, type: `FEED_SUBSCRIPTION`, ...(tChannelObj?.resets ? { reset: true, } : {}), });
+                                        channelsSubscribed?.push(ch?.channel);
+                                    }
+                                }
+                            });
+                        }
+                        return;
+                    }
+                }
+            }
+        };
+
+        ws.onerror = (error: Event) => {
+            errorToast(`Please Refresh your Robinhood Socket Authorization Token to get Latest Realtime Stocks Data`, {
+                error,
+                token: socket_token,
+                source: `Robinhood WS Error`,
+                message: `Stock Socket Sync Needed`,
+            }, undefined, `warn`);
+        };
+
+        ws.onclose = (event: CloseEvent) => {
+            let close = { code: event.code, reason: event.reason, wasClean: event.wasClean, };
+            errorToast(`Please Refresh your Robinhood Socket Authorization Token to get Latest Realtime Stocks Data`, {
+                close,
+                token: socket_token,
+                source: `Robinhood WS Close`,
+                message: `Stock Socket Sync Needed`,
+            }, undefined, `warn`);
+            if (keepAliveInterval) {
+                clearInterval(keepAliveInterval);
+                keepAliveInterval = null;
+            }
+        };
+
+        return () => {
+            if (keepAliveInterval) {
+                clearInterval(keepAliveInterval);
+                keepAliveInterval = null;
+            }
+            ws.close();
+            socketRef.current = null;
+        };
+    }, [stocks?.length, user?.z_token_robinhood, uniquePopularStockSymbols, user?.z_token_robinhood_socket]);
+
+    //                 setTimeout(() => {
+    //                     sendJson({ channel: 3, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })
+    //                     sendJson({ channel: 5, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })
+    //                     sendJson({ channel: 9, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })
+    //                     sendJson({ channel: 15, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })
+    //                     // sendJson({ channel: 17, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })
+    //                     // sendJson({ channel: 19, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })
+  
+    //                 acceptEventFields: {
+    //                     Underlying: [
+    //                         "callVolume",
+    //                         "eventSymbol",
+    //                         "eventType",
+    //                         "putVolume",
+    //                         "time",
+    //                         "volatility"
+    //                     ],
+    //                     TradeETH: [
+    //                         "price",
+    //                         "dayVolume",
+    //                         "eventSymbol",
+    //                         "eventType",
+    //                         "time"
+    //                     ]
+
+    //             sendJson({
+    //                 reset: true,
+    //                 channel: data?.channel,
+    //                 type: `FEED_SUBSCRIPTION`,
+    //                 add: uniquePopularStockSymbols?.map(s => ({ symbol: s, type: `Underlying` })),
+    //             });
+    //             sendJson({
+    //                 reset: true,
+    //                 channel: data?.channel,
+    //                 type: `FEED_SUBSCRIPTION`,
+    //                 add: uniquePopularStockSymbols?.map(s => ({ symbol: s, type: `TradeETH` })),
+    //             });
 
     return (
         <div className={`stocksScrollContainer w100 h100 ${className}`}>
@@ -78,70 +309,3 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         </div>
     )
 }
-
-// Legacy Socket
-// useEffect(() => {
-//     if (!stocks?.length) return;
-
-//     const ws = new WebSocket(`wss://api.robinhood.com/marketdata/streaming/legend/v2/`);
-//     socketRef.current = ws;
-
-//     ws.onopen = () => {
-//         console.log(`Robinhood WS connected`);
-
-//         // Replace this with the actual message Robinhood expects.
-//         // Example only:
-//         ws.send(JSON.stringify({
-//             type: `subscribe`,
-//             symbols: stocks.map((s: any) => s.symbol).filter(Boolean),
-//         }));
-//     };
-
-//     ws.onmessage = (event) => {
-//         try {
-//             const data = JSON.parse(event.data);
-//             console.log(`Robinhood WS message`, data);
-
-//             // setStocks((prevStocks: any[] = []) => {
-//             //     return prevStocks.map((stock: any) => {
-//             //         const symbol = stock?.symbol;
-
-//             //         // Adjust these fields to match Robinhood`s real payload
-//             //         const update = Array.isArray(data)
-//             //             ? data.find((item: any) => item?.symbol === symbol)
-//             //             : data?.symbol === symbol
-//             //                 ? data
-//             //                 : null;
-
-//             //         if (!update) return stock;
-
-//             //         return new StockModel({
-//             //             ...stock,
-//             //             price: update.price ?? stock.price,
-//             //             changes: update.changes ?? stock.changes,
-//             //             last: update.last ?? stock.last,
-//             //         });
-//             //     });
-//             // });
-//         } catch (error) {
-//             console.error(`Failed to parse WS message`, error, event.data);
-//         }
-//     };
-
-//     ws.onerror = (error) => {
-//         console.error(`Robinhood WS error`, error);
-//     };
-
-//     ws.onclose = (event) => {
-//         console.log(`Robinhood WS closed`, {
-//             code: event.code,
-//             reason: event.reason,
-//             wasClean: event.wasClean,
-//         });
-//     };
-
-//     return () => {
-//         ws.close();
-//         socketRef.current = null;
-//     };
-// }, [stocks?.length]);

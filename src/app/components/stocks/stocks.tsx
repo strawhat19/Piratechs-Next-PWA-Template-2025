@@ -29,6 +29,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood } = useContext<any>(StateGlobals);
 
     let robinhoodTokenField = useRef(null);
+    let robinhoodSocketTokenField = useRef(null);
 
     const [loaded, setloaded] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -36,6 +37,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     const [refreshing, setRefreshing] = useState(true);
     const [lastUpdate, setLastUpdate] = useState(new Date()?.toLocaleString());
     const [robinhoodToken, setRobinhoodToken] = useState(user == null ? `` : user?.z_token_robinhood);
+    const [robinhoodSocketToken, setRobinhoodSocketToken] = useState(user == null ? `` : user?.z_token_robinhood_socket);
 
     const getStock = (stk: Stock | Position | any) => {
         let symbol = stk?.symbol;
@@ -125,17 +127,26 @@ export default function Stocks({ className = `stocksComponent` }) {
     }
 
     const onRobinhoodTokenUpdate = (e: any) => {
-        if (loading || refreshing || user == null || robinhoodToken?.length < 900) return;
+        if (loading || refreshing || user == null) return;
+        let id = e?.target?.id;
         let val = e?.target?.value;
+        let socketField = id == `robinhood_socket_token_field`;
         if (val && val?.length > 0) {
-            setRobinhoodToken(val);
+            if (socketField) {
+                setRobinhoodSocketToken(val);
+            } else {
+                setRobinhoodToken(val);
+            }
         }
     }
 
     const onRobinhoodTokenSubmit = (e: any) => {
-        if (loading || refreshing || user == null || robinhoodToken?.length < 900) return;
+        if (loading || refreshing || user == null) return;
         e?.preventDefault();
-        updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken });
+        // let id = e?.target?.id;
+        // let socketField = id == `robinhood_socket_token_field`;
+        console.log({ e, robinhoodToken, robinhoodSocketToken });
+        updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken, z_token_robinhood_socket: robinhoodSocketToken });
     }
 
     const refreshRobinhood = (token = user?.z_token_robinhood, getRealRobinhood: boolean = true) => {
@@ -209,7 +220,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                 refreshRobinhood();
             }
         }
-    }, [user?.z_token_robinhood, stocks, errored])
+    }, [user?.z_token_robinhood, errored, user?.z_token_robinhood_socket])
 
     return (
         <div className={`stocksContainer w95 ${className}`}>
@@ -231,21 +242,33 @@ export default function Stocks({ className = `stocksComponent` }) {
                                 <input 
                                     required
                                     type={`text`} 
+                                    name={`robinhood_socket_token`}
+                                    ref={robinhoodSocketTokenField} 
+                                    id={`robinhood_socket_token_field`}
+                                    placeholder={`Robinhood Socket Token`} 
+                                    defaultValue={user?.z_token_robinhood_socket} 
+                                    disabled={refreshing == true || user == null} 
+                                    className={`b0 br4 mh40 robinhoodTokenFieldInput`} 
+                                    style={{ top: 0, width: `84%`, marginLeft: `auto` }} 
+                                />
+                                <input 
+                                    required
+                                    type={`text`} 
                                     name={`robinhood_token`}
-                                    className={`b0 br4 mh40`} 
                                     ref={robinhoodTokenField} 
                                     id={`robinhood_token_field`}
                                     placeholder={`Robinhood Token`} 
                                     defaultValue={user?.z_token_robinhood} 
-                                    disabled={loading || refreshing || user == null} 
+                                    disabled={refreshing == true || user == null} 
+                                    className={`b0 br4 mh40 robinhoodTokenFieldInput`} 
                                     style={{ top: 0, width: `84%`, marginLeft: `auto` }} 
                                 />
                                 <button 
                                     type={`submit`} 
-                                    disabled={loading || refreshing || user == null || user?.z_token_robinhood?.length < 900} 
-                                    className={`br4 mh40 mw180 ${(loading || refreshing || user == null || user?.z_token_robinhood?.length < 900) ? `disabled` : ``}`} 
+                                    disabled={(!robinhoodToken || !robinhoodSocketToken) || refreshing == true || user == null} 
+                                    className={`br4 mh40 mw180 ${((!robinhoodToken || !robinhoodSocketToken) || refreshing == true || user == null) ? `disabled` : ``}`} 
                                 >
-                                    {(loading || refreshing || user == null) ? `Refreshing` : `Refresh`} Stocks
+                                    {(refreshing == true || user == null) ? `Refreshing` : `Refresh`} Stocks
                                 </button>
                             </form>
                         )}

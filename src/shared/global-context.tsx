@@ -198,17 +198,17 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         }
     };
 
-    useEffect(() => {
-        if (user != null) {
-            if (!dataLoading) {
-                if (user?.data?.board?.id) {
-                    if (user?.z_token_robinhood) {
-                        dev() && console.log(`User Update`, user);
-                    }
-                }
-            }
-        }
-    }, [user, dataLoading])
+    // useEffect(() => {
+    //     if (user != null) {
+    //         if (!dataLoading) {
+    //             if (user?.data?.board?.id) {
+    //                 if (user?.z_token_robinhood) {
+    //                     dev() && console.log(`User Update`, user);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }, [user, dataLoading])
 
     const refreshUserBoards = (selectedBoard: Board, usr: User | null = user) => {
         setUser(prev => {

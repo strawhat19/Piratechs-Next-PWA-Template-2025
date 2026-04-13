@@ -6,6 +6,7 @@ import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../type
 export class Position {
     change?: number = 0;
     merged?: any[] = [];
+    updates?: number = 0;
     quantity: number = 0.1;
     equity?: number = 6.56;
     cost?: number = 425.38;
@@ -46,6 +47,8 @@ export class Position {
     unrealized_intraday_pl: string | number = `0`;
     unrealized_intraday_plpc: string | number = `0`;
     dataSource?: DataSources | string = DataSources.api;
+    lastTrade?: Date | string = new Date()?.toLocaleString();
+    lastUpdate?: Date | string = new Date()?.toLocaleString();
     asset_id: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
     symbol: string | keyof typeof popularStocks = popularStocks.LMT;
 
@@ -79,17 +82,26 @@ export class Position {
         this.price = Number(this.current_price);
         this.change = Number(this.change_today);
         this.average = Number(this.avg_entry_price);
-        this.equity = this?.quantity * this?.average;
-        this.profitLoss = this?.price - this?.average;
         this.quantity_available = Number(this.qty_available);
         let foundSymbolName = popularStocks[this.symbol as keyof typeof popularStocks];
         this.name = foundSymbolName ? String(foundSymbolName) : this.name;
-        if (this?.type == Types.RobinhoodStockPosition) {
-            this.unrealized_pl = Number(this.qty) * Number(this.price);
-        }
-        this.current = this.quantity * this.price;
-        this.totalProfitLoss = this.current - this.equity;
         this.account_type = data?.account_type ?? (RobinhoodAccountTypes as any)[this.account_type as any] ?? this.account_type;
+        this.updateFromPrices();
+    }
+
+    updateFromPrices(price = this?.price, average = this?.average, quantity = this?.quantity) {
+        if (typeof price == `number` && typeof average == `number`) {
+            this.equity = quantity * average;
+            this.profitLoss = price - average;
+            if (this?.type == Types.RobinhoodStockPosition) {
+                this.unrealized_pl = Number(this.qty) * Number(this.price);
+            }
+            this.current = this.quantity * price;
+            this.totalProfitLoss = this.current - this.equity;
+            this.lastUpdate = new Date()?.toLocaleString();
+            if (this.updates) this.updates = this.updates + 1;
+        }
+        return this;
     }
 
     getStock(stocksArr: Stock[]) {
