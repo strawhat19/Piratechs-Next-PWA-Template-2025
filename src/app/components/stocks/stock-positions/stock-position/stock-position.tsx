@@ -23,15 +23,18 @@ export default function StockPostion({
     className = `stockPositionComponent`, 
 }: StockPositionProps) {
     let { stocks } = useContext<any>(StateGlobals);
+    let [pos, setPos] = useState<Position | null>(position);
     let [stock, setStock] = useState<StockModel | null>(null);
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
     const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && position?.merged?.length > 1;
     useEffect(() => {
+        if (!pos || pos == null) setPos(position);
         if (!stocks || !stocks?.length || stocks?.length == 0) return;
-        if (position && stock == null) {
-            let stk: StockModel = getStock(position);
+        if (pos && stock == null) {
+            let stk: StockModel = getStock(pos);
             if (stk) {
                 setStock(stk);
+                setPos(prevPos => prevPos && ({ ...prevPos?.updateFromPrices(Number(stk?.price)), stock: stk, } as Position));
             }
         }
     }, [stocks]);
@@ -115,7 +118,7 @@ export default function StockPostion({
                             <div className={`flex alignCenter gap5`}>
                                 <span>{mp?.quantity}</span>
                                 <span>x</span>
-                                <IconText dollarSign number={mp?.price} /> 
+                                <IconText dollarSign number={stock?.price} /> 
                             </div> 
                             <div className={`flex alignCenter gap5`}>
                                 = <IconText dollarSign number={mp?.current} />

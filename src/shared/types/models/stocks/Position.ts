@@ -14,13 +14,13 @@ export class Position {
     price?: number = 658.08;
     value?: number = 65.808;
     profitLoss?: number = 500;
-    average?: number = 425.38;
-    current?: number = 525.25;
     stock?: Stock | null = null;
     totalProfitLoss?: number = 500;
     quantity_available?: number = 0.1;
     api?: StockAPIs = StockAPIs.Alpaca;
     type?: Types | string = Types.Position;
+    average?: number = 425.38; // Average Equity
+    current?: number = 525.25; // Current Equity
     id?: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
     name?: keyof typeof popularStocks | string | any = popularStocks.LMT;
 
@@ -91,6 +91,8 @@ export class Position {
 
     updateFromPrices(price = this?.price, average = this?.average, quantity = this?.quantity) {
         if (typeof price == `number` && typeof average == `number`) {
+            this.price = price;
+            this.current_price = price;
             this.equity = quantity * average;
             this.profitLoss = price - average;
             if (this?.type == Types.RobinhoodStockPosition) {
