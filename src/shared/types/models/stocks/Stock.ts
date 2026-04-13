@@ -11,7 +11,7 @@ export class Stock {
     api?: StockAPIs = StockAPIs.FinancialModelingPrep;
     
     type: Types = Types.Stock;
-    source?: string = `Alpaca`;
+    source?: DataSources | string = DataSources.alpaca;
     account_type?: RobinhoodAccountTypes | string = RobinhoodAccountTypes.individual;
 
     created_at?: string | Date = `2026-03-06T22:59:51Z`;
@@ -160,6 +160,8 @@ export class Stock {
 
     updateUpdates() {
         this.updated = true;
+        this.api = StockAPIs.Robinhood;
+        this.source = DataSources.robinhood;
         if (typeof this.updates == `number`) {
             this.updates = this.updates + 1;
         }
@@ -176,14 +178,17 @@ export class Stock {
 
     logUpdate(key: string = `Default`, extraData: any = {}) {
         this.updateStats();
-        console.log(`Stock "${this?.symbol}" ${key} Update`, {
+        let marketOpen = isMarketOpen();
+        console.log(`"${this?.symbol}" '${key}' Update`, {
             ...extraData,
             z_key: key,
-            z_stock: this,
+            A_stock: this,
             price: this.price,
-            symbol: this.symbol,
+            z_symbol: this.symbol,
             z_updates: this.updates,
-            lastUpdate: this?.lastUpdate, 
+            z_marketOpen: marketOpen,
+            z_lastUpdate: this?.lastUpdate, 
+            z_tracked_updates: this.tracked_updates,
         });
     }
 

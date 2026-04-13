@@ -8,8 +8,9 @@ import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 import { StateGlobals } from '@/shared/global-context';
+import { DataSources, StockAPIs } from '@/shared/types/types';
 import { useContext, useEffect, useRef, useState } from 'react';
-// import { Position } from '@/shared/types/models/stocks/Position';
+import { Position } from '@/shared/types/models/stocks/Position';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { apiRoutes, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
@@ -19,6 +20,8 @@ const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { user, stocks, setStocks, stockPositions } = useContext<any>(StateGlobals);
+    
+    const [updates, setUpdates] = useState(0);
     const [loading, setLoading] = useState(true);
     const socketRef = useRef<WebSocket | null>(null);
 
@@ -29,16 +32,29 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase());
             if (!stocks || !stocks?.length || stocks?.length == 0) return;
             if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
-            setStocks((prevStocks: StockModel[]) => {
-                return prevStocks.map((stock: StockModel) => {
-                    if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
-                        const next = stock;
-                        next.updateFromLiveEventsArray(data);
-                        updatedStocks?.push(next);
-                        return next;
-                    } else return stock;
+            
+            let firstUpdate = updates == 0;
+            let robinHoodStockPositions = stockPositions?.some((p: Position) => p?.api == StockAPIs.Robinhood && p?.dataSource == DataSources.robinhood);
+
+            if (firstUpdate || robinHoodStockPositions) {
+                setStocks((prevStocks: StockModel[]) => {
+                    let refreshedStocks = prevStocks.map((stock: StockModel) => {
+                        if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
+                            const next = stock;
+                            next.updateFromLiveEventsArray(data);
+                            updatedStocks?.push(next);
+                            return next;
+                        } else return stock;
+                    });
+                    // console.log(`Refreshed Stocks`, {
+                    //     stockPositions,
+                    //     refreshedStocks,
+                    // });
+                    return refreshedStocks;
                 });
-            });
+                setUpdates(prevUpdates => prevUpdates + 1);
+            }
+
             // updatedStocks?.forEach(s => {
             //     setStockPositions((prevPositions: Position[]) => {
             //         return prevPositions.map((position: Position) => {

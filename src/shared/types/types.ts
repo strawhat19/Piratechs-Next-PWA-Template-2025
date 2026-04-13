@@ -15,21 +15,25 @@ export enum Roles {
   Owner = `Owner`,
 }
 
+export enum StockAPIs {
+  Alpaca = `Alpaca`,
+  Database = `Database`,
+  Robinhood = `Robinhood`,
+  FinancialModelingPrep = `FinancialModelingPrep`,
+}
+
 export enum DataSources {
   api = `API`,
+  alpaca = `Alpaca`,
   database = `Database`,
   firebase = `Firebase`,
+  robinhood = `Robinhood`,
+  financialModelingPrep = `FinancialModelingPrep`,
 }
 
 export enum RobinhoodAccountTypes {
   individual = `Individual`,
   ira_traditional = `IRA Traditional`,
-}
-
-export enum StockAPIs {
-  Alpaca = `Alpaca`,
-  Robinhood = `Robinhood`,
-  FinancialModelingPrep = `FinancialModelingPrep`,
 }
 
 export enum Types {
