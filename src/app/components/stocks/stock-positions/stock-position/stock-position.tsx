@@ -68,14 +68,14 @@ export default function StockPostion({
                     <strong className={`stockStat`}>
                         <i><span className={`main`}>YearH</span> <IconText dollarSign number={position?.stock?.yearHigh} /></i>
                     </strong>
-                    <strong className={`stockStat`}>
-                        <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
-                    </strong>
                     {position?.stock?.dividend && position?.stock?.dividend > 0 ? (
                         <strong className={`stockStat`}>
                             <i><span className={`main`}>Div</span> <IconText dollarSign number={position?.stock?.dividend} /></i>
                         </strong>
                     ) : <></>}
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
+                    </strong>
                     {/* <strong className={`stockStat stockStatLastUpdated`}>
                         <i><span className={`main`}>Last</span> <>{position?.stock?.lastUpdate}</></i>
                     </strong> */}
@@ -93,11 +93,17 @@ export default function StockPostion({
                     {/* </Stock> */}
                     {position?.type == Types.RobinhoodStockPosition && (
                        <div className={`robinhoodStockPositionAccountTypes`}>
-                            {position?.merged?.map((mp, mi) => (
-                                <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
-                                    {mp?.account_type}
+                            {position?.merged && position?.merged?.length > 0 ? (
+                                position?.merged?.map((mp, mi) => (
+                                    <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
+                                        {mp?.account_type}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
+                                    {position?.account_type}
                                 </div>
-                            ))}
+                            )}
                        </div>
                     )}
                 </div>
@@ -107,18 +113,31 @@ export default function StockPostion({
                     <strong>Average Equity</strong> 
                 </div>
                 <div className={`stockPositionAvgEquityFields stockColMinHeight w100`}>
-                    {position?.merged?.map((mp, mi) => (
-                        <div key={mi} className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
+                    {position?.merged && position?.merged?.length > 0 ? (
+                        position?.merged?.map((mp, mi) => (
+                            <div key={mi} className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
+                                <div className={`flex alignCenter gap5`}>
+                                    <span>{mp?.quantity}</span>
+                                    <span>x</span>
+                                    <IconText dollarSign number={mp?.average} /> 
+                                </div> 
+                                <div className={`flex alignCenter gap5`} style={{ marginLeft: 5 }}>
+                                    = <IconText dollarSign number={mp?.equity} />
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
                             <div className={`flex alignCenter gap5`}>
-                                <span>{mp?.quantity}</span>
+                                <span>{position?.quantity}</span>
                                 <span>x</span>
-                                <IconText dollarSign number={mp?.average} /> 
+                                <IconText dollarSign number={position?.average} /> 
                             </div> 
                             <div className={`flex alignCenter gap5`} style={{ marginLeft: 5 }}>
-                                = <IconText dollarSign number={mp?.equity} />
+                                = <IconText dollarSign number={position?.equity} />
                             </div>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
             <div className={`currentEquityCol stockOrderStat flex gap5 column alignCenter`}>
@@ -126,18 +145,31 @@ export default function StockPostion({
                     <strong>Current Equity</strong> 
                 </div>
                 <div className={`stockPositionQtyFields stockColMinHeight w100`}>
-                    {position?.merged?.map((mp, mi) => (
-                        <div key={mi} className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
+                    {position?.merged && position?.merged?.length > 0 ? (
+                        position?.merged?.map((mp, mi) => (
+                            <div key={mi} className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
+                                <div className={`flex alignCenter gap5`}>
+                                    <span>{mp?.quantity}</span>
+                                    <span>x</span>
+                                    <IconText dollarSign number={getStock(position)?.price ?? position?.stock?.price} /> 
+                                </div> 
+                                <div className={`flex alignCenter gap5`}>
+                                    = <IconText dollarSign number={Number(mp?.quantity * (getStock(position)?.price ?? position?.stock?.price))} />
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                             <div className={`flex alignCenter gap5`}>
-                                <span>{mp?.quantity}</span>
+                                <span>{position?.quantity}</span>
                                 <span>x</span>
                                 <IconText dollarSign number={getStock(position)?.price ?? position?.stock?.price} /> 
                             </div> 
                             <div className={`flex alignCenter gap5`}>
-                                = <IconText dollarSign number={Number(mp?.quantity * (getStock(position)?.price ?? position?.stock?.price))} />
+                                = <IconText dollarSign number={position ? (Number(position?.quantity * (getStock(position)?.price ?? position?.stock?.price))) : 0} />
                             </div>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
             <div className={`profitLossCol stockOrderStat flex gap5 column alignCenter`}>
@@ -145,13 +177,21 @@ export default function StockPostion({
                     <strong>Profit / Loss</strong> 
                 </div>
                 <div className={`stockPositionPLFields stockColMinHeight w100`}>
-                    {position?.merged?.map((mp, mi) => (
-                        <div key={mi} className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
+                    {position?.merged && position?.merged?.length > 0 ? (
+                        position?.merged?.map((mp, mi) => (
+                            <div key={mi} className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
+                                <div className={`flex alignCenter gap5`}>
+                                    <IconText dollarSign profitLoss fontWeight={800} number={calcProfitLoss(mp)} />
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                             <div className={`flex alignCenter gap5`}>
-                                <IconText dollarSign profitLoss fontWeight={800} number={calcProfitLoss(mp)} />
+                                <IconText dollarSign profitLoss fontWeight={800} number={calcProfitLoss(position)} />
                             </div>
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </div>
