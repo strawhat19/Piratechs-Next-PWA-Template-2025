@@ -98,6 +98,23 @@ export const unauthorized = (req: Request, returnResponse: boolean = true, messa
   return null;
 }
 
+export const isMarketOpen = (): boolean => {
+  const now = new Date();
+  // Convert to New York time
+  const nyTime = new Date(
+    now.toLocaleString(`en-US`, { timeZone: `America/New_York` })
+  );
+  const hours = nyTime.getHours();
+  const minutes = nyTime.getMinutes();
+  const day = nyTime.getDay(); // 0 = Sunday, 6 = Saturday
+  // Weekend check
+  if (day === 0 || day === 6) return false;
+  const currentMinutes = hours * 60 + minutes;
+  const marketOpen = 9 * 60 + 30;  // 9:30 AM
+  const marketClose = 16 * 60;     // 4:00 PM
+  return currentMinutes >= marketOpen && currentMinutes < marketClose;
+};
+
 export const tokenRequired = (req: Request, returnResponse: boolean = true) => {
   const authHeader = req.headers.get(`authorization`) || req.headers.get(`Authorization`);
   if (!authHeader?.startsWith(`Bearer `)) return unauthorized(req, returnResponse, `Missing Bearer Token`);

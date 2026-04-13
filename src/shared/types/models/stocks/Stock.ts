@@ -1,3 +1,4 @@
+import { isMarketOpen } from '@/shared/scripts/constants';
 import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../types';
 import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -175,8 +176,31 @@ export class Stock {
         });
     }
 
+    setPrice(price: number, eventType: string) {
+        this.price = price;
+        this.last = price;
+        this.value = price;
+        this.equity = price;
+        this.lastTradePrice = price;
+        if (typeof this.high == `number`) {
+            if (price > this.high) {
+                this.logUpdate(`High`, { high: price, currentHigh: this?.high, eventType, });
+                this.high = price;
+                this.dayHighPrice = price;
+            }
+        }
+        if (typeof this.low == `number`) {
+            if (price < this.low) {
+                this.logUpdate(`Low`, { low: price, currentLow: this?.low, eventType, });
+                this.low = price;
+                this.dayLowPrice = price;
+            }
+        }
+    }
+
     updateFromLiveEvent(event: any = {}) {
         let priceUpdated = false;
+        let marketOpen = isMarketOpen();
         let eventType = event?.eventType;
 
         const eventSymbol = event?.eventSymbol ?? event?.symbol ?? event?.stock_id ?? event?.id;
@@ -214,26 +238,8 @@ export class Stock {
                 if (price !== undefined) {
                     if (this.price != price) {
                         this.logUpdate(`Price`, { price, currentPrice: this.price, eventType, });
+                        this.setPrice(price, eventType);
                         priceUpdated = true;
-                        this.price = price;
-                        this.last = price;
-                        this.value = price;
-                        this.equity = price;
-                        this.lastTradePrice = price;
-                        if (typeof this.high == `number`) {
-                            if (price > this.high) {
-                                this.logUpdate(`High`, { high: price, currentHigh: this?.high, eventType, });
-                                this.high = price;
-                                this.dayHighPrice = price;
-                            }
-                        }
-                        if (typeof this.low == `number`) {
-                            if (price < this.low) {
-                                this.logUpdate(`Low`, { low: price, currentLow: this?.low, eventType, });
-                                this.low = price;
-                                this.dayLowPrice = price;
-                            }
-                        }
                     }
                 }
 
@@ -268,7 +274,14 @@ export class Stock {
                     const bid = toNum(this.bidPrice);
                     const ask = toNum(this.askPrice);
                     if (bid !== undefined && ask !== undefined) {
-                        this.midPrice = (bid + ask) / 2;
+                        let midPrice = (bid + ask) / 2;
+                        if (midPrice != this.midPrice) {
+                            this.logUpdate(`Mid`, { midPrice, currentMid: this.midPrice, eventType });
+                            this.midPrice = midPrice;
+                            if (marketOpen) {
+                                this.setPrice(midPrice, eventType);
+                            }
+                        }
                     }
                 }
 
@@ -297,7 +310,14 @@ export class Stock {
                 const bid = toNum(this.bidPrice);
                 const ask = toNum(this.askPrice);
                 if (bid !== undefined && ask !== undefined) {
-                    this.midPrice = (bid + ask) / 2;
+                    let midPrice = (bid + ask) / 2;
+                    if (midPrice != this.midPrice) {
+                        this.logUpdate(`Mid`, { midPrice, currentMid: this.midPrice, eventType });
+                        this.midPrice = midPrice;
+                        if (marketOpen) {
+                            this.setPrice(midPrice, eventType);
+                        }
+                    }
                 }
 
                 break;
