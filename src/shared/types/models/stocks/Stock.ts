@@ -278,8 +278,10 @@ export class Stock {
                         if (midPrice != this.midPrice) {
                             this.logUpdate(`Mid`, { midPrice, currentMid: this.midPrice, eventType });
                             this.midPrice = midPrice;
-                            if (marketOpen) {
-                                this.setPrice(midPrice, eventType);
+                            if (!marketOpen) {
+                                if (midPrice != this.price) {
+                                    this.setPrice(midPrice, eventType);
+                                }
                             }
                         }
                     }
@@ -314,8 +316,10 @@ export class Stock {
                     if (midPrice != this.midPrice) {
                         this.logUpdate(`Mid`, { midPrice, currentMid: this.midPrice, eventType });
                         this.midPrice = midPrice;
-                        if (marketOpen) {
-                            this.setPrice(midPrice, eventType);
+                        if (!marketOpen) {
+                            if (midPrice != this.price) {
+                                this.setPrice(midPrice, eventType);
+                            }
                         }
                     }
                 }
