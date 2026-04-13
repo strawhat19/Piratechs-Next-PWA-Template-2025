@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import Stock from '../../stock/stock';
 import { Types } from '@/shared/types/types';
 import IconText from '../../../icon-text/icon-text';
+import { StateGlobals } from '@/shared/global-context';
+import { useContext, useEffect, useState } from 'react';
 import { stockTableAlignmentCenter } from '../../stocks';
 import { Position } from '@/shared/types/models/stocks/Position';
+import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 
 export class StockPositionProps { 
     getStock: any; 
@@ -20,36 +22,47 @@ export default function StockPostion({
     index = 1, 
     className = `stockPositionComponent`, 
 }: StockPositionProps) {
+    let { stocks } = useContext<any>(StateGlobals);
+    let [stock, setStock] = useState<StockModel | null>(null);
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
     const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && position?.merged?.length > 1;
+    useEffect(() => {
+        if (!stocks || !stocks?.length || stocks?.length == 0) return;
+        if (position && stock == null) {
+            let stk: StockModel = getStock(position);
+            if (stk) {
+                setStock(stk);
+            }
+        }
+    }, [stocks]);
     return (
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
                 <div className={`stockPositionStatLabel`}>
                     <strong><span className={`main`}>({index + 1}) </span> <span style={{ marginLeft: 5 }}>Stock</span></strong> 
                     <strong className={`stockStat`}>
-                        <i><span className={`main`}>Low</span> <IconText dollarSign number={position?.stock?.low} /></i>
+                        <i><span className={`main`}>Low</span> <IconText dollarSign number={stock?.low} /></i>
                     </strong>
                     <strong className={`stockStat`}>
-                        <i><span className={`main`}>High</span> <IconText dollarSign number={position?.stock?.high} /></i>
+                        <i><span className={`main`}>High</span> <IconText dollarSign number={stock?.high} /></i>
                     </strong>
                     <strong className={`stockStat`}>
-                        <i><span className={`main`}>YearL</span> <IconText dollarSign number={position?.stock?.yearLow} /></i>
+                        <i><span className={`main`}>YearL</span> <IconText dollarSign number={stock?.yearLow} /></i>
                     </strong>
                     <strong className={`stockStat`}>
-                        <i><span className={`main`}>YearH</span> <IconText dollarSign number={position?.stock?.yearHigh} /></i>
+                        <i><span className={`main`}>YearH</span> <IconText dollarSign number={stock?.yearHigh} /></i>
                     </strong>
-                    {position?.stock?.dividend && position?.stock?.dividend > 0 ? (
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Upd</span> <>{stock?.updates}</></i>
+                    </strong>
+                    {stock?.dividend && stock?.dividend > 0 ? (
                         <strong className={`stockStat`}>
-                            <i><span className={`main`}>Div</span> <IconText dollarSign number={position?.stock?.dividend} /></i>
+                            <i><span className={`main`}>Div</span> <IconText dollarSign number={stock?.dividend} /></i>
                         </strong>
                     ) : <></>}
-                    <strong className={`stockStat`}>
-                        <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
-                    </strong>
-                    <strong className={`stockStat`}>
-                        <i><span className={`main`}>Last</span> <>{position?.stock?.lastUpdate}</></i>
-                    </strong>
+                    {/* <strong className={`stockStat stockStatLastUpdated`}>
+                        <i><span className={`main`}>Last</span> <>{stock?.lastUpdate}</></i>
+                    </strong> */}
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>
                     <Stock 
@@ -59,7 +72,7 @@ export default function StockPostion({
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
                         {/* <strong className={`stockStat`}>
-                            <i><span className={`main`}>Upd</span> <>{position?.stock?.lastUpdate}</></i>
+                            <i><span className={`main`}>Upd</span> <>{stock?.lastUpdate}</></i>
                         </strong> */}
                     {/* </Stock> */}
                     {position?.type == Types.RobinhoodStockPosition && (
