@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Alpaca from '@alpacahq/alpaca-trade-api';
+import { DataSources, StockAPIs } from '@/shared/types/types';
 
 const alpaca = new Alpaca({
   paper: true,
@@ -21,7 +22,8 @@ export const GET = async (req: Request) => {
       nested: false,
       direction: `desc`,
     });
-    return NextResponse.json(orders);
+    let modifiedOrders = orders?.length > 0 ? orders?.map((o: any) => ({ ...o, dataSource: DataSources.api, api: StockAPIs.Alpaca })) : [];
+    return NextResponse.json(modifiedOrders);
   } catch (error) {
     return NextResponse.json({ error: `Failed to Get Orders` }, { status: 500 });
   }

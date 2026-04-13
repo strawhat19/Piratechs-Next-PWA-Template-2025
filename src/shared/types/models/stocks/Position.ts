@@ -1,10 +1,11 @@
 import { Stock } from './Stock';
-import { DataSources, RobinhoodAccountTypes, Types } from '../../types';
 import { RobinhoodStockPosition } from './robinhood/RobinhoodStockPosition';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../types';
 
 export class Position {
     change?: number = 0;
+    merged?: any[] = [];
     quantity: number = 0.1;
     equity?: number = 6.56;
     cost?: number = 425.38;
@@ -17,6 +18,7 @@ export class Position {
     stock?: Stock | null = null;
     totalProfitLoss?: number = 500;
     quantity_available?: number = 0.1;
+    api?: StockAPIs = StockAPIs.Alpaca;
     type?: Types | string = Types.Position;
     id?: string = `6ae1929e-adcd-4de1-9647-25763c8a4548`;
     name?: keyof typeof popularStocks | string | any = popularStocks.LMT;

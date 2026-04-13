@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Stock } from '@/shared/types/models/stocks/Stock';
 import { average as getAverage } from '@/shared/scripts/constants';
-import { DataSources, RobinhoodAccountTypes, Types } from '@/shared/types/types';
+import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '@/shared/types/types';
 import { robinhoodAccountsDefault } from '@/shared/server/database/samples/stocks/robinhood/robinhood';
 import { popularStocks, sampleStocksDB, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -61,6 +61,7 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
             if (quoteObj) {
               quote = {
                 ...quoteObj,
+                api: StockAPIs.Robinhood,
                 dataSource: DataSources.api,
               };
             }
@@ -76,6 +77,7 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
             if (instrumentObj) {
               instrument = {
                 ...instrumentObj,
+                api: StockAPIs.Robinhood,
                 dataSource: DataSources.api,
               };
             }
@@ -106,7 +108,7 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
       lastNonRegTradePrice = Number(lastNonRegTradePrice);
       lastExtendedHoursTradePrice = Number(lastExtendedHoursTradePrice);
       let website = `https://www.google.com/search?q=${symbol}`;
-      let data = { ...instrument, ...quote, ...stockFromSymbol, dataSource: DataSources.api };
+      let data = { ...instrument, ...quote, ...stockFromSymbol, api: StockAPIs.Robinhood, dataSource: DataSources.api };
       // let sources = { instrument, quote, stock: stockFromSymbol };
       let address = data?.address ?? `${city}, ${state}, ${country}`;
       let close = previousClose;
@@ -121,13 +123,13 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
       let wentPublic = ipoDate;
       let change = price - previousClose;
       let changePercentage = parseFloat(((change / previousClose) * 100)?.toFixed(2));
-      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, dividend, divYield, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage, dataSource: DataSources.api };
+      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, dividend, divYield, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage, api: StockAPIs.Robinhood, dataSource: DataSources.api };
       return stock;
     } catch { return null; }
   });
   let results = await Promise.all(requests);
   let stocksFromAPI = results.filter(Boolean);
-  let dataSourceStocks = sampleStocksDB?.map((s: any) => new Stock({ ...s, dataSource: DataSources.database }));
+  let dataSourceStocks = sampleStocksDB?.map((s: any) => new Stock({ ...s, api: StockAPIs.Robinhood, dataSource: DataSources.database }));
   let stocks = stocksFromAPI?.length > 0 ? stocksFromAPI : (useDBStocksDefault ? dataSourceStocks : []);
   return stocks;
 }
@@ -142,7 +144,7 @@ export const getAccountPerfomancesFromAccountIDs = async (account_ids: string[] 
       if (accountRes) {
         let { displayCurrency: currency, marketValue } = accountRes;
         let { depositAdjustedMarketValue: value, cash: buying_power, equityMarketValue: equity, forexMarketValue: forex, lastCorePortfolioEquity: portfolio, excessMaintenanceWithUnclearedDeposits: summary } = marketValue;
-        accountPerformance = { id: account_id, currency, value, buying_power, equity, forex, portfolio, summary, dataSource: DataSources.api };
+        accountPerformance = { id: account_id, currency, value, buying_power, equity, forex, portfolio, summary, api: StockAPIs.Robinhood, dataSource: DataSources.api };
       }
       return accountPerformance;
     } catch { return null; }
@@ -152,13 +154,24 @@ export const getAccountPerfomancesFromAccountIDs = async (account_ids: string[] 
   return accountPerformances;
 }
 
-export const getPositions = async (account_id: string | number = robinhoodAccount?.id, token: string = robinhoodAuthorizationToken) => {
+export const getPositions = async (account: any = robinhoodAccount, token: string = robinhoodAuthorizationToken) => {
+  let account_id = account?.id;
+  let account_type = account?.account_type == `ira_traditional` ? RobinhoodAccountTypes.ira_traditional : RobinhoodAccountTypes.individual;
   let positionsRes = await robinhoodFetch(robinhoodEndpoints?.positions(account_id), token);
   if (positionsRes) {
     let positionsResl = await positionsRes?.json();
     if (positionsResl) {
       let stockPositions = positionsResl?.results;
-      let positions = Array.isArray(stockPositions) ? stockPositions?.map(sp => ({ ...sp, account_id, dataSource: DataSources.api })) : [];
+      let positions = Array.isArray(stockPositions) && stockPositions?.length > 0 ? stockPositions?.map(sp => {
+        let modifiedSP = { 
+          ...sp, 
+          account_id, 
+          account_type,
+          api: StockAPIs.Robinhood, 
+          dataSource: DataSources.api, 
+        };
+        return modifiedSP;
+      }) : [];
       return positions;
     }
   }
@@ -173,9 +186,9 @@ export const getHoldings = async (account_id: string | number = robinhoodAccount
       let holdings = Array.isArray(stockHoldings) ? stockHoldings?.map(h => {
         let { id, account_id, cost_bases, currency, currency_pair_id: currency_id, quantity, tax_lot_cost_bases, created_at, updated_at } = h;
         let { id: crypto_id, code: symbol, type, name, increment, crypto_type: crypto } = currency;
-        let taxes = tax_lot_cost_bases?.map((t: any) => ({ tax_id: t?.id, tax_quantity: t?.clearing_running_quantity, tax_cost: t?.clearing_book_cost_basis, dataSource: DataSources.api }));
-        let costs = cost_bases?.map((c: any) => ({ cost_id: c?.id, cost_currency: c?.currency_id, cost_basis: c?.direct_cost_basis, cost_quantity: c?.direct_quantity, dataSource: DataSources.api }));
-        let mod_holding = { id, account_id, currency_id, quantity, crypto_id, symbol, type, name, increment, crypto, created_at, updated_at, ...taxes[0], ...costs[0], dataSource: DataSources.api, };
+        let taxes = tax_lot_cost_bases?.map((t: any) => ({ tax_id: t?.id, tax_quantity: t?.clearing_running_quantity, tax_cost: t?.clearing_book_cost_basis, api: StockAPIs.Robinhood, dataSource: DataSources.api }));
+        let costs = cost_bases?.map((c: any) => ({ cost_id: c?.id, cost_currency: c?.currency_id, cost_basis: c?.direct_cost_basis, cost_quantity: c?.direct_quantity, api: StockAPIs.Robinhood, dataSource: DataSources.api }));
+        let mod_holding = { id, account_id, currency_id, quantity, crypto_id, symbol, type, name, increment, crypto, created_at, updated_at, ...taxes[0], ...costs[0], api: StockAPIs.Robinhood, dataSource: DataSources.api, };
         return mod_holding;
       }) : [];
       return holdings;
@@ -199,7 +212,7 @@ export const GET = async (req: Request) => {
         let robinhoodAccounts = robinhoodAccountsArray?.length > 0 ? robinhoodAccountsArray?.map(rbacc => {
           let { url, cash, created_at, updated_at, brokerage_account_type: account_type, type, deactivated, buying_power, max_ach_early_access_amount: early_access_amount, account_number: id, cash_held_for_orders: orders_cash, margin_balances, option_level, state, locked, permanently_deactivated: deactivated_permanently, user_id, equity_trading_lock: lock_equity_trading, option_trading_lock: lock_option_trading, disable_adt, management_type, affiliate, car_valid_until: valid_at, nickname, ref_id, user_real_instant_limit: instant_limit, user_dynamic_instant_limit: dynamic_limit } = rbacc;
           let { overnight_ratio, day_trade_ratio = null, is_primary_account: primary = null, start_of_day_dtbp: start_of_day_buying_power = null, eligible_deposit_as_instant: instant_eligible_deposit = null, start_of_day_overnight_buying_power = null } = margin_balances ?? {};
-          let rbAccount = { id, url, cash, created_at, updated_at, account_type, type, deactivated, buying_power, early_access_amount, orders_cash, option_level, state, locked, deactivated_permanently, user_id, lock_equity_trading, lock_option_trading, disable_adt, management_type, affiliate, valid_at, nickname, ref_id, instant_limit, dynamic_limit, overnight_ratio, day_trade_ratio, primary, start_of_day_buying_power, instant_eligible_deposit, start_of_day_overnight_buying_power, dataSource: DataSources.api };
+          let rbAccount = { id, url, cash, created_at, updated_at, account_type, type, deactivated, buying_power, early_access_amount, orders_cash, option_level, state, locked, deactivated_permanently, user_id, lock_equity_trading, lock_option_trading, disable_adt, management_type, affiliate, valid_at, nickname, ref_id, instant_limit, dynamic_limit, overnight_ratio, day_trade_ratio, primary, start_of_day_buying_power, instant_eligible_deposit, start_of_day_overnight_buying_power, dataSource: DataSources.api, api: StockAPIs.Robinhood, };
           return rbAccount;
         }) : [];
         robinhood.accounts = robinhoodAccounts;
@@ -215,12 +228,12 @@ export const GET = async (req: Request) => {
             let holdings: any = [];
             let positions: any = [];
             let acc_perf = performances?.find(p => p?.id == acc?.id) ?? null;
-            let mod_acc = acc_perf ? { ...acc, ...acc_perf, dataSource: DataSources.api } : acc;
-            try { positions = await getPositions(acc?.id, token); } catch (error) { positions = []; }
+            let mod_acc = acc_perf ? { ...acc, ...acc_perf, dataSource: DataSources.api, api: StockAPIs.Robinhood, } : acc;
+            try { positions = await getPositions(acc, token); } catch (error) { positions = []; }
             if (acc?.account_type != `ira_traditional`) {
               try { holdings = await getHoldings(acc?.id, token); } catch (error) { holdings = []; }
             }
-            mod_acc = { ...mod_acc, positions, holdings, dataSource: DataSources.api };
+            mod_acc = { ...mod_acc, positions, holdings, dataSource: DataSources.api, api: StockAPIs.Robinhood, };
             return mod_acc;
           })
         );

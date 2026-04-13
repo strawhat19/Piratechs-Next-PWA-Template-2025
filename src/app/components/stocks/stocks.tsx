@@ -17,7 +17,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import { Position } from '@/shared/types/models/stocks/Position';
 import AuthForm from '../authentication/forms/auth-form/auth-form';
-import { DataSources, RobinhoodAccountTypes } from '@/shared/types/types';
+import { DataSources, RobinhoodAccountTypes, StockAPIs } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
 import { apiRoutes, constants, errorToast, getAPIServerData, getRealStocks, withinXSeconds } from '@/shared/scripts/constants';
 
@@ -47,7 +47,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.account;
             getAPIServerData(apiServerRoute)?.then(acc => {
-                let account = { ...acc, dataSource: DataSources.api };
+                let account = { ...acc, dataSource: DataSources.api, api: StockAPIs.Alpaca };
                 setStocksAcc(account);
                 setLoading(false);
                 console.log(`Account`, account);
@@ -62,7 +62,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.positions;
             getAPIServerData(apiServerRoute)?.then((alpaca_positions: Position[]) => {
-                let positions = alpaca_positions?.map((p: Position) => new Position({ ...p, stock: getStock(p) }));
+                let positions = alpaca_positions?.map((p: Position) => new Position({ ...p, stock: getStock(p), dataSource: DataSources.api, api: StockAPIs.Alpaca }));
                 let sortedPositions = positions?.sort((posA: Position, posB: Position) => positionProfitLoss(posB) - positionProfitLoss(posA));
                 setStockPositions(sortedPositions);
                 setLoading(false);
@@ -90,33 +90,38 @@ export default function Stocks({ className = `stocksComponent` }) {
     }
 
     const postGetRobinhood = (robinhoodAccounts: any[] = robinhood) => {
+        let positionsObj = {};
         // let token = user?.z_token_robinhood;
         let holdings = robinhoodAccounts?.flatMap(acc => acc?.holdings);
         let positions: Position[] = robinhoodAccounts?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
-        setStockPositions(positions);
+        let positionsCopy = [ ...positions ];
+        positions?.forEach(p => {
+            let iKey = RobinhoodAccountTypes.individual;
+            let tKey = RobinhoodAccountTypes.ira_traditional;
+            let matchPs = positionsCopy?.filter(pos => pos?.symbol == p?.symbol);
+            let iPos = matchPs?.find(pos => pos?.account_type == iKey) ?? null;
+            let tPos = matchPs?.find(pos => pos?.account_type == tKey) ?? null;
+            let merged = [iPos, tPos]?.filter(Boolean)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+            p.merged = merged;
+            Object.assign(positionsObj, { [p?.symbol]: p });
+        });
+        let mergedPositionsUnique = Object.values(positionsObj)?.length > 0 ? (
+            Object.values(positionsObj)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss)
+        ) : positions;
+        setStockPositions(mergedPositionsUnique);
         setLoading(false);
         setloaded(true);
-        let validRobinHoodData = Array.isArray(holdings) && Array.isArray(positions) && Array.isArray(robinhoodAccounts);
-        let validRobinHoodDataFilled = validRobinHoodData && (holdings?.length > 0 && positions?.length > 0 && robinhoodAccounts?.length > 0);
+        let validRobinHoodData = Array.isArray(holdings) && Array.isArray(mergedPositionsUnique) && Array.isArray(robinhoodAccounts);
+        let validRobinHoodDataFilled = validRobinHoodData && (holdings?.length > 0 && mergedPositionsUnique?.length > 0 && robinhoodAccounts?.length > 0);
         if (validRobinHoodDataFilled) {
             setRefreshing(false);
         }
         setLastUpdate(new Date()?.toLocaleString());
         if (errored == false) {
-            console.log(`Robinhood Holdings`, holdings);
-            console.log(`Robinhood Positions`, positions);
             console.log(`Robinhood Accounts`, robinhoodAccounts);
+            console.log(`Robinhood Holdings`, holdings);
+            console.log(`Robinhood Positions Merged`, mergedPositionsUnique);
         }
-        // console.log(`Refresh Robinhood Finish`, {
-        //     token,
-        //     errored,
-        //     holdings,
-        //     positions,
-        //     lastUpdate,
-        //     refreshing,
-        //     robinhoodToken,
-        //     robinhoodAccounts,
-        // });
     }
 
     const onRobinhoodTokenUpdate = (e: any) => {

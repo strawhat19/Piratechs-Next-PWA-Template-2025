@@ -26,6 +26,12 @@ export enum RobinhoodAccountTypes {
   ira_traditional = `IRA Traditional`,
 }
 
+export enum StockAPIs {
+  Alpaca = `Alpaca`,
+  Robinhood = `Robinhood`,
+  FinancialModelingPrep = `FinancialModelingPrep`,
+}
+
 export enum Types {
   Data = `Data`,
   User = `User`,

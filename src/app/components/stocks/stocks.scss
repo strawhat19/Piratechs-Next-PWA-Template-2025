@@ -1,3 +1,22 @@
+.stockPositionStart {
+    justify-content: space-between;
+}
+
+.mergedPosition {
+    .stockPositionStart {
+        .robinhoodStockPositionAccountTypes {
+            grid-gap: 4px;
+            display: flex;
+            font-size: 15px;
+            align-items: end;
+            flex-direction: column;
+        }
+    }
+    .stockPositionEnd {
+        font-size: 15px !important;
+    }
+}
+
 .stockPositionStatLabel {
     display: flex;
     grid-gap: 15px;
@@ -42,9 +61,21 @@
     font-size: 0.8em;
 }
 
+.stockColMinHeight {
+    min-height: 42px;
+}
+
+.singlePosition {
+    .stockPositionEnd {
+       @extend .stockColMinHeight;
+       &.stockPositionEndQField {
+           justify-content: center;
+       }
+    }
+}
+
 .stockColValue {
     display: flex;
-    min-height: 42px;
     align-items: center;
 }
 

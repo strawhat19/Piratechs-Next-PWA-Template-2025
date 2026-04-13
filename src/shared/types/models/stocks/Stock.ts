@@ -1,9 +1,10 @@
-import { DataSources, RobinhoodAccountTypes, Types } from '../../types';
+import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../types';
 import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Stock {
     number?: number = 1;
     beta?: number = 1.199;
+    api?: StockAPIs = StockAPIs.FinancialModelingPrep;
     
     type: Types = Types.Stock;
     source?: string = `Alpaca`;
