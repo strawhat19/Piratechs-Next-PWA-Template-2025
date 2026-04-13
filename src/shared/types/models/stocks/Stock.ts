@@ -166,7 +166,8 @@ export class Stock {
         this.updateStats();
         console.log(`Stock "${this?.symbol}" ${key} Update`, {
             ...extraData,
-            // key,
+            z_key: key,
+            z_stock: this,
             price: this.price,
             symbol: this.symbol,
             z_updates: this.updates,
@@ -211,12 +212,26 @@ export class Stock {
 
                 if (price !== undefined) {
                     if (this.price != price) {
-                        // this.logUpdate(`Price`, { price, currentPrice: this.price, eventType, });
+                        this.logUpdate(`Price`, { price, currentPrice: this.price, eventType, });
                         this.price = price;
                         this.last = price;
                         this.value = price;
                         this.equity = price;
                         this.lastTradePrice = price;
+                        if (typeof this.high == `number`) {
+                            if (price > this.high) {
+                                this.logUpdate(`High`, { high: price, currentHigh: this?.high, eventType, });
+                                this.high = price;
+                                this.dayHighPrice = price;
+                            }
+                        }
+                        if (typeof this.low == `number`) {
+                            if (price < this.low) {
+                                this.logUpdate(`Low`, { low: price, currentLow: this?.low, eventType, });
+                                this.low = price;
+                                this.dayLowPrice = price;
+                            }
+                        }
                     }
                 }
 
@@ -427,7 +442,7 @@ export class Stock {
         let range = `${this.low}-${this.high}`;
         if (range != this.range) {
             this.range = range;
-            this.logUpdate(`Price`, { z_range: range, eventType, });
+            this.logUpdate(`Price Range`, { z_range: range, eventType, });
         }
 
         return this;
