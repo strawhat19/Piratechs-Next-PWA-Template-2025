@@ -134,7 +134,7 @@ export default function StockPostion({
                                 <IconText dollarSign number={getStock(position)?.price ?? position?.stock?.price} /> 
                             </div> 
                             <div className={`flex alignCenter gap5`}>
-                                = <IconText dollarSign number={mp?.current} />
+                                = <IconText dollarSign number={Number(mp?.quantity * (getStock(position)?.price ?? position?.stock?.price))} />
                             </div>
                         </div>
                     ))}
