@@ -176,6 +176,7 @@ export class Stock {
     }
 
     updateFromLiveEvent(event: any = {}) {
+        let priceUpdated = false;
         let eventType = event?.eventType;
 
         const eventSymbol = event?.eventSymbol ?? event?.symbol ?? event?.stock_id ?? event?.id;
@@ -213,6 +214,7 @@ export class Stock {
                 if (price !== undefined) {
                     if (this.price != price) {
                         this.logUpdate(`Price`, { price, currentPrice: this.price, eventType, });
+                        priceUpdated = true;
                         this.price = price;
                         this.last = price;
                         this.value = price;
@@ -442,7 +444,9 @@ export class Stock {
         let range = `${this.low}-${this.high}`;
         if (range != this.range) {
             this.range = range;
-            this.logUpdate(`Price Range`, { z_range: range, eventType, });
+            if (!priceUpdated) {
+                this.logUpdate(`Price Range`, { z_range: range, eventType, });
+            }
         }
 
         return this;

@@ -210,6 +210,11 @@ export default function Stocks({ className = `stocksComponent` }) {
         refreshStockOrders();
     }, [])
 
+    // useEffect(() => {
+    //     setRobinhoodToken(user?.z_token_robinhood);
+    //     setRobinhoodSocketToken(user?.z_token_robinhood_socket);
+    // }, [user])
+
     useEffect(() => {
         let canRefresh = false;
         let recentlyUpdated = withinXSeconds(lastUpdate, 4);
@@ -217,6 +222,8 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (shouldRefresh) {
             canRefresh = user != null && user?.email && errored == false;
             if (canRefresh) {
+                setRobinhoodToken(user?.z_token_robinhood);
+                setRobinhoodSocketToken(user?.z_token_robinhood_socket);
                 refreshRobinhood();
             }
         }
