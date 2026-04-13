@@ -5,6 +5,7 @@ import './stocks.scss';
 import Logo from '../logo/logo';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
+import { toast } from 'react-toastify';
 import { SwiperSlide } from 'swiper/react';
 import StockSearch from './stock-search/stock-search';
 import StockOrders from './stock-orders/stock-orders';
@@ -145,8 +146,12 @@ export default function Stocks({ className = `stocksComponent` }) {
         e?.preventDefault();
         // let id = e?.target?.id;
         // let socketField = id == `robinhood_socket_token_field`;
-        console.log({ e, robinhoodToken, robinhoodSocketToken });
+        // console.log({ e, robinhoodToken, robinhoodSocketToken });
         updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken, z_token_robinhood_socket: robinhoodSocketToken });
+        toast.info(`Refreshing...`);
+        setTimeout(() => {
+            window?.location?.reload();
+        }, 3500);
     }
 
     const refreshRobinhood = (token = user?.z_token_robinhood, getRealRobinhood: boolean = true) => {

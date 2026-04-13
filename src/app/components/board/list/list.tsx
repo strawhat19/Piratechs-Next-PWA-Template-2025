@@ -8,11 +8,11 @@ import Logo from '@/app/components/logo/logo';
 import { List } from '@/shared/types/models/List';
 import { Item } from '@/shared/types/models/Item';
 import ItemComponent, { type } from '../item/item';
-import { getFirstNumber, StateGlobals } from '@/shared/global-context';
 import StatusTag, { statuses } from '../status/status';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { ArrowDropDownTwoTone, Settings } from '@mui/icons-material';
+import { getFirstNumber, StateGlobals } from '@/shared/global-context';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useContext, useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { imagesObject } from '@/app/components/slider/images-carousel/images-carousel';
@@ -20,7 +20,6 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { DndContext, DragEndEvent, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { capWords, constants, countPropertiesInObject, dev, errorToast, genID, getIDParts, logToast, randomNumber } from '@/shared/scripts/constants';
 import { addItemToDatabase, db, deleteItemFromDatabase, itemConverter, listConverter, Tables, updateItemInDatabase, updateListInDatabase } from '@/shared/server/firebase';
-import { Types } from '@/shared/types/types';
 
 export default function ListComponent({
   list: listObj,
