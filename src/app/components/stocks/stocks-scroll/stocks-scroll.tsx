@@ -18,7 +18,7 @@ const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
-    const { user, stocks, setStocks } = useContext<any>(StateGlobals);
+    const { user, stocks, setStocks, stockPositions } = useContext<any>(StateGlobals);
     const [loading, setLoading] = useState(true);
     const socketRef = useRef<WebSocket | null>(null);
 
@@ -28,6 +28,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             let updatedStocks: StockModel[] = [];
             let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase());
             if (!stocks || !stocks?.length || stocks?.length == 0) return;
+            if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
             setStocks((prevStocks: StockModel[]) => {
                 return prevStocks.map((stock: StockModel) => {
                     if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
@@ -38,7 +39,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                     } else return stock;
                 });
             });
-            // if (!setStockPositions || !setStockPositions?.length || setStockPositions?.length == 0) return;
             // updatedStocks?.forEach(s => {
             //     setStockPositions((prevPositions: Position[]) => {
             //         return prevPositions.map((position: Position) => {
