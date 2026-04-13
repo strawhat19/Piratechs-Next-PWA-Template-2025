@@ -39,7 +39,7 @@ export default function StockPostion({
         }
     }, [stocks]);
     return (
-        <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition` : `singlePosition`}`}>
+        <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(pos) ? `mergedPosition` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
                 <div className={`stockPositionStatLabel`}>
                     <strong><span className={`main`}>({index + 1}) </span> <span style={{ marginLeft: 5 }}>Stock</span></strong> 
@@ -69,8 +69,8 @@ export default function StockPostion({
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>
                     <Stock 
-                        {...getStock(position)} 
-                        symbol={position?.symbol}
+                        {...getStock(pos)} 
+                        symbol={pos?.symbol}
                         linkClass={stockAlignmentCenter ? `` : `justifyStart`}  
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
@@ -78,9 +78,9 @@ export default function StockPostion({
                             <i><span className={`main`}>Upd</span> <>{stock?.lastUpdate}</></i>
                         </strong> */}
                     {/* </Stock> */}
-                    {position?.type == Types.RobinhoodStockPosition && (
+                    {pos?.type == Types.RobinhoodStockPosition && (
                        <div className={`robinhoodStockPositionAccountTypes`}>
-                            {position?.merged?.map((mp, mi) => (
+                            {pos?.merged?.map((mp, mi) => (
                                 <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
                                     {mp?.account_type}
                                 </div>
@@ -94,7 +94,7 @@ export default function StockPostion({
                     <strong>Average Equity</strong> 
                 </div>
                 <div className={`stockPositionAvgEquityFields stockColMinHeight w100`}>
-                    {position?.merged?.map((mp, mi) => (
+                    {pos?.merged?.map((mp, mi) => (
                         <div key={mi} className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
                             <div className={`flex alignCenter gap5`}>
                                 <span>{mp?.quantity}</span>
@@ -113,7 +113,7 @@ export default function StockPostion({
                     <strong>Current Equity</strong> 
                 </div>
                 <div className={`stockPositionQtyFields stockColMinHeight w100`}>
-                    {position?.merged?.map((mp, mi) => (
+                    {pos?.merged?.map((mp, mi) => (
                         <div key={mi} className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                             <div className={`flex alignCenter gap5`}>
                                 <span>{mp?.quantity}</span>
@@ -132,7 +132,7 @@ export default function StockPostion({
                     <strong>Profit / Loss</strong> 
                 </div>
                 <div className={`stockPositionPLFields stockColMinHeight w100`}>
-                    {position?.merged?.map((mp, mi) => (
+                    {pos?.merged?.map((mp, mi) => (
                         <div key={mi} className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                             <div className={`flex alignCenter gap5`}>
                                 <IconText dollarSign profitLoss fontWeight={800} number={mp?.totalProfitLoss} />
