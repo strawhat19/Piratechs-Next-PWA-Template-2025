@@ -1,0 +1,18 @@
+.stocksMainContainer {
+    &:not(:has(.stocksSearchField)) {
+        padding-top: 115px;
+        .stocksContainer {
+            --w: 99%;
+            .slider {
+                --stockSliderHeight: 745px;
+            }
+        }
+    }
+}
+
+.inactiveButton {
+    font-weight: 700;
+    color: var(--main);
+    background: white;
+    transition: var(--transition);
+}

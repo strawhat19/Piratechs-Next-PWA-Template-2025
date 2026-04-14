@@ -3,6 +3,7 @@ import Img from '@/app/components/image/image';
 import { constants } from '@/shared/scripts/constants';
 
 export type LogoOptions = {
+    style?: any;
     src?: string;
     size?: number;
     label?: string;
@@ -14,6 +15,7 @@ export type LogoOptions = {
 
 export default function Logo({
     size = 40,
+    style = {},
     fontWeight = 700,
     className = `logo`,
     showLogoIcon = false,
@@ -22,7 +24,7 @@ export default function Logo({
     logoIcon = <Home className={`linkHover`} style={{ fontSize: size }} />,
 }: LogoOptions) {
     return (
-        <div className={`logoContainer ${className} flex alignCenter start gap10`} style={{ fontWeight }}>
+        <div className={`logoContainer ${className} flex alignCenter start gap10`} style={{ fontWeight, ...style }}>
             {(showLogoIcon && logoIcon != undefined) ? logoIcon : (
                 <Img className={`logo`} src={src} alt={`Logo`} width={size} height={size} />
             )}

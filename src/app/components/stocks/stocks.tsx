@@ -27,7 +27,7 @@ export const stockTableAlignmentCenter = false;
 export const positionProfitLoss = (position: any) => position?.current_price - position?.avg_entry_price;
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood } = useContext<any>(StateGlobals);
+    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime } = useContext<any>(StateGlobals);
 
     let robinhoodTokenField = useRef(null);
     let robinhoodSocketTokenField = useRef(null);
@@ -248,8 +248,21 @@ export default function Stocks({ className = `stocksComponent` }) {
 
                 {stocks?.length > 0 && <>
                     <div className={`customPageTop mh40 flex alignCenter gap5 spaceBetween w100 relative`} style={{ top: -10 }}>
-                        <Logo label={`Stocks`} />
-                        {user != null && (
+                        <Logo label={`Stocks`} style={{ marginRight: 5 }} />
+                        {user != null && <>
+                            {realtime == true && (
+                                Object.values(RobinhoodAccountTypes)?.reverse()?.map((rba: RobinhoodAccountTypes, rbi: number) => (
+                                    <button 
+                                        key={rbi}
+                                        className={`br4 mh40 mw180 ${robinhoodAccountTypes?.includes(rba) ? `inactiveButton` : `activeButton`}`} 
+                                        onClick={(e: any) => setRobinhoodAccountTypes((prevTypes: RobinhoodAccountTypes[]) => {
+                                            return robinhoodAccountTypes?.includes(rba) ? prevTypes?.filter((pt: RobinhoodAccountTypes) => pt != rba) : [ ...prevTypes, rba ];
+                                        })} 
+                                    >
+                                        {rba == RobinhoodAccountTypes.individual ? RobinhoodAccountTypes.ira_traditional : RobinhoodAccountTypes.individual}
+                                    </button>
+                                ))
+                            )}
                             <form className={`fieldGroup mh40 flex alignCenter gap5 spaceBetween robinhoodTokenFieldGroup`} onInput={(e) => onRobinhoodTokenUpdate(e)} onSubmit={(e) => onRobinhoodTokenSubmit(e)}>
                                 <input 
                                     required
@@ -283,7 +296,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                                     {(refreshing == true || user == null) ? `Refreshing` : `Refresh`} Stocks
                                 </button>
                             </form>
-                        )}
+                        </>}
                     </div>
                     {/* <StockSearch stcks={stocks} className={`mainStockSearch`} {...{loading}} /> */}
                 </>}

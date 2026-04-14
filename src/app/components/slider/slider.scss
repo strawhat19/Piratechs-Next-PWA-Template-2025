@@ -44,13 +44,11 @@
 
 .slider {
     width: 100%;
-    --tableSearchesOffset: 0;
     --stockSliderHeight: 535px;
     --stockSliderOffset_Default: 78px;
     --stockSliderOffset: var(--stockSliderOffset_Default);
     @media (min-height: 700px) {
         --stockSliderHeight: 675px;
-        // --stockSliderHeight: calc(675px + var(--tableSearchesOffset));
         @media (max-height: 915px) {
             --stockSliderHeight: 600px;
         }

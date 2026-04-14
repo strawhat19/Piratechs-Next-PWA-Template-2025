@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import Stock from '../../stock/stock';
+import { useContext, useState } from 'react';
 import { Types } from '@/shared/types/types';
 import IconText from '../../../icon-text/icon-text';
+import { StateGlobals } from '@/shared/global-context';
 import { stockTableAlignmentCenter } from '../../stocks';
 import { Position } from '@/shared/types/models/stocks/Position';
 
@@ -20,7 +21,8 @@ export default function StockPostion({
     className = `stockPositionComponent`, 
 }: StockPositionProps) {
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
-    const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && position?.merged?.length > 1;
+    const { robinhoodAccountTypes } = useContext<any>(StateGlobals);
+    const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && (position?.merged?.length > 1 && robinhoodAccountTypes?.length > 1);
     return (
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
@@ -65,9 +67,11 @@ export default function StockPostion({
                        <div className={`robinhoodStockPositionAccountTypes`}>
                             {position?.merged && position?.merged?.length > 0 ? (
                                 position?.merged?.map((mp, mi) => (
-                                    <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
-                                        {mp?.account_type}
-                                    </div>
+                                    robinhoodAccountTypes?.includes(mp?.account_type) && (
+                                        <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
+                                            {mp?.account_type}
+                                        </div>
+                                    )
                                 ))
                             ) : (
                                 <div className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
@@ -85,16 +89,18 @@ export default function StockPostion({
                 <div className={`stockPositionAvgEquityFields stockColMinHeight w100`}>
                     {position?.merged && position?.merged?.length > 0 ? (
                         position?.merged?.map((mp, mi) => (
-                            <div key={mi} className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
-                                <div className={`flex alignCenter gap5`}>
-                                    <span>{mp?.quantity}</span>
-                                    <span>x</span>
-                                    <IconText dollarSign number={mp?.average} /> 
-                                </div> 
-                                <div className={`flex alignCenter gap5`} style={{ marginLeft: 5 }}>
-                                    = <IconText dollarSign number={mp?.equity} />
+                            robinhoodAccountTypes?.includes(mp?.account_type) && (
+                                <div key={mi} className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
+                                    <div className={`flex alignCenter gap5`}>
+                                        <span>{mp?.quantity}</span>
+                                        <span>x</span>
+                                        <IconText dollarSign number={mp?.average} /> 
+                                    </div> 
+                                    <div className={`flex alignCenter gap5`} style={{ marginLeft: 5 }}>
+                                        = <IconText dollarSign number={mp?.equity} />
+                                    </div>
                                 </div>
-                            </div>
+                            )
                         ))
                     ) : (
                         <div className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
@@ -117,9 +123,8 @@ export default function StockPostion({
                 <div className={`stockPositionQtyFields stockColMinHeight w100`}>
                     {position?.merged && position?.merged?.length > 0 ? (
                         position?.merged?.map((mp, mi) => (
-                            // StockPositionCurrentEquity(mp)
-                            <div key={mi} className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
-                                {/* <div className={`flex gap5 alignCenter w100 justifyCenter`}> */}
+                            robinhoodAccountTypes?.includes(mp?.account_type) && (
+                                <div key={mi} className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                                     <div className={`flex alignCenter gap5`}>
                                         <span>{mp?.quantity}</span>
                                         <span>x</span>
@@ -128,8 +133,8 @@ export default function StockPostion({
                                     <div className={`flex alignCenter gap5`}>
                                         = {position?.stock?.price && <IconText dollarSign number={Number(mp?.quantity * position?.stock?.price)} />}
                                     </div>
-                                {/* </div> */}
-                            </div>
+                                </div>
+                            )
                         ))
                     ) : (
                         <div className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
@@ -152,11 +157,13 @@ export default function StockPostion({
                 <div className={`stockPositionPLFields stockColMinHeight w100`}>
                     {position?.merged && position?.merged?.length > 0 ? (
                         position?.merged?.map((mp, mi) => (
-                            <div key={mi} className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
-                                <div className={`flex alignCenter gap5`}>
-                                    <IconText dollarSign profitLoss fontWeight={800} number={mp?.totalProfitLoss} />
+                            robinhoodAccountTypes?.includes(mp?.account_type) && (
+                                <div key={mi} className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
+                                    <div className={`flex alignCenter gap5`}>
+                                        <IconText dollarSign profitLoss fontWeight={800} number={mp?.totalProfitLoss} />
+                                    </div>
                                 </div>
-                            </div>
+                            )
                         ))
                     ) : (
                         <div className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>

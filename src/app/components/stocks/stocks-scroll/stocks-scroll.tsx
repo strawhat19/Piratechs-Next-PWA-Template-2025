@@ -19,7 +19,7 @@ const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
-    const { user, stocks, setStocks, stockPositions, setStockPositions } = useContext<any>(StateGlobals);
+    const { user, stocks, setStocks, stockPositions, setStockPositions, setRealtime } = useContext<any>(StateGlobals);
     
     const [updates, setUpdates] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -39,6 +39,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             let robinHoodStockPositions = stockPositions?.some((p: Position) => p?.api == StockAPIs.Robinhood && p?.dataSource == DataSources.robinhood);
 
             if (firstUpdate || robinHoodStockPositions) {
+                setRealtime(true);
                 setStocks((prevStocks: StockModel[]) => {
                     let refreshedStocks = prevStocks?.map((stock: StockModel) => {
                         if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
