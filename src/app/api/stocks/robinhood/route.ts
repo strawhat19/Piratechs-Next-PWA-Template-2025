@@ -129,11 +129,8 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
       lastExtendedHoursTradePrice = Number(lastExtendedHoursTradePrice);
       let website = `https://www.google.com/search?q=${symbol}`;
       let data = { ...instrument, ...quote, ...stockFromSymbol, api: StockAPIs.Robinhood, dataSource: DataSources.api };
-      // let sources = { instrument, quote, stock: stockFromSymbol };
       let address = data?.address ?? `${city}, ${state}, ${country}`;
       let close = previousClose;
-      // price = price > high ? lastTradePrice : price;
-      // price = price > high ? getAverage([open, close, lastTradePrice]) : price;
       price = price > high ? getAverage([lastNonRegTradePrice, lastExtendedHoursTradePrice, lastTradePrice]) : price;
       let image = data?.image ?? (stockImages as any)[symbol] ?? `https://images.financialmodelingprep.com/symbol/${symbol}.png`;
       let logo = image;
@@ -143,7 +140,7 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
       let wentPublic = ipoDate;
       let change = price - previousClose;
       let changePercentage = parseFloat(((change / previousClose) * 100)?.toFixed(2));
-      let stock = { address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, dividend, divYield, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage, api: StockAPIs.Robinhood, dataSource: DataSources.api };
+      let stock = new Stock({ address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, dividend, divYield, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage, api: StockAPIs.Robinhood, dataSource: DataSources.api });
       return stock;
     } catch { return null; }
   });

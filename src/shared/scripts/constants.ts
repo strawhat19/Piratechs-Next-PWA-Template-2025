@@ -1,6 +1,8 @@
 import { toast } from 'react-toastify';
 import { NextResponse } from 'next/server';
-import { Roles, Types } from '../types/types';
+import { DataSources, Roles, StockAPIs, Types } from '../types/types';
+
+export const resetParams = (dataSource: DataSources, api: StockAPIs, updates: number = 0, updated: boolean = false, loaded: boolean = false) => ({ api, dataSource, updates, updated, loaded, });
 
 export const constants = {
   breakpoints: {

@@ -20,7 +20,8 @@ import { Position } from '@/shared/types/models/stocks/Position';
 import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { DataSources, RobinhoodAccountTypes, StockAPIs } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
-import { apiRoutes, constants, dev, errorToast, getAPIServerData, getRealStocks, withinXSeconds } from '@/shared/scripts/constants';
+import { apiRoutes, constants, dev, errorToast, getAPIServerData, getRealStocks, stringNoSpaces, withinXSeconds } from '@/shared/scripts/constants';
+import Img from '../image/image';
 
 const devEnv = dev();
 
@@ -118,6 +119,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     const postGetRobinhood = (robinhoodAccounts: any[] = robinhood) => {
         let positionsObj = {};
         // let token = user?.z_token_robinhood;
+
         let holdings = robinhoodAccounts?.flatMap(acc => acc?.holdings);
         let positions: Position[] = robinhoodAccounts?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
 
@@ -201,6 +203,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealRobinhood && getRealStocks && (token && token?.length > 0)) {
             setRefreshing(true);
             setRobinhoodToken(token);
+            // toast.info(`Getting Positions`);
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
             let serverRouteExtension = user != null && token ? `?id=${token}` : ``;
             getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodAccountsFromAPI: any) => {
@@ -299,12 +302,22 @@ export default function Stocks({ className = `stocksComponent` }) {
                                 Object.values(RobinhoodAccountTypes)?.map((rba: RobinhoodAccountTypes, rbi: number) => (
                                     <button 
                                         key={rbi}
-                                        className={`br4 mh40 mw180 ${!robinhoodAccountTypes?.includes(rba) ? `activeButton` : `inactiveButton`}`} 
+                                        className={`stockTypeFilterButton br4 mh40 mw250 ${!robinhoodAccountTypes?.includes(rba) ? `activeButton` : `inactiveButton`}`} 
                                         onClick={(e: any) => setRobinhoodAccountTypes((prevTypes: RobinhoodAccountTypes[]) => {
                                             return robinhoodAccountTypes?.includes(rba) ? prevTypes?.filter((pt: RobinhoodAccountTypes) => pt != rba) : [ ...prevTypes, rba ];
                                         })} 
                                     >
-                                        {rba}
+                                        <Img 
+                                            width={`20px`} 
+                                            height={`20px`} 
+                                            alt={`${stringNoSpaces(rba)}Logo`} 
+                                            className={`${stringNoSpaces(rba)}Logo`}
+                                            src={rba == RobinhoodAccountTypes.alpaca ? (
+                                                `/${constants?.images?.logos?.Alpaca}`
+                                            ) : `/${constants?.images?.logos?.Robinhood}`} 
+                                        /> {rba} ({stockPositions?.filter((p: Position) => p && p != undefined && p?.merged && p?.merged?.length > 1 ? (
+                                            p?.merged?.some((mp: Position) => mp?.account_type?.toLowerCase() == rba?.toLowerCase())
+                                        ) : p?.account_type?.toLowerCase() == rba?.toLowerCase())?.length})
                                     </button>
                                 ))
                             )}
@@ -336,7 +349,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                                 <button 
                                     type={`submit`} 
                                     disabled={(!robinhoodToken || !robinhoodSocketToken) || refreshing == true || user == null} 
-                                    className={`br4 mh40 mw180 ${((!robinhoodToken || !robinhoodSocketToken) || refreshing == true || user == null) ? `disabled` : ``}`} 
+                                    className={`br4 mh40 mw250 ${((!robinhoodToken || !robinhoodSocketToken) || refreshing == true || user == null) ? `disabled` : ``}`} 
                                 >
                                     {(refreshing == true || user == null) ? `Refreshing` : `Refresh`} Stocks
                                 </button>

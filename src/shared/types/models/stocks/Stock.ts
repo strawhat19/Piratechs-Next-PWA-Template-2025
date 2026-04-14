@@ -85,7 +85,9 @@ export class Stock {
     changePercentage?: number = this.change;
     exchangeFullName?: string = this.exchange;
     exchangeShortName?: string = this.exchange;
+    lastNonRegTradePrice?: number = this.price;
     previousClose?: number | string = this.close;
+    lastExtendedHoursTradePrice?: number = this.price;
     dataSource?: DataSources | string = DataSources.api;
     fullTimeEmployees?: number | string = this.employees;
 

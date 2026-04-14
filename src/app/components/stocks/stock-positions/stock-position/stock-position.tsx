@@ -3,7 +3,7 @@
 import Stock from '../../stock/stock';
 import Img from '@/app/components/image/image';
 import IconText from '../../../icon-text/icon-text';
-import { constants } from '@/shared/scripts/constants';
+import { constants, stringNoSpaces } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { Position } from '@/shared/types/models/stocks/Position';
@@ -53,7 +53,10 @@ export default function StockPostion({
                         </strong>
                     ) : <></>}
                     <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Upd</span> <>{stock?.tracked_updates}</></i>
+                        <i><span className={`main`}>Upd</span> <>{stock?.updates}</></i>
+                    </strong>
+                    <strong className={`stockStat stockStatUpdates`}>
+                        <i><span className={`main`}>Points</span> <>{stock?.tracked_updates}</></i>
                     </strong>
                     <strong className={`stockStat stockStatLastUpdated`}>
                         <i><span className={`main`}>Last</span> <>{stock?.tracked_last_updated}</></i>
@@ -84,8 +87,8 @@ export default function StockPostion({
                                         <Img 
                                             width={`11px`} 
                                             height={`11px`} 
-                                            alt={`${mp?.account_type}Logo`} 
-                                            className={`${mp?.account_type}Logo`}
+                                            alt={`${stringNoSpaces(mp?.account_type)}Logo`} 
+                                            className={`${stringNoSpaces(mp?.account_type)}Logo`}
                                             src={mp?.account_type == RobinhoodAccountTypes.alpaca ? (
                                                 `/${constants?.images?.logos?.Alpaca}`
                                             ) : `/${constants?.images?.logos?.Robinhood}`} 

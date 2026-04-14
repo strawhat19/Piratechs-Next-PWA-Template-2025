@@ -3,16 +3,10 @@ import './icon-text.scss';
 import { BarChart } from '@mui/icons-material';
 
 export const numberFormatWithCommas = (numberValue: string | number, decimalPlaces: number) => {
-    let numberFormatted = numberValue; 
-    let parsedNumber = typeof numberValue == `string` ? parseFloat(numberValue) : numberValue;
-    let validNumber = !isNaN(parsedNumber);
-    if (validNumber) {
-        let stringNum = parsedNumber?.toLocaleString(`en-US`);
-        let parsedFloat = decimalPlaces > 0 ? parsedNumber?.toFixed(decimalPlaces) : parsedNumber;
-        numberFormatted = parsedNumber > 999 ? stringNum?.includes(`.`) ? stringNum : (stringNum + (decimalPlaces > 0 ? `.00` : ``)) : parsedFloat;
-    }
-    return numberFormatted;
-}
+  const parsedNumber = typeof numberValue === `string` ? parseFloat(numberValue) : numberValue;
+  if (isNaN(parsedNumber)) return numberValue;
+  return parsedNumber.toLocaleString(`en-US`, { minimumFractionDigits: 0, maximumFractionDigits: decimalPlaces, });
+};
 
 export default function IconText({ 
     text = ``, 
