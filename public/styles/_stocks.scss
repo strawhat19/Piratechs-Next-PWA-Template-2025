@@ -1,3 +1,13 @@
+.stockQtyColCalc {
+    --mw: 190px;
+    min-width: var(--mw) !important;
+    max-width: var(--mw) !important;
+}
+
+.currentEquityCol {
+    --mw: 180px;
+}
+
 .stocksComponentSlider {
     container-type: inline-size;
     @media (max-width: 1600px) {

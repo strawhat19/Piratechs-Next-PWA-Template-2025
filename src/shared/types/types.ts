@@ -32,6 +32,7 @@ export enum DataSources {
 }
 
 export enum RobinhoodAccountTypes {
+  alpaca = `Alpaca`,
   individual = `Individual`,
   ira_traditional = `IRA Traditional`,
 }
@@ -54,6 +55,7 @@ export enum Types {
   Robinhood = `Robinhood`,
   Notification = `Notification`,
   RobinhoodStock = `RobinhoodStock`,
+  AlpacaStockPosition = `AlpacaStockPosition`,
   RobinhoodStockPosition = `RobinhoodStockPosition`,
 }
 

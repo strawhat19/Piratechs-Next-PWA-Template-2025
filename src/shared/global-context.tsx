@@ -60,8 +60,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
     let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
+    let [alpacaPositions, setAlpacaPositions] = useState<Position[]>([]);
     let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB?.map((s: any) => new Stock(s)));
-    let [robinhoodAccountTypes, setRobinhoodAccountTypes] = useState<RobinhoodAccountTypes[]>([RobinhoodAccountTypes.individual, RobinhoodAccountTypes.ira_traditional]);
+    let [robinhoodAccountTypes, setRobinhoodAccountTypes] = useState<RobinhoodAccountTypes[]>([]);
 
     // let type = Types.Item;
     // let imageURLs = Object.values(imagesObject.vertical);
@@ -379,6 +380,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         return () => window?.removeEventListener(`resize`, debouncedResize);
     }, []);
 
+    // State
     const state = useMemo(() => ({
         onSignOut,
         signInUser,
@@ -406,6 +408,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         histories, setHistories,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
+        alpacaPositions, setAlpacaPositions,
         robinhoodAccountTypes, setRobinhoodAccountTypes,
 
         boardForm, setBoardForm,
@@ -413,7 +416,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }), [
         user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
-        stocks, histories, stockOrders, stocksAcc, stockPositions, robinhoodAccountTypes, realtime,
+        stocks, histories, stockOrders, stocksAcc, stockPositions, robinhoodAccountTypes, realtime, alpacaPositions,
         boardForm, boardItems, boards, dataLoading,
     ]);
 

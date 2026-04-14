@@ -6,7 +6,7 @@ import { StateGlobals } from '@/shared/global-context';
 import StockPostion from './stock-position/stock-position';
 
 export default function StockPositions({ getStock }: any) {
-    const { stockPositions } = useContext<any>(StateGlobals);
+    const { stockPositions, robinhoodAccountTypes } = useContext<any>(StateGlobals);
     return (
         <div className={`stockMetrics stockMetricsTableContainer stockMetrics_account_positions w100 h100`}>
             <div className={`stockMetric stockMetric_positions flex column gap15I`}>
@@ -20,7 +20,9 @@ export default function StockPositions({ getStock }: any) {
                 </div> */}
                 <div className={`positionsContainer stockMetricTableContainer`}>
                     {stockPositions?.length > 0 ? stockPositions?.map((pos: any, posIndex: number) => (
-                        <StockPostion key={posIndex} position={pos} getStock={getStock} index={posIndex} />
+                        !robinhoodAccountTypes?.includes(pos?.account_type) && (
+                            <StockPostion key={posIndex} position={pos} getStock={getStock} index={posIndex} />
+                        )
                     )) : <></>}
                 </div>
             </div>

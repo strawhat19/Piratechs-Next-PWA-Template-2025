@@ -22,9 +22,9 @@ export default function StockPostion({
 }: StockPositionProps) {
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
     const { robinhoodAccountTypes } = useContext<any>(StateGlobals);
-    const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && (position?.merged?.length > 1 && robinhoodAccountTypes?.length > 1);
+    const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && (position?.merged?.length > 1 && robinhoodAccountTypes?.length < 3);
     return (
-        <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition` : `singlePosition`}`}>
+        <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition ${position?.merged && position?.merged?.length > 2 ? `mergedPositionXL` : ``}` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
                 <div className={`stockPositionStatLabel`}>
                     <strong><span className={`main`}>({index + 1}) </span> <span style={{ marginLeft: 5 }}>Stock</span></strong> 
@@ -49,7 +49,7 @@ export default function StockPostion({
                         <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
                     </strong>
                     <strong className={`stockStat stockStatLastUpdated`}>
-                        <i><span className={`main`}>Last</span> <>{position?.stock?.tracked_last_updated}</></i>
+                        <i><span className={`main`}>Last</span> <>{position?.stock?.lastUpdate}</></i>
                     </strong>
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>
@@ -63,33 +63,31 @@ export default function StockPostion({
                             <i><span className={`main`}>Upd</span> <>{position?.stock?.lastUpdate}</></i>
                         </strong> */}
                     {/* </Stock> */}
-                    {position?.type == Types.RobinhoodStockPosition && (
-                       <div className={`robinhoodStockPositionAccountTypes`}>
-                            {position?.merged && position?.merged?.length > 0 ? (
-                                position?.merged?.map((mp, mi) => (
-                                    robinhoodAccountTypes?.includes(mp?.account_type) && (
-                                        <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
-                                            {mp?.account_type}
-                                        </div>
-                                    )
-                                ))
-                            ) : (
-                                <div className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
-                                    {position?.account_type}
-                                </div>
-                            )}
-                       </div>
-                    )}
+                    <div className={`robinhoodStockPositionAccountTypes`}>
+                        {position?.merged && position?.merged?.length > 0 ? (
+                            position?.merged?.map((mp, mi) => (
+                                !robinhoodAccountTypes?.includes(mp?.account_type) && (
+                                    <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
+                                        {mp?.account_type}
+                                    </div>
+                                )
+                            ))
+                        ) : (
+                            <div className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
+                                {position?.account_type}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
-            <div className={`avgEquityCol stockPositionStat flex gap5 column alignCenter fitMin`}>
+            <div className={`avgEquityCol stockQtyCol stockQtyColCalc stockPositionStat flex gap5 column alignCenter fitMin`}>
                 <div className={`stockPositionStatLabel main w100 center`}>
                     <strong>Average Equity</strong> 
                 </div>
                 <div className={`stockPositionAvgEquityFields stockColMinHeight w100`}>
                     {position?.merged && position?.merged?.length > 0 ? (
                         position?.merged?.map((mp, mi) => (
-                            robinhoodAccountTypes?.includes(mp?.account_type) && (
+                            !robinhoodAccountTypes?.includes(mp?.account_type) && (
                                 <div key={mi} className={`stockPositionAvgEquityField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric`}>
                                     <div className={`flex alignCenter gap5`}>
                                         <span>{mp?.quantity}</span>
@@ -116,14 +114,14 @@ export default function StockPostion({
                     )}
                 </div>
             </div>
-            <div className={`currentEquityCol stockOrderStat flex gap5 column alignCenter`}>
+            <div className={`currentEquityCol stockQtyCol stockQtyColCalc stockOrderStat flex gap5 column alignCenter`}>
                 <div className={`stockPositionStatLabel main w100 center`}>
                     <strong>Current Equity</strong> 
                 </div>
                 <div className={`stockPositionQtyFields stockColMinHeight w100`}>
                     {position?.merged && position?.merged?.length > 0 ? (
                         position?.merged?.map((mp, mi) => (
-                            robinhoodAccountTypes?.includes(mp?.account_type) && (
+                            !robinhoodAccountTypes?.includes(mp?.account_type) && (
                                 <div key={mi} className={`stockPositionQtyField stockPositionEnd stockPositionEndQField stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                                     <div className={`flex alignCenter gap5`}>
                                         <span>{mp?.quantity}</span>
@@ -150,14 +148,14 @@ export default function StockPostion({
                     )}
                 </div>
             </div>
-            <div className={`profitLossCol stockOrderStat flex gap5 column alignCenter`}>
+            <div className={`profitLossCol stockQtyCol stockQtyColPL stockOrderStat flex gap5 column alignCenter`}>
                 <div className={`stockPositionStatLabel main w100 center`}>
                     <strong>Profit / Loss</strong> 
                 </div>
                 <div className={`stockPositionPLFields stockColMinHeight w100`}>
                     {position?.merged && position?.merged?.length > 0 ? (
                         position?.merged?.map((mp, mi) => (
-                            robinhoodAccountTypes?.includes(mp?.account_type) && (
+                            !robinhoodAccountTypes?.includes(mp?.account_type) && (
                                 <div key={mi} className={`stockPositionPLField stockPositionEnd stockPositionStatValue stockColValue subMetric stockPositionProfitLoss gap5`}>
                                     <div className={`flex alignCenter gap5`}>
                                         <IconText dollarSign profitLoss fontWeight={800} number={mp?.totalProfitLoss} />

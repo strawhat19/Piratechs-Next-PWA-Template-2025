@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Stock } from '@/shared/types/models/stocks/Stock';
+import { Position } from '@/shared/types/models/stocks/Position';
 import { average as getAverage } from '@/shared/scripts/constants';
 import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '@/shared/types/types';
 import { robinhoodAccountsDefault } from '@/shared/server/database/samples/stocks/robinhood/robinhood';
@@ -182,17 +183,11 @@ export const getPositions = async (account: any = robinhoodAccount, token: strin
     if (positionsResl) {
       let stockPositions = positionsResl?.results;
       let positions = Array.isArray(stockPositions) && stockPositions?.length > 0 ? stockPositions?.map(sp => {
-        let modifiedSP = { 
-          ...sp, 
-          merged: [],
-          account_id, 
-          account_type,
-          api: StockAPIs.Robinhood, 
-          dataSource: DataSources.api, 
-        };
-        // modifiedSP.merged.push(modifiedSP);
+        let modifiedSP = new Position({ ...sp, merged: [], account_id, account_type, api: StockAPIs.Robinhood, dataSource: DataSources.api, forceUpdate: false });
+        let copy = new Position({ ...modifiedSP, forceUpdate: false });
+        modifiedSP.merged = [copy];
         return modifiedSP;
-      }) : [];
+      })?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss) : [];
       return positions;
     }
   }
@@ -245,8 +240,7 @@ export const GET = async (req: Request) => {
       let performances = await getAccountPerfomancesFromAccountIDs(account_ids, token);
       if (performances && Array.isArray(performances) && performances?.length > 0) {
 
-        // let rbAccounts = await Promise.all(
-        robinhood.accounts = await Promise.all(
+        let rbAccounts = await Promise.all(
           robinhood?.accounts?.map(async (acc: any) => {
             let holdings: any = [];
             let positions: any = [];
@@ -261,7 +255,7 @@ export const GET = async (req: Request) => {
           })
         );
 
-        // robinhood.accounts = await rbAccounts;
+        robinhood.accounts = await rbAccounts;
 
         // let positionsObj = {};
         // let t_positions = robinhood?.accounts?.flatMap((acc: any) => acc?.positions)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);

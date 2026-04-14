@@ -27,7 +27,7 @@ export const stockTableAlignmentCenter = false;
 export const positionProfitLoss = (position: any) => position?.current_price - position?.avg_entry_price;
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime } = useContext<any>(StateGlobals);
+    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setAlpacaPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime, alpacaPositions } = useContext<any>(StateGlobals);
 
     let robinhoodTokenField = useRef(null);
     let robinhoodSocketTokenField = useRef(null);
@@ -67,9 +67,10 @@ export default function Stocks({ className = `stocksComponent` }) {
             getAPIServerData(apiServerRoute)?.then((alpaca_positions: Position[]) => {
                 let positions = alpaca_positions?.map((p: Position) => new Position({ ...p, stock: getStock(p), dataSource: DataSources.api, api: StockAPIs.Alpaca }));
                 let sortedPositions = positions?.sort((posA: Position, posB: Position) => positionProfitLoss(posB) - positionProfitLoss(posA));
+                setAlpacaPositions(sortedPositions);
                 setStockPositions(sortedPositions);
                 setLoading(false);
-                console.log(`Positions`, sortedPositions);
+                console.log(`Alpaca Positions`, sortedPositions);
             });
         } else {
             setLoading(false);
@@ -97,20 +98,35 @@ export default function Stocks({ className = `stocksComponent` }) {
         // let token = user?.z_token_robinhood;
         let holdings = robinhoodAccounts?.flatMap(acc => acc?.holdings);
         let positions: Position[] = robinhoodAccounts?.flatMap(acc => acc?.positions)?.sort((a, b) => b?.totalProfitLoss - a?.totalProfitLoss);
-        let positionsCopy = [ ...positions ];
+
+        let alPositions: Position[] = alpacaPositions?.map((alp: Position) => {
+            let stock: Stock = stocks?.find((s: Stock) => s?.symbol == alp?.symbol);
+            let updAlp: Position = new Position({ ...alp, stock, });
+            let copy = new Position({ ...updAlp });
+            updAlp.merged = [copy];
+            return updAlp;
+        });
+
+        let positionsCopy = [ ...positions, ...alPositions ];
+
         positions?.forEach(p => {
+            let aKey = RobinhoodAccountTypes.alpaca;
             let iKey = RobinhoodAccountTypes.individual;
             let tKey = RobinhoodAccountTypes.ira_traditional;
+            let stock: Stock = stocks?.find((s: Stock) => s?.symbol == p?.symbol);
             let matchPs = positionsCopy?.filter(pos => pos?.symbol == p?.symbol);
+            let aPos = matchPs?.find(pos => pos?.account_type == aKey) ?? null;
             let iPos = matchPs?.find(pos => pos?.account_type == iKey) ?? null;
             let tPos = matchPs?.find(pos => pos?.account_type == tKey) ?? null;
-            let merged = [iPos, tPos]?.filter(Boolean)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+            let merged = [aPos, iPos, tPos]?.filter(Boolean)?.map(ps => ({ ...ps, stock }))?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
             p.merged = merged;
             Object.assign(positionsObj, { [p?.symbol]: p });
         });
+
         let mergedPositionsUnique = Object.values(positionsObj)?.length > 0 ? (
-            Object.values(positionsObj)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss)
+            Object.values(positionsObj)?.sort((a: any, b: any) => b?.merged?.[0]?.totalProfitLoss - a?.merged?.[0]?.totalProfitLoss)
         ) : positions;
+
         setStockPositions(mergedPositionsUnique);
         setLoading(false);
         setloaded(true);
@@ -251,15 +267,15 @@ export default function Stocks({ className = `stocksComponent` }) {
                         <Logo label={`Stocks`} style={{ marginRight: 5 }} />
                         {user != null && <>
                             {realtime == true && (
-                                Object.values(RobinhoodAccountTypes)?.reverse()?.map((rba: RobinhoodAccountTypes, rbi: number) => (
+                                Object.values(RobinhoodAccountTypes)?.map((rba: RobinhoodAccountTypes, rbi: number) => (
                                     <button 
                                         key={rbi}
-                                        className={`br4 mh40 mw180 ${robinhoodAccountTypes?.includes(rba) ? `inactiveButton` : `activeButton`}`} 
+                                        className={`br4 mh40 mw180 ${!robinhoodAccountTypes?.includes(rba) ? `activeButton` : `inactiveButton`}`} 
                                         onClick={(e: any) => setRobinhoodAccountTypes((prevTypes: RobinhoodAccountTypes[]) => {
                                             return robinhoodAccountTypes?.includes(rba) ? prevTypes?.filter((pt: RobinhoodAccountTypes) => pt != rba) : [ ...prevTypes, rba ];
                                         })} 
                                     >
-                                        {rba == RobinhoodAccountTypes.individual ? RobinhoodAccountTypes.ira_traditional : RobinhoodAccountTypes.individual}
+                                        {rba}
                                     </button>
                                 ))
                             )}

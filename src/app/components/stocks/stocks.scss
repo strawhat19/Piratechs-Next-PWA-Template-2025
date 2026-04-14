@@ -2,38 +2,52 @@
     justify-content: space-between;
 }
 
-// .robinhoodTokenFieldInput {
-//     max-width: 250px;
-// }
+.stockPositionEndQField {
+    padding-left: 0 !important;
+}
 
-// .stockPositionEndQField {
-//     padding-left: 0 !important;
-//     justify-content: space-between;
-// }
+.positionAccountType {
+    position: relative;
+}
 
 .mergedPosition {
+    --fs: 15px;
+    &.mergedPositionXL {
+        --fs: 13px;
+        .positionAccountType {
+            top: -4px;
+        }
+        .stockQtyCol {
+            top: -3px;
+            grid-gap: 3px;
+            position: relative;
+        }
+        .stockPositionStatLabel {
+            font-size: calc(var(--fs) + 1px);
+        }
+    }
     .stockPositionStart {
         .robinhoodStockPositionAccountTypes {
             grid-gap: 4px;
             display: flex;
-            font-size: 15px;
             align-items: end;
+            font-size: var(--fs);
             flex-direction: column;
         }
     }
     .stockPositionEnd {
-        font-size: 15px !important;
+        font-size: var(--fs) !important;
     }
 }
 
 .stockPositionStatLabel {
     display: flex;
-    grid-gap: 15px;
+    grid-gap: 10px;
     align-items: center;
 }
 
 .stockStat {
-    font-size: 0.65em;
+    font-size: 12px;
     i {
         display: flex;
         grid-gap: 5px;
@@ -50,7 +64,7 @@
 }
 
 .avgEquityCol {
-    min-width: 225px;
+    min-width: 214px;
 }
 
 .currentEquityCol {

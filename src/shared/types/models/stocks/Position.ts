@@ -27,6 +27,7 @@ export class Position {
 
     // Robinhood
     url?: string;
+    updated_by?: DataSources;
     created_at?: string | Date;
     updated_at?: string | Date;
     account_type?: RobinhoodAccountTypes | string = RobinhoodAccountTypes.individual;
@@ -93,8 +94,7 @@ export class Position {
 
     updateFromPrices(price = this?.price, average = this?.average, quantity = this?.quantity) {
         if (typeof price == `number` && typeof average == `number`) {
-            this.api = StockAPIs.Robinhood;
-            this.dataSource = DataSources.robinhood;
+            this.updated_by = DataSources.robinhood;
             this.price = price;
             this.current_price = price;
             this.equity = quantity * average;
@@ -111,7 +111,7 @@ export class Position {
             //     // updatedMerged = this.merged?.map((mp: Position) => {
             //     //     if (mp?.price && mp?.equity && mp?.quantity && mp?.average) {
             //     //         let newPos = mp;
-            //     //         // let newPos = new Position({ ...mp, forceUpdate: true });
+            //     //         // let newPos = new Position({ ...mp, forceUpdate: false });
             //     //         newPos?.updateFromPrices(price);
             //     //         return newPos;
             //     //     } else return mp;

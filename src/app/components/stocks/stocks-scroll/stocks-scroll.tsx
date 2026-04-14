@@ -59,7 +59,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                                             // let price = Number(updPos?.price);
                                             // let newPrice = Number(stk?.price);
                                             // if (price != newPrice) {
-                                            //     updPos = new Position({ ...updPos, forceUpdate: true, price: stk?.price, });
+                                            //     updPos = new Position({ ...updPos, forceUpdate: false, price: stk?.price, });
                                             //     updPos = updPos?.updateFromPrices(Number(newPrice));
                                             //     // let owPos = { ...position, ...updPos };
                                             //     // updPos = owPos as any;
@@ -67,7 +67,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                                             // return updPos;
                                         } else return position;
                                     } else return position;
-                                })?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
+                                })?.sort((a: Position, b: Position) => Number(b?.merged?.[0]?.totalProfitLoss) - Number(a?.merged?.[0]?.totalProfitLoss));
                                 return refreshedPositions;
                             });
                             return stk;
