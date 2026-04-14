@@ -21,7 +21,7 @@ export default function StockPositions({ getStock }: any) {
                 <div className={`positionsContainer stockMetricTableContainer`}>
                     {stockPositions?.length > 0 ? stockPositions?.map((pos: any, posIndex: number) => (
                         !robinhoodAccountTypes?.includes(pos?.account_type) && (
-                            <StockPostion key={posIndex} position={pos} getStock={getStock} index={posIndex} />
+                            <StockPostion key={posIndex} position={pos} index={posIndex} />
                         )
                     )) : <></>}
                 </div>

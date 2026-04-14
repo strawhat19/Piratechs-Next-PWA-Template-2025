@@ -174,16 +174,17 @@ export class Stock {
         let d = new Date();
         this.updateUpdates();
         this.updated_at = d?.toISOString();
+        this.tracked_last_updated = d?.toLocaleString();
         if (typeof this.tracked_updates == `number`) {
-            this.tracked_last_updated = d?.toLocaleString();
             this.tracked_updates = this.tracked_updates + 1;
         }
     }
 
     logUpdate(key: string = `Default`, extraData: any = {}) {
         this.updateStats();
+        let updates = this.updates;
         let marketOpen = isMarketOpen();
-        console.log(`${this?.symbol} "${key}" Update`, {
+        console.log(`${this?.symbol} "${key}" Update #`, updates, {
             ...extraData,
             z_key: key,
             Z_stock: this,

@@ -7,6 +7,7 @@ import Stock from '../stock/stock';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
+// import { calcTotalProfitLoss } from '../stocks';
 import { StateGlobals } from '@/shared/global-context';
 import { DataSources, StockAPIs } from '@/shared/types/types';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -52,19 +53,18 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                                     if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
                                         if (stk?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) {
                                             if (!position?.price) return position;
-                                            const nextPos = position;
-                                            nextPos?.updateFromPrices(Number(nextPos?.price));
-                                            return nextPos;
-                                            // let updPos = position;
-                                            // let price = Number(updPos?.price);
-                                            // let newPrice = Number(stk?.price);
-                                            // if (price != newPrice) {
-                                            //     updPos = new Position({ ...updPos, forceUpdate: false, price: stk?.price, });
-                                            //     updPos = updPos?.updateFromPrices(Number(newPrice));
-                                            //     // let owPos = { ...position, ...updPos };
-                                            //     // updPos = owPos as any;
-                                            // }
-                                            // return updPos;
+                                            let updPos = position;
+                                            let price = Number(updPos?.price);
+                                            let newPrice = Number(stk?.price);
+                                            if (price != newPrice) {
+                                                updPos?.updateFromPrices(newPrice);
+                                                // let { average, current, equity, quantity } = position;
+                                                // updPos = new Position({ ...updPos, stock: stk, forceUpdate: false, price: newPrice, average, current, equity, quantity });
+                                                // updPos = updPos?.updateFromPrices(newPrice);
+                                                // let totalProfitLoss = calcTotalProfitLoss(updPos, stk);
+                                                // updPos.totalProfitLoss = totalProfitLoss;
+                                                return updPos;
+                                            } else return updPos;
                                         } else return position;
                                     } else return position;
                                 })?.sort((a: Position, b: Position) => Number(b?.merged?.[0]?.totalProfitLoss) - Number(a?.merged?.[0]?.totalProfitLoss));

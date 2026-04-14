@@ -26,6 +26,21 @@ export const stockTableAlignmentCenter = false;
 
 export const positionProfitLoss = (position: any) => position?.current_price - position?.avg_entry_price;
 
+export const calcTotalProfitLoss = (position: Position | null | any, stock: Stock | null | any) => {
+    if (position) {
+        if (stock) {
+            let { price } = stock;
+            let { average, quantity, current, equity } = position;
+            if (typeof price == `number` && typeof average == `number`) {
+                equity = quantity * average;
+                current = quantity * price;
+                let totalProfitLoss = Number(current - equity);
+                return totalProfitLoss;
+            }
+        } else return Number(position?.totalProfitLoss);
+    } else return Number(position?.totalProfitLoss);
+}
+
 export default function Stocks({ className = `stocksComponent` }) {
     const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setAlpacaPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime, alpacaPositions } = useContext<any>(StateGlobals);
 
@@ -65,8 +80,13 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealStocks) {
             let apiServerRoute = apiRoutes?.stocks?.routes?.positions;
             getAPIServerData(apiServerRoute)?.then((alpaca_positions: Position[]) => {
-                let positions = alpaca_positions?.map((p: Position) => new Position({ ...p, stock: getStock(p), dataSource: DataSources.api, api: StockAPIs.Alpaca }));
-                let sortedPositions = positions?.sort((posA: Position, posB: Position) => positionProfitLoss(posB) - positionProfitLoss(posA));
+                let positions = alpaca_positions?.map((p: Position) => {
+                    let stock: Stock = getStock(p);
+                    let totalProfitLoss = calcTotalProfitLoss(p, stock);
+                    let newPos = new Position({ ...p, stock, price: stock?.price, totalProfitLoss, dataSource: DataSources.api, api: StockAPIs.Alpaca });
+                    return newPos;
+                });
+                let sortedPositions = positions?.sort((posA: Position | any, posB: Position | any) => (calcTotalProfitLoss(posB, posB?.stock) as number) - (calcTotalProfitLoss(posA, posA?.stock) as number));
                 setAlpacaPositions(sortedPositions);
                 setStockPositions(sortedPositions);
                 setLoading(false);
