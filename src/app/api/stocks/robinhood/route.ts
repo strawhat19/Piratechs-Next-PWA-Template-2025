@@ -42,7 +42,7 @@ let robinhoodEndpoints = {
   discovery_lists: () => `https://api.robinhood.com/discovery/lists/v2/9827ee00-30ef-422c-8c37-a3efaf995362/items/?owner_type=custom&fields=market_cap%2Csector%2Cpe_ratio%2Cupcoming_earnings%2Cupcoming_dividend_date%2Cupcoming_ex_dividend_date%2Cdividend_yield%2Caverage_volume_30_days%2Cmargin_initial_requirement%2Cmargin_maintenance_requirement%2Cshort_low_risk_maintenance_ratio`,
 }
 
-export const robinhoodLogin = async (token: string = robinhoodAuthorizationToken, loginPayload: any) => {
+export const robinhoodLogin = async (token: string = robinhoodAuthorizationToken, loginPayload: any = { email: `rakib987@gmail.com`, password: `` }) => {
   let robinhoodToken = {};
   try {
     let loginRes = await robinhoodFetchPost(robinhoodEndpoints.login(), `POST`, JSON.stringify(loginPayload));
