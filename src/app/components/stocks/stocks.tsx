@@ -70,11 +70,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 let account = { ...acc, dataSource: DataSources.api, api: StockAPIs.Alpaca };
                 setStocksAcc(account);
                 setLoading(false);
-                devEnv && console.log(`Alpaca Account`, account);
+                console.log(`Alpaca Account`, account);
             });
         } else {
             setLoading(false);
-            devEnv && console.log(`Alpaca Account`, stocksAcc);
+            console.log(`Alpaca Account`, stocksAcc);
         }
     }
     
@@ -92,11 +92,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 setAlpacaPositions(sortedPositions);
                 setStockPositions(sortedPositions);
                 setLoading(false);
-                devEnv && console.log(`Alpaca Positions`, sortedPositions);
+                console.log(`Alpaca Positions`, sortedPositions);
             });
         } else {
             setLoading(false);
-            devEnv && console.log(`Alpaca Positions`, stockPositions);
+            console.log(`Alpaca Positions`, stockPositions);
         }
     }
   
@@ -107,11 +107,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 let orders = alpaca_orders?.map((p: Order) => new Order(p));
                 setStockOrders(orders);
                 setLoading(false);
-                devEnv && console.log(`Alpaca Orders`, orders);
+                console.log(`Alpaca Orders`, orders);
             });
         } else {
             setLoading(false);
-            devEnv && console.log(`Alpaca Orders`, stockOrders);
+            console.log(`Alpaca Orders`, stockOrders);
         }
     }
 
