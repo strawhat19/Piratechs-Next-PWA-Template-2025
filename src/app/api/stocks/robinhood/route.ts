@@ -17,22 +17,6 @@ let robinhoodAccount = robinhoodAccounts?.main;
 export const robinhoodFetch = async (endpoint: string, token: string = robinhoodAuthorizationToken) => await fetch(endpoint, { method: `GET`, cache: `no-store`, headers: { [`Content-Type`]: `application/json`, Authorization: `Bearer ${token}`, } });
 export const robinhoodFetchPost = async (endpoint: string, method = `POST`, body: any = {}) => await fetch(endpoint, { method, headers: { [`Accept`]: `application/json`, [`Content-Type`]: `application/json` , }, body });
 
-export const loginPayload = {
-  "device_token": "53fb8e23-8290-47b6-b24b-bc089b7734d1",
-  "client_id": "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS",
-  "create_read_only_secondary_token": true,
-  "expires_in": 86400,
-  "grant_type": "password",
-  "scope": "internal",
-  "token_request_path": "/login?to=%2F",
-  "username": "rakib987@gmail.com",
-  "password": "usonofa678",
-  "long_session": true,
-  "request_id": "1147cbb0-f308-4fd4-b530-5c76b09ba0c4",
-  "gr_key": "6Leq-w4qAAAAAEAT7gwYSJ21_sYIejmG73oR3fAO",
-  "gr_token": "0cAFcWeA464jgR9uyLoMWCyXyvz6isn5MjgY2MRAVkNRc2EuHoXrmGVSSEnbz4X-9WyPtVi2aoRp3c1M9hgXJyclG06KTx14yHDYlb8QQUDliSQ2ATkbTjoOsUF-jz8vDE3bZtJvv7SeFIH0tSjEfBwjz1tDZ5sXDAXQmsYfv7MqL6rbuCrQy3hC-de1GKMLm8EL8cpwI0kxWdGmfjnCRm4ZVpqgYjRNRYdTT6dVERKpP-sGXWMbU2lAZwAnFfWbatziJUCzUE67mq25npXcbkhVhMqzylf_HI_5jJRTlrda9sLpbJMQ2MjPTmj06vhflLHKcs19rE81I5S4vUtQCRrMfU5QF2YfSQIRGx_XvEhrv-mDq7UKfyN1BU6ZEZVZ9PdsFoY0h-7VYSl9QDtrImktjV9CwGJhVYgNSVNEoQMtH5zK32BZrjLawabDLV0zOnwomTogO6miOQR3ql_N6TpBNqF7iev8tu_VnNowAcMPpaEdyy6mZaxUWMBbtxxriuMHmgjJhR55Lcbh704_EoWvBYmZe0E_h_gIU5_32x0hVxfYlE4XMQQS46Uu1BqI0HmVUp4GYl1P6mZ8FtW6OnUcjUSPY5AayIoNq_08We71gdP75lXnQRFFPhkIVFp1y13pNT9ltTPXmk3dPRoT2L7PxMxtGMZPg3CBPqu8mbLkMNlzf-cSXbB4hKr07s_6IjMNgnGsv4nSaGCzA2HvT6hiqL0eD9wrdeWiDFWSELkxqXrt1Ea8iDltyQxpO-HDvTaCBoiHIITPh61BQHUB-MDJ6wYUue8QOndNfacV8BYg_hMmtexvuyqjL8fMhfiVyctY1FQmeKrRvAvZhOT1TfNKyJDzsY5Ate4ekYJxaIUiNT-MWS3xQUvIbbhwXYPITxnSYXxld86j0xv1mRYxxjEmUFwMkYtudVZ176qz6Bmkn3WpgZ1m4-T_usuSOW_s3TYKqtW8VUf42dxnAZ4KgJlbqLUWAC58hDxEQor4i7yZZk_9WyaF3B2g9OxSV36Xw5cLDFzTkRdNGNVYQYqkbae5LtbelQNagoIZ9-cFpK7lvwbjQStKX7YN0rSxEcMLM9q7HPNpddmA7LCHqOmKEHxJqc8yqPOAYq0_AQ5o8SzvOL8aQ1nS3YwJiwGF-Vr31PX9xk5jEre2qYOgfK9Y800ziwM1_VdmJRIUKaJyDkjOcjxMTA_b_aXb9fcc9lyrso9Qqnq0Ls23YlwehNCMIrXLF1VRvqFuboyg6sNirY0ifT3uhl5uWvbLTANrkkt5F1sphqTMO3H3tAbMH-NZW9uWEzBqFFidA4eoKytqe_voNrSJVwsM5Zpt0gCBAdahxa02LNytlf3e-Bk_oH-aIh1JJDA5mJs0v4JLNHG_VY2Ir3ArFOQOap9pdKbDCOnekLAkApiWozU9fhkR8l4_4oRcm_BNleYIbW6Su5o4I9-4YmJyoJ8e866zW0_WcH7JyHK365TtPaWzhRNSQEeb1J5ScqMpy1qMJedIVuENLstg8JzBDVdh5NBWRSDDTlfh4Ja2KDoSGy_9L7krUvP00bR6wqk2yRq_zCC15csvVTr5Y2nj7vutY3Lwt2Rv1DWuhiQybXoTfI1m1z3oXFs0qGRTVkSZUcLqNsnW8zAbP-jJ40zyO7d433p6lIbAo-5-fM2gx_rtlv4CbS2wJrrrIc3fo_M6TkPRkHUVg3_89vPYgufzXtl13-qdNC15f_sUQCgvalmOTq9cbMLstljk_CwpUVBitujnMO8YrxvXv0MJSfCNHUU8169Ku2scpEZ0jtuO1N4G4eEHpPdmDmNOiNfFFiHLhBGs8HOep_noEFMiYmKhWiZrjISThaquyRvS3mez1Pvpm7vrO-Kk3zbC7y5bhTIE_KFJADH2iKk0FlR9r11mN72xmu2zpm10iT3gDs76AXfisIm-ChJnu_uy-sXKJuO4rsSL1X-DDscylanNwBbdM1IkwgAhYBPG7X6GWXQURJ9OOEkBmjnJ9_BQoeJ8ZNC7g2QiTj5WasoyOyPHkENX__Gz0FVhd8MdgakAksC9w7wMGmDrL_saB3t8bSpTxHMbRN8pOIe9a4rVuHuIIRtVYmEmpmnlCtJdQ_IsVPSlEiY6WP_HGifHheGHCAGOp2cMTVxA063EQmr7jgRKcB1Xbu4TdTDKHhjN1LXaz8V3-XpeCIJ7y21crNENxDjQNi7aMEuxxcew"
-};
-
 let robinhoodEndpoints = {
   user: () => `https://api.robinhood.com/user/`,
   orders: () => `https://api.robinhood.com/orders/`,
@@ -57,7 +41,7 @@ let robinhoodEndpoints = {
   discovery_lists: () => `https://api.robinhood.com/discovery/lists/v2/9827ee00-30ef-422c-8c37-a3efaf995362/items/?owner_type=custom&fields=market_cap%2Csector%2Cpe_ratio%2Cupcoming_earnings%2Cupcoming_dividend_date%2Cupcoming_ex_dividend_date%2Cdividend_yield%2Caverage_volume_30_days%2Cmargin_initial_requirement%2Cmargin_maintenance_requirement%2Cshort_low_risk_maintenance_ratio`,
 }
 
-export const robinhoodLogin = async (token: string = robinhoodAuthorizationToken) => {
+export const robinhoodLogin = async (token: string = robinhoodAuthorizationToken, loginPayload: any) => {
   let robinhoodToken = {};
   try {
     let loginRes = await robinhoodFetchPost(robinhoodEndpoints.login(), `POST`, JSON.stringify(loginPayload));
@@ -200,11 +184,13 @@ export const getPositions = async (account: any = robinhoodAccount, token: strin
       let positions = Array.isArray(stockPositions) && stockPositions?.length > 0 ? stockPositions?.map(sp => {
         let modifiedSP = { 
           ...sp, 
+          merged: [],
           account_id, 
           account_type,
           api: StockAPIs.Robinhood, 
           dataSource: DataSources.api, 
         };
+        // modifiedSP.merged.push(modifiedSP);
         return modifiedSP;
       }) : [];
       return positions;
@@ -258,6 +244,8 @@ export const GET = async (req: Request) => {
       let account_ids = robinhood?.accounts?.map((acc: any) => String(acc?.id));
       let performances = await getAccountPerfomancesFromAccountIDs(account_ids, token);
       if (performances && Array.isArray(performances) && performances?.length > 0) {
+
+        // let rbAccounts = await Promise.all(
         robinhood.accounts = await Promise.all(
           robinhood?.accounts?.map(async (acc: any) => {
             let holdings: any = [];
@@ -272,6 +260,28 @@ export const GET = async (req: Request) => {
             return mod_acc;
           })
         );
+
+        // robinhood.accounts = await rbAccounts;
+
+        // let positionsObj = {};
+        // let t_positions = robinhood?.accounts?.flatMap((acc: any) => acc?.positions)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+
+        // t_positions?.forEach((p: any) => {
+        //   let iKey = RobinhoodAccountTypes.individual;
+        //   let tKey = RobinhoodAccountTypes.ira_traditional;
+        //   let matchPs = t_positions?.filter((pos: any) => pos?.symbol == p?.symbol);
+        //   let iPos = matchPs?.find((pos: any) => pos?.account_type == iKey) ?? null;
+        //   let tPos = matchPs?.find((pos: any) => pos?.account_type == tKey) ?? null;
+        //   let merged = [iPos, tPos]?.filter(Boolean)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+        //   p.merged = merged;
+        //   Object.assign(positionsObj, { [p?.symbol]: p });
+        // });
+
+        // let mergedPositionsUnique = Object.values(positionsObj)?.length > 0 ? (
+        //   Object.values(positionsObj)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss)
+        // ) : t_positions;
+
+        // robinhood.accounts = mergedPositionsUnique;
       }
     }
 

@@ -73,7 +73,7 @@ export const updateUserInDatabase = async (id: string, updates: Partial<User>) =
   const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
   const res = await fetch(usersAPI + `/` + id, {
     method: `PATCH`,
-    body: JSON.stringify(updates),
+    body: JSON.stringify({ ...updates, updated: new Date()?.toLocaleString() }),
     headers: { 
       Authorization: `Bearer ${token}`,
       [`Content-Type`]: `application/json`, 

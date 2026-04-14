@@ -1,8 +1,9 @@
-import { DataSources } from '@/shared/types/types';
+import { DataSources, StockAPIs } from '@/shared/types/types';
 
 export const robinhoodAccountsDefault = [
     {
         "id": "814497780",
+        api: StockAPIs.Database,
         "url": "https://api.robinhood.com/accounts/814497780/",
         "cash": "59.8900",
         "created_at": "2019-07-30T16:23:39.463826Z",
@@ -6752,6 +6753,7 @@ export const robinhoodAccountsDefault = [
     },
     {
         "id": "507375913",
+        api: StockAPIs.Database,
         "url": "https://api.robinhood.com/accounts/507375913/",
         "cash": "1532.1200",
         "created_at": "2025-04-01T02:29:40.052309Z",

@@ -43,26 +43,34 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 setStocks((prevStocks: StockModel[]) => {
                     let refreshedStocks = prevStocks?.map((stock: StockModel) => {
                         if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
-                            const next = stock;
-                            next?.updateFromLiveEventsArray(data);
-                            updatedStocks?.push(next);
+                            const stk: StockModel = stock;
+                            stk?.updateFromLiveEventsArray(data);
+                            updatedStocks?.push(stk);
                             setStockPositions((prevPositions: Position[]) => {
                                 if (!prevPositions?.length) return prevPositions;
                                 let refreshedPositions = prevPositions?.map((position: Position) => {
                                     if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
-                                        if (next?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) {
+                                        if (stk?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) {
+                                            if (!position?.price) return position;
                                             const nextPos = position;
-                                            nextPos?.updateFromPrices(Number(next?.price));
-                                            // const nextPosMerged = nextPos?.merged?.map(mp => new Position(mp as Position)?.updateFromPrices(Number(next?.price)));
-                                            // const nextPosMergedSorted = nextPosMerged?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
-                                            // nextPos.merged = nextPosMergedSorted;
+                                            nextPos?.updateFromPrices(Number(nextPos?.price));
                                             return nextPos;
+                                            // let updPos = position;
+                                            // let price = Number(updPos?.price);
+                                            // let newPrice = Number(stk?.price);
+                                            // if (price != newPrice) {
+                                            //     updPos = new Position({ ...updPos, forceUpdate: true, price: stk?.price, });
+                                            //     updPos = updPos?.updateFromPrices(Number(newPrice));
+                                            //     // let owPos = { ...position, ...updPos };
+                                            //     // updPos = owPos as any;
+                                            // }
+                                            // return updPos;
                                         } else return position;
                                     } else return position;
                                 })?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
                                 return refreshedPositions;
                             });
-                            return next;
+                            return stk;
                         } else return stock;
                     });
                     return refreshedStocks;
