@@ -20,7 +20,7 @@ const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
-    const { user, stocks, setStocks, stockPositions, setStockPositions, setRealtime } = useContext<any>(StateGlobals);
+    const { user, stocks, setStocks, stockPositions, setStockPositions, setRealtime, stocksFullyLoaded } = useContext<any>(StateGlobals);
     
     const [updates, setUpdates] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -129,6 +129,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     }, [user?.z_token_robinhood]);
 
     useEffect(() => {
+        // if (!stocksFullyLoaded) return;
         if (!user?.z_token_robinhood) return;
         if (!user?.z_token_robinhood_socket) return;
         if (!uniquePopularStockSymbols?.length) return;
@@ -202,10 +203,12 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                     let isData = typeLC == `feed_data` && (dataD && Array.isArray(dataD));
                     if (isData) {
                         onSocketStockDataUpdate(channel, channelName, dataD);
-                    } else console.log(`Robinhood WS ${channelName}`, { ...data, channel, channelName, type });
-                } else {
-                    console.log(`Robinhood WS Data`, { ...data, channel, type });
-                }
+                    } 
+                    // else console.log(`Robinhood WS ${channelName}`, { ...data, channel, channelName, type });
+                } 
+                // else {
+                //     console.log(`Robinhood WS Data`, { ...data, channel, type });
+                // }
     
                 if (data?.type === `SETUP` && data?.channel == 0) {
                     authenticate();

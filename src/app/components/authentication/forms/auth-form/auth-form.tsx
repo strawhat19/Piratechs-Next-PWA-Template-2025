@@ -18,7 +18,7 @@ const stateLabels: any = {
     [Next]: `${Sign_Up} or ${Sign_In}`,
 }
 
-export default function AuthForm({ extensionText = ``, style = { opacity: 1 } }: any) {
+export default function AuthForm({ type = `Users`, extensionText = ``, style = { opacity: 1 } }: any) {
     let emailOrUsernameField = useRef(null);
 
     const { user, users, loaded, authState, setAuthState, signInUser, onSignOut } = useContext<any>(StateGlobals);
@@ -130,7 +130,7 @@ export default function AuthForm({ extensionText = ``, style = { opacity: 1 } }:
     return (
         <div style={style} className={`formContainer authFormContainer authFormContainer_${stringNoSpaces(authState)}`}>
             {!loaded ? (
-                <Loader height={52} label={`Users Loading`} style={{ background: `var(--blackGlass) !important`, [`--animation-delay`]: `${2 * 0.15}s` }} />
+                <Loader height={52} label={`${type} Loading`} style={{ background: `var(--blackGlass) !important`, [`--animation-delay`]: `${2 * 0.15}s` }} />
             ) : <>
                 {user != null && (
                     <AvatarComponent style={{ position: `relative`, top: -2 }} />

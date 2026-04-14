@@ -22673,4 +22673,4 @@ export const sampleStocks = [
     }
 ]
 
-export const sampleStocksDB = sampleStocks?.map(s => ({ ...s, api: StockAPIs.Database, dataSource: DataSources.database, }));
+export const sampleStocksDB = sampleStocks?.map(s => ({ ...s, updates: 0, updated: false, loaded: false, api: StockAPIs.Database, dataSource: DataSources.database, }));

@@ -7,9 +7,9 @@ import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
 import { toast } from 'react-toastify';
 import { SwiperSlide } from 'swiper/react';
-import StockSearch from './stock-search/stock-search';
 import StockOrders from './stock-orders/stock-orders';
 import { StateGlobals } from '@/shared/global-context';
+// import StockSearch from './stock-search/stock-search';
 import StockAccount from './stock-account/stock-account';
 import { Stock } from '@/shared/types/models/stocks/Stock';
 import { Order } from '@/shared/types/models/stocks/Order';
@@ -20,7 +20,9 @@ import { Position } from '@/shared/types/models/stocks/Position';
 import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { DataSources, RobinhoodAccountTypes, StockAPIs } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
-import { apiRoutes, constants, errorToast, getAPIServerData, getRealStocks, withinXSeconds } from '@/shared/scripts/constants';
+import { apiRoutes, constants, dev, errorToast, getAPIServerData, getRealStocks, withinXSeconds } from '@/shared/scripts/constants';
+
+const devEnv = dev();
 
 export const stockTableAlignmentCenter = false;
 
@@ -42,7 +44,7 @@ export const calcTotalProfitLoss = (position: Position | null | any, stock: Stoc
 }
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setAlpacaPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime, alpacaPositions } = useContext<any>(StateGlobals);
+    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setAlpacaPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded, setStocksFullyLoaded, } = useContext<any>(StateGlobals);
 
     let robinhoodTokenField = useRef(null);
     let robinhoodSocketTokenField = useRef(null);
@@ -68,11 +70,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 let account = { ...acc, dataSource: DataSources.api, api: StockAPIs.Alpaca };
                 setStocksAcc(account);
                 setLoading(false);
-                console.log(`Account`, account);
+                devEnv && console.log(`Alpaca Account`, account);
             });
         } else {
             setLoading(false);
-            console.log(`Account`, stocksAcc);
+            devEnv && console.log(`Alpaca Account`, stocksAcc);
         }
     }
     
@@ -90,11 +92,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 setAlpacaPositions(sortedPositions);
                 setStockPositions(sortedPositions);
                 setLoading(false);
-                console.log(`Alpaca Positions`, sortedPositions);
+                devEnv && console.log(`Alpaca Positions`, sortedPositions);
             });
         } else {
             setLoading(false);
-            console.log(`Positions`, stockPositions);
+            devEnv && console.log(`Alpaca Positions`, stockPositions);
         }
     }
   
@@ -105,11 +107,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 let orders = alpaca_orders?.map((p: Order) => new Order(p));
                 setStockOrders(orders);
                 setLoading(false);
-                console.log(`Orders`, orders);
+                devEnv && console.log(`Alpaca Orders`, orders);
             });
         } else {
             setLoading(false);
-            console.log(`Orders`, stockOrders);
+            devEnv && console.log(`Alpaca Orders`, stockOrders);
         }
     }
 
@@ -140,27 +142,34 @@ export default function Stocks({ className = `stocksComponent` }) {
             let tPos = matchPs?.find(pos => pos?.account_type == tKey) ?? null;
             let merged = [aPos, iPos, tPos]?.filter(Boolean)?.map(ps => ({ ...ps, stock }))?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
             p.merged = merged;
+            p.loaded = merged?.length > 0;
             Object.assign(positionsObj, { [p?.symbol]: p });
         });
 
-        let mergedPositionsUnique = Object.values(positionsObj)?.length > 0 ? (
-            Object.values(positionsObj)?.sort((a: any, b: any) => b?.merged?.[0]?.totalProfitLoss - a?.merged?.[0]?.totalProfitLoss)
+        let positionsBySymbol = Object.values(positionsObj);
+        let mergedPositionsUnique = positionsBySymbol?.length > 0 ? (
+            positionsBySymbol?.sort((a: any, b: any) => b?.merged?.[0]?.totalProfitLoss - a?.merged?.[0]?.totalProfitLoss)
         ) : positions;
 
         setStockPositions(mergedPositionsUnique);
         setLoading(false);
         setloaded(true);
+
         let validRobinHoodData = Array.isArray(holdings) && Array.isArray(mergedPositionsUnique) && Array.isArray(robinhoodAccounts);
         let validRobinHoodDataFilled = validRobinHoodData && (holdings?.length > 0 && mergedPositionsUnique?.length > 0 && robinhoodAccounts?.length > 0);
         if (validRobinHoodDataFilled) {
             setRefreshing(false);
         }
+
         setLastUpdate(new Date()?.toLocaleString());
+        
         if (errored == false) {
             console.log(`Robinhood Accounts`, robinhoodAccounts);
             console.log(`Robinhood Holdings`, holdings);
-            console.log(`Robinhood Positions Merged`, mergedPositionsUnique);
+            console.log(`Positions`, mergedPositionsUnique);
         }
+
+        setStocksFullyLoaded(mergedPositionsUnique?.some((p: Position | any) => p?.merged?.length >= 3));
     }
 
     const onRobinhoodTokenUpdate = (e: any) => {
@@ -184,10 +193,8 @@ export default function Stocks({ className = `stocksComponent` }) {
         // let socketField = id == `robinhood_socket_token_field`;
         // console.log({ e, robinhoodToken, robinhoodSocketToken });
         updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken, z_token_robinhood_socket: robinhoodSocketToken });
-        toast.info(`Refreshing...`);
-        setTimeout(() => {
-            window?.location?.reload();
-        }, 3500);
+        toast.warn(`Refreshing...`, { position: `top-right` });
+        window?.location?.reload();
     }
 
     const refreshRobinhood = (token = user?.z_token_robinhood, getRealRobinhood: boolean = true) => {
@@ -272,17 +279,19 @@ export default function Stocks({ className = `stocksComponent` }) {
 
     return (
         <div className={`stocksContainer w95 ${className}`}>
+            {/* {(user == null && loading || !stocksFullyLoaded) ? <Loader height={250} label={`Stocks Loading`} /> : <> */}
             {(user == null && loading) ? <Loader height={250} label={`Stocks Loading`} /> : <>
 
                 {loading == false ? (
                     user == null ? <>
                         <div className={`stocksSignIn`}>
-                            <AuthForm style={{ width: `100%` }} extensionText={`To View Portfolio`} />
+                            <AuthForm style={{ width: `100%` }} type={`Stocks`} extensionText={`To View Portfolio`} />
                         </div>
                     </> : <></>
                 ) : <></>}
 
-                {stocks?.length > 0 && <>
+                {/* {(stocksFullyLoaded && ((user != null && !loading) && stocks?.length > 0)) && <> */}
+                {(((user != null && !loading) && stocks?.length > 0)) && <>
                     <div className={`customPageTop mh40 flex alignCenter gap5 spaceBetween w100 relative`} style={{ top: -10 }}>
                         <Logo label={`Stocks`} style={{ marginRight: 5 }} />
                         {user != null && <>

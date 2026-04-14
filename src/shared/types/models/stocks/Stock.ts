@@ -6,6 +6,7 @@ export class Stock {
     number?: number = 1;
     updates?: number = 0;
     beta?: number = 1.199;
+    loaded?: boolean = false;
     updated?: boolean = false;
     tracked_updates?: number = this.updates;
     api?: StockAPIs = StockAPIs.FinancialModelingPrep;
@@ -181,23 +182,24 @@ export class Stock {
     }
 
     logUpdate(key: string = `Default`, extraData: any = {}) {
-        this.updateStats();
-        let updates = this.updates;
-        let marketOpen = isMarketOpen();
-        console.log(`${this?.symbol} "${key}" Update #`, updates, {
-            ...extraData,
-            z_key: key,
-            Z_stock: this,
-            price: this.price,
-            changes: this.changes,
-            z_symbol: this.symbol,
-            z_updates: this.updates,
-            z_marketOpen: marketOpen,
-            z_mid_price: this.midPrice,
-            z_lastUpdate: this?.lastUpdate, 
-            z_tracked_updates: this.tracked_updates,
-            z_tracked_updated: this?.tracked_last_updated, 
-        });
+        let trackedKeys = [`Price`];
+        if (trackedKeys?.includes(key)) {
+            this.updateStats();
+            // let updates = this.updates;
+            let marketOpen = isMarketOpen();
+            let updates = this.tracked_updates;
+            let updated = this.tracked_last_updated;
+            console.log(`${this?.symbol} "${key}" Upd #`, updates, {
+                ...extraData,
+                updates,
+                stock: this,
+                price: this.price,
+                symbol: this.symbol,
+                z_last_updated: updated, 
+                z_is_market_open: marketOpen,
+                z_total_updates: this.updates,
+            });
+        }
     }
 
     setPrice(price: number, eventType: string) {

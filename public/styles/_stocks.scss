@@ -29,6 +29,9 @@
             --w: 99%;
             .slider {
                 --stockSliderHeight: 745px;
+                @media (max-height: 915px) {
+                    --stockSliderHeight: 675px;
+                }
             }
         }
     }

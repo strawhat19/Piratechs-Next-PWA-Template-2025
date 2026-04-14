@@ -13,6 +13,7 @@ export class Position {
     last?: number = 658.08;
     price?: number = 658.08;
     value?: number = 65.808;
+    loaded?: boolean = false;
     profitLoss?: number = 500;
     stock?: Stock | null = null;
     forceUpdate?: boolean = false;

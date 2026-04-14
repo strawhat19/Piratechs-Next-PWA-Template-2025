@@ -4,9 +4,9 @@ import Stock from '../../stock/stock';
 import IconText from '../../../icon-text/icon-text';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
-import { calcTotalProfitLoss, positionProfitLoss, stockTableAlignmentCenter } from '../../stocks';
 import { Position } from '@/shared/types/models/stocks/Position';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
+import { calcTotalProfitLoss, stockTableAlignmentCenter } from '../../stocks';
 
 export class StockPositionProps { 
     index: number = 1; 
@@ -21,12 +21,12 @@ export default function StockPostion({
 }: StockPositionProps) {
     let [stock, setStock] = useState<StockModel | null>(null);
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
-    const { robinhoodAccountTypes, stocks, stockPositions } = useContext<any>(StateGlobals);
+    const { robinhoodAccountTypes, stocks } = useContext<any>(StateGlobals);
     const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && (position?.merged?.length > 1 && robinhoodAccountTypes?.length < 3);
     useEffect(() => {
         let stk: StockModel = stocks?.find((s: StockModel) => s?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) ?? null;
         if (stk) setStock(stk);
-    }, [position])
+    }, [stocks])
     return (
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition ${position?.merged && position?.merged?.length > 2 ? `mergedPositionXL` : ``}` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>

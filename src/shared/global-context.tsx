@@ -36,7 +36,8 @@ export const getPageName = (path: string) => {
     return pageName;
 }
 
-export default function GlobalProvider({ children }: { children: React.ReactNode }) {    
+export default function GlobalProvider({ children }: { children: React.ReactNode }) {   
+    // State 
     let [loaded, setLoaded] = useState<any>(false);
     let [isDevEnv, setDevEnv] = useState<any>(devEnv);
     let [user, setUser] = useState<User | null>(null);
@@ -61,6 +62,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
     let [alpacaPositions, setAlpacaPositions] = useState<Position[]>([]);
+    let [stocksFullyLoaded, setStocksFullyLoaded] = useState<boolean>(false);
     let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB?.map((s: any) => new Stock(s)));
     let [robinhoodAccountTypes, setRobinhoodAccountTypes] = useState<RobinhoodAccountTypes[]>([]);
 
@@ -409,6 +411,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
         alpacaPositions, setAlpacaPositions,
+        stocksFullyLoaded, setStocksFullyLoaded,
         robinhoodAccountTypes, setRobinhoodAccountTypes,
 
         boardForm, setBoardForm,
@@ -416,7 +419,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }), [
         user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
-        stocks, histories, stockOrders, stocksAcc, stockPositions, robinhoodAccountTypes, realtime, alpacaPositions,
+        stocks, histories, stockOrders, stocksAcc, stockPositions, robinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded,
         boardForm, boardItems, boards, dataLoading,
     ]);
 
