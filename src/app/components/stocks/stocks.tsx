@@ -264,7 +264,7 @@ export default function Stocks({ className = `stocksComponent` }) {
     // }, [user])
 
     useEffect(() => {
-        let canRefresh = false;
+        let canRefresh = alpacaPositions?.length > 0;
         let recentlyUpdated = withinXSeconds(lastUpdate, 4);
         let shouldRefresh = !recentlyUpdated || !loaded;
         if (shouldRefresh) {
@@ -275,7 +275,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                 refreshRobinhood();
             }
         }
-    }, [user?.z_token_robinhood, errored, user?.z_token_robinhood_socket])
+    }, [alpacaPositions?.length, user?.z_token_robinhood, errored, user?.z_token_robinhood_socket])
 
     return (
         <div className={`stocksContainer w95 ${className}`}>

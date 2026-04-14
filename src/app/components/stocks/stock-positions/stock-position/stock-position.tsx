@@ -1,12 +1,15 @@
 'use client';
 
 import Stock from '../../stock/stock';
+import Img from '@/app/components/image/image';
 import IconText from '../../../icon-text/icon-text';
+import { constants } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { Position } from '@/shared/types/models/stocks/Position';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { calcTotalProfitLoss, stockTableAlignmentCenter } from '../../stocks';
+import { DataSources, RobinhoodAccountTypes } from '@/shared/types/types';
 
 export class StockPositionProps { 
     index: number = 1; 
@@ -78,7 +81,15 @@ export default function StockPostion({
                             position?.merged?.map((mp, mi) => (
                                 !robinhoodAccountTypes?.includes(mp?.account_type) && (
                                     <div key={mi} className={`badge positionAccountType`} style={{ marginLeft: 0, fontSize: `0.85em` }}>
-                                        {mp?.account_type}
+                                        <Img 
+                                            width={`11px`} 
+                                            height={`11px`} 
+                                            alt={`${mp?.account_type}Logo`} 
+                                            className={`${mp?.account_type}Logo`}
+                                            src={mp?.account_type == RobinhoodAccountTypes.alpaca ? (
+                                                `/${constants?.images?.logos?.Alpaca}`
+                                            ) : `/${constants?.images?.logos?.Robinhood}`} 
+                                        /> {mp?.account_type}
                                     </div>
                                 )
                             ))

@@ -33,6 +33,10 @@ export const constants = {
       // logo: `assets/icons/ico.svg`,
       logo: `assets/icons/Piratechs-Icon-Blue-Neon.svg`,
     },
+    logos: {
+      Alpaca: `assets/logos/svgs/Alpaca.svg`,
+      Robinhood: `assets/logos/svgs/Robinhood.svg`,
+    }
   },
 }
 

@@ -59,6 +59,13 @@
 
     // Fonts
     --font: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif;
+
+    // Stocks
+    --alpaca_yellow: 252, 215, 43;
+    --robinhood_lime: 204, 255, 0;
+
+    --alpaca: var(--alpaca_yellow);
+    --robinhood: var(--robinhood_lime);
 }
 
 body {
