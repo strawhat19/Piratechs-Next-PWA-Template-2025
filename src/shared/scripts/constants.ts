@@ -56,7 +56,9 @@ export const apiRoutes = {
       account: `/api/stocks/account`,
       positions: `/api/stocks/positions`,
       robinhood: `/api/stocks/robinhood`,
+      robinhoodLogin: `/api/stocks/robinhood/login`,
       robinhoodStocks: `/api/stocks/robinhood/stocks`,
+      robinhoodLoginOfficial: `https://api.robinhood.com/oauth2/token/`,
     }
   }
 }

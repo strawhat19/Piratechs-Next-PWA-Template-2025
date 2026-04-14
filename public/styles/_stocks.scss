@@ -1,3 +1,17 @@
+.stocksComponentSlider {
+    container-type: inline-size;
+    @media (max-width: 1565px) {
+        .stockStatLastUpdated {
+            display: none;
+        }
+    }
+    @media (max-width: 1375px) {
+        .stockStatUpdates {
+            display: none;
+        }
+    }
+}
+
 .stocksMainContainer {
     &:not(:has(.stocksSearchField)) {
         padding-top: 115px;

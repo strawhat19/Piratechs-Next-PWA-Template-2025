@@ -47,6 +47,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                             next?.updateFromLiveEventsArray(data);
                             updatedStocks?.push(next);
                             setStockPositions((prevPositions: Position[]) => {
+                                if (!prevPositions?.length) return prevPositions;
                                 let refreshedPositions = prevPositions?.map((position: Position) => {
                                     if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
                                         if (next?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) {
@@ -253,14 +254,14 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         };
 
         ws.onclose = (event: CloseEvent) => {
-            let close = { code: event.code, reason: event.reason, wasClean: event.wasClean, };
-            errorToast(`Please Refresh your Robinhood Socket Authorization Token to get Latest Realtime Stocks Data`, {
-                close,
-                token: socket_token,
-                source: `Robinhood WS Close`,
-                message: `Stock Socket Sync Needed`,
-            }, undefined, `warn`);
-            authenticate();
+            // let close = { code: event.code, reason: event.reason, wasClean: event.wasClean, };
+            // errorToast(`Please Refresh your Robinhood Socket Authorization Token to get Latest Realtime Stocks Data`, {
+            //     close,
+            //     token: socket_token,
+            //     source: `Robinhood WS Close`,
+            //     message: `Stock Socket Sync Needed`,
+            // }, undefined, `warn`);
+            // authenticate();
             if (keepAliveInterval) {
                 clearInterval(keepAliveInterval);
                 keepAliveInterval = null;

@@ -155,6 +155,42 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         setAuthState(AuthStates.Sign_Out);
         if (showSuccess && loaded == false) {
             logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
+            // try {
+            //     const token = await fetch(apiRoutes?.stocks?.routes?.robinhoodLogin, {
+            //         method: `GET`,
+            //         // body: JSON.stringify(loginPayload),
+            //         headers: { [`Accept`]: `application/json`, [`Content-Type`]: `application/json` },
+            //     });
+
+            //     if (!token?.ok) {
+            //         const msg = `Failed to Get Token (${token?.status})`;
+            //         logToast(msg, `Error`, true);
+            //         return;
+            //     }
+
+            //     const data = (await token?.json()) as unknown;
+
+            //     // if (!Array.isArray(data)) {
+            //     //     logToast(`Error on Get Users`, `Error`, true);
+            //     //     return;
+            //     // }
+
+            //     // const usersFromAPI = data.map((u) => new User({
+            //     //     id: String((u as any).id ?? ``),
+            //     //     ...u,
+            //     // })) as User[];
+
+            //     dev() && console.log(`Token`, {data, token});
+
+            //     // setUsers(usersFromAPI);
+            // } catch (err: any) {
+            //     logToast(`Error on Get Token`, `Error`, true, err);
+            // } finally {
+            //     // setUsersLoading(false);
+            // }
+            // getAPIServerData(apiRoutes?.stocks?.routes?.robinhoodLogin)?.then(token => {
+            //     console.log(`TOKEN`, token);
+            // });
         }
     }
 

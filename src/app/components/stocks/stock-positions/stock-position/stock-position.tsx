@@ -45,7 +45,7 @@ export default function StockPostion({
                             <i><span className={`main`}>Div</span> <IconText dollarSign number={position?.stock?.dividend} /></i>
                         </strong>
                     ) : <></>}
-                    <strong className={`stockStat`}>
+                    <strong className={`stockStat stockStatUpdates`}>
                         <i><span className={`main`}>Upd</span> <>{position?.stock?.updates}</></i>
                     </strong>
                     <strong className={`stockStat stockStatLastUpdated`}>
