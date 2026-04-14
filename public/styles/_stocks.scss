@@ -1,11 +1,11 @@
 .stocksComponentSlider {
     container-type: inline-size;
-    @media (max-width: 1565px) {
+    @media (max-width: 1600px) {
         .stockStatLastUpdated {
             display: none;
         }
     }
-    @media (max-width: 1375px) {
+    @media (max-width: 1400px) {
         .stockStatUpdates {
             display: none;
         }

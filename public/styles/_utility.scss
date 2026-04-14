@@ -208,7 +208,11 @@
 
     &:not(.pointerEventsNone) {
         &:hover {
-            @extend .hoverLinkForce;
+            transition: var(--transition);
+            &::before {
+                transform: scale(1, 1);
+                transition: 500ms ease-in-out;
+            }
         }
     }
 }
