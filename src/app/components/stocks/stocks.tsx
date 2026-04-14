@@ -285,7 +285,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                             </form>
                         )}
                     </div>
-                    <StockSearch stcks={stocks} className={`mainStockSearch`} {...{loading}} />
+                    {/* <StockSearch stcks={stocks} className={`mainStockSearch`} {...{loading}} /> */}
                 </>}
 
                 {loading == false ? (

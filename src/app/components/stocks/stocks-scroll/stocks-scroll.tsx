@@ -19,7 +19,7 @@ const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
-    const { user, stocks, setStocks, stockPositions } = useContext<any>(StateGlobals);
+    const { user, stocks, setStocks, stockPositions, setStockPositions } = useContext<any>(StateGlobals);
     
     const [updates, setUpdates] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -28,8 +28,10 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const onSocketStockDataUpdate = (channel: number, channelName: string, data: any[]) => {
         if (data && Array.isArray(data) && data?.length > 0) {
             if (!Array.isArray(data) || !data.length) return;
+
             let updatedStocks: StockModel[] = [];
             let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase());
+
             if (!stocks || !stocks?.length || stocks?.length == 0) return;
             if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
             
@@ -38,34 +40,33 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
             if (firstUpdate || robinHoodStockPositions) {
                 setStocks((prevStocks: StockModel[]) => {
-                    let refreshedStocks = prevStocks.map((stock: StockModel) => {
+                    let refreshedStocks = prevStocks?.map((stock: StockModel) => {
                         if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
                             const next = stock;
-                            next.updateFromLiveEventsArray(data);
+                            next?.updateFromLiveEventsArray(data);
                             updatedStocks?.push(next);
+                            setStockPositions((prevPositions: Position[]) => {
+                                let refreshedPositions = prevPositions?.map((position: Position) => {
+                                    if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
+                                        if (next?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) {
+                                            const nextPos = position;
+                                            nextPos?.updateFromPrices(Number(next?.price));
+                                            // const nextPosMerged = nextPos?.merged?.map(mp => new Position(mp as Position)?.updateFromPrices(Number(next?.price)));
+                                            // const nextPosMergedSorted = nextPosMerged?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
+                                            // nextPos.merged = nextPosMergedSorted;
+                                            return nextPos;
+                                        } else return position;
+                                    } else return position;
+                                })?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
+                                return refreshedPositions;
+                            });
                             return next;
                         } else return stock;
                     });
-                    // console.log(`Refreshed Stocks`, {
-                    //     stockPositions,
-                    //     refreshedStocks,
-                    // });
                     return refreshedStocks;
                 });
                 setUpdates(prevUpdates => prevUpdates + 1);
             }
-
-            // updatedStocks?.forEach(s => {
-            //     setStockPositions((prevPositions: Position[]) => {
-            //         return prevPositions.map((position: Position) => {
-            //             if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
-            //                 const nextPos = new Position(position);
-            //                 nextPos.updateFromPrices(Number(s?.price));
-            //                 return nextPos;
-            //             } else return position;
-            //         });
-            //     });
-            // })
         }
     }
 

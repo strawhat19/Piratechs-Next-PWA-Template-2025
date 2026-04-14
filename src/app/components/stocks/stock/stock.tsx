@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Img from '../../image/image';
 import { Tooltip } from '@mui/material';
 import IconText from '../../icon-text/icon-text';
-import { dev } from '@/shared/scripts/constants';
+import { dev, withinXSeconds } from '@/shared/scripts/constants';
 import StockDetails from './stock-details/stock-details';
 import { BarChart, PlayArrow } from '@mui/icons-material';
 import { appleCompanyDescription } from '@/shared/server/database/samples/stocks/stocks';
@@ -14,6 +14,7 @@ export default function Stock({
     style = {},
     change = 0,
     zip = 95014,
+    lastUpdated,
     dividend = 0,
     state = `CA`, 
     country = `US`,
@@ -57,6 +58,8 @@ export default function Stock({
             website,
         })
     }
+
+    // ${withinXSeconds(lastUpdated, 5) ? `recentlyUpdatedStock hoverLink hoverLinkForce` : ``}
 
     return (
         <div className={`stockContainer ${className}_container`} onClick={(e) => logStock(e)} style={style}>

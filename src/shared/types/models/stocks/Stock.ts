@@ -9,6 +9,7 @@ export class Stock {
     updated?: boolean = false;
     tracked_updates?: number = this.updates;
     api?: StockAPIs = StockAPIs.FinancialModelingPrep;
+    tracked_last_updated?: Date | string = new Date()?.toLocaleString();
     
     type: Types = Types.Stock;
     source?: DataSources | string = DataSources.alpaca;
@@ -159,19 +160,22 @@ export class Stock {
     }
 
     updateUpdates() {
+        let d = new Date();
         this.updated = true;
         this.api = StockAPIs.Robinhood;
         this.source = DataSources.robinhood;
+        this.lastUpdate = d?.toLocaleString();
         if (typeof this.updates == `number`) {
             this.updates = this.updates + 1;
         }
     }
 
     updateStats() {
+        let d = new Date();
         this.updateUpdates();
-        this.updated_at = new Date().toISOString();
-        this.lastUpdate = new Date().toLocaleString();
+        this.updated_at = d?.toISOString();
         if (typeof this.tracked_updates == `number`) {
+            this.tracked_last_updated = d?.toLocaleString();
             this.tracked_updates = this.tracked_updates + 1;
         }
     }
@@ -179,16 +183,19 @@ export class Stock {
     logUpdate(key: string = `Default`, extraData: any = {}) {
         this.updateStats();
         let marketOpen = isMarketOpen();
-        console.log(`"${this?.symbol}" '${key}' Update`, {
+        console.log(`${this?.symbol} "${key}" Update`, {
             ...extraData,
             z_key: key,
-            A_stock: this,
+            Z_stock: this,
             price: this.price,
+            changes: this.changes,
             z_symbol: this.symbol,
             z_updates: this.updates,
             z_marketOpen: marketOpen,
+            z_mid_price: this.midPrice,
             z_lastUpdate: this?.lastUpdate, 
             z_tracked_updates: this.tracked_updates,
+            z_tracked_updated: this?.tracked_last_updated, 
         });
     }
 

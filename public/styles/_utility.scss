@@ -198,13 +198,17 @@
         transition: var(--transition);
     }
 
+    .hoverLinkForce {
+        transition: var(--transition);
+        &::before {
+            transform: scale(1, 1);
+            transition: 500ms ease-in-out;
+        }
+    }
+
     &:not(.pointerEventsNone) {
         &:hover {
-            transition: var(--transition);
-            &::before {
-                transform: scale(1, 1);
-                transition: 500ms ease-in-out;
-            }
+            @extend .hoverLinkForce;
         }
     }
 }

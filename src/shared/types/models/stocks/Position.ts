@@ -15,6 +15,7 @@ export class Position {
     value?: number = 65.808;
     profitLoss?: number = 500;
     stock?: Stock | null = null;
+    forceUpdate?: boolean = false;
     totalProfitLoss?: number = 500;
     quantity_available?: number = 0.1;
     api?: StockAPIs = StockAPIs.Alpaca;
@@ -53,8 +54,9 @@ export class Position {
     symbol: string | keyof typeof popularStocks = popularStocks.LMT;
 
     constructor(data: Partial<Position> | Partial<RobinhoodStockPosition> | any, stock?: Stock) {
-        if (data?.type != Types.RobinhoodStockPosition) {
+        if (data?.forceUpdate || data?.type != Types.RobinhoodStockPosition) {
             Object.assign(this, data);
+            if (data?.forceUpdate) return;
         }
         this.id = this.asset_id;
         if (data?.type == Types.RobinhoodStockPosition) {
@@ -91,6 +93,8 @@ export class Position {
 
     updateFromPrices(price = this?.price, average = this?.average, quantity = this?.quantity) {
         if (typeof price == `number` && typeof average == `number`) {
+            this.api = StockAPIs.Robinhood;
+            this.dataSource = DataSources.robinhood;
             this.price = price;
             this.current_price = price;
             this.equity = quantity * average;
@@ -102,6 +106,18 @@ export class Position {
             this.totalProfitLoss = this.current - this.equity;
             this.lastUpdate = new Date()?.toLocaleString();
             if (this.updates) this.updates = this.updates + 1;
+            // if (this.merged && this.merged?.length > 0) {
+            //     let updatedMerged = this.merged;
+            //     // updatedMerged = this.merged?.map((mp: Position) => {
+            //     //     if (mp?.price && mp?.equity && mp?.quantity && mp?.average) {
+            //     //         let newPos = mp;
+            //     //         // let newPos = new Position({ ...mp, forceUpdate: true });
+            //     //         newPos?.updateFromPrices(price);
+            //     //         return newPos;
+            //     //     } else return mp;
+            //     // });
+            //     this.merged = updatedMerged?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
+            // }
         }
         return this;
     }
