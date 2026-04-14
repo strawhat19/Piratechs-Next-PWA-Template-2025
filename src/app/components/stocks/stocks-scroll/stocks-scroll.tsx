@@ -17,7 +17,7 @@ import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
 import { apiRoutes, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
 
 const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
-const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ];
+const uniquePopularStockSymbols = [ ...new Set(popularStockSymbols) ]?.filter(Boolean)?.sort();
 
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const { user, stocks, setStocks, stockPositions, setStockPositions, setRealtime, stocksFullyLoaded } = useContext<any>(StateGlobals);
