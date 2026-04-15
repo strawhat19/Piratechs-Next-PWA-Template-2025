@@ -29,10 +29,16 @@
 .stocksMainContainer {
     &:not(:has(.stocksSearchField)) {
         padding-top: 115px;
+        @media (max-height: 935px) {
+            padding-top: 108px;
+        }
         .stocksContainer {
             --w: 99%;
             .slider {
                 --stockSliderHeight: 745px;
+                @media (max-height: 935px) {
+                    --stockSliderHeight: 700px;
+                }
                 @media (max-height: 915px) {
                     --stockSliderHeight: 675px;
                 }
