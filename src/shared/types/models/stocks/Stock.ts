@@ -3,6 +3,8 @@ import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../type
 import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
 export class Stock {
+    score?: number = 0;
+    points?: number = 0;
     number?: number = 1;
     updates?: number = 0;
     beta?: number = 1.199;
@@ -170,6 +172,12 @@ export class Stock {
         this.lastUpdate = d?.toLocaleString();
         if (typeof this.updates == `number`) {
             this.updates = this.updates + 1;
+        }
+        if (typeof this.points == `number`) {
+            this.points = Number(this.updates) * Number(this.tracked_updates);
+        }
+        if (typeof this.score == `number`) {
+            this.score = Number(this.points) * Number(this.price);
         }
     }
 

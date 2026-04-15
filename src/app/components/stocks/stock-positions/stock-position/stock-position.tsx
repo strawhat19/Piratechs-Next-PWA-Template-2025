@@ -34,9 +34,14 @@ export default function StockPostion({
         <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition ${position?.merged && position?.merged?.length > 2 ? `mergedPositionXL` : ``}` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
                 <div className={`stockPositionStatLabel`}>
+                    <div></div>
                     <strong><span className={`main`}>({index + 1}) </span> <span style={{ marginLeft: 5 }}>Stock</span></strong> 
+                    <div></div>
                     <strong className={`stockStat`}>
                         <i><span className={`main`}>Low</span> <IconText dollarSign number={stock?.low} /></i>
+                    </strong>
+                    <strong className={`stockStat`}>
+                        <i><span className={`main`}>Mid</span> <>{<IconText dollarSign number={stock?.midPrice} />}</></i>
                     </strong>
                     <strong className={`stockStat`}>
                         <i><span className={`main`}>High</span> <IconText dollarSign number={stock?.high} /></i>
@@ -52,14 +57,22 @@ export default function StockPostion({
                             <i><span className={`main`}>Div</span> <IconText dollarSign number={stock?.dividend} /></i>
                         </strong>
                     ) : <></>}
+                    <div></div>
                     <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Upd</span> <>{stock?.updates}</></i>
+                        <i><span className={`main`}>Score</span> <>{<IconText showIcon={false} number={stock?.score} />}</></i>
                     </strong>
                     <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Points</span> <>{stock?.tracked_updates}</></i>
+                        <i><span className={`main`}>Points</span> <>{<IconText showIcon={false} number={stock?.points} />}</></i>
                     </strong>
+                    <strong className={`stockStat stockStatUpdates`}>
+                        <i><span className={`main`}>Upd</span> <>{<IconText showIcon={false} number={stock?.updates} />}</></i>
+                    </strong>
+                    <strong className={`stockStat stockStatUpdates`}>
+                        <i><span className={`main`}>Tracked</span> <>{<IconText showIcon={false} number={stock?.tracked_updates} />}</></i>
+                    </strong>
+                    <div></div>
                     <strong className={`stockStat stockStatLastUpdated`}>
-                        <i><span className={`main`}>Last</span> <>{stock?.tracked_last_updated}</></i>
+                        <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={stock?.tracked_last_updated as string} />}</></i>
                     </strong>
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>

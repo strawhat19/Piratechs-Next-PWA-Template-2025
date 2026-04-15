@@ -2,10 +2,13 @@ import './icon-text.scss';
 
 import { BarChart } from '@mui/icons-material';
 
-export const numberFormatWithCommas = (numberValue: string | number, decimalPlaces: number) => {
+export const numberFormatWithCommas = (numberValue: string | number, decimalPlaces: number = 2) => {
   const parsedNumber = typeof numberValue === `string` ? parseFloat(numberValue) : numberValue;
   if (isNaN(parsedNumber)) return numberValue;
-  return parsedNumber.toLocaleString(`en-US`, { minimumFractionDigits: 0, maximumFractionDigits: decimalPlaces, });
+  const fixed = parsedNumber.toFixed(decimalPlaces); // always 2 decimals
+  const [intPart, decPart] = fixed.split(`.`);
+  const formattedInt = Number(intPart).toLocaleString(`en-US`);
+  return decPart === `00` ? formattedInt : `${formattedInt}.${decPart}`;
 };
 
 export default function IconText({ 
