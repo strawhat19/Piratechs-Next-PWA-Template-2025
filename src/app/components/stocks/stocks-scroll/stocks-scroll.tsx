@@ -58,11 +58,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                                             let newPrice = Number(stk?.price);
                                             if (price != newPrice) {
                                                 updPos?.updateFromPrices(newPrice);
-                                                // let { average, current, equity, quantity } = position;
-                                                // updPos = new Position({ ...updPos, stock: stk, forceUpdate: false, price: newPrice, average, current, equity, quantity });
-                                                // updPos = updPos?.updateFromPrices(newPrice);
-                                                // let totalProfitLoss = calcTotalProfitLoss(updPos, stk);
-                                                // updPos.totalProfitLoss = totalProfitLoss;
                                                 return updPos;
                                             } else return updPos;
                                         } else return position;
@@ -129,7 +124,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     }, [user?.z_token_robinhood]);
 
     useEffect(() => {
-        // if (!stocksFullyLoaded) return;
+        if (!stocksFullyLoaded) return;
         if (!user?.z_token_robinhood) return;
         if (!user?.z_token_robinhood_socket) return;
         if (!uniquePopularStockSymbols?.length) return;
@@ -287,7 +282,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             ws.close();
             socketRef.current = null;
         };
-    }, [stocks?.length, user?.z_token_robinhood, uniquePopularStockSymbols, user?.z_token_robinhood_socket]);
+    }, [stocksFullyLoaded, stocks?.length, user?.z_token_robinhood, uniquePopularStockSymbols, user?.z_token_robinhood_socket]);
 
     //                 setTimeout(() => {
     //                     sendJson({ channel: 3, parameters: { contract: `AUTO` }, service: `FEED`, type: `CHANNEL_REQUEST`, })

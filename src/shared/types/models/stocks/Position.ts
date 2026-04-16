@@ -74,7 +74,6 @@ export class Position {
             this.cost_basis = d?.clearing_cost_basis;
             this.current_price = Number(stock?.price);
             this.account_type = d?.brokerage_account_type;
-            // this.avg_entry_price = d?.average_buy_price;
             this.avg_entry_price = d?.clearing_average_cost;
             this.qty_available = d?.shares_available_for_sells;
             this.qty = String(d?.quantity)?.split(``).slice(0, 5)?.join(``);
@@ -93,7 +92,7 @@ export class Position {
         this.updateFromPrices();
     }
 
-    updateFromPrices(price = this?.price, average = this?.average, quantity = this?.quantity) {
+    updateFromPrices(price = this?.price, average = this?.average, quantity = this?.quantity, merge: boolean = false) {
         if (typeof price == `number` && typeof average == `number`) {
             this.updated_by = DataSources.robinhood;
             this.price = price;
@@ -107,18 +106,20 @@ export class Position {
             this.totalProfitLoss = this.current - this.equity;
             this.lastUpdate = new Date()?.toLocaleString();
             if (this.updates) this.updates = this.updates + 1;
-            // if (this.merged && this.merged?.length > 0) {
-            //     let updatedMerged = this.merged;
-            //     // updatedMerged = this.merged?.map((mp: Position) => {
-            //     //     if (mp?.price && mp?.equity && mp?.quantity && mp?.average) {
-            //     //         let newPos = mp;
-            //     //         // let newPos = new Position({ ...mp, forceUpdate: false });
-            //     //         newPos?.updateFromPrices(price);
-            //     //         return newPos;
-            //     //     } else return mp;
-            //     // });
-            //     this.merged = updatedMerged?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
-            // }
+            if (merge) {
+                if (this.merged && this.merged?.length > 0) {
+                    let updatedMerged = this.merged;
+                    updatedMerged = this.merged?.map((mp: Position) => {
+                        if (mp?.price && mp?.equity && mp?.quantity && mp?.average) {
+                            let newPos = mp;
+                            newPos = new Position({ ...mp, forceUpdate: false });
+                            newPos?.updateFromPrices(price);
+                            return newPos;
+                        } else return mp;
+                    });
+                    this.merged = updatedMerged?.sort((a: Position, b: Position) => Number(b?.totalProfitLoss) - Number(a?.totalProfitLoss));
+                }
+            }
         }
         return this;
     }

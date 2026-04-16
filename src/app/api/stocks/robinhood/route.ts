@@ -212,7 +212,8 @@ export const getHoldings = async (account_id: string | number = robinhoodAccount
 export const GET = async (req: Request) => {
   let robinhood: any = {};
   let { searchParams } = new URL(req.url);
-  let token = searchParams?.get(`id`) ?? ``;
+  let token: string = searchParams?.get(`id`) ?? ``;
+  let merge: boolean = Boolean(searchParams?.get(`merge`)) ?? false;
   
   try {
 
@@ -254,25 +255,27 @@ export const GET = async (req: Request) => {
 
         robinhood.accounts = await rbAccounts;
 
-        // let positionsObj = {};
-        // let t_positions = robinhood?.accounts?.flatMap((acc: any) => acc?.positions)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+        if (merge) {
+          let positionsObj = {};
+          let t_positions = robinhood?.accounts?.flatMap((acc: any) => acc?.positions)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
 
-        // t_positions?.forEach((p: any) => {
-        //   let iKey = RobinhoodAccountTypes.individual;
-        //   let tKey = RobinhoodAccountTypes.ira_traditional;
-        //   let matchPs = t_positions?.filter((pos: any) => pos?.symbol == p?.symbol);
-        //   let iPos = matchPs?.find((pos: any) => pos?.account_type == iKey) ?? null;
-        //   let tPos = matchPs?.find((pos: any) => pos?.account_type == tKey) ?? null;
-        //   let merged = [iPos, tPos]?.filter(Boolean)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
-        //   p.merged = merged;
-        //   Object.assign(positionsObj, { [p?.symbol]: p });
-        // });
+          t_positions?.forEach((p: any) => {
+            let iKey = RobinhoodAccountTypes.individual;
+            let tKey = RobinhoodAccountTypes.ira_traditional;
+            let matchPs = t_positions?.filter((pos: any) => pos?.symbol == p?.symbol);
+            let iPos = matchPs?.find((pos: any) => pos?.account_type == iKey) ?? null;
+            let tPos = matchPs?.find((pos: any) => pos?.account_type == tKey) ?? null;
+            let merged = [iPos, tPos]?.filter(Boolean)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+            p.merged = merged;
+            Object.assign(positionsObj, { [p?.symbol]: p });
+          });
 
-        // let mergedPositionsUnique = Object.values(positionsObj)?.length > 0 ? (
-        //   Object.values(positionsObj)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss)
-        // ) : t_positions;
+          let mergedPositionsUnique = Object.values(positionsObj)?.length > 0 ? (
+            Object.values(positionsObj)?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss)
+          ) : t_positions;
 
-        // robinhood.accounts = mergedPositionsUnique;
+          robinhood.accounts = mergedPositionsUnique;
+        }
       }
     }
 
