@@ -177,7 +177,8 @@ export class Stock {
             this.points = Number(this.updates) * Number(this.tracked_updates);
         }
         if (typeof this.score == `number`) {
-            this.score = Number(this.points) * Number(this.price);
+            let newScore = (Number(this.points) / 2) * (Number(this.price) / 2);
+            if (newScore > this.score) this.score = newScore;
         }
     }
 
