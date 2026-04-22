@@ -1,4 +1,4 @@
-import { isMarketOpen } from '@/shared/scripts/constants';
+import { average, isMarketOpen } from '@/shared/scripts/constants';
 import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '../../types';
 import { appleCompanyDescription, stockImages } from '@/shared/server/database/samples/stocks/stocks';
 
@@ -25,6 +25,7 @@ export class Stock {
     country: string = `US`;
     changes: number = 0.12;
     price: number = 213.88;
+    historical?: any[] = [];
     symbol: string = `AAPL`;
     currency: string = `USD`;
     city: string = `Cupertino`;
@@ -232,6 +233,11 @@ export class Stock {
                 this.dayLowPrice = price;
             }
         }
+        let d = new Date();
+        let dt = d?.toISOString();
+        let historicalPrices = this.historical && this.historical?.length > 0 ? this.historical?.map(h => h?.price) : [price];
+        let historicalAvg = average(historicalPrices);
+        this.historical?.push({ dt, price, average: historicalAvg, low: this.low, high: this.high });
     }
 
     updateFromLiveEvent(event: any = {}) {

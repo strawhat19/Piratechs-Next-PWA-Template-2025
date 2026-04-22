@@ -196,7 +196,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         // console.log({ e, robinhoodToken, robinhoodSocketToken });
         updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken, z_token_robinhood_socket: robinhoodSocketToken });
         toast.warn(`Refreshing...`, { position: `top-right` });
-        setTimeout(() => { window?.location?.reload(); }, 2500);
+        setTimeout(() => { window?.location?.reload(); }, 1500);
     }
 
     const refreshRobinhood = (token = user?.z_token_robinhood, getRealRobinhood: boolean = true) => {

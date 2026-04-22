@@ -76,6 +76,7 @@ export const average = (numbers: (number | null | undefined)[]): number => {
   return avg;
 }
 
+export const defaultTimeZoneName = `America/New_York`;
 export const isOdd = (number: number) => number % 2 != 0;
 export const isEven = (number: number) => number % 2 == 0;
 export const randomNumber = (max: number): number => Math.floor(Math.random() * max);
@@ -98,6 +99,13 @@ export const isDate = (str: string): boolean => {
   const timestamp = Date.parse(str);
   return !isNaN(timestamp);
 }
+
+export const timeZoneDateTime = (timeZone: string = defaultTimeZoneName, dt?: Date | string) => {
+  if (dt && typeof dt == `string` && !is_valid_date_time_str(dt)) return dt;
+  let date = dt ? new Date(dt) : new Date();
+  let datetime = date?.toLocaleString(`en-US`, { timeZone });
+  return datetime;
+};
 
 export const unauthorized = (req: Request, returnResponse: boolean = true, message: string = `Unauthorized`) => {
   if (returnResponse) {
@@ -137,13 +145,11 @@ export const errorToast = (errorMessage: string, data: any, duration: number = 5
 }
 
 export const withinXSeconds = (datetime: Date | string, seconds: number = 1) => {
-  // let now_dt = new Date()?.toLocaleString();
   let datetime_time = new Date(datetime)?.getTime();
   if (isNaN(datetime_time)) return false;
   let now = Date.now();
   let difference = Math.abs(now - datetime_time);
   let isWithinXSeconds = difference <= (seconds * 1000);
-  // console.log({ now: now_dt, datetime });
   return isWithinXSeconds;
 }
 

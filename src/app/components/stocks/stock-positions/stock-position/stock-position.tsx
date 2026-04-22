@@ -3,13 +3,14 @@
 import Stock from '../../stock/stock';
 import Img from '@/app/components/image/image';
 import IconText from '../../../icon-text/icon-text';
-import { constants, stringNoSpaces } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
+import { RobinhoodAccountTypes } from '@/shared/types/types';
 import { Position } from '@/shared/types/models/stocks/Position';
+import { constants, stringNoSpaces } from '@/shared/scripts/constants';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { calcTotalProfitLoss, stockTableAlignmentCenter } from '../../stocks';
-import { DataSources, RobinhoodAccountTypes } from '@/shared/types/types';
+import StockHistoryChart from '../../stock/stock-charts/stock-time-chart/stock-time-chart';
 
 export class StockPositionProps { 
     index: number = 1; 
@@ -82,6 +83,7 @@ export default function StockPostion({
                         linkClass={stockAlignmentCenter ? `` : `justifyStart`}  
                         className={`stockPosition stkPos ${stockAlignmentCenter ? `w100 minwunset` : ``}`} 
                     />
+                    <StockHistoryChart stock={stock} />
                         {/* <strong className={`stockStat`}>
                             <i><span className={`main`}>Price</span> <IconText dollarSign number={stock?.price} /></i>
                         </strong>
