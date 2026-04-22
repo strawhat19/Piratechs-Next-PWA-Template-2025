@@ -1,4 +1,5 @@
 .stockPositionStart {
+    container-type: inline-size;
     justify-content: space-between;
 }
 
@@ -34,6 +35,7 @@
         .robinhoodStockPositionAccountTypes {
             grid-gap: 4px;
             display: flex;
+            min-width: 111px;
             align-items: end;
             font-size: var(--fs);
             flex-direction: column;

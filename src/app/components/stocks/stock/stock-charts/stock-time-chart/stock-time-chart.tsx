@@ -1,33 +1,11 @@
 'use client';
 
 import 'chartjs-adapter-date-fns';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  TimeScale,
-  ChartOptions,
-  ScriptableContext,
-  Filler,
-} from 'chart.js';
-import annotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from 'react-chartjs-2';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, TimeScale, ChartOptions, ScriptableContext, Filler } from 'chart.js';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  TimeScale,
-  Filler,
-  annotationPlugin
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, TimeScale, Filler, annotationPlugin);
 
 export type HistoricalPoint = {
   dt: string;
@@ -175,7 +153,7 @@ export default function StockHistoryChart({
   }
 
   return (
-    <div style={{ width: '100%', maxWidth: 700, height, maxHeight: 45 }}>
+    <div className={`stockChart`}>
       <Line data={data} options={options} />
     </div>
   );
