@@ -133,16 +133,17 @@ export default function Stocks({ className = `stocksComponent` }) {
 
         let positionsCopy = [ ...positions, ...alPositions ];
 
-        positions?.forEach(p => {
+        positions?.forEach((p: Position) => {
             let aKey = RobinhoodAccountTypes.alpaca;
             let iKey = RobinhoodAccountTypes.individual;
             let tKey = RobinhoodAccountTypes.ira_traditional;
             let stock: Stock = stocks?.find((s: Stock) => s?.symbol == p?.symbol);
-            let matchPs = positionsCopy?.filter(pos => pos?.symbol == p?.symbol);
-            let aPos = matchPs?.find(pos => pos?.account_type == aKey) ?? null;
-            let iPos = matchPs?.find(pos => pos?.account_type == iKey) ?? null;
-            let tPos = matchPs?.find(pos => pos?.account_type == tKey) ?? null;
-            let merged = [aPos, iPos, tPos]?.filter(Boolean)?.map(ps => ({ ...ps, stock }))?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+            let matchPs = positionsCopy?.filter((pos: Position) => pos?.symbol == p?.symbol);
+            let aPos = matchPs?.find((pos: Position) => pos?.account_type == aKey) ?? null;
+            let iPos = matchPs?.find((pos: Position) => pos?.account_type == iKey) ?? null;
+            let tPos = matchPs?.find((pos: Position) => pos?.account_type == tKey) ?? null;
+            let sorted = [iPos, tPos]?.filter(Boolean)?.map(ps => ({ ...ps, stock }))?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
+            let merged = [ ...sorted, aPos ];
             p.merged = merged;
             p.loaded = merged?.length > 0;
             Object.assign(positionsObj, { [p?.symbol]: p });

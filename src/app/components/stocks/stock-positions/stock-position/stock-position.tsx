@@ -27,6 +27,15 @@ export default function StockPostion({
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
     const { robinhoodAccountTypes, stocks } = useContext<any>(StateGlobals);
     const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && (position?.merged?.length > 1 && robinhoodAccountTypes?.length < 3);
+    const getLastUpdated = (last_updated: string) => {
+        let timeStampToDisplay = String(last_updated);
+        if (typeof timeStampToDisplay == `string`) {
+            let [date, timeStamp] = timeStampToDisplay?.split(`, `);
+            if (timeStamp) timeStampToDisplay = timeStamp; 
+            if (!timeStamp && date) timeStampToDisplay = date; 
+        }
+        return timeStampToDisplay as string;
+    }
     useEffect(() => {
         let stk: StockModel = stocks?.find((s: StockModel) => s?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) ?? null;
         if (stk) setStock(stk);
@@ -73,7 +82,7 @@ export default function StockPostion({
                     </strong>
                     <div></div>
                     <strong className={`stockStat stockStatLastUpdated`}>
-                        <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={stock?.tracked_last_updated as string} />}</></i>
+                        <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={getLastUpdated(String(stock?.tracked_last_updated))} />}</></i>
                     </strong>
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>
