@@ -10,6 +10,7 @@ export class Stock {
     beta?: number = 1.199;
     loaded?: boolean = false;
     updated?: boolean = false;
+    connected?: boolean = false;
     tracked_updates?: number = this.updates;
     api?: StockAPIs = StockAPIs.FinancialModelingPrep;
     tracked_last_updated?: Date | string = new Date()?.toLocaleString();
@@ -165,6 +166,14 @@ export class Stock {
         this.company = this.companyName;
     }
 
+    setHistorical(price = this.price) {
+        let d = new Date();
+        let dt = d?.toISOString();
+        let historicalPrices = this.historical && this.historical?.length > 0 ? this.historical?.map(h => h?.price) : [price];
+        let historicalAvg = average(historicalPrices);
+        this.historical?.push({ dt, price, average: historicalAvg, low: this.low, high: this.high });
+    }
+
     updateUpdates() {
         let d = new Date();
         this.updated = true;
@@ -211,6 +220,7 @@ export class Stock {
                 price: this.price,
                 symbol: this.symbol,
                 z_last_updated: updated, 
+                connected: this.connected,
                 z_is_market_open: marketOpen,
                 z_total_updates: this.updates,
             });
@@ -237,11 +247,7 @@ export class Stock {
                 this.dayLowPrice = price;
             }
         }
-        let d = new Date();
-        let dt = d?.toISOString();
-        let historicalPrices = this.historical && this.historical?.length > 0 ? this.historical?.map(h => h?.price) : [price];
-        let historicalAvg = average(historicalPrices);
-        this.historical?.push({ dt, price, average: historicalAvg, low: this.low, high: this.high });
+        this.setHistorical();
     }
 
     updateFromLiveEvent(event: any = {}) {
@@ -512,15 +518,19 @@ export class Stock {
             }
         }
 
+        this.endLiveUpdate(priceUpdated, eventType);
+
+        return this;
+    }
+
+    endLiveUpdate(priceUpdated: boolean = false, eventType: string) {
         let range = `${this.low}-${this.high}`;
         if (range != this.range) {
             this.range = range;
             if (!priceUpdated) {
-                this.logUpdate(`Price Range`, { z_range: range, eventType, });
+                this.logUpdate(`Price Range`, { z_range: range, eventType });
             }
         }
-
-        return this;
     }
 
     updateFromLiveEventsArray(events: any[] = []) {

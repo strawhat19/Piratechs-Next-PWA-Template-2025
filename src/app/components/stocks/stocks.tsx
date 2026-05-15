@@ -3,6 +3,7 @@
 import './stocks.scss';
 
 import Logo from '../logo/logo';
+import Img from '../image/image';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
 import { toast } from 'react-toastify';
@@ -21,7 +22,6 @@ import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { DataSources, RobinhoodAccountTypes, StockAPIs } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
 import { apiRoutes, constants, dev, errorToast, getAPIServerData, getRealStocks, stringNoSpaces, withinXSeconds } from '@/shared/scripts/constants';
-import Img from '../image/image';
 
 const devEnv = dev();
 
@@ -45,7 +45,7 @@ export const calcTotalProfitLoss = (position: Position | null | any, stock: Stoc
 }
 
 export default function Stocks({ className = `stocksComponent` }) {
-    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setAlpacaPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded, setStocksFullyLoaded, } = useContext<any>(StateGlobals);
+    const { user, width, stocks, stocksAcc, stockPositions, setStockPositions, setAlpacaPositions, setStocksAcc, stockOrders, setStockOrders, robinhood, setRobinhood, robinhoodAccountTypes, setRobinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded, setStocksFullyLoaded, positionsLoadingSet, setPositionsLoadingSet, positionsLoadedSet, setPositionsLoadedSet } = useContext<any>(StateGlobals);
 
     let robinhoodTokenField = useRef(null);
     let robinhoodSocketTokenField = useRef(null);
@@ -93,11 +93,11 @@ export default function Stocks({ className = `stocksComponent` }) {
                 setAlpacaPositions(sortedPositions);
                 setStockPositions(sortedPositions);
                 setLoading(false);
-                console.log(`Alpaca Positions`, sortedPositions);
+                console.log(`Alpaca Position(s)`, sortedPositions);
             });
         } else {
             setLoading(false);
-            console.log(`Alpaca Positions`, stockPositions);
+            console.log(`Alpaca Position(s)`, stockPositions);
         }
     }
   
@@ -167,9 +167,9 @@ export default function Stocks({ className = `stocksComponent` }) {
         setLastUpdate(new Date()?.toLocaleString());
         
         if (errored == false) {
-            console.log(`Robinhood Accounts`, robinhoodAccounts);
-            console.log(`Robinhood Holdings`, holdings);
-            console.log(`Positions`, mergedPositionsUnique);
+            console.log(`Robinhood Account(s)`, robinhoodAccounts);
+            console.log(`Robinhood Holding(s)`, holdings);
+            console.log(`Position(s)`, mergedPositionsUnique);
         }
 
         // let stocksLoaded = (stocks?.length ?? 0) >= minStocksLen;
@@ -178,6 +178,11 @@ export default function Stocks({ className = `stocksComponent` }) {
         // let fullyLoaded: boolean = Boolean(stocksLoaded && positionsMerged);
 
         setStocksFullyLoaded(positionsMerged);
+
+        if (positionsLoadedSet == false) {
+            toast.success(`Position(s) Loaded`);
+            setPositionsLoadedSet(true);        
+        }
     }
 
     const onRobinhoodTokenUpdate = (e: any) => {
@@ -209,7 +214,10 @@ export default function Stocks({ className = `stocksComponent` }) {
         if (getRealRobinhood && getRealStocks && (token && token?.length > 0)) {
             setRefreshing(true);
             setRobinhoodToken(token);
-            // toast.info(`Getting Positions`);
+            if (positionsLoadingSet == false) {
+                toast.info(`Position(s) Loading`);
+                setPositionsLoadingSet(true);
+            }
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
             let serverRouteExtension = user != null && token ? `?id=${token}` : ``;
             getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodAccountsFromAPI: any) => {

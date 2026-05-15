@@ -4,6 +4,7 @@ import './stocks-scroll.scss';
 
 // import WebSocket from 'ws';
 import Stock from '../stock/stock';
+import { toast } from 'react-toastify';
 import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
@@ -28,7 +29,10 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         robinhoodAccountTypes,
         stocksObj, setStocksObj,
         stockPositions, setStockPositions,
+        stocksLoadedSet, setStocksLoadedSet,
+        stocksLoadingSet, setStocksLoadingSet,
         webSocketConnected, setWebSocketConnected,
+        stockRefreshTokensWarningSet, setStockRefreshTokensWarningSet,
     } = useContext<any>(StateGlobals);
 
     const [updates, setUpdates] = useState(0);
@@ -111,34 +115,38 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         // let token = user?.z_token_robinhood;
         let hasNewStocks = stocksFromAPI && stocksFromAPI?.length > 0;
         let stocksToSet = hasNewStocks ? stocksFromAPI : stocks;
-
         setStocks(stocksToSet);
         setLoading(false);
-
         if (hasNewStocks) {
-            console.log(`Stocks`, stocksFromAPI);
+            console.log(`Stock(s)`, stocksFromAPI);
+        } else {
+            console.log(`Cached Stock(s)`, stocksToSet);
+        }
+        if (stocksLoadedSet == false) {
+            toast.success(`Stock(s) Loaded`);
+            setStocksLoadedSet(true);
         }
     };
 
     const refreshStocks = (getReal = false, getRobinhood = true, token = user?.z_token_robinhood) => {
+        if (stocksLoadingSet == false) {
+            toast.info(`Stock(s) Loading`);
+            setStocksLoadingSet(true);
+        }
         if (getReal && getRealStocks) {
             getAPIServerData()?.then(stocksData => {
                 let stocksToSet = stocksData?.map((s: any) => new StockModel(s));
-
                 setStocks(stocksToSet);
                 setLoading(false);
-
-                console.log(`Stocks`, stocksToSet);
+                console.log(`Stock(s)`, stocksToSet);
             });
         } else {
             if (getRobinhood && !loading && token?.length > 0) {
                 let apiServerRoute = apiRoutes?.stocks?.routes?.robinhoodStocks;
                 let serverRouteExtension = user != null && token ? `?id=${token}` : ``;
-
                 getAPIServerData(apiServerRoute, serverRouteExtension)?.then((robinhoodStocks: any) => {
                     if (Array.isArray(robinhoodStocks) && robinhoodStocks?.length > 0) {
                         let modStks = robinhoodStocks?.map((s: any) => new StockModel(s));
-
                         setStocks(modStks);
                         finishStocksLoading(modStks);
                     } else {
@@ -146,7 +154,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                     }
                 })?.catch(error => {
                     let errorMessage = `Error on GET Robinhood Stocks`;
-
                     errorToast(errorMessage, error);
                     finishStocksLoading();
                 });
@@ -157,10 +164,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const reconnectSocket = () => {
         if (!reconnectPeriodically) return;
         if (reconnectTimerRef.current) return;
-
         reconnectTimerRef.current = setTimeout(() => {
             reconnectTimerRef.current = null;
-
             if (
                 stocksFullyLoaded &&
                 user?.z_token_robinhood &&
@@ -177,12 +182,9 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return;
         if (!sendJsonRef.current) return;
         if (!channelsToRequestObjRef.current) return;
-
         const alreadySubscribed = subscribedSymbolsRef.current.includes(symbol);
-
         if (connect && alreadySubscribed) return;
         if (!connect && !alreadySubscribed) return;
-
         Object.values(channelsToRequestObjRef.current).forEach((channelObj: any) => {
             sendJsonRef.current({
                 channel: channelObj.channel,
@@ -192,27 +194,25 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                     : { remove: [{ type: channelObj?.name, symbol }] }),
             });
         });
-
-        subscribedSymbolsRef.current = connect
-            ? [...new Set([...subscribedSymbolsRef?.current, symbol])].sort()
-            : subscribedSymbolsRef?.current?.filter(s => s !== symbol);
-
-        dev() && console.log(connect ? `Realtime Symbol Added` : `Realtime Symbol Removed`, {
+        subscribedSymbolsRef.current = connect ? [...new Set([...subscribedSymbolsRef?.current, symbol])].sort() : subscribedSymbolsRef?.current?.filter(s => s !== symbol);
+        let symbols = subscribedSymbolsRef?.current;
+        setStocks((prevStocks: StockModel[]) => prevStocks?.map(s => new StockModel({ ...s, connected: connect })));
+        dev() && console.log(connect ? `${symbol} Connected` : `${symbol} Disconnected`, {
             symbol,
-            subscribedSymbols: subscribedSymbolsRef?.current,
+            symbols,
             ...extraData,
         });
     };
 
-    const startRealtimeUpdates = () => {
+    const startRealtimeUpdates = (): any => {
+        let defaultReturn = (ws: any = socketRef?.current) => { ws };
+
         if (
             socketRef.current &&
             socketRef.current.readyState !== WebSocket.CLOSED &&
             socketRef.current.readyState !== WebSocket.CLOSING
         ) {
-            return {
-                ws: socketRef.current,
-            };
+            return defaultReturn(socketRef?.current);
         }
 
         const channelsRequested: number[] = [];
@@ -299,8 +299,13 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         let sps = stockPositions?.filter((pos: Position) => !robinhoodAccountTypes?.includes(pos?.account_type))?.slice(0, 9);
         let intialSymbols = sps?.map((sp: Position) => sp?.symbol);
         let symbolsToUse = connectSymbolsOnWSConnect ? symbols : intialSymbols;
-
-        dev() && console.log(`Start Stock(s) Realtime Update(s)`);
+        
+        // if (webSocketConnected == true) return defaultReturn(ws);
+        if (webSocketConnected == false) {
+            let message = `Syncing Realtime Market Data`;
+            toast.info(message);
+            dev() && console.log(message);
+        }
 
         const channelsToRequestObj = {
             1: {
@@ -511,6 +516,10 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         };
 
         ws.onclose = (event: CloseEvent) => {
+            if (stockRefreshTokensWarningSet == false) {
+                toast.warn(`Refresh Robinhood Socket & Auth Token(s)`);
+                setStockRefreshTokensWarningSet(true);
+            }
             console.warn(`Robinhood WS closed`, {
                 code: event.code,
                 reason: event.reason,
@@ -535,9 +544,9 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             }
         };
 
-        return {
-            ws,
-        };
+        setWebSocketConnected(true);
+
+        return { ws, };
     };
 
     useEffect(() => {
@@ -553,8 +562,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         if (!uniquePopularStockSymbols?.length) return;
         if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
         if (!stocks || !stocks?.length || stocks?.length == 0 || ((stocks?.length ?? 0) < minStocksLen)) return;
-
-        setWebSocketConnected(true);
 
         let { ws } = startRealtimeUpdates();
 

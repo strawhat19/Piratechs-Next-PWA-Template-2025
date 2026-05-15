@@ -80,37 +80,37 @@ export default function Stock({
         })
     }
 
-    const setStock = (interval: number = 1, message: string = `Stock`) => {
-        setStocksObj((prevStocksObj: any) => { 
-            const letter = symbol?.[0];
-            const updatedLetter = { 
-                ...prevStocksObj?.[letter], 
-                [symbol]: (((prevStocksObj?.[letter]?.[symbol] ?? 0) + interval) <= 0 ? 0 : ((prevStocksObj?.[letter]?.[symbol] ?? 0) + interval)),
-            };
-            updatedLetter[1] = Object.keys(updatedLetter)?.filter(k => k != `1` && k != `2`)?.length;
-            const updatedStocksObj = { ...prevStocksObj, [letter]: updatedLetter, };
-            updatedStocksObj[1] = Object.keys(updatedStocksObj)?.filter(k => k != `1` && k != `2`)?.reduce((count, letterKey) => count + (updatedStocksObj?.[letterKey]?.[1] ?? 0), 0);
-            updatedStocksObj[2] = updatedStocksObj?.[2] ? [...updatedStocksObj?.[2]] : [];
-            if (interval >= 1) {
-                if (!updatedStocksObj[2]?.includes(symbol)) {
-                    updatedStocksObj[2].push(symbol);
-                }
-            } else {
-                let symbolCount = updatedStocksObj?.[letter]?.[symbol] ?? 0;
-                if (symbolCount <= 0) {
-                    updatedStocksObj[2] = updatedStocksObj[2]?.filter((s: string) => s != symbol);
-                }
-            }
-            if (Array.isArray(updatedStocksObj?.[2]) && updatedStocksObj?.[2]?.length > 0) {
-                updatedStocksObj?.[2]?.sort();
-            }
-            if (stocksFullyLoaded) {
-                let fullMsg = interval < 1 ? `${message} Leave` : message;
-                logStock(undefined, fullMsg, { interval, stocksObj: updatedStocksObj });
-            }
-            return updatedStocksObj;
-        });
-    }
+    // const setStock = (interval: number = 1, message: string = `Stock`) => {
+    //     setStocksObj((prevStocksObj: any) => { 
+    //         const letter = symbol?.[0];
+    //         const updatedLetter = { 
+    //             ...prevStocksObj?.[letter], 
+    //             [symbol]: (((prevStocksObj?.[letter]?.[symbol] ?? 0) + interval) <= 0 ? 0 : ((prevStocksObj?.[letter]?.[symbol] ?? 0) + interval)),
+    //         };
+    //         updatedLetter[1] = Object.keys(updatedLetter)?.filter(k => k != `1` && k != `2`)?.length;
+    //         const updatedStocksObj = { ...prevStocksObj, [letter]: updatedLetter, };
+    //         updatedStocksObj[1] = Object.keys(updatedStocksObj)?.filter(k => k != `1` && k != `2`)?.reduce((count, letterKey) => count + (updatedStocksObj?.[letterKey]?.[1] ?? 0), 0);
+    //         updatedStocksObj[2] = updatedStocksObj?.[2] ? [...updatedStocksObj?.[2]] : [];
+    //         if (interval >= 1) {
+    //             if (!updatedStocksObj[2]?.includes(symbol)) {
+    //                 updatedStocksObj[2].push(symbol);
+    //             }
+    //         } else {
+    //             let symbolCount = updatedStocksObj?.[letter]?.[symbol] ?? 0;
+    //             if (symbolCount <= 0) {
+    //                 updatedStocksObj[2] = updatedStocksObj[2]?.filter((s: string) => s != symbol);
+    //             }
+    //         }
+    //         if (Array.isArray(updatedStocksObj?.[2]) && updatedStocksObj?.[2]?.length > 0) {
+    //             updatedStocksObj?.[2]?.sort();
+    //         }
+    //         if (stocksFullyLoaded) {
+    //             let fullMsg = interval < 1 ? `${message} Leave` : message;
+    //             logStock(undefined, fullMsg, { interval, stocksObj: updatedStocksObj });
+    //         }
+    //         return updatedStocksObj;
+    //     });
+    // }
 
     // useEffect(() => {
     //     if (!stocksFullyLoaded) return;

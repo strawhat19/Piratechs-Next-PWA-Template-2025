@@ -21,7 +21,7 @@ import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userC
 
 export const StateGlobals = createContext({});
 
-export const minStocksLen = 247;
+export const minStocksLen = 235;
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen };
 
 export const getFirstNumber = (str: string): number | null => {
@@ -64,10 +64,15 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
     let [alpacaPositions, setAlpacaPositions] = useState<Position[]>([]);
+    let [stocksLoadedSet, setStocksLoadedSet] = useState<boolean>(false);
+    let [stocksLoadingSet, setStocksLoadingSet] = useState<boolean>(false);
     let [stocksFullyLoaded, setStocksFullyLoaded] = useState<boolean>(false);
     let [webSocketConnected, setWebSocketConnected] = useState<boolean>(false);
+    let [positionsLoadedSet, setPositionsLoadedSet] = useState<boolean>(false);
+    let [positionsLoadingSet, setPositionsLoadingSet] = useState<boolean>(false);
     let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB?.map((s: any) => new Stock(s)));
     let [robinhoodAccountTypes, setRobinhoodAccountTypes] = useState<RobinhoodAccountTypes[]>([]);
+    let [stockRefreshTokensWarningSet, setStockRefreshTokensWarningSet] = useState<boolean>(false);
 
     // let type = Types.Item;
     // let imageURLs = Object.values(imagesObject.vertical);
@@ -396,6 +401,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         usersLoading, setUsersLoading,
 
         boards, setBoards,
+        boardForm, setBoardForm,
+        boardItems, setBoardItems,
         dataLoading, setDataLoading,
 
         isPWA, setIsPWA,
@@ -414,18 +421,23 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         stocksObj, setStocksObj,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
+        stocksLoadedSet, setStocksLoadedSet,
         alpacaPositions, setAlpacaPositions,
+        stocksLoadingSet, setStocksLoadingSet,
         stocksFullyLoaded, setStocksFullyLoaded,
         webSocketConnected, setWebSocketConnected,
+        positionsLoadedSet, setPositionsLoadedSet,
+        positionsLoadingSet, setPositionsLoadingSet,
         robinhoodAccountTypes, setRobinhoodAccountTypes,
-
-        boardForm, setBoardForm,
-        boardItems, setBoardItems,
+        stockRefreshTokensWarningSet, setStockRefreshTokensWarningSet,
     }), [
         user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
-        stocks, histories, stockOrders, stocksAcc, stocksObj, stockPositions, robinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected,
         boardForm, boardItems, boards, dataLoading,
+        stocks, histories, stockOrders, stocksAcc, stocksObj, stockPositions, robinhoodAccountTypes, 
+        realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected, 
+        stocksLoadedSet, stocksLoadingSet, positionsLoadedSet, positionsLoadingSet,
+        stockRefreshTokensWarningSet,
     ]);
 
     return (

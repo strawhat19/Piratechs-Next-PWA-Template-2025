@@ -20,6 +20,6 @@ export const GET = async () => {
     })?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss) : [];
     return NextResponse.json(modifiedPositions);
   } catch (error) {
-    return NextResponse.json({ error: `Failed to Get Positions` }, { status: 500 });
+    return NextResponse.json({ error: `Failed to Get Position(s)` }, { status: 500 });
   }
 };
