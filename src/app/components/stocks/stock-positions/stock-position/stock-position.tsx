@@ -41,7 +41,7 @@ export default function StockPostion({
         if (stk) setStock(stk);
     }, [stocks])
     return (
-        <div className={`stockPositionContainer stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition ${position?.merged && position?.merged?.length > 2 ? `mergedPositionXL` : ``}` : `singlePosition`}`}>
+        <div id={`stock_${position?.symbol}`} className={`stockPositionContainer stockComponent stock_${position?.symbol} stockTableRow stockTableRowCols flex gap10 alignCenter ${className} ${isMergedPosition(position) ? `mergedPosition ${position?.merged && position?.merged?.length > 2 ? `mergedPositionXL` : ``}` : `singlePosition`}`}>
             <div className={`stockPositionStat width100 flex gap5 column`}>
                 <div className={`stockPositionStatLabel`}>
                     <div></div>

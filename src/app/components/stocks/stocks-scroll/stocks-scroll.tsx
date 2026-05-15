@@ -25,6 +25,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         stocksFullyLoaded,
         stocks, setStocks,
         realtime, setRealtime,
+        robinhoodAccountTypes,
         stocksObj, setStocksObj,
         stockPositions, setStockPositions,
         webSocketConnected, setWebSocketConnected,
@@ -295,11 +296,17 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             });
         };
 
+        let sps = stockPositions?.filter((pos: Position) => !robinhoodAccountTypes?.includes(pos?.account_type))?.slice(0, 9);
+        let intialSymbols = sps?.map((sp: Position) => sp?.symbol);
+        let symbolsToUse = connectSymbolsOnWSConnect ? symbols : intialSymbols;
+
+        dev() && console.log(`Start Stock(s) Realtime Update(s)`);
+
         const channelsToRequestObj = {
             1: {
                 channel: 1,
                 name: `Trade`,
-                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Trade`, symbol })) : [],
+                add: symbolsToUse?.map((symbol: string) => ({ type: `Trade`, symbol })),
                 acceptEventFields: {
                     Trade: [
                         `price`,
@@ -319,7 +326,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 channel: 7,
                 resets: true,
                 name: `Quote`,
-                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Quote`, symbol })) : [],
+                add: symbolsToUse?.map((symbol: string) => ({ type: `Quote`, symbol })),
                 acceptEventFields: {
                     Quote: [
                         `askPrice`,
@@ -341,7 +348,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 channel: 11,
                 resets: true,
                 name: `Summary`,
-                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Summary`, symbol })) : [],
+                add: symbolsToUse?.map((symbol: string) => ({ type: `Summary`, symbol })),
                 acceptEventFields: {
                     Summary: [
                         `dayClosePrice`,
@@ -362,7 +369,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 channel: 13,
                 resets: true,
                 name: `Profile`,
-                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Profile`, symbol })) : [],
+                add: symbolsToUse?.map((symbol: string) => ({ type: `Profile`, symbol })),
                 acceptEventFields: {
                     Profile: [
                         `eventSymbol`,
@@ -575,6 +582,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     }, [
         stocks?.length,
         stocksFullyLoaded,
+        stockPositions?.length,
         user?.z_token_robinhood,
         user?.z_token_robinhood_socket,
     ]);
@@ -582,28 +590,34 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     useEffect(() => {
         if (!webSocketConnected) return;
         if (connectSymbolsOnWSConnect) return;
+        if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
 
         const visibleSymbols = new Set<string>();
+        
         const updateVisibleSymbols = () => {
             const symbols = Array.from(visibleSymbols).sort();
             setStocksObj((prev: any) => ({ ...prev, 2: symbols, }));
         };
+
+        const trackSymbolRealtime = (symbol: string, add: boolean = true) => {
+            if (add) visibleSymbols.add(symbol);
+            else visibleSymbols.delete(symbol);
+            updateRealtimeSymbol(symbol, add, { stocksObj, visibleSymbols });
+        }
 
         const observer = new IntersectionObserver((entries) => {
             let changed = false;
             entries.forEach(entry => {
                 const symbol = (entry.target as HTMLElement)?.id?.replaceAll(`stock_`, ``);
                 if (!symbol) return;
-                if (entry.isIntersecting) {
+                if (entry?.isIntersecting) {
                     if (!visibleSymbols.has(symbol)) {
-                        visibleSymbols.add(symbol);
-                        updateRealtimeSymbol(symbol, true, { stocksObj, visibleSymbols });
+                        trackSymbolRealtime(symbol);
                         changed = true;
                     }
                 } else {
                     if (visibleSymbols.has(symbol)) {
-                        visibleSymbols.delete(symbol);
-                        updateRealtimeSymbol(symbol, false, { stocksObj, visibleSymbols });
+                        trackSymbolRealtime(symbol, false);
                         changed = true;
                     }
                 }
@@ -612,7 +626,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 updateVisibleSymbols();
             }
         },
-        { threshold: 0.1, });
+        { threshold: 0.01, });
 
         const stockEls = document.querySelectorAll<HTMLElement>(`.stockComponent`);
         stockEls.forEach(el => observer.observe(el));
@@ -623,6 +637,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         stocks?.length,
         stocksFullyLoaded,
         webSocketConnected,
+        robinhoodAccountTypes,
+        stockPositions?.length,,
         user?.z_token_robinhood,
         user?.z_token_robinhood_socket,
     ])

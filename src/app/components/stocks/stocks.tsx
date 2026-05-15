@@ -173,7 +173,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         }
 
         // let stocksLoaded = (stocks?.length ?? 0) >= minStocksLen;
-        let positionsMerged = mergedPositionsUnique?.some((p: Position | any) => p?.merged?.length >= 3);
+        let positionsMerged = mergedPositionsUnique?.some((p: Position | any) => p?.merged?.length >= 2);
 
         // let fullyLoaded: boolean = Boolean(stocksLoaded && positionsMerged);
 
