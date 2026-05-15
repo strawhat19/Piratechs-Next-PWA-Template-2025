@@ -83,7 +83,7 @@ export default function StockPostion({
                         </strong>
                         <div></div>
                         <strong className={`stockStat stockStatLastUpdated`}>
-                            <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={getLastUpdated(String(stock?.tracked_last_updated))} />}</></i>
+                            <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={getLastUpdated(String(stock?.lastUpdate))} />}</></i>
                         </strong>
                     </>}
                 </div>
