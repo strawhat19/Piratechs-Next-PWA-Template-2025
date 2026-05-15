@@ -69,12 +69,12 @@ export default function StockPostion({
                     ) : <></>}
                     <div></div>
                     {webSocketConnected && <>
-                        <strong className={`stockStat stockStatUpdates`}>
+                        {/* <strong className={`stockStat stockStatUpdates`}>
                             <i><span className={`main`}>Score</span> <>{<IconText showIcon={false} number={stock?.score} />}</></i>
                         </strong>
                         <strong className={`stockStat stockStatUpdates`}>
                             <i><span className={`main`}>Points</span> <>{<IconText showIcon={false} number={stock?.points} />}</></i>
-                        </strong>
+                        </strong> */}
                         <strong className={`stockStat stockStatUpdates`}>
                             <i><span className={`main`}>Upd</span> <>{<IconText showIcon={false} number={stock?.updates} />}</></i>
                         </strong>
