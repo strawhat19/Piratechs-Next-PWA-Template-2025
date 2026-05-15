@@ -25,7 +25,7 @@ export default function StockPostion({
 }: StockPositionProps) {
     let [stock, setStock] = useState<StockModel | null>(null);
     let [stockAlignmentCenter, ] = useState(stockTableAlignmentCenter);
-    const { robinhoodAccountTypes, stocks } = useContext<any>(StateGlobals);
+    const { robinhoodAccountTypes, stocks, webSocketConnected } = useContext<any>(StateGlobals);
     const isMergedPosition = (position: Position | null) => position != null && position?.merged && Array.isArray(position?.merged) && (position?.merged?.length > 1 && robinhoodAccountTypes?.length < 3);
     const getLastUpdated = (last_updated: string) => {
         let timeStampToDisplay = String(last_updated);
@@ -68,22 +68,24 @@ export default function StockPostion({
                         </strong>
                     ) : <></>}
                     <div></div>
-                    <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Score</span> <>{<IconText showIcon={false} number={stock?.score} />}</></i>
-                    </strong>
-                    <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Points</span> <>{<IconText showIcon={false} number={stock?.points} />}</></i>
-                    </strong>
-                    <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Upd</span> <>{<IconText showIcon={false} number={stock?.updates} />}</></i>
-                    </strong>
-                    <strong className={`stockStat stockStatUpdates`}>
-                        <i><span className={`main`}>Tracked</span> <>{<IconText showIcon={false} number={stock?.tracked_updates} />}</></i>
-                    </strong>
-                    <div></div>
-                    <strong className={`stockStat stockStatLastUpdated`}>
-                        <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={getLastUpdated(String(stock?.tracked_last_updated))} />}</></i>
-                    </strong>
+                    {webSocketConnected && <>
+                        <strong className={`stockStat stockStatUpdates`}>
+                            <i><span className={`main`}>Score</span> <>{<IconText showIcon={false} number={stock?.score} />}</></i>
+                        </strong>
+                        <strong className={`stockStat stockStatUpdates`}>
+                            <i><span className={`main`}>Points</span> <>{<IconText showIcon={false} number={stock?.points} />}</></i>
+                        </strong>
+                        <strong className={`stockStat stockStatUpdates`}>
+                            <i><span className={`main`}>Upd</span> <>{<IconText showIcon={false} number={stock?.updates} />}</></i>
+                        </strong>
+                        <strong className={`stockStat stockStatUpdates`}>
+                            <i><span className={`main`}>Tracked</span> <>{<IconText showIcon={false} number={stock?.tracked_updates} />}</></i>
+                        </strong>
+                        <div></div>
+                        <strong className={`stockStat stockStatLastUpdated`}>
+                            <i><span className={`main`}>Last</span> <>{<IconText showIcon={false} text={getLastUpdated(String(stock?.tracked_last_updated))} />}</></i>
+                        </strong>
+                    </>}
                 </div>
                 <div className={`stockPositionStart stockPositionStatValue stockColValue subMetric`}>
                     <Stock 

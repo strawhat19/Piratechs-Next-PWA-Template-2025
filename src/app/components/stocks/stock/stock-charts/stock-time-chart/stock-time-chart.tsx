@@ -110,7 +110,7 @@ export default function StockHistoryChart({
             if (!raw) return stock?.symbol || 'Stock';
             return new Date(raw).toLocaleTimeString();
           },
-          label: (context) => `$${Number(context.parsed.y).toFixed(2)}`,
+          label: (context) => `$${Number(context?.parsed?.y ?? 0)?.toFixed(2)}`,
         },
       },
       annotation: latest

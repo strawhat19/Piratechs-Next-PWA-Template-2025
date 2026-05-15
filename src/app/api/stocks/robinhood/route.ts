@@ -139,7 +139,7 @@ export const getStocksFromSymbols = async (symbols: string[], token: string = ro
       let equity = price;
       let wentPublic = ipoDate;
       let change = price - previousClose;
-      let changePercentage = parseFloat(((change / previousClose) * 100)?.toFixed(2));
+      let changePercentage = parseFloat((((change ?? 0) / (previousClose ?? 0)) * 100)?.toFixed(2));
       let stock = new Stock({ address, symbol, name, id: symbol, stock_id, open, high, low, volume, volAvg, yearHigh, float, yearLow, marketCap, description, ceo, city, state, sector, industry, employees, founded, dividend, divYield, paysDividends, price, previousClose, active, updated_at, account_type, country, ipoDate, website, url, source, image, logo, close, changes, equity, wentPublic, lastTradePrice, size, lastNonRegTradePrice, lastExtendedHoursTradePrice, change, changePercentage, api: StockAPIs.Robinhood, dataSource: DataSources.api });
       return stock;
     } catch { return null; }

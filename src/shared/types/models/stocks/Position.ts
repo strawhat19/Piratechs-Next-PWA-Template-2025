@@ -78,7 +78,7 @@ export class Position {
             this.qty_available = d?.shares_available_for_sells;
             this.qty = String(d?.quantity)?.split(``).slice(0, 5)?.join(``);
         }
-        this.quantity = Number(Number(this.qty)?.toFixed(2));
+        this.quantity = Number(Number(this.qty ?? 0)?.toFixed(2));
         this.cost = Number(this.cost_basis);
         this.last = Number(this.lastday_price);
         this.value = Number(this.market_value);

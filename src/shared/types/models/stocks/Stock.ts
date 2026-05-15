@@ -201,10 +201,13 @@ export class Stock {
             let marketOpen = isMarketOpen();
             let updates = this.tracked_updates;
             let updated = this.tracked_last_updated;
+            // let storedStocksObj = localStorage.getItem(`stocks`);
+            // let stocksObj = storedStocksObj ? JSON.parse(storedStocksObj) : {};
             console.log(`${this?.symbol} "${key}" Upd #`, updates, {
                 ...extraData,
                 updates,
                 stock: this,
+                // stocksObj,
                 price: this.price,
                 symbol: this.symbol,
                 z_last_updated: updated, 

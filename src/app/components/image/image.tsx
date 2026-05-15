@@ -4,6 +4,8 @@ import Image from 'next/image';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+export const defaultBlur = `blur`;
+
 export default function Img({ 
     id,
     alt,
@@ -12,7 +14,7 @@ export default function Img({
     height,
     className,
     style = {},
-    effect = `blur`,
+    effect = undefined,
     useLazyLoad = true,
     onImageLoad = (e?: any) => {},
     onImageError = (e?: any) => {}, 

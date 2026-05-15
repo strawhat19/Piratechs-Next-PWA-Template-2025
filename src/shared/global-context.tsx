@@ -21,7 +21,8 @@ import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userC
 
 export const StateGlobals = createContext({});
 
-export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, };
+export const minStocksLen = 265;
+export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen };
 
 export const getFirstNumber = (str: string): number | null => {
   const match = str.match(/-?\d+(\.\d+)?/);
@@ -56,6 +57,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [authState, setAuthState] = useState<AuthStates>(AuthStates.Next);
     
     let [histories, setHistories] = useState([]);
+    let [stocksObj, setStocksObj] = useState<any>({});
     let [realtime, setRealtime] = useState<boolean>(false);
     let [stockOrders, setStockOrders] = useState<Order[]>([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
@@ -63,6 +65,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
     let [alpacaPositions, setAlpacaPositions] = useState<Position[]>([]);
     let [stocksFullyLoaded, setStocksFullyLoaded] = useState<boolean>(false);
+    let [webSocketConnected, setWebSocketConnected] = useState<boolean>(false);
     let [stocks, setStocks] = useState<Stock[]>(sampleStocksDB?.map((s: any) => new Stock(s)));
     let [robinhoodAccountTypes, setRobinhoodAccountTypes] = useState<RobinhoodAccountTypes[]>([]);
 
@@ -408,10 +411,12 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         robinhood, setRobinhood,
         stocksAcc, setStocksAcc,
         histories, setHistories,
+        stocksObj, setStocksObj,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
         alpacaPositions, setAlpacaPositions,
         stocksFullyLoaded, setStocksFullyLoaded,
+        webSocketConnected, setWebSocketConnected,
         robinhoodAccountTypes, setRobinhoodAccountTypes,
 
         boardForm, setBoardForm,
@@ -419,7 +424,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }), [
         user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
-        stocks, histories, stockOrders, stocksAcc, stockPositions, robinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded,
+        stocks, histories, stockOrders, stocksAcc, stocksObj, stockPositions, robinhoodAccountTypes, realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected,
         boardForm, boardItems, boards, dataLoading,
     ]);
 

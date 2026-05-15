@@ -8,13 +8,13 @@ import Slider from '../../slider/slider';
 import Loader from '../../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 // import { calcTotalProfitLoss } from '../stocks';
-import { StateGlobals } from '@/shared/global-context';
-import { DataSources, StockAPIs } from '@/shared/types/types';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Position } from '@/shared/types/models/stocks/Position';
+// import { DataSources, StockAPIs } from '@/shared/types/types';
+import { minStocksLen, StateGlobals } from '@/shared/global-context';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
-import { apiRoutes, errorToast, getAPIServerData, getRealStocks } from '@/shared/scripts/constants';
+import { apiRoutes, connectSymbolsOnWSConnect, dev, errorToast, getAPIServerData, getRealStocks, reconnectPeriodically } from '@/shared/scripts/constants';
 
 const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
 const uniquePopularStockSymbols = [...new Set(popularStockSymbols)]?.filter(Boolean)?.sort();
@@ -22,25 +22,29 @@ const uniquePopularStockSymbols = [...new Set(popularStockSymbols)]?.filter(Bool
 export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const {
         user,
-        stocks,
-        setStocks,
-        stockPositions,
-        setStockPositions,
-        setRealtime,
         stocksFullyLoaded,
+        stocks, setStocks,
+        realtime, setRealtime,
+        stocksObj, setStocksObj,
+        stockPositions, setStockPositions,
+        webSocketConnected, setWebSocketConnected,
     } = useContext<any>(StateGlobals);
 
     const [updates, setUpdates] = useState(0);
     const [loading, setLoading] = useState(true);
 
+    const sendJsonRef = useRef<any>(null);
+    const channelsToRequestObjRef = useRef<any>(null);
+    const subscribedSymbolsRef = useRef<string[]>([]);
+
     const socketRef = useRef<WebSocket | null>(null);
+    const watchdogRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const keepAliveRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const watchdogRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+    const updatesRef = useRef(0);
     const stocksRef = useRef<StockModel[]>([]);
     const stockPositionsRef = useRef<Position[]>([]);
-    const updatesRef = useRef(0);
 
     const intentionalCloseRef = useRef(false);
     const lastMessageAtRef = useRef(Date.now());
@@ -60,34 +64,25 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     const onSocketStockDataUpdate = (channel: number, channelName: string, data: any[]) => {
         if (!Array.isArray(data) || !data.length) return;
-
         let updatedStocks: StockModel[] = [];
         let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase()).filter(Boolean);
-
         if (!stocksRef.current?.length) return;
-
         setRealtime(true);
-
         setStocks((prevStocks: StockModel[]) => {
             let refreshedStocks = prevStocks?.map((stock: StockModel) => {
                 if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
                     const stk: StockModel = stock;
-
                     stk?.updateFromLiveEventsArray(data);
                     updatedStocks?.push(stk);
-
                     setStockPositions((prevPositions: Position[]) => {
                         if (!prevPositions?.length) return prevPositions;
-
                         let refreshedPositions = prevPositions?.map((position: Position) => {
                             if (dataSymbols?.includes(position?.symbol?.toUpperCase())) {
                                 if (stk?.symbol?.toUpperCase() == position?.symbol?.toUpperCase()) {
                                     if (!position?.price) return position;
-
                                     let updPos = position;
                                     let price = Number(updPos?.price);
                                     let newPrice = Number(stk?.price);
-
                                     if (price != newPrice) {
                                         updPos?.updateFromPrices(newPrice);
                                         return updPos;
@@ -97,17 +92,13 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                         })?.sort((a: Position, b: Position) => {
                             return Number(b?.merged?.[0]?.totalProfitLoss) - Number(a?.merged?.[0]?.totalProfitLoss);
                         });
-
                         return refreshedPositions;
                     });
-
                     return stk;
                 } else return stock;
             });
-
             return refreshedStocks;
         });
-
         setUpdates(prevUpdates => {
             let nextUpdates = prevUpdates + 1;
             updatesRef.current = nextUpdates;
@@ -124,7 +115,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         setLoading(false);
 
         if (hasNewStocks) {
-            console.log(`Robinhood Stocks`, stocksFromAPI);
+            console.log(`Stocks`, stocksFromAPI);
         }
     };
 
@@ -163,6 +154,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     };
 
     const reconnectSocket = () => {
+        if (!reconnectPeriodically) return;
         if (reconnectTimerRef.current) return;
 
         reconnectTimerRef.current = setTimeout(() => {
@@ -177,6 +169,38 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 startRealtimeUpdates();
             }
         }, 3000);
+    };
+
+    const updateRealtimeSymbol = (symbol: string, connect: boolean = true, extraData: any = {}) => {
+        if (!symbol) return;
+        if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return;
+        if (!sendJsonRef.current) return;
+        if (!channelsToRequestObjRef.current) return;
+
+        const alreadySubscribed = subscribedSymbolsRef.current.includes(symbol);
+
+        if (connect && alreadySubscribed) return;
+        if (!connect && !alreadySubscribed) return;
+
+        Object.values(channelsToRequestObjRef.current).forEach((channelObj: any) => {
+            sendJsonRef.current({
+                channel: channelObj.channel,
+                type: `FEED_SUBSCRIPTION`,
+                ...(connect
+                    ? { add: [{ type: channelObj?.name, symbol }] }
+                    : { remove: [{ type: channelObj?.name, symbol }] }),
+            });
+        });
+
+        subscribedSymbolsRef.current = connect
+            ? [...new Set([...subscribedSymbolsRef?.current, symbol])].sort()
+            : subscribedSymbolsRef?.current?.filter(s => s !== symbol);
+
+        dev() && console.log(connect ? `Realtime Symbol Added` : `Realtime Symbol Removed`, {
+            symbol,
+            subscribedSymbols: subscribedSymbolsRef?.current,
+            ...extraData,
+        });
     };
 
     const startRealtimeUpdates = () => {
@@ -212,6 +236,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             }
         };
 
+        sendJsonRef.current = sendJson;
+
         const authenticate = () => {
             if (!didAuth && ws.readyState === WebSocket.OPEN) {
                 sendJson({
@@ -236,6 +262,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         };
 
         const startWatchdog = () => {
+            if (!reconnectPeriodically) return;
             if (watchdogRef.current) return;
 
             watchdogRef.current = setInterval(() => {
@@ -272,7 +299,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             1: {
                 channel: 1,
                 name: `Trade`,
-                add: symbols.map((symbol: string) => ({ type: `Trade`, symbol })),
+                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Trade`, symbol })) : [],
                 acceptEventFields: {
                     Trade: [
                         `price`,
@@ -290,9 +317,9 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             },
             7: {
                 channel: 7,
-                name: `Quote`,
                 resets: true,
-                add: symbols.map((symbol: string) => ({ type: `Quote`, symbol })),
+                name: `Quote`,
+                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Quote`, symbol })) : [],
                 acceptEventFields: {
                     Quote: [
                         `askPrice`,
@@ -312,9 +339,9 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             },
             11: {
                 channel: 11,
-                name: `Summary`,
                 resets: true,
-                add: symbols.map((symbol: string) => ({ type: `Summary`, symbol })),
+                name: `Summary`,
+                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Summary`, symbol })) : [],
                 acceptEventFields: {
                     Summary: [
                         `dayClosePrice`,
@@ -333,9 +360,9 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             },
             13: {
                 channel: 13,
-                name: `Profile`,
                 resets: true,
-                add: symbols.map((symbol: string) => ({ type: `Profile`, symbol })),
+                name: `Profile`,
+                add: connectSymbolsOnWSConnect ? symbols.map((symbol: string) => ({ type: `Profile`, symbol })) : [],
                 acceptEventFields: {
                     Profile: [
                         `eventSymbol`,
@@ -358,6 +385,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 },
             },
         };
+
+        channelsToRequestObjRef.current = channelsToRequestObj;
 
         const channelsToRequest = Object.values(channelsToRequestObj);
 
@@ -383,12 +412,12 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                     if (isData) {
                         lastFeedDataAtRef.current = Date.now();
 
-                        console.log(`Robinhood FEED_DATA`, {
-                            channel,
-                            channelName,
-                            count: dataD.length,
-                            time: new Date().toLocaleTimeString(),
-                        });
+                        // dev() && console.log(`Robinhood Feed Data`, {
+                        //     channel,
+                        //     channelName,
+                        //     count: dataD.length,
+                        //     time: new Date().toLocaleTimeString(),
+                        // });
 
                         onSocketStockDataUpdate(channel, channelName, dataD);
                     }
@@ -494,7 +523,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
             socketRef.current = null;
 
-            if (!intentionalCloseRef.current) {
+            if (!intentionalCloseRef.current && reconnectPeriodically) {
                 reconnectSocket();
             }
         };
@@ -509,12 +538,16 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     }, [user?.z_token_robinhood]);
 
     useEffect(() => {
+        if (loading) return;
+        if (socketRef.current) return;
         if (!stocksFullyLoaded) return;
         if (!user?.z_token_robinhood) return;
         if (!user?.z_token_robinhood_socket) return;
         if (!uniquePopularStockSymbols?.length) return;
-        if (!stocks || !stocks?.length || stocks?.length == 0) return;
-        if (socketRef.current) return;
+        if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
+        if (!stocks || !stocks?.length || stocks?.length == 0 || ((stocks?.length ?? 0) < minStocksLen)) return;
+
+        setWebSocketConnected(true);
 
         let { ws } = startRealtimeUpdates();
 
@@ -540,11 +573,59 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             socketRef.current = null;
         };
     }, [
-        stocksFullyLoaded,
         stocks?.length,
+        stocksFullyLoaded,
         user?.z_token_robinhood,
         user?.z_token_robinhood_socket,
     ]);
+
+    useEffect(() => {
+        if (!webSocketConnected) return;
+        if (connectSymbolsOnWSConnect) return;
+
+        const visibleSymbols = new Set<string>();
+        const updateVisibleSymbols = () => {
+            const symbols = Array.from(visibleSymbols).sort();
+            setStocksObj((prev: any) => ({ ...prev, 2: symbols, }));
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            let changed = false;
+            entries.forEach(entry => {
+                const symbol = (entry.target as HTMLElement)?.id?.replaceAll(`stock_`, ``);
+                if (!symbol) return;
+                if (entry.isIntersecting) {
+                    if (!visibleSymbols.has(symbol)) {
+                        visibleSymbols.add(symbol);
+                        updateRealtimeSymbol(symbol, true, { stocksObj, visibleSymbols });
+                        changed = true;
+                    }
+                } else {
+                    if (visibleSymbols.has(symbol)) {
+                        visibleSymbols.delete(symbol);
+                        updateRealtimeSymbol(symbol, false, { stocksObj, visibleSymbols });
+                        changed = true;
+                    }
+                }
+            });
+            if (changed) {
+                updateVisibleSymbols();
+            }
+        },
+        { threshold: 0.1, });
+
+        const stockEls = document.querySelectorAll<HTMLElement>(`.stockComponent`);
+        stockEls.forEach(el => observer.observe(el));
+        return () => {
+            observer.disconnect();
+        };
+    }, [
+        stocks?.length,
+        stocksFullyLoaded,
+        webSocketConnected,
+        user?.z_token_robinhood,
+        user?.z_token_robinhood_socket,
+    ])
 
     return (
         <div className={`stocksScrollContainer w100 h100 ${className}`}>

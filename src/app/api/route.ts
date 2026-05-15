@@ -56,9 +56,9 @@ export const GET = async () => {
       message: defaultMessage,
       datetime: new Date().toLocaleString(),
       stats: {
-        cpuLoad: `${cpuLoad.toFixed(2)}`,
+        cpuLoad: `${(cpuLoad ?? 0)?.toFixed(2)}`,
         uptime: `${uptimeHours} hours, ${uptimeMinutes} minutes`,
-        memoryUsage: `${usedMem.toFixed(2)} GB of ${totalMem.toFixed(2)} GB`,
+        memoryUsage: `${(usedMem ?? 0)?.toFixed(2)} GB of ${(totalMem ?? 0)?.toFixed(2)} GB`,
       },
       ...(process.env.NODE_ENV == `development` && { routes: getApiRoutes() }),
     });

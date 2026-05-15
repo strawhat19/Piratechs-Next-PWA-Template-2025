@@ -143,7 +143,7 @@ export default function Stocks({ className = `stocksComponent` }) {
             let iPos = matchPs?.find((pos: Position) => pos?.account_type == iKey) ?? null;
             let tPos = matchPs?.find((pos: Position) => pos?.account_type == tKey) ?? null;
             let sorted = [iPos, tPos]?.filter(Boolean)?.map(ps => ({ ...ps, stock }))?.sort((a: any, b: any) => b?.totalProfitLoss - a?.totalProfitLoss);
-            let merged = [ ...sorted, aPos ];
+            let merged = [ ...sorted, aPos ]?.filter(Boolean);
             p.merged = merged;
             p.loaded = merged?.length > 0;
             Object.assign(positionsObj, { [p?.symbol]: p });
@@ -172,7 +172,12 @@ export default function Stocks({ className = `stocksComponent` }) {
             console.log(`Positions`, mergedPositionsUnique);
         }
 
-        setStocksFullyLoaded(mergedPositionsUnique?.some((p: Position | any) => p?.merged?.length >= 3));
+        // let stocksLoaded = (stocks?.length ?? 0) >= minStocksLen;
+        let positionsMerged = mergedPositionsUnique?.some((p: Position | any) => p?.merged?.length >= 3);
+
+        // let fullyLoaded: boolean = Boolean(stocksLoaded && positionsMerged);
+
+        setStocksFullyLoaded(positionsMerged);
     }
 
     const onRobinhoodTokenUpdate = (e: any) => {
@@ -299,7 +304,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                     <div className={`customPageTop mh40 flex alignCenter gap5 spaceBetween w100 relative`} style={{ top: -10 }}>
                         <Logo label={`Stocks`} style={{ marginRight: 5 }} />
                         {user != null && <>
-                            {realtime == true && (
+                            {(stocksFullyLoaded == true || realtime == true) && (
                                 Object.values(RobinhoodAccountTypes)?.map((rba: RobinhoodAccountTypes, rbi: number) => (
                                     <button 
                                         key={rbi}
