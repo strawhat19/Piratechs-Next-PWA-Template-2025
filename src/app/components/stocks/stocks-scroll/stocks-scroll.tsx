@@ -12,9 +12,9 @@ import { SwiperSlide } from 'swiper/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Position } from '@/shared/types/models/stocks/Position';
 // import { DataSources, StockAPIs } from '@/shared/types/types';
-import { minStocksLen, StateGlobals } from '@/shared/global-context';
 import { Stock as StockModel } from '@/shared/types/models/stocks/Stock';
 import { popularStocks } from '@/shared/server/database/samples/stocks/stocks';
+import { minStockPositions, minStocksLen, StateGlobals } from '@/shared/global-context';
 import { apiRoutes, connectSymbolsOnWSConnect, dev, errorToast, getAPIServerData, getRealStocks, reconnectPeriodically } from '@/shared/scripts/constants';
 
 const popularStockSymbols = [...Object.keys(popularStocks), `BRK.A`, `BRK.B`];
@@ -28,6 +28,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         realtime, setRealtime,
         robinhoodAccountTypes,
         stocksObj, setStocksObj,
+        syncedSet, setSyncedSet,
         stockPositions, setStockPositions,
         stocksLoadedSet, setStocksLoadedSet,
         stocksLoadingSet, setStocksLoadingSet,
@@ -72,7 +73,14 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         let updatedStocks: StockModel[] = [];
         let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase()).filter(Boolean);
         if (!stocksRef.current?.length) return;
-        setRealtime(true);
+        if (realtime == false) {
+            if (syncedSet == false) {
+                // let message = `Synchronized Realtime Market Data`;
+                // toast.success(message);
+                setSyncedSet(true);
+            }
+            setRealtime(true);
+        }
         setStocks((prevStocks: StockModel[]) => {
             let refreshedStocks = prevStocks?.map((stock: StockModel) => {
                 if (dataSymbols?.includes(stock?.symbol?.toUpperCase())) {
@@ -130,7 +138,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
     const refreshStocks = (getReal = false, getRobinhood = true, token = user?.z_token_robinhood) => {
         if (stocksLoadingSet == false) {
-            toast.info(`Stock(s) Loading`);
+            // toast.info(`Stock(s) Loading`);
             setStocksLoadingSet(true);
         }
         if (getReal && getRealStocks) {
@@ -204,6 +212,17 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         });
     };
 
+    const warnRefreshTokens = (error: any, token: string) => {
+        if (stocks?.every((s: StockModel) => s?.updated == false)) {
+            if (stockRefreshTokensWarningSet == false) {
+                let warningMsg = `Refresh Robinhood Socket & Auth Token(s)`;
+                let fullMsg = `Please Refresh your Robinhood Socket Authorization Token to get Latest Realtime Stock(s) Data`;
+                errorToast(warningMsg, { error, token, message: fullMsg, source: `Robinhood WS Error`, }, undefined, `warn`);
+                setStockRefreshTokensWarningSet(true);
+            }
+        }
+    }
+
     const startRealtimeUpdates = (): any => {
         let defaultReturn = (ws: any = socketRef?.current) => { ws };
 
@@ -251,7 +270,6 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
         const startKeepAlive = () => {
             if (keepAliveRef.current) return;
-
             keepAliveRef.current = setInterval(() => {
                 if (ws.readyState === WebSocket.OPEN) {
                     sendJson({
@@ -265,18 +283,14 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         const startWatchdog = () => {
             if (!reconnectPeriodically) return;
             if (watchdogRef.current) return;
-
             watchdogRef.current = setInterval(() => {
                 let secondsSinceLastFeedData = (Date.now() - lastFeedDataAtRef.current) / 1000;
-
                 if (secondsSinceLastFeedData > 45) {
                     console.warn(`Robinhood WS feed stale, reconnecting`, {
                         secondsSinceLastFeedData,
                         readyState: socketRef.current?.readyState,
                     });
-
                     intentionalCloseRef.current = false;
-
                     if (socketRef.current) {
                         socketRef.current.close();
                     } else {
@@ -296,7 +310,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
             });
         };
 
-        let sps = stockPositions?.filter((pos: Position) => !robinhoodAccountTypes?.includes(pos?.account_type))?.slice(0, 9);
+        let sps = stockPositions?.filter((pos: Position) => !robinhoodAccountTypes?.includes(pos?.account_type))?.slice(0, minStockPositions);
         let intialSymbols = sps?.map((sp: Position) => sp?.symbol);
         let symbolsToUse = connectSymbolsOnWSConnect ? symbols : intialSymbols;
         
@@ -500,45 +514,26 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         };
 
         ws.onerror = (error: Event) => {
-            errorToast(
-                `Please Refresh your Robinhood Socket Authorization Token to get Latest Realtime Stocks Data`,
-                {
-                    error,
-                    token: socket_token,
-                    source: `Robinhood WS Error`,
-                    message: `Stock Socket Sync Needed`,
-                },
-                undefined,
-                `warn`
-            );
-
+            warnRefreshTokens(error, socket_token);
             authenticate();
         };
 
         ws.onclose = (event: CloseEvent) => {
-            if (stockRefreshTokensWarningSet == false) {
-                toast.warn(`Refresh Robinhood Socket & Auth Token(s)`);
-                setStockRefreshTokensWarningSet(true);
-            }
-            console.warn(`Robinhood WS closed`, {
+            dev() && console.log(`Robinhood WS Closed`, {
                 code: event.code,
                 reason: event.reason,
                 wasClean: event.wasClean,
                 intentional: intentionalCloseRef.current,
             });
-
             if (keepAliveRef.current) {
                 clearInterval(keepAliveRef.current);
                 keepAliveRef.current = null;
             }
-
             if (watchdogRef.current) {
                 clearInterval(watchdogRef.current);
                 watchdogRef.current = null;
             }
-
             socketRef.current = null;
-
             if (!intentionalCloseRef.current && reconnectPeriodically) {
                 reconnectSocket();
             }

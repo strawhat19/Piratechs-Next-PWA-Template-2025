@@ -177,6 +177,7 @@ export class Stock {
     updateUpdates() {
         let d = new Date();
         this.updated = true;
+        this.connected = true;
         this.api = StockAPIs.Robinhood;
         this.source = DataSources.robinhood;
         this.lastUpdate = d?.toLocaleString();

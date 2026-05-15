@@ -22,7 +22,8 @@ import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userC
 export const StateGlobals = createContext({});
 
 export const minStocksLen = 235;
-export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen };
+export const minStockPositions = 15;
+export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen, minStockPositions };
 
 export const getFirstNumber = (str: string): number | null => {
   const match = str.match(/-?\d+(\.\d+)?/);
@@ -59,6 +60,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [histories, setHistories] = useState([]);
     let [stocksObj, setStocksObj] = useState<any>({});
     let [realtime, setRealtime] = useState<boolean>(false);
+    let [syncedSet, setSyncedSet] = useState<boolean>(false);
     let [stockOrders, setStockOrders] = useState<Order[]>([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
     let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
@@ -419,6 +421,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         stocksAcc, setStocksAcc,
         histories, setHistories,
         stocksObj, setStocksObj,
+        syncedSet, setSyncedSet,
         stockOrders, setStockOrders,
         stockPositions, setStockPositions,
         stocksLoadedSet, setStocksLoadedSet,
@@ -434,7 +437,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         boardForm, boardItems, boards, dataLoading,
-        stocks, histories, stockOrders, stocksAcc, stocksObj, stockPositions, robinhoodAccountTypes, 
+        stocks, histories, stockOrders, stocksAcc, 
+        stocksObj, stockPositions, robinhoodAccountTypes, syncedSet,
         realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected, 
         stocksLoadedSet, stocksLoadingSet, positionsLoadedSet, positionsLoadingSet,
         stockRefreshTokensWarningSet,

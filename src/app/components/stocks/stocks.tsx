@@ -215,7 +215,7 @@ export default function Stocks({ className = `stocksComponent` }) {
             setRefreshing(true);
             setRobinhoodToken(token);
             if (positionsLoadingSet == false) {
-                toast.info(`Position(s) Loading`);
+                // toast.info(`Position(s) Loading`);
                 setPositionsLoadingSet(true);
             }
             let apiServerRoute = apiRoutes?.stocks?.routes?.robinhood;
