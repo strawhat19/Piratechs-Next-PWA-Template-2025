@@ -2,8 +2,8 @@ import { toast } from 'react-toastify';
 import { NextResponse } from 'next/server';
 import { DataSources, Roles, StockAPIs, Types } from '../types/types';
 
-export const connectSymbolsOnWSConnect = false;
 export const reconnectPeriodically: boolean = false;
+export const connectSymbolsOnWSConnect: boolean = false;
 export const resetParams = (dataSource: DataSources, api: StockAPIs, updates: number = 0, updated: boolean = false, loaded: boolean = false) => ({ api, dataSource, updates, updated, loaded, });
 
 export const constants = {

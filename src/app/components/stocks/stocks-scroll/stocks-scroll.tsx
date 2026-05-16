@@ -224,14 +224,17 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     }
 
     const startRealtimeUpdates = (): any => {
-        let defaultReturn = (ws: any = socketRef?.current) => { ws };
+        // let defaultReturn = (ws: any = socketRef?.current) => ({ ws });
 
         if (
             socketRef.current &&
             socketRef.current.readyState !== WebSocket.CLOSED &&
             socketRef.current.readyState !== WebSocket.CLOSING
         ) {
-            return defaultReturn(socketRef?.current);
+            return {
+                ws: socketRef.current,
+            };
+            // return defaultReturn(socketRef?.current);
         }
 
         const channelsRequested: number[] = [];
