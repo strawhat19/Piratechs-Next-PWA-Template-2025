@@ -56,6 +56,7 @@ export const stockImages = {
     FGL: `https://static.stocktitan.net/company-logo/fgl.png`,
     HTCO: `https://www.sofi.com/asset-icons/EQUITY-HTCO?format=svg`,
     HUHU: `https://www.sofi.com/asset-icons/EQUITY-HUHU?format=svg`,
+    IRON: logosPath + `IRON.png`,
     RCT: `https://static.stocktitan.net/company-logo/rct-lg.png`,
     VSNT: logosPath + `VSNT.png`,
 }
