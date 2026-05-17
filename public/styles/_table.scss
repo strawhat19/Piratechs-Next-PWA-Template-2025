@@ -1,0 +1,9 @@
+.table {
+    position: relative;
+    .table_header {
+        top: 13px;
+        left: 13px;
+        z-index: 1;
+        position: absolute;
+    }
+}
