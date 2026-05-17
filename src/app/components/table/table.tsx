@@ -2,14 +2,11 @@
 
 import { useContext } from 'react';
 import Loader from '../loaders/loader';
-import CssBaseline from '@mui/material/CssBaseline';
 import { StateGlobals } from '@/shared/global-context';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { GridToolbar } from '@mui/x-data-grid/internals';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const paginationModel = { page: 0, pageSize: 12 };
-const darkTheme = createTheme({ palette: { mode: `dark`, } });
 
 const default_columns: GridColDef[] = [
   { field: `id`, headerName: `ID`, width: 87 },
@@ -57,8 +54,6 @@ export default function Table({
 }: any) {
   const { loaded } = useContext<any>(StateGlobals);
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
       <div className={`table ${className}`}>
         {loaded ? <>
           {toolbar ? <>
@@ -66,29 +61,30 @@ export default function Table({
               {title}
             </div>
           </> : <></>}
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            density={density}
-            showToolbar={toolbar}
-            checkboxSelection={selectable}
-            slots={{ toolbar: GridToolbar, }}
-            pageSizeOptions={page_size_options}
-            initialState={{ pagination: { paginationModel: pagination_options } }}
-            slotProps={{ toolbar: { showQuickFilter: search, quickFilterProps: { debounceMs: search_delay, }, }, }}
-            sx={{ 
-              border: 0, 
-              borderColor: 'rgba(255,255,255,0.12)',
-              '& .MuiDataGrid-columnHeaders': {
-                bgcolor: 'rgba(255,255,255,0.04)',
-              },
-              '& .MuiDataGrid-row:hover': {
-                bgcolor: 'rgba(255,255,255,0.06)',
-              }, 
-            }}
-          />
+          {/* <MUI> */}
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              density={density}
+              showToolbar={toolbar}
+              checkboxSelection={selectable}
+              slots={{ toolbar: GridToolbar, }}
+              pageSizeOptions={page_size_options}
+              initialState={{ pagination: { paginationModel: pagination_options } }}
+              slotProps={{ toolbar: { showQuickFilter: search, quickFilterProps: { debounceMs: search_delay, }, }, }}
+              sx={{ 
+                border: 0, 
+                borderColor: 'rgba(255,255,255,0.12)',
+                '& .MuiDataGrid-columnHeaders': {
+                  bgcolor: 'rgba(255,255,255,0.04)',
+                },
+                '& .MuiDataGrid-row:hover': {
+                  bgcolor: 'rgba(255,255,255,0.06)',
+                }, 
+              }}
+            />
+          {/* </MUI> */}
         </> : <Loader height={250} label={`Table Loading`} />}
       </div>
-    </ThemeProvider>
   )
 }

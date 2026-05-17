@@ -45,6 +45,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [user, setUser] = useState<User | null>(null);
     let [users, setUsers] = useState<User[] | any>([]);
     let [usersLoading, setUsersLoading] = useState(true);
+    let [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
     
     let [boards, setBoards] = useState<Board[]>([]);
     let [dataLoading, setDataLoading] = useState(true);
@@ -161,6 +162,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         }
         if (!isSmallScreen) {
             setMenuExpanded(false);
+            // setProfileMenuOpen(false);
         }
     }
 
@@ -405,6 +407,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         width, setWidth,
         height, setHeight,
         usersLoading, setUsersLoading,
+        profileMenuOpen, setProfileMenuOpen,
 
         boards, setBoards,
         boardForm, setBoardForm,
@@ -438,7 +441,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         robinhoodAccountTypes, setRobinhoodAccountTypes,
         stockRefreshTokensWarningSet, setStockRefreshTokensWarningSet,
     }), [
-        user, users, usersLoading, width, height, selected, loaded, isDevEnv, 
+        user, users, usersLoading, profileMenuOpen, 
+        width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         boardForm, boardItems, boards, dataLoading,
         stocks, histories, stockOrders, stocksAcc, 

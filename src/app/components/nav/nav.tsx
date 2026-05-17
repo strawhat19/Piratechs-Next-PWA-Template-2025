@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useContext } from 'react';
+import MenuComponent from '../menu/menu';
 import { usePathname } from 'next/navigation';
 import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
@@ -28,7 +29,7 @@ export const routes = {
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {
     const pathname = usePathname();
-    let { user, loaded, menuExpanded, setMenuExpanded } = useContext<any>(StateGlobals);
+    let { user, loaded, menuExpanded, setMenuExpanded, profileMenuOpen, setProfileMenuOpen } = useContext<any>(StateGlobals);
 
     return (
         <nav className={`container ${className}`}>
@@ -42,12 +43,13 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </> : (
                         <li className={`menuButton`}>
                             {/* Welcome, {user?.name} */}
-                            <Icon_Button disabled={!loaded} title={`Profile`} className={`profileButton`}>
+                            <Icon_Button onClick={(e: any) => setProfileMenuOpen(!profileMenuOpen)} disabled={!loaded} title={`Profile`} className={`profileButton`}>
                                 <span className={`letter`}>
                                     {user?.name?.[0]}
                                 </span>
                                 {/* <Person className={`settingsIcon`} style={{ fontSize: 20 }} /> */}
                             </Icon_Button>
+                            <MenuComponent open={profileMenuOpen} />
                         </li>
                     )}
                     <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>

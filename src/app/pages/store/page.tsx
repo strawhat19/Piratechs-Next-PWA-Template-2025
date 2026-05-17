@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 export default function StorePage() {
     return (
         <Container className={`storePage`}>
-            {/* <h1>Store Page</h1> */}
             <Store />
         </Container>
     )
