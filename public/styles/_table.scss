@@ -15,20 +15,3 @@
         position: absolute;
     }
 }
-
-.MuiDataGrid-root {
-    --DataGrid-t-color-border-base: var(--buttons) !important;
-    --DataGrid-t-color-background-base: var(--navy) !important;
-    --DataGrid-t-header-background-base: var(--navy) !important;
-    --DataGrid-t-color-background-overlay: var(--navy) !important;
-    --DataGrid-t-color-background-backdrop: rgba(0, 0, 0, 0.38) !important;
-    .MuiDataGrid-cell, .MuiDataGrid-footerContainer, .MuiDataGrid-columnHeaderTitle, .MuiTablePagination-root {
-        color: white !important;
-    }
-    .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root {
-        color: white !important;
-    }
-    .MuiCheckbox-root {
-        color: var(--links) !important;
-    }
-}

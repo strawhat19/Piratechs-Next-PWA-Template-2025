@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useContext } from 'react';
 import MenuComponent from '../menu/menu';
+import { useContext, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
@@ -29,7 +29,18 @@ export const routes = {
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {
     const pathname = usePathname();
-    let { user, loaded, menuExpanded, setMenuExpanded, profileMenuOpen, setProfileMenuOpen } = useContext<any>(StateGlobals);
+
+    let { user, loaded, menuExpanded, setMenuExpanded } = useContext<any>(StateGlobals);
+
+    let [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
+
+    const openProfileMenu = (e: React.MouseEvent<HTMLElement>) => {
+        setProfileAnchorEl(e.currentTarget);
+    };
+
+    const closeProfileMenu = () => {
+        setProfileAnchorEl(null);
+    };
 
     return (
         <nav className={`container ${className}`}>
@@ -43,13 +54,13 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </> : (
                         <li className={`menuButton`}>
                             {/* Welcome, {user?.name} */}
-                            <Icon_Button onClick={(e: any) => setProfileMenuOpen(!profileMenuOpen)} disabled={!loaded} title={`Profile`} className={`profileButton`}>
+                            <Icon_Button id={`profileMenuButton`} onClick={openProfileMenu} disabled={!loaded} title={`Profile`} className={`profileButton`}>
                                 <span className={`letter`}>
                                     {user?.name?.[0]}
                                 </span>
                                 {/* <Person className={`settingsIcon`} style={{ fontSize: 20 }} /> */}
                             </Icon_Button>
-                            <MenuComponent open={profileMenuOpen} />
+                            <MenuComponent open={profileAnchorEl != null} anchorEl={profileAnchorEl} onClose={closeProfileMenu} topOffset={1} />
                         </li>
                     )}
                     <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>

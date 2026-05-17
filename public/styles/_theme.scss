@@ -33,6 +33,8 @@
     // navies
     --navy: #041b44;
     --dark-navy: #00091b;
+    --dark_navy_rgb: 2, 13, 34;
+    --dark_navy: rgba(var(--dark_navy_rgb), 1);
 
     // silver
     --soft-silver: #aaaaaa;

@@ -1,3 +1,38 @@
+.menuComponent {
+    .MuiPaper-root {
+        // background: var(--navy) !important;
+        background: var(--background) !important;
+    }
+    .MuiList-root {
+        padding: 0;
+    }
+}
+
+.MuiMenuItem-root {
+    font-size: 14px;
+    color: white !important;
+    min-height: 34px !important;
+    padding: 6px 10px !important;
+    transition: var(--transition);
+    .MuiSvgIcon-root {
+        font-size: 20px;
+        margin-right: 10px;
+        color: var(--links);
+    }
+    &:hover {
+      background: var(--buttons) !important;
+    }
+    &:active {
+      background: var(--links) !important;
+    }
+}
+
+.MuiDivider-root {
+    opacity: 0.8;
+    margin: 0 !important;
+    border-color: var(--links) !important;
+}
+
 .MuiDialog-root {
     .MuiBackdrop-root {
         backdrop-filter: blur(5px);
@@ -66,4 +101,21 @@
     text-transform: none !important;
     background: var(--buttons) !important;
     transition: var(--transition) !important;
+}
+
+.MuiDataGrid-root {
+    --DataGrid-t-color-border-base: var(--buttons) !important;
+    --DataGrid-t-color-background-base: var(--navy) !important;
+    --DataGrid-t-header-background-base: var(--navy) !important;
+    --DataGrid-t-color-background-overlay: var(--navy) !important;
+    --DataGrid-t-color-background-backdrop: var(--dark_navy) !important;
+    .MuiDataGrid-cell, .MuiDataGrid-footerContainer, .MuiDataGrid-columnHeaderTitle, .MuiTablePagination-root {
+        color: white !important;
+    }
+    .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root {
+        color: white !important;
+    }
+    .MuiCheckbox-root {
+        color: var(--links) !important;
+    }
 }

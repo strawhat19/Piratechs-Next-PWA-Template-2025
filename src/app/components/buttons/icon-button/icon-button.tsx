@@ -8,6 +8,7 @@ export default function Icon_Button({
     url = ``,
     disabled = false, 
     onClick = () => {}, 
+    id = `iconButtonID`,
     style = { position: `relative` },
     className = `iconButtonComponent`, 
 }: any) {
@@ -15,8 +16,8 @@ export default function Icon_Button({
     return (
         <Tooltip title={title} arrow>
             <IconButton 
-                size={`small`}
-                disabled={disabled} 
+                id={id}
+                size={`small`} 
                 className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
                 onClick={disabled ? undefined : (url != `` ? () => router.push(url) : onClick)} 
                 style={{ ...style, maxWidth: size, maxHeight: size, ...(disabled ? { pointerEvents: `none` } : {}), }} 
