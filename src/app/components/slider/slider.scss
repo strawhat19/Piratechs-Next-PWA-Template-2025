@@ -64,7 +64,7 @@
         gap: 15px;
         display: grid;
         grid-template-columns: minmax(auto, 45px) 1fr minmax(auto, 45px);
-        &.stocksComponentSlider {
+        &.componentSlider {
             grid-template-rows: var(--stockSliderHeight);
             .stockMetricTableContainer {
                 overflow: auto;

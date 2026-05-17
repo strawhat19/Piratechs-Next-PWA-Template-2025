@@ -29,10 +29,10 @@ export default function Container({
 }: any) {
     const pathname = usePathname();
 
-    let { loaded, isPWA, width } = useContext<any>(StateGlobals);
+    let { user, loaded, isPWA, width } = useContext<any>(StateGlobals);
 
     return (
-        <body className={`${className} ${getPageName(pathname)} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
+        <body className={`${className} ${getPageName(pathname)} ${user == null ? `noUser` : `hasUser`} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
             {topBarComponent != null && (
                 <TopBar>
                     {topBarComponent}

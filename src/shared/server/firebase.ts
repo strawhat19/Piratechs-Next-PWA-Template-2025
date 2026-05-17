@@ -6,7 +6,7 @@ import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
 import { Board } from '../types/models/Board';
 import { getFirestore } from 'firebase/firestore';
-import { apiRoutes, getIDParts, logToast } from '../scripts/constants';
+import { apiRoutes, customDate, getIDParts, logToast } from '../scripts/constants';
 import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
 
 export enum Tables {
@@ -69,11 +69,12 @@ export const addUserToDatabase = async (usr: User) => {
 }
 
 export const updateUserInDatabase = async (id: string, updates: Partial<User>) => {
+  const { update } = customDate();
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
   const res = await fetch(usersAPI + `/` + id, {
     method: `PATCH`,
-    body: JSON.stringify({ ...updates, updated: new Date()?.toLocaleString() }),
+    body: JSON.stringify({ ...updates, updated: update }),
     headers: { 
       Authorization: `Bearer ${token}`,
       [`Content-Type`]: `application/json`, 

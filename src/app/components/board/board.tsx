@@ -42,8 +42,8 @@ export default function Board() {
             setBoard(latestBoard);
         });
 
-        const listssRef = collection(db, Tables.lists).withConverter(listConverter as any);
-        const listsQuery = query(listssRef, where(`boardID`, `==`, boardID));
+        const listsRef = collection(db, Tables.lists).withConverter(listConverter as any);
+        const listsQuery = query(listsRef, where(`boardID`, `==`, boardID));
         const unsubListsArr = onSnapshot(listsQuery, listSnap => {
             const listsOrderedItems: List[] = [];
             const lsts = listSnap.docs.map(d => new List({ ...d.data(), board: latestBoard, }));

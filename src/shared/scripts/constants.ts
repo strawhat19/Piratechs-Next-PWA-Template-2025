@@ -443,21 +443,16 @@ export const customDate = (date: Date = new Date()) => {
   let hours = date.getHours();
   let ampm = hours >= 12 ? `PM` : `AM`;
   let minutes: string | number = date.getMinutes();
-
   hours = hours % 12;
   hours = hours ? hours : 12;
   minutes = minutes < 10 ? `0` + minutes : minutes;
-
   let time = hours + `:` + minutes + ` ` + ampm;
   let dateSlashes = (slice: number = 0) => (date.getMonth() + 1) + `/` + date.getDate() + `/` + String(date.getFullYear()).slice(slice);
-
   let milliseconds = date.getMilliseconds();
   let seconds = String(milliseconds * 1000)?.slice(0, 2);
   let ms = Math.round(milliseconds / 10).toString().padStart(2, `0`);
-
   let secondsTime = `${hours}:${minutes}:${seconds} ${ampm}`;
   let update = `${secondsTime} ${dateSlashes(2)}`;
-
   let datesObject = {
     ms,
     ampm,
@@ -471,6 +466,5 @@ export const customDate = (date: Date = new Date()) => {
     date: dateSlashes(),
     datetime: time + ` ` + dateSlashes(2),
   }
-
   return datesObject;
 }

@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import MenuComponent from '../menu/menu';
 import { useContext, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
+import { useRouter, usePathname } from 'next/navigation';
+import { capWords, dev } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
-import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart } from '@mui/icons-material';
+import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart, Person, Logout } from '@mui/icons-material';
 
 const size = 20;
 export const routes = {
@@ -28,6 +28,7 @@ export const routes = {
 }
 
 export default function Nav({ iconSize = size, className = `navComponent` }) {
+    const router = useRouter();
     const pathname = usePathname();
 
     let { user, loaded, menuExpanded, setMenuExpanded } = useContext<any>(StateGlobals);
@@ -41,6 +42,25 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
     const closeProfileMenu = () => {
         setProfileAnchorEl(null);
     };
+
+    const profileMenuItems = [
+        {
+            id: `profile`,
+            label: `Profile`,
+            icon: <Person />,
+            onClick: () => {
+                router.push(`/profile`);
+            },
+        },
+        {
+            id: `signout`,
+            icon: <Logout />,
+            label: `Sign Out`,
+            onClick: () => {
+                dev() && console.log(`Sign Out`);
+            },
+        },
+    ];
 
     return (
         <nav className={`container ${className}`}>
@@ -60,7 +80,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                                 </span>
                                 {/* <Person className={`settingsIcon`} style={{ fontSize: 20 }} /> */}
                             </Icon_Button>
-                            <MenuComponent open={profileAnchorEl != null} anchorEl={profileAnchorEl} onClose={closeProfileMenu} topOffset={1} />
+                            <MenuComponent open={profileAnchorEl != null} anchorEl={profileAnchorEl} onClose={closeProfileMenu} topOffset={1} menuItems={profileMenuItems} />
                         </li>
                     )}
                     <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>

@@ -110,42 +110,42 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         // }),
     ]);
 
-    const refreshUsers = async () => {
-        setUsersLoading(true);
-        try {
-            const res = await fetch(apiRoutes.users.url, {
-                method: `GET`,
-                cache: `no-store`,
-                headers: { [`Accept`]: `application/json` },
-            });
+    // const refreshUsers = async () => {
+    //     setUsersLoading(true);
+    //     try {
+    //         const res = await fetch(apiRoutes.users.url, {
+    //             method: `GET`,
+    //             cache: `no-store`,
+    //             headers: { [`Accept`]: `application/json` },
+    //         });
 
-            if (!res.ok) {
-                const msg = `Failed to Get Users (${res.status})`;
-                logToast(msg, `Error`, true);
-                return;
-            }
+    //         if (!res.ok) {
+    //             const msg = `Failed to Get Users (${res.status})`;
+    //             logToast(msg, `Error`, true);
+    //             return;
+    //         }
 
-            const data = (await res.json()) as unknown;
+    //         const data = (await res.json()) as unknown;
 
-            if (!Array.isArray(data)) {
-                logToast(`Error on Get Users`, `Error`, true);
-                return;
-            }
+    //         if (!Array.isArray(data)) {
+    //             logToast(`Error on Get Users`, `Error`, true);
+    //             return;
+    //         }
 
-            const usersFromAPI = data.map((u) => new User({
-                id: String((u as any).id ?? ``),
-                ...u,
-            })) as User[];
+    //         const usersFromAPI = data.map((u) => new User({
+    //             id: String((u as any).id ?? ``),
+    //             ...u,
+    //         })) as User[];
 
-            dev() && console.log(`Users`, usersFromAPI);
+    //         dev() && console.log(`Users`, usersFromAPI);
 
-            setUsers(usersFromAPI);
-        } catch (err: any) {
-            logToast(`Error on Get Users`, `Error`, true, err);
-        } finally {
-            setUsersLoading(false);
-        }
-    }
+    //         setUsers(usersFromAPI);
+    //     } catch (err: any) {
+    //         logToast(`Error on Get Users`, `Error`, true, err);
+    //     } finally {
+    //         setUsersLoading(false);
+    //     }
+    // }
 
     const onResize = (force = false) => {
         const windowWidth = window?.innerWidth;
@@ -170,44 +170,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             setUser(usr);
         }
         setAuthState(AuthStates.Sign_Out);
-        if (showSuccess && loaded == false) {
+        if (showSuccess) {
             logToast(`${usr?.name} Signed In Successfully`, ``, false, usr);
-            // try {
-            //     const token = await fetch(apiRoutes?.stocks?.routes?.robinhoodLogin, {
-            //         method: `GET`,
-            //         // body: JSON.stringify(loginPayload),
-            //         headers: { [`Accept`]: `application/json`, [`Content-Type`]: `application/json` },
-            //     });
-
-            //     if (!token?.ok) {
-            //         const msg = `Failed to Get Token (${token?.status})`;
-            //         logToast(msg, `Error`, true);
-            //         return;
-            //     }
-
-            //     const data = (await token?.json()) as unknown;
-
-            //     // if (!Array.isArray(data)) {
-            //     //     logToast(`Error on Get Users`, `Error`, true);
-            //     //     return;
-            //     // }
-
-            //     // const usersFromAPI = data.map((u) => new User({
-            //     //     id: String((u as any).id ?? ``),
-            //     //     ...u,
-            //     // })) as User[];
-
-            //     dev() && console.log(`Token`, {data, token});
-
-            //     // setUsers(usersFromAPI);
-            // } catch (err: any) {
-            //     logToast(`Error on Get Token`, `Error`, true, err);
-            // } finally {
-            //     // setUsersLoading(false);
-            // }
-            // getAPIServerData(apiRoutes?.stocks?.routes?.robinhoodLogin)?.then(token => {
-            //     console.log(`TOKEN`, token);
-            // });
         }
     }
 
@@ -286,14 +250,14 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         const listsQuery = query(listsRef, where(`boardIDs`, `array-contains`, selectedBoard?.id));
         const unsubLists = onSnapshot(listsQuery, listSnap => {
             const lists = listSnap.docs.map(d => new List({ ...d.data(), board: selectedBoard }));
-            setUser(prev => prev ? ({ ...prev, lists, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
+            setUser((prev: User | any) => prev ? ({ ...prev, lists, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
             const unsubItemsArr = lists.map((list: List) => {
                 const itemsRef = collection(db, Tables.items).withConverter(itemConverter);
                 const itemsQuery = query(itemsRef, where(`listIDs`, `array-contains`, list?.id));
                 return onSnapshot(itemsQuery, itemSnap => {
                     const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
                     const updatedLists = lists?.map(l => new List({ ...l, items: items?.filter(i => i?.listID == l?.id) }));
-                    setUser(prev => prev ? ({ ...prev, items, lists: updatedLists, data: { ...prev?.data, lists: updatedLists, items } }) : prev);
+                    setUser((prev: User | any) => prev ? ({ ...prev, items, lists: updatedLists, data: { ...prev?.data, lists: updatedLists, items } }) : prev);
                     items.forEach((item: Item) => {
                         const tasksRef = collection(db, Tables.tasks).withConverter(taskConverter);
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));
@@ -316,10 +280,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             stopBoardsListener();
             return;
         }
-
         const boardsDB = collection(db, Tables.boards).withConverter(boardConverter);
         const boardsDBQuery = query(boardsDB, where(`userIDs`, `array-contains`, user?.id));
-
         const boardsDBQueryListener = onSnapshot(boardsDBQuery, boardsDBDocs => {
             const boards = boardsDBDocs.docs.map(d => new Board(d.data()));
             setBoards(boards);
@@ -327,33 +289,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             refreshUserBoards(selectedBoard);
             setLoaded(true);
         });
-
         boardsUnsubRef.current = boardsDBQueryListener;
-
         return () => stopBoardsListener();
     }, [user?.id, (user as any)?.boardID]);
-
-    useEffect(() => {
-        if (user != null) {
-            const usersDB = collection(db, Tables.users).withConverter(userConverter);
-            const usersDBQuery = query(usersDB, where(`userIDs`, `array-contains`, user?.id));
-
-            const usersDBQueryListener = onSnapshot(usersDBQuery, usersDBDocs => {
-                const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
-                const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
-                const selectedBoard = boards.find(b => b?.id === (user as any)?.boardID) ?? boards[0];
-                setUsers(dbUsers);
-                let usr = dbUser;
-                delete usr?.data;
-                refreshUserBoards(selectedBoard, usr);
-                setLoaded(true);
-            });
-
-            return () => {
-                usersDBQueryListener();
-            }
-        }
-    }, [user?.id, boards]);
 
     useEffect(() => {
         let listenForUserAuthChanges: any = null;
@@ -381,6 +319,28 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }, [users]);
 
     useEffect(() => {
+        setUsersLoading(true);
+        const usersDB = collection(db, Tables.users).withConverter(userConverter);
+        const usersDBQueryListener = onSnapshot(usersDB, usersDBDocs => {
+            const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
+            const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
+            const selectedBoard = boards.find(b => b?.id === (user as any)?.boardID) ?? boards[0];
+            console.log(`User(s)`, dbUsers);
+            setUsers(dbUsers);
+            setUsersLoading(false);
+            if (user != null) {
+                let usr = dbUser;
+                delete usr?.data;
+                refreshUserBoards(selectedBoard, usr);
+            }
+            setLoaded(true);
+        });
+        return () => {
+            usersDBQueryListener();
+        }
+    }, []);
+
+    useEffect(() => {
         if (typeof window != `undefined`) {
             let isOnPWA = isInStandaloneMode();
             setIsPWA(isOnPWA);
@@ -390,7 +350,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
         onResize();
 
-        refreshUsers();
+        // refreshUsers();
 
         window?.addEventListener(`resize`, debouncedResize);
         return () => window?.removeEventListener(`resize`, debouncedResize);

@@ -375,7 +375,7 @@ export default function Stocks({ className = `stocksComponent` }) {
 
                 {loading == false ? (
                     user == null ? <>
-                        <Slider className={`stocksDashboardSlider stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
+                        <Slider className={`stocksDashboardSlider stocksComponentSlider componentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
                             <SwiperSlide>
                                 <div className={`stocksDashboard`}>
                                     {/* Stocks */}
@@ -383,7 +383,7 @@ export default function Stocks({ className = `stocksComponent` }) {
                             </SwiperSlide>
                         </Slider>
                     </> : <>
-                        <Slider className={`stocksComponentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
+                        <Slider className={`stocksComponentSlider componentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
                             <SwiperSlide>
                                 <StockPositions {...{getStock}} />
                             </SwiperSlide>

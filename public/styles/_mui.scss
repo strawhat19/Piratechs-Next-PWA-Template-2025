@@ -1,11 +1,9 @@
-.menuComponent {
-    .MuiPaper-root {
-        // background: var(--navy) !important;
-        background: var(--background) !important;
-    }
-    .MuiList-root {
-        padding: 0;
-    }
+.MuiList-root {
+    padding: 0 !important;
+}
+
+.MuiPaper-root {
+    background: var(--background) !important;
 }
 
 .MuiMenuItem-root {
@@ -112,7 +110,7 @@
     .MuiDataGrid-cell, .MuiDataGrid-footerContainer, .MuiDataGrid-columnHeaderTitle, .MuiTablePagination-root {
         color: white !important;
     }
-    .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root {
+    .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root, .MuiDataGrid-columnHeaders button .MuiSvgIcon-root {
         color: white !important;
     }
     .MuiCheckbox-root {

@@ -51,13 +51,20 @@ export const defaultUserData = {
   friends: [], 
 };
 
+export const minRole = (currRole: Roles | string, role: Roles | string) => {
+  let indexOfRole = Object.values(Roles).indexOf(currRole as Roles);
+  let indexOfMinRole = Object.values(Roles).indexOf(role as Roles);
+  let userIsMinRole: boolean = indexOfRole >= indexOfMinRole;
+  return userIsMinRole;
+}
+
 export class User extends Data {
   board?: Board;
   items?: Item[];
   color?: string;
+  lists?: List[];
   phone?: string;
   avatar?: string;
-  listss?: List[];
   z_token?: string;
   boards?: Board[];
   boardID: string = ``;
@@ -87,4 +94,8 @@ export class User extends Data {
     if (!isValid(this.title)) this.title = title;
     if (!isValid(this.properties)) this.properties = countPropertiesInObject(this) + 1;
   }
+
+  // isMinRole(role: Roles | string) {
+  //   return minRole(this.role, role);
+  // }
 }

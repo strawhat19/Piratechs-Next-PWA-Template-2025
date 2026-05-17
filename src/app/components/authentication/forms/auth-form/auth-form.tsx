@@ -12,11 +12,9 @@ import { AuthStates, Providers, Roles, Types } from '@/shared/types/types';
 import { addUserToDatabase, auth, renderFirebaseAuthErrorMessage } from '@/shared/server/firebase';
 import { errorToast, findHighestNumberInArrayByKey, logToast, stringNoSpaces } from '@/shared/scripts/constants';
 
+export const defaultRole: Roles = Roles.Subscriber;
 const { Next, Sign_Up, Sign_In, Sign_Out } = AuthStates;
-
-const stateLabels: any = {
-    [Next]: `${Sign_Up} or ${Sign_In}`,
-}
+const stateLabels: any = { [Next]: `${Sign_Up} or ${Sign_In}` };
 
 export default function AuthForm({ type = `Users`, extensionText = ``, style = { opacity: 1 } }: any) {
     let emailOrUsernameField = useRef(null);
@@ -72,7 +70,7 @@ export default function AuthForm({ type = `Users`, extensionText = ``, style = {
                             type, 
                             email, 
                             number, 
-                            role: Roles.Owner, 
+                            role: defaultRole, 
                             provider: Providers.Firebase, 
 
                             uid,
