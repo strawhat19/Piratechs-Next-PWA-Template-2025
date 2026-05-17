@@ -5,6 +5,7 @@ import { Divider, MenuItem } from '@mui/material';
 export default function Menu({
     open = false,
     topOffset = 0,
+    colors = false,
     menuItems = [],
     anchorEl = null,
     onClose = () => {},
@@ -24,10 +25,10 @@ export default function Menu({
                     transformOrigin={{ vertical: `top`, horizontal: `right`, }} 
                     slotProps={{ list: { 'aria-labelledby': targetID, }, paper: { sx: { mt: topOffset, }, }, }}
                 >
-                    {[ ...menuItems, { id: `close`, label: `Close`, icon: <Close />, divider: true }, ]?.map((mi: any, mii: number) => (
+                    {[ ...menuItems, { id: `close`, label: `Close`, icon: <Close htmlColor={`var(--links)`} />, divider: true }, ]?.map((mi: any, mii: number) => (
                         <div key={mii} className={`menuItemContent`}>
                             {mi?.divider ? <Divider /> : <></>}
-                            <MenuItem className={`menuItemComponent ${mi?.className}`} onClick={() => {
+                            <MenuItem className={`menuItemComponent ${colors ? `hasColors` : `noColors`} ${mi?.className}`} onClick={() => {
                                 mi?.onClick?.();
                                 onClose();
                             }}>

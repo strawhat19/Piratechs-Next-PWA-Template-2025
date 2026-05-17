@@ -149,6 +149,11 @@ export default function AuthForm({ type = `Users`, extensionText = ``, style = {
                             )}
                         </div>
                     )}
+                    {authState != Next && (
+                        <Button className={`formSubmitButton formEnd`} onClick={(e) => setAuthState(Next)}>
+                            Back
+                        </Button>
+                    )}
                     <Button className={`formSubmitButton formEnd`} type={`submit`}>
                         {authState}
                     </Button>

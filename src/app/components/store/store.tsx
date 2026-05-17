@@ -10,14 +10,16 @@ import { StateGlobals } from '@/shared/global-context';
 import UsersTable from '../table/users-table/users-table';
 
 export default function Store({ className = `storeComponent` }) {
-    const { width, loaded } = useContext<any>(StateGlobals);
+    const { user, width, loaded } = useContext<any>(StateGlobals);
     return (
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
                 <Slider className={`componentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
-                    <SwiperSlide>
-                        <UsersTable type={`Customer`} />
-                    </SwiperSlide>
+                    {user == null ? <></> : (
+                        <SwiperSlide>
+                            <UsersTable type={`Customer`} />
+                        </SwiperSlide>
+                    )}
                     <SwiperSlide>
                         <Table title={`Order(s)`} />
                     </SwiperSlide>

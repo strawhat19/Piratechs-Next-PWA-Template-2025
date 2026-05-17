@@ -58,7 +58,7 @@ export default function Table({
         {loaded ? <>
           {toolbar ? <>
             <div className={`table_header`}>
-              {title}
+              <span style={{ color: `var(--links)`, fontWeight: 700, marginRight: 4, marginLeft: 2 }}>({rows?.length})</span> {title}
             </div>
           </> : <></>}
           {/* <MUI> */}

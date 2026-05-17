@@ -12,13 +12,13 @@ import { updateUserInDatabase } from '@/shared/server/firebase';
 import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown } from '@mui/icons-material';
 
 const roleIcons: Record<Roles, JSX.Element> = {
-  [Roles.Guest]: <Person fontSize={`small`} />,
-  [Roles.Subscriber]: <Star fontSize={`small`} />,
-  [Roles.Editor]: <Edit fontSize={`small`} />,
-  [Roles.Moderator]: <Security fontSize={`small`} />,
-  [Roles.Administrator]: <AdminPanelSettings fontSize={`small`} />,
-  [Roles.Developer]: <Code fontSize={`small`} />,
-  [Roles.Owner]: <WorkspacePremium fontSize={`small`} />,
+  [Roles.Guest]: <Person fontSize={`small`} color={`secondary`} />,
+  [Roles.Subscriber]: <Star fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
+  [Roles.Editor]: <Edit fontSize={`small`} htmlColor={`var(--success)`} />,
+  [Roles.Moderator]: <Security style={{ fontSize: 18 }} color={`warning`} />,
+  [Roles.Administrator]: <AdminPanelSettings fontSize={`small`} htmlColor={`var(--pink_neon)`} />,
+  [Roles.Developer]: <Code fontSize={`small`} htmlColor={`var(--links)`} />,
+  [Roles.Owner]: <WorkspacePremium fontSize={`small`} color={`error`} />,
 };
 
 const RoleCell = ({ row, value }: any) => {
@@ -32,22 +32,21 @@ const RoleCell = ({ row, value }: any) => {
     icon: roleIcons[role as Roles],
     className: role === value ? `selectedRoleItem` : ``,
     onClick: () => {
-        let newRole = role;
-        let oldRole = value;
-        let userName = row?.name;
-        let msg = (end: string = `ing`) => `Updat${end} ${userName} from Role "${oldRole}" to "${newRole}"`;
-        toast.info(msg());
-        updateUserInDatabase(row?.id, { role: newRole })?.then(() => {
-            toast.success(msg(`ed`));
-        });
+      let newRole = role;
+      let oldRole = value;
+      let userName = row?.name;
+      let msg = (end: string = `ing`) => `Updat${end} ${userName} from Role "${oldRole}" to "${newRole}"`;
+      toast.info(msg());
+      updateUserInDatabase(row?.id, { role: newRole })?.then(() => {
+        toast.success(msg(`ed`));
+      });
     },
   }));
   return (
     <>
       <Button
         size={`small`}
-        className={`roleDropdownButton`}
-        style={{ width: `100%`, justifyContent: `space-between`, top: -1 }}
+        className={`tableDropDown roleDropdownButton`}
         onClick={(e) => {
           e.stopPropagation();
           setAnchorEl(e.currentTarget);
@@ -61,6 +60,7 @@ const RoleCell = ({ row, value }: any) => {
       </Button>
       <Menu
         open={open}
+        colors={true}
         topOffset={0.5}
         anchorEl={anchorEl}
         onClose={closeMenu}
@@ -97,7 +97,7 @@ export default function UsersTable({
     ];
     return (
         users?.length > 0 ? <>
-            <Table title={`(${users?.length}) ${type}(s)`} rows={users} columns={user_columns} />
+            <Table title={`${type}(s)`} rows={users} columns={user_columns} />
         </> : <Loader height={250} label={`${type}(s) Loading`} />
     )
 }

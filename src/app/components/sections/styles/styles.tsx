@@ -9,7 +9,7 @@ import { constants } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import AuthForm from '../../authentication/forms/auth-form/auth-form';
 
-export default function Styles({ showAuth = false }: any) {
+export default function Styles({ showStyles = true, showAuth = false, type }: any) {
     let { user, width, loaded, menuExpanded } = useContext<any>(StateGlobals);
 
     const fonts = () => {
@@ -79,17 +79,19 @@ export default function Styles({ showAuth = false }: any) {
     }
 
     return <>
-        {showAuth ? (user != null ? <></> : <AuthForm />) : <></>}
-        <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
-            {loaded ? (
-                <Slider showButtons={width > constants?.breakpoints?.mobile}>
-                    <SwiperSlide>{fonts()}</SwiperSlide>
-                    <SwiperSlide>{buttonsLinks()}</SwiperSlide>
-                    <SwiperSlide>{paragraph()}</SwiperSlide>
-                </Slider>
-            ) : (
-                <Loader height={150} label={`Styles Loading`} style={{ [`--animation-delay`]: `${4 * 0.15}s` }} />
-            )}
-        </section>
+        {showAuth ? (user != null ? <></> : <AuthForm type={type ? `${type}s` : undefined} extensionText={type ? `To View ${type}s` : undefined} />) : <></>}
+        {showStyles ? (
+            <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
+                {loaded ? (
+                    <Slider showButtons={width > constants?.breakpoints?.mobile}>
+                        <SwiperSlide>{fonts()}</SwiperSlide>
+                        <SwiperSlide>{buttonsLinks()}</SwiperSlide>
+                        <SwiperSlide>{paragraph()}</SwiperSlide>
+                    </Slider>
+                ) : (
+                    <Loader height={150} label={type ? `${type}s Loading` : `Styles Loading`} style={{ [`--animation-delay`]: `${4 * 0.15}s` }} />
+                )}
+            </section>
+        ) : <></>}
     </>
 }

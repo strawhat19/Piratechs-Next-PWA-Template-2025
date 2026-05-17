@@ -8,6 +8,7 @@ import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
 import { toast } from 'react-toastify';
 import { SwiperSlide } from 'swiper/react';
+import ZeroState from '../zero-state/zero-state';
 import StockOrders from './stock-orders/stock-orders';
 import { StateGlobals } from '@/shared/global-context';
 // import StockSearch from './stock-search/stock-search';
@@ -18,8 +19,7 @@ import StockPositions from './stock-positions/stock-positions';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import { Position } from '@/shared/types/models/stocks/Position';
-import AuthForm from '../authentication/forms/auth-form/auth-form';
-import { DataSources, RobinhoodAccountTypes, StockAPIs } from '@/shared/types/types';
+import { DataSources, RobinhoodAccountTypes, StockAPIs, Types } from '@/shared/types/types';
 import { RobinhoodStockPosition } from '@/shared/types/models/stocks/robinhood/RobinhoodStockPosition';
 import { apiRoutes, constants, dev, errorToast, getAPIServerData, getRealStocks, stringNoSpaces, withinXSeconds } from '@/shared/scripts/constants';
 
@@ -270,15 +270,12 @@ export default function Stocks({ className = `stocksComponent` }) {
     }
 
     useEffect(() => {
-        refreshStocksAccount();
-        refreshStockPositions();
-        refreshStockOrders();
-    }, [])
-
-    // useEffect(() => {
-    //     setRobinhoodToken(user?.z_token_robinhood);
-    //     setRobinhoodSocketToken(user?.z_token_robinhood_socket);
-    // }, [user])
+        if (user != null) {
+            refreshStocksAccount();
+            refreshStockPositions();
+            refreshStockOrders();
+        }
+    }, [user?.lastSignIn])
 
     useEffect(() => {
         let canRefresh = alpacaPositions?.length > 0;
@@ -292,20 +289,16 @@ export default function Stocks({ className = `stocksComponent` }) {
                 refreshRobinhood();
             }
         }
-    }, [alpacaPositions?.length, user?.z_token_robinhood, errored, user?.z_token_robinhood_socket])
+    }, [alpacaPositions?.length, user?.z_token_robinhood, errored, user?.z_token_robinhood_socket]);
+
+    if (user == null) {
+        return <ZeroState type={Types.Stock} />
+    }
 
     return (
         <div className={`stocksContainer w95 ${className}`}>
             {/* {(user == null && loading || !stocksFullyLoaded) ? <Loader height={250} label={`Stocks Loading`} /> : <> */}
             {(user == null && loading) ? <Loader height={250} label={`Stocks Loading`} /> : <>
-
-                {loading == false ? (
-                    user == null ? <>
-                        <div className={`stocksSignIn`}>
-                            <AuthForm style={{ width: `100%` }} type={`Stocks`} extensionText={`To View Portfolio`} />
-                        </div>
-                    </> : <></>
-                ) : <></>}
 
                 {/* {(stocksFullyLoaded && ((user != null && !loading) && stocks?.length > 0)) && <> */}
                 {(((user != null && !loading) && stocks?.length > 0)) && <>

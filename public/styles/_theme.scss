@@ -17,6 +17,8 @@
     // greens
     --teal: #3fa5e3;
     --success: #13deb9;
+    --green_neon_rgb: 57, 255, 20;
+    --green_neon: rgba(var(--green_neon_rgb), 1);
     
     // blues
     --blue: #0082c6;
@@ -29,6 +31,8 @@
     --blueactivedark: #0057a8;
     --blueneon: rgb(0, 191, 255);
     --blueopac: rgb(0, 191, 255, 0.7);
+    --cool_neon_blue_rgb: 0, 195, 255;
+    --cool_neon_blue: rgba(var(--cool_neon_blue_rgb), 1);
 
     // navies
     --navy: #041b44;
@@ -46,6 +50,15 @@
     // glass
     --lightGlass: rgba(255, 61, 0, 0.2);
     --darkGlass: rgba(0, 194, 255, 0.2);
+
+    // warnings
+    // yellows
+    --yellow_neon_rgb: 255, 230, 0;
+    --yellow_neon: rgba(var(--yellow_neon_rgb), 1);
+
+    // pinks
+    --pink_neon_rgb: 255, 20, 147;
+    --pink_neon: rgba(var(--pink_neon_rgb), 1);
 
     // colors
     --bg: var(--bluedark);

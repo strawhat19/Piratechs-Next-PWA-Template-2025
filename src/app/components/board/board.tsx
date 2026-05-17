@@ -15,9 +15,11 @@ import { useContext, useEffect, useState } from 'react';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
+import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { constants, countPropertiesInObject, errorToast, logToast } from '@/shared/scripts/constants';
 import { addBoardToDatabase, addListToDatabase, boardConverter, db, deleteBoardFromDatabase, listConverter, Tables } from '@/shared/server/firebase';
+import ZeroState from '../zero-state/zero-state';
 
 export default function Board() {
     const { user, width, loaded, usersLoading, boardForm, setSelected } = useContext<any>(StateGlobals);
@@ -29,7 +31,6 @@ export default function Board() {
 
     useEffect(() => {
         if (!board?.id) return;
-
         let latestBoard = board;
         let boardID = String(board?.id);
         const boardDocRef = doc(db, Tables.boards, boardID).withConverter(boardConverter as any);
@@ -41,7 +42,6 @@ export default function Board() {
             latestBoard = snap.data();
             setBoard(latestBoard);
         });
-
         const listsRef = collection(db, Tables.lists).withConverter(listConverter as any);
         const listsQuery = query(listsRef, where(`boardID`, `==`, boardID));
         const unsubListsArr = onSnapshot(listsQuery, listSnap => {
@@ -55,7 +55,6 @@ export default function Board() {
             })
             setLists(listsOrderedItems);
         })
-
         return () => {
             unsubBoard();
             unsubListsArr();
@@ -164,8 +163,21 @@ export default function Board() {
         console.log(`Manage Board`, board);
     }
 
+    if (user == null) {
+        return <ZeroState />
+    }
+
     return <>
         <div className={`boardComponent ${user != null ? `boardLists_${lists?.length}` : ``} ${(!loading && lists?.length > 0) ? `hasLists` : `noLists`}`}>
+            {/* {user == null ? <>
+                <div className={`boardsSignIn`}>
+                    <div className={`pageLogoComponentContainerCenter`}>
+                        <Logo label={`Boards`} />
+                    </div>
+                    <h1>Boards Page</h1>
+                    <AuthForm style={{ width: `75%` }} type={`Boards`} extensionText={`To View Board`} />
+                </div>
+            </> : <></>} */}
             {(!loading && (user?.data?.boards?.length == 0 && lists?.length == 0)) && (
                 <div className={`addBoardFormContainer boardTopComponent`}>
                     <div className={`boardTopRow boardFormContainer boardListTitle spaceBetween`}>

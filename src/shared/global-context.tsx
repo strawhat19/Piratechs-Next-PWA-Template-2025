@@ -202,7 +202,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             if (userCredential != null) {
                 let existingUser = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
                 if (existingUser) {
-                    dev() && console.log(`Found Existing User`, existingUser);
+                    // dev() && console.log(`Found Existing User`, existingUser);
                 } else onSignOut();
             }
         }).catch(error => onSignInError(error));

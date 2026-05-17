@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import MenuComponent from '../menu/menu';
 import { useContext, useState } from 'react';
+import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { useRouter, usePathname } from 'next/navigation';
-import { capWords, dev } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart, Person, Logout } from '@mui/icons-material';
@@ -31,7 +31,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
     const router = useRouter();
     const pathname = usePathname();
 
-    let { user, loaded, menuExpanded, setMenuExpanded } = useContext<any>(StateGlobals);
+    let { user, loaded, menuExpanded, setMenuExpanded, onSignOut } = useContext<any>(StateGlobals);
 
     let [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -56,8 +56,12 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
             id: `signout`,
             icon: <Logout />,
             label: `Sign Out`,
-            onClick: () => {
-                dev() && console.log(`Sign Out`);
+            onClick: async () => {
+                // toast.info(`Signing Out`);
+                await onSignOut()?.then(() => {
+                    // toast.info(`Signed Out`);
+                    router.push(`/`);
+                });
             },
         },
     ];

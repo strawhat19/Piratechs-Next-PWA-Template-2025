@@ -7,15 +7,19 @@
 }
 
 .MuiMenuItem-root {
-    font-size: 14px;
     color: white !important;
+    font-size: 13px !important;
     min-height: 34px !important;
     padding: 6px 10px !important;
     transition: var(--transition);
+    &.noColors {
+        .MuiSvgIcon-root {
+            color: var(--links);
+        }
+    }
     .MuiSvgIcon-root {
         font-size: 20px;
         margin-right: 10px;
-        color: var(--links);
     }
     &:hover {
       background: var(--buttons) !important;
@@ -110,10 +114,10 @@
     .MuiDataGrid-cell, .MuiDataGrid-footerContainer, .MuiDataGrid-columnHeaderTitle, .MuiTablePagination-root {
         color: white !important;
     }
-    .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root, .MuiDataGrid-columnHeaders button .MuiSvgIcon-root {
-        color: white !important;
-    }
-    .MuiCheckbox-root {
+    // .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root, .MuiDataGrid-columnHeaders button .MuiSvgIcon-root {
+    //     color: white !important;
+    // }
+    .MuiDataGrid-toolbar .MuiSvgIcon-root, .MuiDataGrid-toolbarContainer .MuiSvgIcon-root, .MuiTablePagination-root .MuiSvgIcon-root, .MuiDataGrid-columnHeaders button .MuiSvgIcon-root, .MuiCheckbox-root {
         color: var(--links) !important;
     }
 }
