@@ -1,6 +1,6 @@
 {
   "name": "piratechs-next-pwa-template-2025",
-  "version": "0.4.6.9",
+  "version": "0.4.7.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.2",
+    "@mui/x-data-grid": "^8.28.6",
     "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",

@@ -7,17 +7,7 @@ import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../buttons/icon-button/icon-button';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
-
-import { 
-    Menu,
-    Close,
-    Person,
-    BarChart,
-    Settings,
-    PermMedia,
-    Checklist,
-    ShoppingCart,
-} from '@mui/icons-material';
+import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart } from '@mui/icons-material';
 
 const size = 20;
 export const routes = {
@@ -52,7 +42,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </> : (
                         <li className={`menuButton`}>
                             {/* Welcome, {user?.name} */}
-                            <Icon_Button disabled={!loaded} title={`Profile`} url={`/profile`} className={`profileButton`}>
+                            <Icon_Button disabled={!loaded} title={`Profile`} className={`profileButton`}>
                                 <span className={`letter`}>
                                     {user?.name?.[0]}
                                 </span>
