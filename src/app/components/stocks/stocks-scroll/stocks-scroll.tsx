@@ -51,6 +51,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     const updatesRef = useRef(0);
     const stocksRef = useRef<StockModel[]>([]);
     const stockPositionsRef = useRef<Position[]>([]);
+    const visibleSymbolsRef = useRef<Set<string>>(new Set());
 
     const intentionalCloseRef = useRef(false);
     const lastMessageAtRef = useRef(Date.now());
@@ -69,6 +70,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
     }, [updates]);
 
     const onSocketStockDataUpdate = (channel: number, channelName: string, data: any[]) => {
+        // dev() && console.log(`onSocketStockDataUpdate`, { channel, channelName, data });
         if (!Array.isArray(data) || !data.length) return;
         let updatedStocks: StockModel[] = [];
         let dataSymbols = data?.map(d => d?.eventSymbol?.toUpperCase()).filter(Boolean);
@@ -204,7 +206,13 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         });
         subscribedSymbolsRef.current = connect ? [...new Set([...subscribedSymbolsRef?.current, symbol])].sort() : subscribedSymbolsRef?.current?.filter(s => s !== symbol);
         let symbols = subscribedSymbolsRef?.current;
-        setStocks((prevStocks: StockModel[]) => prevStocks?.map(s => new StockModel({ ...s, connected: connect })));
+        // setStocks((prevStocks: StockModel[]) =>
+        //     prevStocks?.map((s: StockModel) =>
+        //         s?.symbol?.toUpperCase() === symbol?.toUpperCase()
+        //             ? new StockModel({ ...s, connected: connect })
+        //             : s
+        //     )
+        // );
         dev() && console.log(connect ? `${symbol} Connected` : `${symbol} Disconnected`, {
             symbol,
             symbols,
@@ -434,6 +442,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 let channel: number = Number(data?.channel);
                 let channelName = (channelsToRequestObj as any)?.[channel]?.name;
 
+                // dev() && console.log(`onmessage`, { type, typeLC, channel, channelName, data });
+
                 if (channelName) {
                     let dataD = data?.data;
                     let isData = typeLC == `feed_data` && dataD && Array.isArray(dataD);
@@ -508,6 +518,12 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
 
                                 channelsSubscribed?.push(channel);
                             }
+
+                            if (!connectSymbolsOnWSConnect) {
+                                Array.from(visibleSymbolsRef.current).forEach(symbol => {
+                                    updateRealtimeSymbol(symbol, true, { source: `resubscribe-after-channel-open` });
+                                });
+                            }
                         }
 
                         return;
@@ -536,6 +552,8 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 clearInterval(watchdogRef.current);
                 watchdogRef.current = null;
             }
+            subscribedSymbolsRef.current = [];
+            setWebSocketConnected(false);
             socketRef.current = null;
             if (!intentionalCloseRef.current && reconnectPeriodically) {
                 reconnectSocket();
@@ -597,7 +615,7 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
         if (connectSymbolsOnWSConnect) return;
         if (!stockPositions || !stockPositions?.length || stockPositions?.length == 0) return;
 
-        const visibleSymbols = new Set<string>();
+        const visibleSymbols = visibleSymbolsRef.current;
         
         const updateVisibleSymbols = () => {
             const symbols = Array.from(visibleSymbols).sort();

@@ -7,6 +7,7 @@ const routes = {
   chats: { authenticated: `User`, redirects: [`chat`, `message`, `messages`], icons: { fontAwesome: `fa-comments`, mui: `Chat` } },
   board: { authenticated: ``, redirects: [`items`, `tasks`, `lists`, `list`], icons: { fontAwesome: `fa-list-check`, mui: `Checklist` } },
   notifications: { authenticated: `User`, redirects: [`alerts`, `notification`], icons: { fontAwesome: `fa-bell`, mui: `Notifications` } },
+  store: { authenticated: ``, redirects: [`shop`, `products`, `catalog`], icons: { fontAwesome: `fa-list-shopping-cart`, mui: `ShoppingCart` } },
   profile: { authenticated: `User`, redirects: [`edit`, `account`, `preferences`, `account`], icons: { fontAwesome: `fa-user`, mui: `Person` } },
   signup: { authenticated: ``, redirects: [`new`, `sign-up`, `register`, `subscribe`], icons: { fontAwesome: `fa-user-plus`, mui: `PersonAdd` } },
   signin: { authenticated: ``, redirects: [`log`, `sign`, `login`, `log-in`, `sign-in`], icons: { fontAwesome: `fa-sign-in-alt`, mui: `Login` } },

@@ -150,13 +150,17 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     const onResize = (force = false) => {
         const windowWidth = window?.innerWidth;
         const windowHeight = window?.innerHeight;
-        setSmallScreen(windowWidth <= constants?.breakpoints?.mobile);
+        const isSmallScreen = windowWidth <= constants?.breakpoints?.mobile;
+        setSmallScreen(isSmallScreen);
         if (force) {
             setWidth(windowWidth);
             setHeight(windowHeight);
         } else {
             setWidth((prevWidth?: number) => prevWidth !== windowWidth ? windowWidth : prevWidth);
             setHeight((prevHeight?: number) => prevHeight !== windowHeight ? windowHeight : prevHeight);
+        }
+        if (!isSmallScreen) {
+            setMenuExpanded(false);
         }
     }
 

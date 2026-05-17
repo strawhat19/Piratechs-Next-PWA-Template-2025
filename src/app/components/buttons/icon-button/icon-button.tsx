@@ -5,19 +5,21 @@ export default function Icon_Button({
     size,
     title, 
     children, 
-    url = ``, 
+    url = ``,
+    disabled = false, 
     onClick = () => {}, 
-    className = `iconButtonComponent`, 
     style = { position: `relative` },
+    className = `iconButtonComponent`, 
 }: any) {
     const router = useRouter();
     return (
         <Tooltip title={title} arrow>
             <IconButton 
-                size={`small`} 
-                className={`iconButton p0 ${className}`} 
-                style={{...style, maxWidth: size, maxHeight: size}}
-                onClick={url != `` ? () => router.push(url) : onClick}
+                size={`small`}
+                disabled={disabled} 
+                className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
+                onClick={disabled ? undefined : (url != `` ? () => router.push(url) : onClick)} 
+                style={{ ...style, maxWidth: size, maxHeight: size, ...(disabled ? { pointerEvents: `none` } : {}), }} 
             >
                 {children}
             </IconButton>
