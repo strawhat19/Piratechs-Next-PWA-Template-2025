@@ -12,7 +12,7 @@ import { AuthStates, Providers, Roles, Types } from '@/shared/types/types';
 import { addUserToDatabase, auth, renderFirebaseAuthErrorMessage } from '@/shared/server/firebase';
 import { errorToast, findHighestNumberInArrayByKey, logToast, stringNoSpaces } from '@/shared/scripts/constants';
 
-export const defaultRole: Roles = Roles.Subscriber;
+export const defaultRole: Roles = Roles.Customer;
 const { Next, Sign_Up, Sign_In, Sign_Out } = AuthStates;
 const stateLabels: any = { [Next]: `${Sign_Up} or ${Sign_In}` };
 
@@ -88,7 +88,6 @@ export default function AuthForm({ type = `Users`, extensionText = ``, style = {
                         await addUserToDatabase(newUser).then(async () => {
                             logToast(`Created User`, newUser?.name, false, newUser);
                             form.reset();
-                            signInUser(email, password);
                         }).catch(signUpAndSeedError => {
                             let errorMessage = `Error on Sign Up & Set Default Data`;
                             errorToast(errorMessage, signUpAndSeedError);
@@ -104,6 +103,7 @@ export default function AuthForm({ type = `Users`, extensionText = ``, style = {
                             // setUser()
                         // } else {
                             toast.error(renderFirebaseAuthErrorMessage(errorMessage));  
+                            return;
                         // }         
                     } else {
                         toast.error(`Error Signing Up`);

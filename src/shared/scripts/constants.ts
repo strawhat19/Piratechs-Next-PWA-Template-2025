@@ -454,17 +454,17 @@ export const customDate = (date: Date = new Date()) => {
   let secondsTime = `${hours}:${minutes}:${seconds} ${ampm}`;
   let update = `${secondsTime} ${dateSlashes(2)}`;
   let datesObject = {
-    ms,
-    ampm,
-    time,
-    hours,
-    update,
-    minutes,
-    seconds,
-    secondsTime,
-    milliseconds,
-    date: dateSlashes(),
-    datetime: time + ` ` + dateSlashes(2),
+    ms, // 54
+    hours, // 3
+    minutes, // 48
+    seconds, // 54
+    ampm, // AM / PM
+    time, // 3:48 PM
+    milliseconds, // 543
+    secondsTime, // 3:48:54 PM
+    update, // 3:48:54 PM 5/17/26
+    date: dateSlashes(), // 5/17/2026
+    datetime: time + ` ` + dateSlashes(2), // 3:48 PM 5/17/26
   }
   return datesObject;
 }

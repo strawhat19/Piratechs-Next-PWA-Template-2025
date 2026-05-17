@@ -8,6 +8,7 @@ import ListComponent from './list/list';
 import BoardForm from './form/board-form';
 import { SwiperSlide } from 'swiper/react';
 import { Types } from '@/shared/types/types';
+import ZeroState from '../zero-state/zero-state';
 import { List } from '@/shared/types/models/List';
 import { Delete, Settings } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
@@ -15,14 +16,12 @@ import { useContext, useEffect, useState } from 'react';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import { generateModel } from '@/shared/types/models/Properties';
 import { Board as BoardModel } from '@/shared/types/models/Board';
-import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { constants, countPropertiesInObject, errorToast, logToast } from '@/shared/scripts/constants';
 import { addBoardToDatabase, addListToDatabase, boardConverter, db, deleteBoardFromDatabase, listConverter, Tables } from '@/shared/server/firebase';
-import ZeroState from '../zero-state/zero-state';
 
 export default function Board() {
-    const { user, width, loaded, usersLoading, boardForm, setSelected } = useContext<any>(StateGlobals);
+    const { user, width, loaded, usersLoading, boardForm, setSelected, setOnBoards } = useContext<any>(StateGlobals);
 
     let [loading, setLoading] = useState(false);
     let [lists, setLists] = useState<List[]>([]);
@@ -30,6 +29,7 @@ export default function Board() {
     let [showAddLists, setShowAddLists] = useState(false);
 
     useEffect(() => {
+        setOnBoards(true);
         if (!board?.id) return;
         let latestBoard = board;
         let boardID = String(board?.id);

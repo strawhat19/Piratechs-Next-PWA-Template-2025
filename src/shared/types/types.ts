@@ -8,6 +8,7 @@ export enum Providers {
 export enum Roles {
   Guest = `Guest`,
   Subscriber = `Subscriber`,
+  Customer = `Customer`,
   Editor = `Editor`,
   Moderator = `Moderator`,
   Administrator = `Administrator`,

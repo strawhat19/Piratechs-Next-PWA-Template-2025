@@ -16,8 +16,8 @@ import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
 import { sampleStockAccount, sampleStocksDB } from '@/shared/server/database/samples/stocks/stocks';
-import { apiRoutes, capWords, constants, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
-import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter } from '@/shared/server/firebase';
+import { capWords, constants, customDate, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
+import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter, updateUserInDatabase } from '@/shared/server/firebase';
 
 export const StateGlobals = createContext({});
 
@@ -48,6 +48,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     
     let [boards, setBoards] = useState<Board[]>([]);
     let [dataLoading, setDataLoading] = useState(true);
+    let [onBoards, setOnBoards] = useState<boolean>(false);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -168,6 +169,10 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         if (user != null) return;
         if (usr?.id != (user as any)?.id) {
             setUser(usr);
+            if (usr?.signedIn == false) {
+                let { datetime } = customDate();
+                updateUserInDatabase(usr?.id, { lastSignIn: datetime, signedIn: true });
+            }
         }
         setAuthState(AuthStates.Sign_Out);
         if (showSuccess) {
@@ -175,7 +180,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         }
     }
 
-    const onSignOut = async () => {
+    const onSignOut = async (usr: User | null = user) => {
+        if (usr) updateUserInDatabase(usr?.id, { signedIn: false });
         setUser(null);
         setAuthState(AuthStates.Next);
         await signOut(auth);
@@ -202,7 +208,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             if (userCredential != null) {
                 let existingUser = users.find((usr: User) => usr?.email?.toLowerCase() == email?.toLowerCase());
                 if (existingUser) {
-                    // dev() && console.log(`Found Existing User`, existingUser);
+                    // console.log(`Existing User`, existingUser);
                 } else onSignOut();
             }
         }).catch(error => onSignInError(error));
@@ -244,6 +250,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }
 
     useEffect(() => {
+        if (!onBoards) return;
         let selectedBoard: Board = user?.data?.board;
         if (!selectedBoard?.id) return;
         const listsRef = collection(db, Tables.lists).withConverter(listConverter);
@@ -296,16 +303,20 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     useEffect(() => {
         let listenForUserAuthChanges: any = null;
         if (users?.length > 0) {
-            if (listenForUserAuthChanges == null) listenForUserAuthChanges = onAuthStateChanged(auth, async (usr) => {
-                if (usr) {
-                    if (usr?.uid) {
-                        let thisUser = users.find((us: User) => us?.uid == usr?.uid);
-                        onSignIn(thisUser, true);
+            if (listenForUserAuthChanges == null) {
+                listenForUserAuthChanges = onAuthStateChanged(auth, async (usr) => {
+                    if (usr) {
+                        if (usr?.uid) {
+                            let thisUser = users.find((us: User) => us?.uid == usr?.uid);
+                            if (thisUser) {
+                                onSignIn(thisUser, true);
+                            }
+                        }
+                    } else {
+                        setLoaded(true);
                     }
-                } else {
-                    setLoaded(true);
-                }
-            });
+                });
+            }
         } else if (listenForUserAuthChanges != null) {
             listenForUserAuthChanges();
             setLoaded(true);
@@ -367,6 +378,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         usersLoading, setUsersLoading,
 
         boards, setBoards,
+        onBoards, setOnBoards,
         boardForm, setBoardForm,
         boardItems, setBoardItems,
         dataLoading, setDataLoading,
@@ -401,7 +413,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         user, users, usersLoading, 
         width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
-        boardForm, boardItems, boards, dataLoading,
+        onBoards, boardForm, boardItems, boards, dataLoading,
         stocks, histories, stockOrders, stocksAcc, 
         stocksObj, stockPositions, robinhoodAccountTypes, syncedSet,
         realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected, 

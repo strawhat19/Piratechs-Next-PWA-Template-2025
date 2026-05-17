@@ -2,7 +2,7 @@ import { Data } from './Data';
 import { Item } from './Item';
 import { List } from './List';
 import { Board } from './Board';
-import { DataSources, Types } from '../types';
+import { DataSources, Roles, Types } from '../types';
 import { capWords, countPropertiesInObject, genID, getIDParts, isValid } from '@/shared/scripts/constants';
 
 export enum Providers { 
@@ -16,16 +16,6 @@ export enum Groups {
   Testers = `Testers`,
   Beta = `Beta`,
   Production = `Production`,
-}
-
-export enum Roles {
-  Guests = `Guests`,
-  Subscribers = `Subscribers`,
-  Editors = `Editors`,
-  Moderators = `Moderators`,
-  Administrators = `Administrators`,
-  Developers = `Developers`,
-  Owners = `Owners`,
 }
 
 export const item = { tasks: [] };
@@ -76,8 +66,8 @@ export class User extends Data {
   anonymous?: boolean = false;
   data?: any = defaultUserData;
   z_token_robinhood?: string = ``;
+  role: Roles | string = Roles.Customer;
   z_token_robinhood_socket?: string = ``;
-  role: Roles | string = Roles.Subscribers;
   provider: Providers | string = Providers.Firebase;
   lastSignIn?: Date | string | any = getIDParts()?.date;
   dataSource?: DataSources | string = DataSources.firebase;

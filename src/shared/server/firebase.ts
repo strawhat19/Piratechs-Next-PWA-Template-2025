@@ -7,7 +7,7 @@ import { getStorage } from 'firebase/storage';
 import { Board } from '../types/models/Board';
 import { getFirestore } from 'firebase/firestore';
 import { apiRoutes, customDate, getIDParts, logToast } from '../scripts/constants';
-import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
+import { GoogleAuthProvider, browserLocalPersistence, deleteUser, getAuth, getIdToken, setPersistence } from 'firebase/auth';
 
 export enum Tables {
   users = `users`,
@@ -303,3 +303,29 @@ export const taskConverter = {
     return new Task(data);
   }
 }
+
+// export const deleteDatabaseData = async (
+//   queryField: string, 
+//   operator: WhereFilterOp, 
+//   value: any, 
+//   tablesToUse: string[] = collectionNames,
+// ) => {
+//   try {
+//     let deletedDocumentIds = [];
+//     for (const collectionName of tablesToUse) {
+//       const dataFieldQuery = query(collection(db, collectionName), where(queryField, operator, value));
+//       const dataQuerySnapshots = await getDocs(dataFieldQuery);
+//       if (!dataQuerySnapshots.empty) {
+//         const batchDeleteJob = writeBatch(db);
+//         dataQuerySnapshots.forEach(document => {
+//           deletedDocumentIds.push(document?.id);
+//           batchDeleteJob.delete(document?.ref);
+//         });
+//         await batchDeleteJob.commit();
+//       }
+//     }
+//     return deletedDocumentIds;
+//   } catch (deleteUserDataError) {
+//     await logToast(`Error Deleting Data for ${value}`, deleteUserDataError, true);
+//   }
+// }

@@ -1,7 +1,7 @@
 import Table from '../table';
 import Menu from '../../menu/menu';
-import { Button } from '@mui/material';
 import { toast } from 'react-toastify';
+import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { Roles } from '@/shared/types/types';
 import { GridColDef } from '@mui/x-data-grid';
@@ -9,11 +9,13 @@ import { JSX, useContext, useState } from 'react';
 import { minRole } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { updateUserInDatabase } from '@/shared/server/firebase';
-import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown } from '@mui/icons-material';
+import Icon_Button from '../../buttons/icon-button/icon-button';
+import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown, ShoppingCart, Circle, Logout, Delete } from '@mui/icons-material';
 
 const roleIcons: Record<Roles, JSX.Element> = {
   [Roles.Guest]: <Person fontSize={`small`} color={`secondary`} />,
   [Roles.Subscriber]: <Star fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
+  [Roles.Customer]: <ShoppingCart style={{ fontSize: 18 }} htmlColor={`var(--blueneon)`} />,
   [Roles.Editor]: <Edit fontSize={`small`} htmlColor={`var(--success)`} />,
   [Roles.Moderator]: <Security style={{ fontSize: 18 }} color={`warning`} />,
   [Roles.Administrator]: <AdminPanelSettings fontSize={`small`} htmlColor={`var(--pink_neon)`} />,
@@ -72,6 +74,80 @@ const RoleCell = ({ row, value }: any) => {
   );
 }
 
+const ActionsCell = ({ row, value, canManage = false }: any) => {
+    const { user } = useContext<any>(StateGlobals);
+    const online = Boolean(value);
+    const statusColor = online ? `var(--green_neon)` : `rgba(255,255,255,0.35)`;
+    const statusLabel = online ? `Online` : `Offline`;
+    const onSignUserOut = () => {
+        toast.info(`Signing Out ${row?.name}`);
+        console.log(`Sign User Out`, row);
+    };
+    const onEditUser = () => {
+        toast.info(`Editing ${row?.name}`);
+        console.log(`Edit User`, row);
+    };
+    const onDeleteUser = () => {
+        toast.info(`Deleting ${row?.name}`);
+        console.log(`Delete User`, row);
+    };
+  return (
+    <div className="actionsCell">
+        <div className={`rowStatus`}>
+            <span className="statusDotWrap">
+                <Circle
+                    className="statusDot"
+                    style={{
+                        color: statusColor,
+                        filter: online
+                        ? `drop-shadow(0 0 6px var(--forest_neon_green))`
+                        : `none`,
+                    }}
+                />
+            </span>
+            <span className="statusText">
+                {statusLabel}
+            </span>
+        </div>
+        <div className={`actions`}>
+            {minRole(user?.role, Roles.Editor) ? <>
+                <Icon_Button title="Edit User" size="small"
+                    className="actionIconButton editAction"
+                    onClick={(e: any) => {
+                        e.stopPropagation();
+                        onEditUser();
+                    }}
+                >
+                    <Edit fontSize="small" />
+                </Icon_Button>
+            </> : <></>}
+            {canManage ? <>
+                {online ? (
+                    <Icon_Button title="Sign User Out" size="small"
+                    className="actionIconButton signOutAction"
+                    onClick={(e: any) => {
+                        e.stopPropagation();
+                        onSignUserOut();
+                    }}>
+                        <Logout fontSize="small" />
+                    </Icon_Button>
+                ) : (
+                <Icon_Button title="Delete User" size="small"
+                    className="actionIconButton deleteAction"
+                    onClick={(e: any) => {
+                        e.stopPropagation();
+                        onDeleteUser();
+                    }}
+                    >
+                        <Delete fontSize="small" />
+                </Icon_Button>
+                )}
+            </> : null}
+        </div>
+    </div>
+  );
+};
+
 export default function UsersTable({
     type = `User`,
 }: any) {
@@ -92,8 +168,20 @@ export default function UsersTable({
         { field: `created`, headerName: `Registered`, width: 165, },
         { field: `lastSignIn`, headerName: `Last Sign In`, width: 165, },
         { field: `updated`, headerName: `Updated`, width: 165, },
-        { field: `email`, headerName: `Email`, width: 150 },
-        { field: `id`, headerName: `UUID`, width: 333, },
+        { field: `email`, headerName: `Email`, width: 175 },
+        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
+        { 
+            minWidth: 150,
+            field: `signedIn`, 
+            headerName: `Actions`, 
+            renderCell: ({ row, value }: any) => (
+                <ActionsCell
+                    row={row}
+                    value={value}
+                    canManage={(user != null && row?.id == user?.id) || minRole(user?.role, Roles.Moderator)}
+                />
+            ), 
+        },
     ];
     return (
         users?.length > 0 ? <>
