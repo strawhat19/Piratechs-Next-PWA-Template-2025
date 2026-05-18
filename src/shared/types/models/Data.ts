@@ -11,12 +11,9 @@ export class Data {
   password?: string;
   number: number = 1;
   properties?: number;
-
   type: Types = Types.Data;
-
   updated: Date | string | any = customDate()?.datetime;
   created: Date | string | any = customDate()?.datetime;
-
   constructor(data: Partial<Data>) {
     Object.assign(this, data);
     if (isValid(this.email) && !isValid(this.name)) this.name = capWords(this.email.split(`@`)[0]);

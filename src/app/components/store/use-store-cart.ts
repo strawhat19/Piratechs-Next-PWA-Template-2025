@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import type { Product } from '../table/products-table/products-table';
+import type { Product } from '@/shared/types/models/Product';
 
 export type CartItem = Product & {
     quantity: number;

@@ -5,6 +5,7 @@ import { List } from './types/models/List';
 import { Item } from './types/models/Item';
 import { Task } from './types/models/Task';
 import { Board } from './types/models/Board';
+import { Product } from './types/models/Product';
 import { User } from '@/shared/types/models/User';
 import { Stock } from './types/models/stocks/Stock';
 import { Order } from './types/models/stocks/Order';
@@ -17,7 +18,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
 import { sampleStockAccount, sampleStocksDB } from '@/shared/server/database/samples/stocks/stocks';
 import { capWords, constants, customDate, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
-import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter, updateUserInDatabase } from '@/shared/server/firebase';
+import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter, productConverter, updateUserInDatabase } from '@/shared/server/firebase';
 
 export const StateGlobals = createContext({});
 
@@ -49,6 +50,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [boards, setBoards] = useState<Board[]>([]);
     let [dataLoading, setDataLoading] = useState(true);
     let [onBoards, setOnBoards] = useState<boolean>(false);
+
+    let [products, setProducts] = useState<Product[]>([]);
+    let [productsLoading, setProductsLoading] = useState(true);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -352,6 +356,20 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }, []);
 
     useEffect(() => {
+        setProductsLoading(true);
+        const productsDB = collection(db, Tables.products).withConverter(productConverter);
+        const productsDBQueryListener = onSnapshot(productsDB, productsDBDocs => {
+            const dbProducts = productsDBDocs.docs.map(d => new Product(d.data()));
+            setProducts(dbProducts);
+            setProductsLoading(false);
+            dev() && console.log(`Product(s)`, dbProducts);
+        });
+        return () => {
+            productsDBQueryListener();
+        }
+    }, []);
+
+    useEffect(() => {
         if (typeof window != `undefined`) {
             let isOnPWA = isInStandaloneMode();
             setIsPWA(isOnPWA);
@@ -382,6 +400,9 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         boardForm, setBoardForm,
         boardItems, setBoardItems,
         dataLoading, setDataLoading,
+
+        products, setProducts,
+        productsLoading, setProductsLoading,
 
         isPWA, setIsPWA,
         loaded, setLoaded,
@@ -414,6 +435,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         onBoards, boardForm, boardItems, boards, dataLoading,
+        products, productsLoading, 
         stocks, histories, stockOrders, stocksAcc, 
         stocksObj, stockPositions, robinhoodAccountTypes, syncedSet,
         realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected, 

@@ -5,9 +5,10 @@ import { Task } from '../types/models/Task';
 import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
 import { Board } from '../types/models/Board';
+import { Product } from '../types/models/Product';
 import { getFirestore } from 'firebase/firestore';
 import { apiRoutes, customDate, getIDParts, logToast } from '../scripts/constants';
-import { GoogleAuthProvider, browserLocalPersistence, deleteUser, getAuth, getIdToken, setPersistence } from 'firebase/auth';
+import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
 
 export enum Tables {
   users = `users`,
@@ -15,6 +16,7 @@ export enum Tables {
   lists = `lists`,
   tasks = `tasks`,
   boards = `boards`,
+  products = `products`,
   features = `features`,
   notifications = `notifications`,
 }
@@ -301,6 +303,16 @@ export const taskConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new Task(data);
+  }
+}
+
+export const productConverter = {
+  toFirestore: (prd: Product) => {
+    return JSON.parse(JSON.stringify(prd));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new Product(data);
   }
 }
 

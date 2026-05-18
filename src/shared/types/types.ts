@@ -51,6 +51,7 @@ export enum Types {
   Stock = `Stock`,
   Upload = `Upload`,
   Message = `Message`,
+  Product = `Product`,
   Feature = `Feature`,
   Position = `Position`,
   Robinhood = `Robinhood`,
