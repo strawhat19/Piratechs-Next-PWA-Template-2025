@@ -1,0 +1,126 @@
+.storeContainer {
+    gap: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.testPaymentComponent {
+    gap: 14px;
+    width: 100%;
+    display: flex;
+    padding: 14px;
+    color: white;
+    margin: 0 auto;
+    align-items: center;
+    background: var(--bg);
+    justify-content: space-between;
+    border-radius: calc(var(--borderRadius) + 3px);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+    box-shadow: 0 0 14px rgba(var(--cool_neon_blue_rgb), 0.16);
+}
+
+.testPaymentSummary {
+    gap: 10px;
+    display: flex;
+    min-width: 210px;
+    align-items: center;
+    h2 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+    }
+    p {
+        margin: 2px 0 0;
+        font-size: 13px;
+        line-height: 1.35;
+        color: rgba(255, 255, 255, 0.78);
+    }
+}
+
+.testPaymentIcon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    flex: 0 0 36px;
+    color: var(--navy);
+    align-items: center;
+    background: var(--main);
+    justify-content: center;
+    border-radius: var(--borderRadius);
+}
+
+.testPaymentControls {
+    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.quantityField, .testPaymentTotal {
+    gap: 6px;
+    display: flex;
+    color: white;
+    align-items: center;
+    span {
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.72);
+        text-transform: uppercase;
+    }
+}
+
+.quantityField {
+    input {
+        top: 0;
+        width: 64px;
+        color: white;
+        font-size: 15px;
+        min-height: 34px;
+        background: var(--navy);
+        border-color: var(--main);
+    }
+}
+
+.testPaymentTotal {
+    min-height: 34px;
+    padding: 6px 10px;
+    background: var(--navy);
+    border-radius: var(--borderRadius);
+    strong {
+        font-size: 16px;
+    }
+}
+
+.stripeCheckoutButton {
+    min-height: 34px;
+    &:disabled {
+        cursor: wait;
+        filter: grayscale(0.2);
+        background: var(--disabled);
+    }
+}
+
+.testPaymentMessage {
+    width: 100%;
+    font-size: 13px;
+    flex-basis: 100%;
+    line-height: 1.4;
+    &.errorMessage {
+        color: white;
+        max-width: 65%;
+        padding: 8px 10px;
+        border-radius: var(--borderRadius);
+        background: rgba(255, 0, 0, 0.25);
+    }
+}
+
+@media (max-width: 700px) {
+    .testPaymentComponent {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .testPaymentControls {
+        justify-content: flex-start;
+    }
+}
