@@ -8,6 +8,10 @@ type CheckoutRequest = {
 
 const stripeApiVersion = `2025-04-30.basil`;
 
+const getStripeServerKey = () => {
+    return process.env.STRIPE_SECRET_KEY || process.env.STRIPE_RESTRICTED_KEY;
+};
+
 const getBaseUrl = (request: NextRequest) => {
     const origin = request.headers.get(`origin`);
     if (origin) return origin;
@@ -19,12 +23,12 @@ const getBaseUrl = (request: NextRequest) => {
 
 export const POST = async (request: NextRequest) => {
     try {
-        const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+        const stripeServerKey = getStripeServerKey();
 
-        if (!stripeSecretKey) {
+        if (!stripeServerKey) {
             return NextResponse.json({
                 ok: false,
-                message: `Missing STRIPE_SECRET_KEY. Add a Stripe test secret key to your environment to create checkout sessions.`,
+                message: `Missing STRIPE_SECRET_KEY or STRIPE_RESTRICTED_KEY. Add a Stripe test server key to your environment to create checkout sessions.`,
             }, { status: 500 });
         }
 
@@ -43,8 +47,8 @@ export const POST = async (request: NextRequest) => {
         const baseUrl = getBaseUrl(request);
         const params = new URLSearchParams({
             mode: `payment`,
-            success_url: `${baseUrl}/pages/store?checkout=success`,
-            cancel_url: `${baseUrl}/pages/store?checkout=canceled`,
+            success_url: `${baseUrl}/store?checkout=success`,
+            cancel_url: `${baseUrl}/store?checkout=canceled`,
             [`line_items[0][quantity]`]: String(quantity),
             [`line_items[0][price_data][currency]`]: `usd`,
             [`line_items[0][price_data][unit_amount]`]: String(amount),
@@ -54,7 +58,7 @@ export const POST = async (request: NextRequest) => {
         const stripeResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions`, {
             method: `POST`,
             headers: {
-                Authorization: `Bearer ${stripeSecretKey}`,
+                Authorization: `Bearer ${stripeServerKey}`,
                 [`Content-Type`]: `application/x-www-form-urlencoded`,
                 [`Stripe-Version`]: stripeApiVersion,
             },

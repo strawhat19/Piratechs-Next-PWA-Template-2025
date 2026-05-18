@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import LockIcon from '@mui/icons-material/Lock';
+import { toast } from 'react-toastify';
 
 type CheckoutStatus = `idle` | `loading` | `success` | `error`;
 
@@ -11,10 +12,30 @@ const testProduct = {
     amount: 999,
 };
 
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
 export default function TestPayment() {
     const [quantity, setQuantity] = useState(1);
     const [status, setStatus] = useState<CheckoutStatus>(`idle`);
     const [message, setMessage] = useState(``);
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const checkout = params.get(`checkout`);
+
+        if (checkout == `success`) {
+            toast.success(`Payment Completed Successfully`);
+        } else if (checkout == `canceled`) {
+            toast.error(`Payment checkout was canceled.`);
+        }
+
+        if (checkout) {
+            params.delete(`checkout`);
+            const query = params.toString();
+            const cleanUrl = `${window.location.pathname}${query ? `?${query}` : ``}`;
+            window.history.replaceState({}, ``, cleanUrl);
+        }
+    }, []);
 
     const total = useMemo(() => {
         return new Intl.NumberFormat(`en-US`, {
@@ -28,6 +49,10 @@ export default function TestPayment() {
         setMessage(``);
 
         try {
+            if (!stripePublishableKey) {
+                throw new Error(`Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY. Add your Stripe test publishable key to continue.`);
+            }
+
             const response = await fetch(`/api/store/stripe/checkout`, {
                 method: `POST`,
                 headers: { [`Content-Type`]: `application/json` },
