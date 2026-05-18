@@ -1,26 +1,27 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import InternalCheckout from './internal-checkout';
 import type { CartItem } from './use-store-cart';
 import { DeleteSweep, ShoppingCartCheckout, Storefront } from '@mui/icons-material';
 
 type CartSummaryProps = {
     cart: CartItem[];
     total: string;
-    checkingOut: boolean;
     showFullCartLink?: boolean;
-    onCheckout: () => void;
     onClearCart: () => void;
+    onPaymentSuccess: () => void;
 };
 
 export default function CartSummary({
     cart,
     total,
-    checkingOut,
     showFullCartLink = false,
-    onCheckout,
     onClearCart,
+    onPaymentSuccess,
 }: CartSummaryProps) {
+    const [checkoutOpen, setCheckoutOpen] = useState(false);
     const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
     return (
@@ -38,7 +39,7 @@ export default function CartSummary({
                     <div className={`storeCartItem`} key={item.id}>
                         <div>
                             <strong>{item.name}</strong>
-                            <span>{item.sku} · {item.category}</span>
+                            <span>{item.sku} - {item.category}</span>
                         </div>
                         <div className={`storeCartItemMeta`}>
                             <span>Qty {item.quantity}</span>
@@ -57,15 +58,26 @@ export default function CartSummary({
                         View Full Cart
                     </Link>
                 ) : null}
-                <button type={`button`} onClick={onClearCart} disabled={cart.length == 0 || checkingOut}>
+                <button type={`button`} onClick={onClearCart} disabled={cart.length == 0}>
                     <DeleteSweep fontSize={`small`} />
                     Clear Cart
                 </button>
-                <button type={`button`} className={`checkoutCartButton`} onClick={onCheckout} disabled={cart.length == 0 || checkingOut}>
+                <button type={`button`} className={`checkoutCartButton`} onClick={() => setCheckoutOpen(!checkoutOpen)} disabled={cart.length == 0}>
                     <ShoppingCartCheckout fontSize={`small`} />
-                    {checkingOut ? `Starting...` : `Checkout`}
+                    {checkoutOpen ? `Hide Checkout` : `Checkout`}
                 </button>
             </div>
+
+            {checkoutOpen ? (
+                <InternalCheckout
+                    cart={cart}
+                    total={total}
+                    onSuccess={() => {
+                        setCheckoutOpen(false);
+                        onPaymentSuccess();
+                    }}
+                />
+            ) : null}
         </section>
     );
 }

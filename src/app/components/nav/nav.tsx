@@ -38,7 +38,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
     let [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
     let [storeAnchorEl, setStoreAnchorEl] = useState<null | HTMLElement>(null);
     let [cartDrawerOpen, setCartDrawerOpen] = useState(false);
-    const { cart, cartCount, cartTotal, checkingOut, clearCart, checkoutCart } = useStoreCart();
+    const { cart, cartCount, cartTotal, clearCart, saveCart } = useStoreCart();
 
     const openProfileMenu = (e: React.MouseEvent<HTMLElement>) => {
         setProfileAnchorEl(e.currentTarget);
@@ -192,10 +192,9 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 open={cartDrawerOpen}
                 cart={cart}
                 total={cartTotal}
-                checkingOut={checkingOut}
                 onClose={() => setCartDrawerOpen(false)}
-                onCheckout={checkoutCart}
                 onClearCart={clearCart}
+                onPaymentSuccess={() => saveCart([])}
             />
         </nav>
     )

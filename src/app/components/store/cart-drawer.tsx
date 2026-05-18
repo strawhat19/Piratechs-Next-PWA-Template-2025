@@ -8,20 +8,18 @@ type CartDrawerProps = {
     open: boolean;
     cart: CartItem[];
     total: string;
-    checkingOut: boolean;
     onClose: () => void;
-    onCheckout: () => void;
     onClearCart: () => void;
+    onPaymentSuccess: () => void;
 };
 
 export default function CartDrawer({
     open,
     cart,
     total,
-    checkingOut,
     onClose,
-    onCheckout,
     onClearCart,
+    onPaymentSuccess,
 }: CartDrawerProps) {
     return (
         <Drawer
@@ -34,10 +32,9 @@ export default function CartDrawer({
             <CartSummary
                 cart={cart}
                 total={total}
-                checkingOut={checkingOut}
                 showFullCartLink
-                onCheckout={onCheckout}
                 onClearCart={onClearCart}
+                onPaymentSuccess={onPaymentSuccess}
             />
         </Drawer>
     );

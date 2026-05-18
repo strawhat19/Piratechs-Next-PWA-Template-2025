@@ -134,3 +134,46 @@
         border-radius: 3px;
     }
 }
+
+.internalCheckoutForm {
+    gap: 14px;
+    display: grid;
+    padding: 14px;
+    margin-top: 2px;
+    background: var(--navy);
+    border-radius: var(--borderRadius);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.28);
+
+    .checkoutCartButton {
+        color: var(--navy);
+        min-height: 38px;
+        background: var(--success);
+    }
+}
+
+.internalCheckoutHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 {
+        margin: 0;
+        font-size: 17px;
+    }
+
+    p {
+        margin: 2px 0 0;
+        font-size: 13px;
+        line-height: 1.35;
+        color: rgba(255, 255, 255, 0.72);
+    }
+}
+
+.internalCheckoutMessage {
+    color: white;
+    font-size: 13px;
+    line-height: 1.45;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--borderRadius);
+}
