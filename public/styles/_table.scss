@@ -69,4 +69,14 @@
       font-size: 17px;
     }
   }
+
+  &.productActionsCell {
+    .statusText {
+      min-width: 68px;
+    }
+
+    .addToCartAction {
+      color: var(--green_neon) !important;
+    }
+  }
 }

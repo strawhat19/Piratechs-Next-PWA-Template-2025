@@ -7,8 +7,10 @@ import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { useRouter, usePathname } from 'next/navigation';
 import Icon_Button from '../buttons/icon-button/icon-button';
+import CartDrawer from '../store/cart-drawer';
+import { useStoreCart } from '../store/use-store-cart';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
-import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart, Person, Logout } from '@mui/icons-material';
+import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart, Person, Logout, Storefront, DeleteSweep } from '@mui/icons-material';
 
 const size = 20;
 export const routes = {
@@ -34,6 +36,9 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
     let { user, loaded, menuExpanded, setMenuExpanded, onSignOut } = useContext<any>(StateGlobals);
 
     let [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
+    let [storeAnchorEl, setStoreAnchorEl] = useState<null | HTMLElement>(null);
+    let [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+    const { cart, cartCount, cartTotal, checkingOut, clearCart, checkoutCart } = useStoreCart();
 
     const openProfileMenu = (e: React.MouseEvent<HTMLElement>) => {
         setProfileAnchorEl(e.currentTarget);
@@ -41,6 +46,10 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
 
     const closeProfileMenu = () => {
         setProfileAnchorEl(null);
+    };
+
+    const closeStoreMenu = () => {
+        setStoreAnchorEl(null);
     };
 
     const profileMenuItems = [
@@ -65,6 +74,65 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
             },
         },
     ];
+
+    const storeMenuItems = [
+        {
+            id: `view-cart`,
+            label: `View Cart`,
+            icon: <ShoppingCart />,
+            onClick: () => setCartDrawerOpen(true),
+        },
+        {
+            id: `clear-cart`,
+            label: `Clear Cart`,
+            icon: <DeleteSweep />,
+            onClick: clearCart,
+        },
+        {
+            id: `go-store`,
+            label: `Go to Store`,
+            icon: <Storefront />,
+            onClick: () => router.push(`/store`),
+        },
+    ];
+
+    const renderRouteLink = (path: string, config: any) => {
+        const isStoreRoute = path == `store`;
+        const hasCartItems = isStoreRoute && cartCount > 0;
+        const content = (
+            <>
+                <span className={`navIconWrap`}>
+                    {config.icons.mui}
+                    {hasCartItems ? <span className={`cartNavBadge`}>{cartCount}</span> : null}
+                </span>
+                <span className={`linkText`}>
+                    {capWords(path)}
+                </span>
+            </>
+        );
+
+        if (hasCartItems) {
+            return (
+                <button
+                    type={`button`}
+                    className={`smallFont colorwhite flexContainer navMenuLinkButton`}
+                    onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setStoreAnchorEl(event.currentTarget);
+                    }}
+                >
+                    {content}
+                </button>
+            );
+        }
+
+        return (
+            <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
+                {content}
+            </Link>
+        );
+    };
 
     return (
         <nav className={`container ${className}`}>
@@ -100,13 +168,18 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </li>
                 </>}
                 {Object.entries(routes).map(([path, config]: any) => (
-                    <li key={path} onClick={() => setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
-                        <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
-                            {config.icons.mui}
-                            <span className={`linkText`}>
-                                {capWords(path)}
-                            </span>
-                        </Link>
+                    <li key={path} onClick={() => !(path == `store` && cartCount > 0) && setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
+                        {renderRouteLink(path, config)}
+                        {path == `store` ? (
+                            <MenuComponent
+                                open={storeAnchorEl != null}
+                                anchorEl={storeAnchorEl}
+                                onClose={closeStoreMenu}
+                                topOffset={1}
+                                menuItems={storeMenuItems}
+                                className={`storeCartMenu`}
+                            />
+                        ) : null}
                     </li>
                 ))}
                 {/* {className == `mobileNav` && (
@@ -115,6 +188,15 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </li>
                 )} */}
             </ul>
+            <CartDrawer
+                open={cartDrawerOpen}
+                cart={cart}
+                total={cartTotal}
+                checkingOut={checkingOut}
+                onClose={() => setCartDrawerOpen(false)}
+                onCheckout={checkoutCart}
+                onClearCart={clearCart}
+            />
         </nav>
     )
 }

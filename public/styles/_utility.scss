@@ -226,6 +226,41 @@
     nav {
         .navigationLink {
             @extend .hoverLink;
+            .navMenuLinkButton {
+                gap: 5px;
+                padding: 0;
+                border: none;
+                color: white;
+                min-height: auto;
+                background: transparent;
+                &:hover {
+                    filter: none;
+                    box-shadow: none;
+                }
+            }
+            .navIconWrap {
+                display: flex;
+                position: relative;
+                align-items: center;
+            }
+            .cartNavBadge {
+                top: -10px;
+                right: -12px;
+                z-index: 1;
+                color: var(--navy);
+                display: flex;
+                font-size: 10px;
+                font-weight: 800;
+                min-width: 17px;
+                min-height: 17px;
+                padding: 1px 4px;
+                position: absolute;
+                align-items: center;
+                background: var(--success);
+                justify-content: center;
+                border-radius: 999px;
+                box-shadow: 0 0 0 2px var(--bg);
+            }
             &.activeRoute {
                 &::before {
                     transform: scale(1, 1);

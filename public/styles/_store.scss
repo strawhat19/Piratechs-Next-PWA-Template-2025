@@ -4,26 +4,49 @@
     flex-direction: column;
 }
 
-.testPaymentComponent {
+.storeCartComponent {
     gap: 14px;
     width: 100%;
     display: flex;
     padding: 14px;
     color: white;
     margin: 0 auto;
-    align-items: center;
+    align-items: stretch;
     background: var(--bg);
-    justify-content: space-between;
+    flex-direction: column;
     border-radius: calc(var(--borderRadius) + 3px);
     border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
     box-shadow: 0 0 14px rgba(var(--cool_neon_blue_rgb), 0.16);
 }
 
-.testPaymentSummary {
-    gap: 10px;
+.cartDrawerPaper {
+    width: min(420px, 94vw);
+    color: white !important;
+    padding: 18px;
+    background: var(--navy) !important;
+}
+
+.cartDrawerComponent {
+    .storeCartComponent {
+        border: none;
+        padding: 0;
+        box-shadow: none;
+        background: transparent;
+    }
+}
+
+.cartPageComponent {
+    margin: 0 auto;
+    max-width: 980px;
+    .storeCartComponent {
+        min-height: 360px;
+    }
+}
+
+.storeCartHeader {
     display: flex;
-    min-width: 210px;
     align-items: center;
+    justify-content: space-between;
     h2 {
         margin: 0;
         font-size: 18px;
@@ -35,92 +58,79 @@
         line-height: 1.35;
         color: rgba(255, 255, 255, 0.78);
     }
+    strong {
+        color: var(--green_neon);
+        font-size: 18px;
+    }
 }
 
-.testPaymentIcon {
-    width: 36px;
-    height: 36px;
+.storeCartItems {
+    gap: 8px;
+    display: grid;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.storeCartItem {
+    gap: 12px;
     display: flex;
-    flex: 0 0 36px;
-    color: var(--navy);
+    padding: 9px 10px;
     align-items: center;
-    background: var(--main);
-    justify-content: center;
+    background: var(--navy);
+    justify-content: space-between;
+    border-radius: var(--borderRadius);
+    strong {
+        font-size: 14px;
+    }
+    span {
+        display: block;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+}
+
+.storeCartItemMeta {
+    gap: 4px;
+    display: grid;
+    text-align: right;
+    min-width: 88px;
+}
+
+.emptyCart {
+    padding: 12px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.76);
+    background: rgba(255, 255, 255, 0.06);
     border-radius: var(--borderRadius);
 }
 
-.testPaymentControls {
+.storeCartActions {
     gap: 10px;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     justify-content: flex-end;
-}
-
-.quantityField, .testPaymentTotal {
-    gap: 6px;
-    display: flex;
-    color: white;
-    align-items: center;
-    span {
-        font-size: 12px;
-        font-weight: 700;
-        color: rgba(255, 255, 255, 0.72);
-        text-transform: uppercase;
-    }
-}
-
-.quantityField {
-    input {
-        top: 0;
-        width: 64px;
-        color: white;
-        font-size: 15px;
+    button {
         min-height: 34px;
-        background: var(--navy);
-        border-color: var(--main);
+        &:disabled {
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+            background: var(--disabled);
+        }
     }
-}
-
-.testPaymentTotal {
-    min-height: 34px;
-    padding: 6px 10px;
-    background: var(--navy);
-    border-radius: var(--borderRadius);
-    strong {
-        font-size: 16px;
+    .checkoutCartButton {
+        background: var(--success);
+        color: var(--navy);
     }
-}
-
-.stripeCheckoutButton {
-    min-height: 34px;
-    &:disabled {
-        cursor: wait;
-        filter: grayscale(0.2);
-        background: var(--disabled);
-    }
-}
-
-.testPaymentMessage {
-    width: 100%;
-    font-size: 13px;
-    flex-basis: 100%;
-    line-height: 1.4;
-    &.errorMessage {
+    .cartLinkButton {
+        gap: 5px;
         color: white;
-        max-width: 65%;
-        padding: 8px 10px;
-        border-radius: var(--borderRadius);
-        background: rgba(255, 0, 0, 0.25);
-    }
-}
-
-@media (max-width: 700px) {
-    .testPaymentComponent {
-        align-items: stretch;
-        flex-direction: column;
-    }
-    .testPaymentControls {
-        justify-content: flex-start;
+        display: flex;
+        font-size: 16px;
+        min-height: 34px;
+        padding: 5px 15px;
+        align-items: center;
+        background: var(--buttons);
+        justify-content: center;
+        border-radius: 3px;
     }
 }

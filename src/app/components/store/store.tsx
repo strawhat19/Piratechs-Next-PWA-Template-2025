@@ -4,18 +4,21 @@ import { useContext } from 'react';
 import Table from '../table/table';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
-import TestPayment from './test-payment';
 import { SwiperSlide } from 'swiper/react';
 import { constants } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import UsersTable from '../table/users-table/users-table';
+import ProductsTable from '../table/products-table/products-table';
+import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 
 export default function Store({ className = `storeComponent` }) {
     const { user, width, loaded } = useContext<any>(StateGlobals);
+    const { addToCart, saveCart } = useStoreCart();
+    useCheckoutReturnToast(saveCart);
+
     return (
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
-                <TestPayment />
                 <Slider className={`componentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
                     {user == null ? <></> : (
                         <SwiperSlide>
@@ -26,7 +29,7 @@ export default function Store({ className = `storeComponent` }) {
                         <Table title={`Order(s)`} />
                     </SwiperSlide>
                     <SwiperSlide>
-                        <Table title={`Product(s)`} />
+                        <ProductsTable onAddToCart={addToCart} />
                     </SwiperSlide>
                 </Slider>
             </> : <Loader height={250} label={`Store Loading`} />}

@@ -2,7 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 type CheckoutRequest = {
     amount?: number;
+    items?: CheckoutItem[];
     name?: string;
+    quantity?: number;
+    returnPath?: string;
+};
+
+type CheckoutItem = {
+    name?: string;
+    price?: number;
     quantity?: number;
 };
 
@@ -21,6 +29,11 @@ const getBaseUrl = (request: NextRequest) => {
     return host ? `${protocol}://${host}` : `http://localhost:3000`;
 };
 
+const getReturnPath = (returnPath?: string) => {
+    if (!returnPath || !returnPath.startsWith(`/`) || returnPath.startsWith(`//`)) return `/store`;
+    return returnPath.split(`?`)[0] || `/store`;
+};
+
 export const POST = async (request: NextRequest) => {
     try {
         const stripeServerKey = getStripeServerKey();
@@ -33,26 +46,39 @@ export const POST = async (request: NextRequest) => {
         }
 
         const body = await request.json() as CheckoutRequest;
-        const amount = Number(body?.amount ?? 999);
-        const quantity = Math.max(1, Math.min(10, Number(body?.quantity ?? 1)));
-        const productName = body?.name?.trim() || `Piratechs Test Payment`;
+        const checkoutItems = Array.isArray(body?.items) && body.items.length > 0
+            ? body.items.slice(0, 20)
+            : [{
+                name: body?.name,
+                price: body?.amount,
+                quantity: body?.quantity,
+            }];
 
-        if (!Number.isInteger(amount) || amount < 50 || amount > 999999) {
-            return NextResponse.json({
-                ok: false,
-                message: `Amount must be a whole number of cents between 50 and 999999.`,
-            }, { status: 400 });
-        }
+        const lineItems = checkoutItems.map((item) => {
+            const amount = Number(item?.price ?? 999);
+            const quantity = Math.max(1, Math.min(99, Number(item?.quantity ?? 1)));
+            const productName = item?.name?.trim() || `Piratechs Store Item`;
+
+            if (!Number.isInteger(amount) || amount < 50 || amount > 999999) {
+                throw new Error(`Each item price must be a whole number of cents between 50 and 999999.`);
+            }
+
+            return { amount, quantity, productName };
+        });
 
         const baseUrl = getBaseUrl(request);
+        const returnPath = getReturnPath(body?.returnPath);
         const params = new URLSearchParams({
             mode: `payment`,
-            success_url: `${baseUrl}/store?checkout=success`,
-            cancel_url: `${baseUrl}/store?checkout=canceled`,
-            [`line_items[0][quantity]`]: String(quantity),
-            [`line_items[0][price_data][currency]`]: `usd`,
-            [`line_items[0][price_data][unit_amount]`]: String(amount),
-            [`line_items[0][price_data][product_data][name]`]: productName,
+            success_url: `${baseUrl}${returnPath}?checkout=success`,
+            cancel_url: `${baseUrl}${returnPath}?checkout=canceled`,
+        });
+
+        lineItems.forEach((item, index) => {
+            params.set(`line_items[${index}][quantity]`, String(item.quantity));
+            params.set(`line_items[${index}][price_data][currency]`, `usd`);
+            params.set(`line_items[${index}][price_data][unit_amount]`, String(item.amount));
+            params.set(`line_items[${index}][price_data][product_data][name]`, item.productName);
         });
 
         const stripeResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions`, {
@@ -82,7 +108,7 @@ export const POST = async (request: NextRequest) => {
     } catch (error) {
         return NextResponse.json({
             ok: false,
-            message: `Unable to start checkout. Please try again.`,
+            message: error instanceof Error ? error.message : `Unable to start checkout. Please try again.`,
         }, { status: 500 });
     }
 };
