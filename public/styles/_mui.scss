@@ -105,6 +105,10 @@
     transition: var(--transition) !important;
 }
 
+.MuiDataGrid-overlay {
+    color: white;
+}
+
 .MuiDataGrid-root {
     --DataGrid-t-color-border-base: var(--buttons) !important;
     --DataGrid-t-color-background-base: var(--navy) !important;
