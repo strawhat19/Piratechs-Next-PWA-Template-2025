@@ -171,7 +171,9 @@ export default function ProductsTable({
             width: 105,
             field: `price`,
             headerName: `Price`,
-            renderCell: ({ value }: any) => <IconText dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />,
+            renderCell: ({ value }: any) => (
+                <IconText format={false} dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />
+            ),
         },
         { field: `name`, headerName: `Product`, flex: 1, maxWidth: 300, },
         {
