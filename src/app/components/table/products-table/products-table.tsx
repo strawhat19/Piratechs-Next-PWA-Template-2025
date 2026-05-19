@@ -1,48 +1,142 @@
 'use client';
 
 import Table from '../table';
-import { useContext } from 'react';
+import Image from 'next/image';
 import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
-import { Types } from '@/shared/types/types';
+import { useContext, useState } from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
-import { AddShoppingCart } from '@mui/icons-material';
+import { Roles, Types } from '@/shared/types/types';
+import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
-import { Product } from '@/shared/types/models/Product';
 import Icon_Button from '../../buttons/icon-button/icon-button';
+import { Product, ProductStatus } from '@/shared/types/models/Product';
+import { ProductFormDialog } from '../../store/product-form/product-form';
+import { AddShoppingCart, Archive, Delete, Edit, Restore } from '@mui/icons-material';
+import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 
 const storeDollarSignColor = `var(--green_neon)`;
 
-const getProductStatusColor = (product: Product) => {
+const getProductStatus = (product: Product) => {
     const status = String(product?.status || ``).toLowerCase();
-    if (status.includes(`out`) || status.includes(`archived`) || product?.stock <= 0) return `red`;
-    if (status.includes(`active`) && product?.stock > 0) return `var(--green_neon)`;
-    return `rgba(255,255,255,0.35)`;
+    const stock = Number(product?.stock || 0);
+    if (status.includes(`out`) || status.includes(`archived`) || stock <= 0) {
+        return {
+            label: `Unavailable`,
+            color: `red`,
+        };
+    }
+    if (status.includes(`active`) && stock > 0) {
+        return {
+            label: `Active`,
+            color: `var(--green_neon)`,
+        };
+    }
+    return {
+        label: `Pending`,
+        color: `rgba(255,255,255,0.35)`,
+    };
+};
+
+const getProductStatusColor = (product: Product) => {
+    return getProductStatus(product)?.color;
+};
+
+const getProductStatusLabel = (product: Product) => {
+    return getProductStatus(product)?.label;
+};
+
+const ProductImageCell = ({ row }: { row: Product }) => {
+    const imageURL = row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
+    return imageURL ? <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`productTableImage`} /> : <div className={`productTableImage productTableImageEmpty`}>{row?.name?.[0] || `P`}</div>;
 }
 
-const ProductActionsCell = ({ row, onAddToCart }: { row: Product; onAddToCart: (product: Product) => void }) => {
-    const canAddToCart = row.stock > 0;
+const ProductActionsCell = ({ row, onEdit, onAddToCart }: { row: Product; onEdit: (product: Product) => void; onAddToCart: (product: Product) => void }) => {
+    const { user } = useContext<any>(StateGlobals);
+    const canManageProducts = minRole(user?.role, Roles.Administrator);
+    const isArchived = String(row?.status || ``).toLowerCase() == ProductStatus.Archived.toLowerCase();
+    const canAddToCart = !isArchived && row?.stock > 0;
     const statusColor = getProductStatusColor(row);
+    const updateStatus = (status: ProductStatus) => {
+        toast.info(`Updating Product`);
+        updateProductInDatabase(String(row?.id), { status }, user)?.then(() => toast.success(`Product Updated`));
+    }
+    const deleteProduct = () => {
+        if (!window.confirm(`Delete ${row?.name}?`)) return;
+        toast.info(`Deleting Product`);
+        deleteProductFromDatabase(row, user)?.then(() => toast.success(`Product Deleted`));
+    }
 
     return (
         <div className={`actionsCell productActionsCell`}>
-            <TableStatus label={row?.status} color={statusColor} />
+            <TableStatus label={statusColor == `red` ? `${row?.status} (${getProductStatusLabel(row)})` : row?.status} color={statusColor} />
             <div className={`actions`}>
-                <Icon_Button
-                    size={26}
-                    title={canAddToCart ? `Add To Cart` : `Out Of Stock`}
-                    disabled={!canAddToCart}
-                    className={`actionIconButton addToCartAction`}
-                    onClick={(event: any) => {
-                        event.stopPropagation();
-                        onAddToCart(row);
-                        toast.success(`${row?.name} Added To Cart`);
-                    }}
-                >
-                    <AddShoppingCart fontSize={`small`} />
-                </Icon_Button>
+                {!isArchived ? (
+                    <Icon_Button
+                        size={26}
+                        disabled={!canAddToCart}
+                        className={`actionIconButton addToCartAction`}
+                        title={canAddToCart ? `Add To Cart` : `Out Of Stock`}
+                        onClick={(event: any) => {
+                            event.stopPropagation();
+                            onAddToCart(row);
+                            toast.success(`${row?.name} Added To Cart`);
+                        }}
+                    >
+                        <AddShoppingCart fontSize={`small`} />
+                    </Icon_Button>
+                ) : <></>}
+                {canManageProducts ? <>
+                    <Icon_Button
+                        size={26}
+                        title={`Edit Product`}
+                        className={`actionIconButton editAction`}
+                        onClick={(event: any) => {
+                            event.stopPropagation();
+                            onEdit(row);
+                        }}
+                    >
+                        <Edit fontSize={`small`} />
+                    </Icon_Button>
+                    {isArchived ? <>
+                        <Icon_Button
+                            size={26}
+                            title={`Restore Product`}
+                            className={`actionIconButton restoreAction`}
+                            onClick={(event: any) => {
+                                event.stopPropagation();
+                                updateStatus(ProductStatus.Active);
+                            }}
+                        >
+                            <Restore fontSize={`small`} />
+                        </Icon_Button>
+                        <Icon_Button
+                            size={26}
+                            title={`Delete Product`}
+                            className={`actionIconButton deleteAction`}
+                            onClick={(event: any) => {
+                                event.stopPropagation();
+                                deleteProduct();
+                            }}
+                        >
+                            <Delete fontSize={`small`} />
+                        </Icon_Button>
+                    </> : (
+                        <Icon_Button
+                            size={26}
+                            title={`Archive Product`}
+                            className={`actionIconButton archiveAction`}
+                            onClick={(event: any) => {
+                                event.stopPropagation();
+                                updateStatus(ProductStatus.Archived);
+                            }}
+                        >
+                            <Archive fontSize={`small`} />
+                        </Icon_Button>
+                    )}
+                </> : <></>}
             </div>
         </div>
     );
@@ -53,32 +147,44 @@ export default function ProductsTable({
     onAddToCart = () => {}, 
 }: any) {
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     const productColumns: GridColDef[] = [
-        { field: `id`, headerName: `ID`, width: 75 },
-        { field: `sku`, headerName: `SKU`, width: 130 },
-        { field: `name`, headerName: `Product`, width: 210, flex: 1 },
-        { field: `category`, headerName: `Category`, width: 135 },
+        { field: `number`, headerName: `ID`, width: 87 },
         {
+            width: 70,
+            sortable: false,
+            field: `imageURL`,
+            filterable: false,
+            headerName: `Image`,
+            renderCell: ({ row }: any) => <ProductImageCell row={row} />,
+        },
+        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 300, },
+        { field: `sku`, headerName: `SKU`, width: 130 },
+        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
+        { field: `productType`, headerName: `Type`, width: 120 },
+        { field: `category`, headerName: `Category`, width: 145 },
+        {
+            width: 105,
             field: `price`,
             headerName: `Price`,
-            width: 105,
             renderCell: ({ value }: any) => <IconText dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />,
         },
         {
+            width: 85,
             field: `stock`,
             type: `number`,
             headerName: `Stock`,
-            width: 95,
             renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
         },
         {
-            minWidth: 165,
-            field: `actions`,
-            headerName: `Actions`,
+            width: 250,
+            minWidth: 250,
             sortable: false,
+            field: `actions`,
             filterable: false,
-            renderCell: ({ row }: any) => <ProductActionsCell row={row} onAddToCart={onAddToCart} />,
+            headerName: `Action(s)`,
+            renderCell: ({ row }: any) => <ProductActionsCell row={row} onAddToCart={onAddToCart} onEdit={setSelectedProduct} />,
         },
     ];
 
@@ -87,12 +193,19 @@ export default function ProductsTable({
     }
 
     return (
-        <Table
-            type={type}
-            rows={products}
-            title={`${type}(s)`}
-            columns={productColumns}
-            className={`productsTableComponent`}
-        />
+        <>
+            <Table
+                type={type}
+                rows={products}
+                title={`${type}(s)`}
+                columns={productColumns}
+                className={`productsTableComponent`}
+            />
+            <ProductFormDialog
+                product={selectedProduct}
+                open={selectedProduct != null}
+                onClose={() => setSelectedProduct(null)}
+            />
+        </>
     );
 }

@@ -8,6 +8,7 @@ export const numberFormatWithCommas = (numberValue: string | number, decimalPlac
   const fixed = (parsedNumber ?? 0)?.toFixed(decimalPlaces); // always 2 decimals
   const [intPart, decPart] = fixed.split(`.`);
   const formattedInt = Number(intPart).toLocaleString(`en-US`);
+  if (decimalPlaces <= 0 || decPart == undefined) return formattedInt;
   return decPart === `00` ? formattedInt : `${formattedInt}.${decPart}`;
 };
 

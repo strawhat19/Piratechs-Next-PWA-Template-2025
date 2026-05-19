@@ -71,12 +71,62 @@
   }
 
   &.productActionsCell {
+    gap: 9px;
+
     .statusText {
       min-width: 68px;
+    }
+
+    .actions {
+      margin-left: auto;
+      flex-shrink: 0;
     }
 
     .addToCartAction {
       color: var(--green_neon) !important;
     }
+
+    .editAction,
+    .restoreAction {
+      color: var(--green_neon) !important;
+    }
+
+    .archiveAction {
+      color: var(--yellow_neon) !important;
+    }
+
+    .deleteAction {
+      color: red !important;
+    }
+  }
+}
+
+.productTableImage {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  object-fit: cover;
+  overflow: hidden;
+  color: white;
+  font-weight: 800;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy);
+  border-radius: var(--borderRadius);
+  border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+}
+
+.productTableImageEmpty {
+  color: var(--green_neon);
+}
+
+.productsTableComponent {
+  .stockText {
+    min-width: 42px;
+    justify-content: flex-end;
+  }
+
+  .MuiDataGrid-cell {
+    align-items: center;
   }
 }

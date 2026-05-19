@@ -11,10 +11,35 @@ export enum ProductStatus {
 }
 
 export enum ProductType {
-  Digital = `Digital`,
-  Physical = `Physical`,
+  Pin = `Pin`,
+  Print = `Print`,
+  Shirt = `Shirt`,
+  Poster = `Poster`,
+  Sticker = `Sticker`,
+  Graphic = `Graphic`,
   Service = `Service`,
+  Digital = `Digital`,
+  Painting = `Painting`,
+  Physical = `Physical`,
+  Commission = `Commission`,
   Subscription = `Subscription`,
+  DigitalDownload = `Digital Download`,
+}
+
+export enum ProductCategory {
+  Art = `Art`,
+  Apparel = `Apparel`,
+  Stickers = `Stickers`,
+  Paintings = `Paintings`,
+  Prints = `Prints`,
+  Posters = `Posters`,
+  Graphics = `Graphics`,
+  Commissions = `Commissions`,
+  Accessories = `Accessories`,
+  DigitalArt = `Digital Art`,
+  OriginalArt = `Original Art`,
+  CustomArt = `Custom Art`,
+  Merchandise = `Merchandise`,
 }
 
 export interface ProductOption {
@@ -41,6 +66,8 @@ export interface ProductImage {
   width?: number;
   height?: number;
   src?: string;
+  url?: string;
+  storagePath?: string;
   variant_ids?: Array<number | string>;
   variantIDs?: Array<number | string>;
 }
@@ -91,27 +118,30 @@ export class Product extends Data {
   sku: string = ``;
   slug: string = ``;
   label?: string = ``;
+  bodyHTML?: string = ``;
   imageURL?: string = ``;
   imageURLs?: string[] = [];
   description?: string = ``;
   shortDescription?: string = ``;
-  bodyHTML?: string = ``;
+
+  created_by?: string = ``;
+  updated_by?: string = ``;
 
   price: number = 0;
-  compareAtPrice?: number = 0;
   cost?: number = 0;
   currency: string = `usd`;
+  compareAtPrice?: number = 0;
 
   stock: number = 0;
   lowStockThreshold?: number = 5;
   trackInventory: boolean = true;
   allowBackorder: boolean = false;
 
+  tags: string[] = [];
   brand?: string = ``;
   vendor?: string = ``;
-  category: string = ``;
   categories: string[] = [];
-  tags: string[] = [];
+  category: string = ProductCategory.Art;
 
   weight?: number = 0;
   dimensions?: {
@@ -125,6 +155,9 @@ export class Product extends Data {
   taxable: boolean = true;
   stripePriceID?: string = ``;
   stripeProductID?: string = ``;
+  stripePriceAmount?: number = 0;
+  stripeSyncStatus?: string = ``;
+  stripePriceCurrency?: string = `usd`;
 
   externalProductID?: string = ``;
   shopifyID?: number | string;
@@ -151,8 +184,8 @@ export class Product extends Data {
   rawShopify?: Record<string, any> = {};
 
   type: Types = Types.Product;
-  productType: ProductType | string = ProductType.Digital;
-  status: ProductStatus | string = ProductStatus.Draft;
+  status: ProductStatus | string = ProductStatus.Active;
+  productType: ProductType | string = ProductType.Sticker;
   dataSource?: DataSources | string = DataSources.firebase;
   metadata?: Record<string, string | number | boolean> = {};
 
@@ -172,9 +205,9 @@ export class Product extends Data {
       if (isValid(productData?.id) && !isValid(this.externalProductID)) this.externalProductID = String(productData?.id);
     }
 
-    const variants = Array.isArray(this.variants) ? this.variants : [];
-    const firstVariant = this.variant || variants?.[0];
     const images = Array.isArray(this.images) ? this.images : [];
+    let variants = Array.isArray(this.variants) ? this.variants : [];
+    let firstVariant = this.variant || variants?.[0];
     const firstImage = this.image || images?.[0];
 
     if (isValid(productData.id) && !isValid(this.shopifyID) && typeof productData.id == `number`) this.shopifyID = productData.id;
@@ -183,6 +216,8 @@ export class Product extends Data {
     if (isValid(productData.body_html) && !isValid(this.bodyHTML)) this.bodyHTML = String(productData.body_html);
     if (isValid(productData.product_type)) this.productType = String(productData.product_type);
     if (isValid(productData.product_type) && !isValid(this.category)) this.category = String(productData.product_type);
+    if (!isValid(this.productType)) this.productType = ProductType.Sticker;
+    if (!isValid(this.category)) this.category = ProductCategory.Art;
     if (isValid(productData.status)) this.status = capWords(String(productData.status));
     if (isValid(productData.handle) && !isValid(this.handle)) this.handle = String(productData.handle);
     if (isValid(productData.handle) && !isValid(this.slug)) this.slug = String(productData.handle);
@@ -194,9 +229,26 @@ export class Product extends Data {
     if (isValid(productData.updated_at)) this.updated = productData.updated_at;
     if (!isValid(this.tags)) this.tags = normalizeTags(productData.tags);
     if (!isValid(this.label)) this.label = this.name || productData.title || this.sku;
+    if (!isValid(this.imageURL) && isValid(firstImage?.url)) this.imageURL = firstImage?.url;
     if (!isValid(this.image) && firstImage) this.image = firstImage;
     if (!isValid(this.imageURL) && isValid(firstImage?.src)) this.imageURL = firstImage?.src;
-    if (!isValid(this.imageURLs) && images.length > 0) this.imageURLs = images.map(image => image.src || ``).filter(Boolean);
+    if (!isValid(this.imageURLs) && images.length > 0) this.imageURLs = images.map(image => image.src || image.url || ``).filter(Boolean);
+    if (variants.length == 0) {
+      firstVariant = {
+        id: `${this.id || Types.Product}_Variant_1`,
+        sku: this.sku,
+        title: `Default`,
+        price: this.price,
+        position: 1,
+        productID: this.id,
+        available: this.status != ProductStatus.Archived,
+        taxable: this.taxable,
+        inventoryQuantity: this.stock,
+        requiresShipping: this.requiresShipping,
+      };
+      variants = [firstVariant];
+      this.variants = variants;
+    }
     if (!isValid(this.variant) && firstVariant) this.variant = firstVariant;
     if (!isValid(this.variantID) && isValid(firstVariant?.id)) this.variantID = firstVariant?.id;
     if (!isValid(this.variantIDs) && variants.length > 0) this.variantIDs = variants.map(variant => variant.id || ``).filter(Boolean);

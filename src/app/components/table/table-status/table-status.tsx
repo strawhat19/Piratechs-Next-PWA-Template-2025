@@ -1,8 +1,8 @@
 import { Circle } from '@mui/icons-material';
 
+export const tableStatusRed = `red`;
 export const tableStatusGreen = `var(--green_neon)`;
 export const tableStatusGray = `rgba(255,255,255,0.35)`;
-export const tableStatusRed = `red`;
 
 export default function TableStatus({ label = ``, color = tableStatusGray, className = ``, wrap = false }: any) {
     const rowStatus = (
@@ -12,7 +12,7 @@ export default function TableStatus({ label = ``, color = tableStatusGray, class
                     className={`statusDot`}
                     style={{
                         color,
-                        filter: color == tableStatusGreen ? `drop-shadow(0 0 6px var(--forest_neon_green))` : `none`,
+                        filter: color == tableStatusGreen ? `drop-shadow(0 0 1.5px var(--green_neon))` : `none`,
                     }}
                 />
             </span>

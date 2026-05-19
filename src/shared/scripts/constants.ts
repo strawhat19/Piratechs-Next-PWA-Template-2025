@@ -48,6 +48,9 @@ export const apiRoutes = {
   users: {
     url: `/api/users`,
   },
+  products: {
+    url: `/api/products`,
+  },
   boards: {
     url: `/api/boards`,
   },

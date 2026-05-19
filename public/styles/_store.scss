@@ -4,6 +4,241 @@
     flex-direction: column;
 }
 
+.storeProductsPanel {
+    gap: 12px;
+    display: grid;
+}
+
+.productFormComponent {
+    width: 100%;
+    padding: 14px;
+    color: white;
+    background: var(--bg);
+    border-radius: var(--borderRadius);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+    select {
+        outline: none;
+    }
+    form {
+        gap: 12px;
+        display: grid;
+    }
+    textarea {
+        resize: vertical;
+        min-height: 82px;
+        font-family: var(--font);
+    }
+    input, select, textarea {
+        top: 0;
+        width: 100%;
+        color: white;
+        font-size: 13px;
+        min-height: 36px;
+        padding: 8px 10px;
+        background: var(--navy);
+        border-radius: var(--borderRadius);
+        border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+        &:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    }
+}
+
+.productField {
+    gap: 4px;
+    display: grid;
+    min-width: 0;
+
+    span {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        color: rgba(255, 255, 255, 0.72);
+    }
+}
+
+.productFormHeader,
+.productFormActions,
+.productVariantHeader {
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.productFormActions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.productFormHeader {
+    h3 {
+        margin: 0;
+        font-size: 17px;
+    }
+
+    p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.68);
+    }
+}
+
+.productFormGrid,
+.productVariantRow {
+    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+}
+
+.productTextGrid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.productFormChecks {
+    gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+
+    label {
+        gap: 6px;
+        display: flex;
+        font-size: 13px;
+        align-items: center;
+    }
+
+    input {
+        width: 16px;
+        height: 16px;
+        min-height: 16px;
+    }
+}
+
+.productFormButton {
+    gap: 5px;
+    color: white !important;
+    display: inline-flex !important;
+    font-size: 13px !important;
+    min-height: 34px;
+    background: var(--buttons) !important;
+}
+
+.productSaveButton {
+    color: var(--navy) !important;
+    background: var(--success) !important;
+}
+
+.productRemoveButton {
+    min-width: 34px !important;
+    background: var(--danger, red) !important;
+}
+
+.productUploadField {
+    gap: 4px;
+    display: flex;
+    cursor: pointer;
+    min-height: 36px;
+    font-size: 13px;
+    padding: 4px 10px 8px;
+    position: relative;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--navy);
+    border-radius: var(--borderRadius);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+
+    svg {
+        top: 22px;
+        right: 10px;
+        position: absolute;
+    }
+
+    input {
+        display: none;
+    }
+}
+
+.productFieldLabelText {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.productUploadText {
+    min-height: 18px;
+    padding-top: 4px;
+    padding-right: 22px;
+}
+
+.productVariantSection {
+    gap: 8px;
+    display: grid;
+}
+
+.productVariantRow {
+    align-items: center;
+    .productField {
+        display: grid;
+        align-items: stretch;
+    }
+    label {
+        gap: 6px;
+        display: flex;
+        font-size: 13px;
+        align-items: center;
+    }
+    input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        min-height: 16px;
+    }
+}
+
+.productFormWidget {
+    padding: 12px;
+    .productFormGrid {
+        grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    }
+    .productField:first-child {
+        grid-column: span 2;
+    }
+}
+
+.productFormFull, .productFormRestricted {
+    margin: 0 auto 0 0;
+    width: min(88.5dvw, 96vw);
+}
+
+.productFormRestricted {
+    color: white;
+    padding: 18px;
+    background: var(--bg);
+    border-radius: var(--borderRadius);
+}
+
+.productFormDialog {
+    padding: 16px;
+    min-width: 97%;
+    position: relative;
+    background: var(--navy);
+    .productFormComponent {
+        border: none;
+        box-shadow: none;
+    }
+}
+
+.productDialogClose {
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    min-width: 32px !important;
+    position: absolute !important;
+    color: white !important;
+}
+
 .storeCartComponent {
     gap: 14px;
     width: 100%;

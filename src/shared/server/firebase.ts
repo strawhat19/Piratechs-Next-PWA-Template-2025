@@ -47,6 +47,7 @@ export const usersAPI = apiRoutes.users.url;
 export const boardsAPI = apiRoutes.boards.url;
 export const listsAPI = apiRoutes.lists.url;
 export const itemsAPI = apiRoutes.items.url;
+export const productsAPI = apiRoutes.products.url;
 
 export const userConverter = {
   toFirestore: (usr: User) => {
@@ -316,6 +317,62 @@ export const productConverter = {
     const data = snapshot.data(options);
     return new Product(data);
   }
+}
+
+export const addProductToDatabase = async (prd: Product, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(productsAPI, {
+    method: `POST`,
+    body: JSON.stringify(prd),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`,
+    },
+  });
+  if (!res.ok) {
+    let message = `Error On Create Product (${res.status})`;
+    logToast(`Error Adding Product To Database ${Tables.products} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const updateProductInDatabase = async (id: string, updates: Partial<Product>, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(productsAPI + `/` + id, {
+    method: `PATCH`,
+    body: JSON.stringify(updates),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`,
+    },
+  });
+  if (!res.ok) {
+    let message = `Error On Update Product (${res.status})`;
+    logToast(`Error Updating Product In Database ${Tables.products} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
+}
+
+export const deleteProductFromDatabase = async (prd: Product, user: User) => {
+  const currentUser = auth?.currentUser;
+  const token = currentUser ? await getIdToken(currentUser) : user?.uid;
+  const res = await fetch(productsAPI + `/` + prd?.id, {
+    method: `DELETE`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      [`Content-Type`]: `application/json`,
+    },
+  });
+  if (!res.ok) {
+    let message = `Error On Delete Product (${res.status})`;
+    logToast(`Error Deleting Product From Database ${Tables.products} - ${message}`, res, true);
+    return;
+  }
+  return res.json();
 }
 
 export const orderConverter = {
