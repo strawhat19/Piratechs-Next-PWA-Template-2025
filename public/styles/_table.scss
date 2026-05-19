@@ -2,6 +2,49 @@
     --mui_blue: #1976d2;
 }
 
+.pulsate {
+  animation: none;
+  isolation: isolate;
+  position: relative;
+  --br: inherit;
+  --pulsateSize: 14px;
+  --pulsateColor: var(--green_neon);
+  &.circular {
+    --br: var(--circle);
+  }
+  &::after {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    z-index: 3;
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: var(--br);
+    width: var(--pulsateSize);
+    border: 1px solid var(--pulsateColor);
+    transform: translate(-50%, -50%)scale(1.5);
+    animation: 2.2s ease-out infinite pulsateRing;
+    height: var(--pulsateHeight, var(--pulsateSize));
+  }
+}
+
+@keyframes pulsateRing {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  18% {
+    opacity: 0.45;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .table {
     position: relative;
     padding-right: 0px;
@@ -45,6 +88,10 @@
   .statusDot {
     width: 10px;
     height: 10px;
+    border-radius: 50%;
+    &.pulsate {
+      --pulsateSize: 16px;
+    }
   }
 
   .statusText {
@@ -84,6 +131,21 @@
     .editAction,
     .restoreAction {
       color: var(--green_neon) !important;
+    }
+
+    .editAction {
+      color: var(--success) !important;
+    }
+
+    .quickEditActive {
+      --pulsateColor: var(--success);
+      --pulsateSize: 30px;
+      color: var(--success) !important;
+      border-color: var(--success) !important;
+      background: var(--success) !important;
+      svg {
+        color: var(--navy) !important;
+      }
     }
 
     .archiveAction {

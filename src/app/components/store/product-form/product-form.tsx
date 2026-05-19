@@ -6,8 +6,8 @@ import { Roles } from '@/shared/types/types';
 import { Button, Dialog } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { ChangeEvent, FormEvent, useContext, useMemo, useRef, useState } from 'react';
-import { Add, ClearAll, Close, OpenInFull, Remove, Save, UploadFile } from '@mui/icons-material';
+import { ChangeEvent, FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Add, ClearAll, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
 import { addProductToDatabase, storage, updateProductInDatabase } from '@/shared/server/firebase';
 import { capWords, customDate, getNextCollectionNumber, minRole, stringNoSpaces } from '@/shared/scripts/constants';
 import { Product, ProductCategory, ProductImage, ProductStatus, ProductType, ProductVariant } from '@/shared/types/models/Product';
@@ -21,6 +21,8 @@ type ProductFormProps = {
     onSaved?: (product: Product) => void;
     className?: string;
     fullFormURL?: string;
+    onCancelEdit?: () => void;
+    onFullEdit?: (product: Product | null) => void;
 };
 
 type ProductFormVariant = {
@@ -37,6 +39,7 @@ const centsToDollars = (value?: number | string) => ((Number(value || 0) / 100) 
 const dollarsToCents = (value?: number | string) => Math.round(Number(String(value || `0`).replace(/[^0-9.-]/g, ``) || 0) * 100);
 const parseList = (value?: string) => String(value || ``).split(/[\n,]/).map(item => item.trim()).filter(Boolean);
 const getFiles = (event: ChangeEvent<HTMLInputElement>) => Array.from(event?.target?.files || []);
+const comparableFormValue = (value: any) => JSON.stringify(value ?? ``);
 
 const getVariantForm = (variant?: ProductVariant, product?: Product): ProductFormVariant => ({
     sku: variant?.sku || product?.sku || ``,
@@ -125,11 +128,14 @@ export default function ProductForm({
     widget = false,
     onClose = () => {},
     onSaved = () => {},
+    onCancelEdit = undefined,
+    onFullEdit = undefined,
     className = `productFormComponent`,
     fullFormURL = `/store/product-form`,
 }: ProductFormProps) {
     const router = useRouter();
     const formRef = useRef<HTMLFormElement | null>(null);
+    const preserveFormOnProductClearRef = useRef(false);
 
     const { user, products = [] } = useContext<any>(StateGlobals);
 
@@ -147,6 +153,19 @@ export default function ProductForm({
     );
 
     const compact = widget || !full;
+    const resetProductForm = (productToUse: Product | null | undefined = product) => {
+        formRef?.current?.reset();
+        setFiles([]);
+        setForm(getProductForm(productToUse, productToUse?.number || nextProductNumber));
+        setVariants((productToUse?.variants?.length ? productToUse.variants : [{} as ProductVariant]).map(variant => getVariantForm(variant, productToUse || undefined)));
+    }
+    const openFullForm = () => {
+        if (product?.id && onFullEdit) {
+            onFullEdit(product);
+            return;
+        }
+        router.push(fullFormURL);
+    }
     const updateForm = (event: any) => {
         const target = event?.target;
         const value = target?.type == `checkbox` ? target?.checked : target?.value;
@@ -155,12 +174,29 @@ export default function ProductForm({
     const updateVariant = (index: number, field: keyof ProductFormVariant, value: string | boolean) => setVariants(prev => prev.map((variant, variantIndex) => variantIndex == index ? { ...variant, [field]: value } : variant));
     const addVariant = () => setVariants(prev => [...prev, getVariantForm(undefined, new Product({ name: form?.name, sku: form?.sku, price: dollarsToCents(form?.price), stock: Number(form?.stock || 0) }))]);
     const removeVariant = (index: number) => setVariants(prev => prev.length > 1 ? prev.filter((_, variantIndex) => variantIndex != index) : prev);
-    const clearProductForm = () => {
-        formRef?.current?.reset();
-        setFiles([]);
-        setForm(getProductForm(product, product?.number || nextProductNumber));
-        setVariants((product?.variants?.length ? product.variants : [{} as ProductVariant]).map(variant => getVariantForm(variant, product || undefined)));
+    const cancelProductEdit = () => {
+        preserveFormOnProductClearRef.current = false;
+        resetProductForm(null);
+        onCancelEdit?.();
     }
+    const clearProductForm = () => {
+        resetProductForm(product);
+    }
+
+    const requiredFieldsFilled = () => form?.name?.trim() && Number(form?.price || 0) >= 0;
+    const formMatchesProduct = () => {
+        if (!product?.id) return false;
+        const currentForm = getProductForm(product, product?.number || nextProductNumber);
+        return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURLs`].every(key => comparableFormValue((form as any)?.[key]) == comparableFormValue((currentForm as any)?.[key]));
+    }
+
+    useEffect(() => {
+        if (!product?.id && preserveFormOnProductClearRef.current) {
+            preserveFormOnProductClearRef.current = false;
+            return;
+        }
+        resetProductForm(product);
+    }, [product?.id, product?.updated, nextProductNumber]);
 
     const buildVariants = (productID: string | number, productSKU = form?.sku) => variants.map((variant, index) => ({
         productID,
@@ -182,7 +218,8 @@ export default function ProductForm({
     const saveProduct = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!canManageProducts) return toast.error(`Product Form Restricted`);
-        if (!form?.name?.trim()) return toast.error(`Product Name Required`);
+        if (!requiredFieldsFilled()) return toast.error(`Required Product Field(s) Missing`);
+        if (formMatchesProduct()) return toast.error(`Product Unchanged`);
         setSaving(true);
         try {
             const editing = product != null;
@@ -249,19 +286,20 @@ export default function ProductForm({
     if (!canManageProducts) return compact ? null : <div className={`productFormRestricted`}>Product Form Restricted</div>;
 
     return (
-        <div className={`${className} ${compact ? `productFormWidget` : `productFormFull`}`}>
+        <div className={`${className} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
             <form ref={formRef} onSubmit={saveProduct}>
                 <div className={`productFormHeader`}>
                     <div>
                         <h3>
-                            {product?.id ? `Edit Product (${form?.number})` : (
+                            {product?.id ? `Editing Product #${form?.number} "${form?.name}"` : (
                                 compact ? `Create Product (${form?.number})` : `Product Form`
                             )}
                         </h3>
                     </div>
                     <div className={`productFormActions`}>
-                        {compact ? <Button type={`button`} className={`productFormButton`} onClick={() => router.push(fullFormURL)}><OpenInFull fontSize={`small`} /> Full</Button> : <></>}
+                        {compact ? <Button type={`button`} className={`productFormButton`} onClick={openFullForm}><OpenInFull fontSize={`small`} /> Full</Button> : <></>}
                         <Button type={`button`} className={`productFormButton`} onClick={clearProductForm}><ClearAll fontSize={`small`} /> Clear</Button>
+                        {product?.id && onCancelEdit ? <Button type={`button`} className={`productFormButton productCancelButton`} onClick={cancelProductEdit}><Close fontSize={`small`} /> Cancel</Button> : <></>}
                         <Button type={`submit`} disabled={saving} className={`productFormButton productSaveButton`}><Save fontSize={`small`} /> {saving ? `Saving` : `Save`}</Button>
                     </div>
                 </div>

@@ -9,12 +9,11 @@ export default function TableStatus({ title = ``, label = ``, color = tableStatu
     const rowStatus = (
         <Tooltip title={title} arrow>
             <div className={`rowStatus`}>
-                <span className={`statusDotWrap`}>
+                <span className={`statusDotWrap ${color == tableStatusGreen ? `pulsate circular` : ``}`}>
                     <Circle
                         className={`statusDot`}
                         style={{
                             color,
-                            filter: color == tableStatusGreen ? `drop-shadow(0 0 1.5px var(--green_neon))` : `none`,
                         }}
                     />
                 </span>

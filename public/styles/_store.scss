@@ -10,12 +10,22 @@
 }
 
 .productFormComponent {
+    --productFormAccent: var(--success);
+
     width: 100%;
     padding: 14px;
     color: white;
     background: var(--bg);
     border-radius: var(--borderRadius);
     border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+    &.productFormEditing {
+        --pulsateSize: 100%;
+        --pulsateHeight: 100%;
+        --pulsateColor: var(--productFormAccent);
+        background: color-mix(in srgb, var(--productFormAccent) 24%, var(--bg));
+        border-color: var(--productFormAccent);
+        box-shadow: 0 0 2px color-mix(in srgb, var(--productFormAccent) 24%, transparent);
+    }
     select {
         outline: none;
     }
@@ -127,6 +137,11 @@
 .productSaveButton {
     color: var(--navy) !important;
     background: var(--success) !important;
+}
+
+.productCancelButton {
+    color: white !important;
+    background: var(--error) !important;
 }
 
 .productRemoveButton {

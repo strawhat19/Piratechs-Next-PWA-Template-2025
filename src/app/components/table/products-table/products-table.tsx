@@ -64,7 +64,7 @@ const ProductImageCell = ({ row }: { row: Product }) => {
     return imageURL ? <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`productTableImage`} /> : <div className={`productTableImage productTableImageEmpty`}>{row?.name?.[0] || `P`}</div>;
 }
 
-const ProductActionsCell = ({ row, onEdit, onAddToCart }: { row: Product; onEdit: (product: Product) => void; onAddToCart: (product: Product) => void }) => {
+const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: { quickEditing?: boolean; row: Product; onEdit: (product: Product | null) => void; onAddToCart: (product: Product) => void }) => {
     const { user } = useContext<any>(StateGlobals);
     const canManageProducts = minRole(user?.role, Roles.Administrator);
     const isArchived = String(row?.status || ``).toLowerCase() == ProductStatus.Archived.toLowerCase();
@@ -98,31 +98,32 @@ const ProductActionsCell = ({ row, onEdit, onAddToCart }: { row: Product; onEdit
                     >
                         <AddShoppingCart fontSize={`small`} />
                     </Icon_Button>
-                ) : <></>}
+                ) : (isArchived ? <>
+                    <Icon_Button
+                        size={26}
+                        title={`Restore Product`}
+                        className={`actionIconButton restoreAction`}
+                        onClick={(event: any) => {
+                            event.stopPropagation();
+                            updateStatus(ProductStatus.Active);
+                        }}
+                    >
+                        <Restore fontSize={`small`} />
+                    </Icon_Button>
+                </> : <></>)}
                 {canManageProducts ? <>
                     <Icon_Button
                         size={26}
-                        title={`Edit Product`}
-                        className={`actionIconButton editAction`}
+                        title={quickEditing ? `Cancel Quick Edit` : `Quick Edit Product`}
+                        className={`actionIconButton editAction ${quickEditing ? `quickEditActive pulsate circular` : ``}`}
                         onClick={(event: any) => {
                             event.stopPropagation();
-                            onEdit(row);
+                            onEdit(quickEditing ? null : row);
                         }}
                     >
                         <Edit fontSize={`small`} />
                     </Icon_Button>
                     {isArchived ? <>
-                        <Icon_Button
-                            size={26}
-                            title={`Restore Product`}
-                            className={`actionIconButton restoreAction`}
-                            onClick={(event: any) => {
-                                event.stopPropagation();
-                                updateStatus(ProductStatus.Active);
-                            }}
-                        >
-                            <Restore fontSize={`small`} />
-                        </Icon_Button>
                         <Icon_Button
                             size={26}
                             title={`Delete Product`}
@@ -156,9 +157,12 @@ const ProductActionsCell = ({ row, onEdit, onAddToCart }: { row: Product; onEdit
 export default function ProductsTable({ 
     type = Types.Product, 
     onAddToCart = () => {}, 
+    onQuickEdit = undefined,
+    quickEditProduct = null,
 }: any) {
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const editProduct = (product: Product | null) => onQuickEdit ? onQuickEdit(product) : setSelectedProduct(product);
 
     const productColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87 },
@@ -197,7 +201,7 @@ export default function ProductsTable({
             field: `actions`,
             filterable: false,
             headerName: `Action(s)`,
-            renderCell: ({ row }: any) => <ProductActionsCell row={row} onAddToCart={onAddToCart} onEdit={setSelectedProduct} />,
+            renderCell: ({ row }: any) => <ProductActionsCell row={row} onAddToCart={onAddToCart} onEdit={editProduct} quickEditing={quickEditProduct?.id == row?.id} />,
         },
     ];
 
