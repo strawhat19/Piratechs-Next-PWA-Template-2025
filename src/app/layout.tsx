@@ -27,9 +27,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={`en`} className={`appContainer ${plusJakartaSans?.variable}`}>
-      <GlobalProvider>
-        {children}
-      </GlobalProvider>
+      <body className={`pageContainer noUser isStandardPlatform mobile`} suppressHydrationWarning>
+        <GlobalProvider>
+          {children}
+        </GlobalProvider>
+      </body>
     </html>
   );
 }

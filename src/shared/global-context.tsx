@@ -340,7 +340,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             const dbUsers = usersDBDocs.docs.map(d => new User(d.data()));
             const dbUser = dbUsers.find(u => u?.id == user?.id) ?? null;
             const selectedBoard = boards.find(b => b?.id === (user as any)?.boardID) ?? boards[0];
-            console.log(`User(s)`, dbUsers);
+            dev() && console.log(`User(s)`, dbUsers);
             setUsers(dbUsers);
             setUsersLoading(false);
             if (user != null) {

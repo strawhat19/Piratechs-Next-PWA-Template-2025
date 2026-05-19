@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './container.scss';
 
 import Logo from '../logo/logo';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import TopBar from '../topbar/topbar';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
@@ -14,6 +14,13 @@ import DialogComponent from '../dialog/dialog';
 import { ToastContainer } from 'react-toastify';
 import { constants, devEnv } from '@/shared/scripts/constants';
 import { getPageName, StateGlobals } from '@/shared/global-context';
+
+const BodyClassManager = ({ className }: { className: string }) => {
+    useEffect(() => {
+        document.body.className = className;
+    }, [className]);
+    return null;
+}
 
 export default function Container({ 
     children, 
@@ -30,9 +37,11 @@ export default function Container({
     const pathname = usePathname();
 
     let { user, loaded, isPWA, width } = useContext<any>(StateGlobals);
+    const bodyClassName = `${className} ${getPageName(pathname)} ${user == null ? `noUser` : `hasUser`} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`;
 
     return (
-        <body className={`${className} ${getPageName(pathname)} ${user == null ? `noUser` : `hasUser`} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`}>
+        <>
+            <BodyClassManager className={bodyClassName} />
             {topBarComponent != null && (
                 <TopBar>
                     {topBarComponent}
@@ -75,6 +84,6 @@ export default function Container({
                 />
             </main>
             {showPageFooter && <Footer />}
-        </body>
+        </>
     )
 }
