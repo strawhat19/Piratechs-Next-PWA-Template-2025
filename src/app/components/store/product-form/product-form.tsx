@@ -6,7 +6,7 @@ import { Roles } from '@/shared/types/types';
 import { Button, Dialog } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { Add, ClearAll, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
+import { Add, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
 import { ChangeEvent, FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { addProductToDatabase, storage, updateProductInDatabase } from '@/shared/server/firebase';
 import { capWords, customDate, getNextCollectionNumber, minRole, stringNoSpaces } from '@/shared/scripts/constants';
@@ -306,10 +306,22 @@ export default function ProductForm({
                         </div>
                     )}
                     <div className={`productFormActions`}>
-                        {compact ? <Button type={`button`} className={`productFormButton`} onClick={openFullForm}><OpenInFull fontSize={`small`} /> Full</Button> : <></>}
-                        <Button type={`button`} className={`productFormButton`} onClick={clearProductForm}><ClearAll fontSize={`small`} /> Clear</Button>
-                        {product?.id && onCancelEdit ? <Button type={`button`} className={`productFormButton productCancelButton`} onClick={cancelProductEdit}><Close fontSize={`small`} /> Cancel</Button> : <></>}
-                        <Button type={`submit`} disabled={saving} className={`productFormButton productSaveButton`}><Save fontSize={`small`} /> {saving ? `Saving` : `Save`}</Button>
+                        {compact ? (
+                            <Button type={`button`} className={`productFormButton`} onClick={openFullForm}>
+                                <OpenInFull fontSize={`small`} /> Full
+                            </Button>
+                        ) : <></>}
+                        {product == null ? (
+                            <Button disabled={saving || !requiredFieldsFilled() || formMatchesProduct()} type={`button`} className={`productFormButton productCancelButton ${(saving || !requiredFieldsFilled() || formMatchesProduct()) ? `disabled` : ``}`} onClick={clearProductForm}>
+                                <Close fontSize={`small`} /> Clear
+                            </Button>
+                        ) : <></>}
+                        {product?.id && onCancelEdit ? <Button type={`button`} className={`productFormButton productCancelButton`} onClick={cancelProductEdit}>
+                            <Close fontSize={`small`} /> Cancel
+                        </Button> : <></>}
+                        <Button type={`submit`} disabled={saving || !requiredFieldsFilled() || formMatchesProduct()} className={`productFormButton productSaveButton ${(saving || !requiredFieldsFilled() || formMatchesProduct()) ? `disabled` : ``}`}>
+                            <Save fontSize={`small`} /> {saving ? `Saving` : `Save`}
+                        </Button>
                     </div>
                 </div>
                 <div className={`productFormGrid`}>
@@ -317,7 +329,7 @@ export default function ProductForm({
                     <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
                     <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
                     <ProductField funsized={funsized} label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
-                    {product != null && <>
+                    {!funsized && product != null && <>
                         <ProductSelectField label={`Category`} name={`category`} value={form?.category} onChange={updateForm}>
                             {Object.values(ProductCategory).map(category => <option key={category} value={category}>{category}</option>)}
                         </ProductSelectField>

@@ -8,7 +8,7 @@ import { useContext, useState } from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
 import { Roles, Types } from '@/shared/types/types';
-import { minRole } from '@/shared/scripts/constants';
+import { constants, minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../../buttons/icon-button/icon-button';
@@ -46,8 +46,15 @@ const getProductStatusLabel = (product: Product, string: boolean = false) => {
 };
 
 const ProductImageCell = ({ row }: { row: Product }) => {
-    const imageURL = row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
-    return imageURL ? <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`productTableImage`} /> : <div className={`productTableImage productTableImageEmpty`}>{row?.name?.[0] || `P`}</div>;
+    let imageURL = row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
+    if (!imageURL) imageURL = constants.images.icons.logo;
+    return imageURL ? (
+        <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`productTableImage`} />
+    ) : (
+        <div className={`productTableImage productTableImageEmpty`}>
+            {row?.name?.[0] || `P`}
+        </div>
+    );
 }
 
 const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: { quickEditing?: boolean; row: Product; onEdit: (product: Product | null) => void; onAddToCart: (product: Product) => void }) => {
@@ -173,15 +180,16 @@ export default function ProductsTable({
             field: `imageURL`,
             filterable: false,
             headerName: `Image`,
+            headerClassName: `imageHeaderCell`,
             renderCell: ({ row }: any) => <ProductImageCell row={row} />,
         },
-        {
-            width: 85,
-            field: `stock`,
-            type: `number`,
-            headerName: `Stock`,
-            renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
-        },
+        // {
+        //     width: 85,
+        //     field: `stock`,
+        //     type: `number`,
+        //     headerName: `Stock`,
+        //     renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
+        // },
         { field: `category`, headerName: `Category`, width: 100 },
         { field: `created_by`, headerName: `Created By`, width: 175 },
         { field: `updated_by`, headerName: `Updated By`, width: 175 },

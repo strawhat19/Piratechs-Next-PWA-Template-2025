@@ -117,9 +117,9 @@
     grid-gap: 2px !important;
     justify-content: space-evenly;
     button {
-      height: 30px !important;
-      min-height: 30px !important;
-      max-height: 30px !important;
+      height: 27px !important;
+      min-height: 27px !important;
+      max-height: 27px !important;
     }
   }
 }
@@ -237,19 +237,36 @@
   }
 }
 
+.imageHeaderCell {
+  .MuiDataGrid-columnHeaderTitleContainer {
+    left: -2px;
+    position: relative;
+    justify-content: center;
+  }
+}
+
+.MuiDataGrid-cell {
+  &:has(img) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center !important;
+  }
+}
+
 .productTableImage {
   width: 30px;
   height: 30px;
   display: flex;
-  object-fit: cover;
-  overflow: hidden;
   color: white;
+  overflow: hidden;
   font-weight: 800;
+  object-fit: cover;
   align-items: center;
   justify-content: center;
   background: var(--navy);
   border-radius: var(--borderRadius);
-  border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+  // border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
 }
 
 .productTableImageEmpty {
