@@ -76,7 +76,7 @@ export default function OrdersTable({ type = `Order` }: any) {
             width: 105,
             sortable: false,
             filterable: false,
-            renderCell: ({ row, value }: any) => value || row?.stripe_receipt_url ? <Button size={`small`} href={value || row?.stripe_receipt_url} target={`_blank`} rel={`noreferrer`} startIcon={<ReceiptLong />}>Open</Button> : <></>,
+            renderCell: ({ row, value }: any) => value || row?.stripe_receipt_url ? <Button className={`orderActionButton`} size={`small`} href={value || row?.stripe_receipt_url} target={`_blank`} rel={`noreferrer`} startIcon={<ReceiptLong />}>Open</Button> : <></>,
         },
         // { field: `id`, headerName: `Firestore ID`, width: 260 },
         // { field: `stripe_order_id`, headerName: `Stripe Order ID`, width: 245 },
