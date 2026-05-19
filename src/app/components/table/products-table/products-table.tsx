@@ -182,10 +182,10 @@ export default function ProductsTable({
         {
             width: 150,
             minWidth: 150,
-            sortable: false,
             field: `actions`,
             filterable: false,
             headerName: `Action(s)`,
+            valueGetter: (_value: any, row: any) => getProductStatusLabel(row, true) || ``,
             renderCell: ({ row }: any) => <ProductActionsCell row={row} onAddToCart={onAddToCart} onEdit={editProduct} quickEditing={quickEditProduct?.id == row?.id} />,
         },
     ];

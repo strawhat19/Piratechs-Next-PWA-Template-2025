@@ -157,17 +157,17 @@ export default function UsersTable({
         { field: `updated`, headerName: `Updated`, width: 165, },
         { field: `email`, headerName: `Email`, width: 175 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
-        { 
+        {
             minWidth: 150,
-            field: `signedIn`, 
-            headerName: `Action(s)`, 
+            field: `signedIn`,
+            headerName: `Action(s)`,
             renderCell: ({ row, value }: any) => (
                 <ActionsCell
                     row={row}
                     value={value}
                     canManage={minRole(user?.role, Roles.Moderator)}
                 />
-            ), 
+            ),
         },
     ];
     if (!canViewUsers) return <Loader height={250} label={`${type}(s) Restricted`} />;

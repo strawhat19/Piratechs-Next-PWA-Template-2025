@@ -15,6 +15,7 @@ import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { Sync, ReceiptLong } from '@mui/icons-material';
 import { capWords, minRole } from '@/shared/scripts/constants';
+import Icon_Button from '../../buttons/icon-button/icon-button';
 
 const storeDollarSignColor = `var(--green_neon)`;
 
@@ -68,19 +69,41 @@ export default function OrdersTable({
     const orderColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87, },
         { field: `amountTotal`, headerName: `Total`, width: 75, renderCell: ({ row }: any) => <IconText dollarSign number={Number(row?.amountTotal || row?.amount || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} /> },
-        { field: `status`, headerName: `Status`, width: 85, renderCell: ({ value }: any) => <TableStatus label={value} color={getOrderStatusColor(value)} wrap /> },
         { field: `userEmail`, headerName: `Customer`, width: 175 },
         { field: `description`, headerName: `Description`, width: 230, flex: 1, valueGetter: (_value: any, row: any) => orderDescriptionLabel(row) },
         { field: `paymentMethod`, headerName: `Method`, width: 85, valueGetter: (_value: any, row: any) => paymentMethodLabel(row) },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
         { field: `created`, headerName: `Date`, width: 175, valueGetter: (_value: any, row: any) => formatDate(row?.stripe_created || row?.stripeCreated || row?.created) },
         {
-            field: `receiptURL`,
-            headerName: `Receipt`,
-            width: 105,
-            sortable: false,
+            width: 110,
+            minWidth: 110,
+            sortable: true,
+            field: `actions`,
             filterable: false,
-            renderCell: ({ row, value }: any) => value || row?.stripe_receipt_url ? <Button className={`orderActionButton`} size={`small`} href={value || row?.stripe_receipt_url} target={`_blank`} rel={`noreferrer`} startIcon={<ReceiptLong />}>Open</Button> : <></>,
+            headerName: `Action(s)`,
+            valueGetter: (_value: any, row: any) => row?.status || ``,
+            renderCell: ({ row }: any) => (
+                <div className={`actionsCell orderActionsCell`}>
+                    <TableStatus label={row?.status} color={getOrderStatusColor(row?.status)} title={row?.status} />
+                    {row?.stripe_receipt_url ? (
+                        <Icon_Button
+                            size={26}
+                            target={`_blank`}
+                            title={`View Receipt`}
+                            url={row?.stripe_receipt_url}
+                            className={`actionIconButton archiveAction`}
+                            onClick={(event: any) => {
+                                event.stopPropagation();
+                            }}
+                        >
+                            <ReceiptLong fontSize={`small`} />
+                        </Icon_Button>
+                        // <Button className={`orderActionButton`} size={`small`} href={row?.stripe_receipt_url} target={`_blank`} rel={`noreferrer`} startIcon={<ReceiptLong />}>
+                        //     Open
+                        // </Button>
+                    ) : <></>}
+                </div>
+            ),
         },
         // { field: `id`, headerName: `Firestore ID`, width: 260 },
         // { field: `stripe_order_id`, headerName: `Stripe Order ID`, width: 245 },
