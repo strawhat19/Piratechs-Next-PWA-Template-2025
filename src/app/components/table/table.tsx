@@ -2,9 +2,10 @@
 
 import { useContext } from 'react';
 import Loader from '../loaders/loader';
+import { Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { GridToolbar } from '@mui/x-data-grid/internals';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const paginationModel = { page: 0, pageSize: 12 };
 
@@ -44,6 +45,7 @@ export default function Table({
   toolbar = true,
   title = `Table`,
   search_delay = 0,
+  type = Types.Data,
   selectable = true,
   density = `compact`,
   rows = default_rows, 
@@ -53,12 +55,14 @@ export default function Table({
   pagination_options = paginationModel, 
 }: any) {
   const { loaded } = useContext<any>(StateGlobals);
+  const rowCount = rows?.length || 0;
+  const emptyRowsLabel = `(${rowCount}) ${type}(s)`;
   return (
       <div className={`table ${className}`}>
         {loaded ? <>
           {toolbar ? <>
             <div className={`table_header`}>
-              <span style={{ color: `var(--links)`, fontWeight: 700, marginRight: 4, marginLeft: 2 }}>({rows?.length})</span> {title}
+              <span style={{ color: `var(--links)`, fontWeight: 700, marginRight: 4, marginLeft: 2 }}>({rowCount})</span> {title}
             </div>
           </> : <></>}
           {/* <MUI> */}
@@ -69,6 +73,7 @@ export default function Table({
               showToolbar={toolbar}
               checkboxSelection={selectable}
               slots={{ toolbar: GridToolbar, }}
+              localeText={{ noRowsLabel: emptyRowsLabel }}
               pageSizeOptions={page_size_options}
               initialState={{ pagination: { paginationModel: pagination_options } }}
               slotProps={{ toolbar: { showQuickFilter: search, quickFilterProps: { debounceMs: search_delay, }, }, }}

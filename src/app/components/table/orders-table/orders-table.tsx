@@ -5,10 +5,10 @@ import { Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
 import { getIdToken } from 'firebase/auth';
-import { Roles } from '@/shared/types/types';
 import { GridColDef } from '@mui/x-data-grid';
 import { auth } from '@/shared/server/firebase';
 import IconText from '../../icon-text/icon-text';
+import { Roles, Types } from '@/shared/types/types';
 import { Order } from '@/shared/types/models/Order';
 import { useContext, useMemo, useState } from 'react';
 import TableStatus from '../table-status/table-status';
@@ -39,7 +39,9 @@ const getOrderStatusColor = (status?: string) => {
     return `rgba(255,255,255,0.35)`;
 }
 
-export default function OrdersTable({ type = `Order` }: any) {
+export default function OrdersTable({
+    type = Types.Order,
+}: any) {
     const { user, orders = [], ordersLoading = false } = useContext<any>(StateGlobals);
     const [syncing, setSyncing] = useState(false);
     const canManageOrders = minRole(user?.role, Roles.Administrator);
@@ -93,7 +95,7 @@ export default function OrdersTable({ type = `Order` }: any) {
             {canManageOrders ? <div className={`tableControls`} style={{ display: `flex`, justifyContent: `flex-end`, marginBottom: 8 }}>
                 <Button size={`small`} variant={`outlined`} disabled={syncing} onClick={syncStripeOrders} startIcon={<Sync />}>{syncing ? `Syncing` : `Sync Stripe`}</Button>
             </div> : <></>}
-            <Table title={`${type}(s)`} rows={visibleOrders} columns={orderColumns} className={`ordersTableComponent`} selectable={canManageOrders} pagination_options={{ page: 0, pageSize: 10 }} />
+            <Table type={type} title={`${type}(s)`} rows={visibleOrders} columns={orderColumns} className={`ordersTableComponent`} selectable={canManageOrders} pagination_options={{ page: 0, pageSize: 10 }} />
         </div>
     );
 }

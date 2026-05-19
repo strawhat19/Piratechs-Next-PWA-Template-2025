@@ -3,9 +3,9 @@ import Menu from '../../menu/menu';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
-import { Roles } from '@/shared/types/types';
 import { GridColDef } from '@mui/x-data-grid';
 import { JSX, useContext, useState } from 'react';
+import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
@@ -135,7 +135,7 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
 };
 
 export default function UsersTable({
-    type = `User`,
+    type = Types.User,
 }: any) {
     const { user, users } = useContext<any>(StateGlobals);
     const canViewUsers = minRole(user?.role, Roles.Editor);
@@ -173,7 +173,7 @@ export default function UsersTable({
     if (!canViewUsers) return <Loader height={250} label={`${type}(s) Restricted`} />;
     return (
         users?.length > 0 ? <>
-            <Table title={`${type}(s)`} rows={users} columns={user_columns} />
+            <Table type={type} title={`${type}(s)`} rows={users} columns={user_columns} />
         </> : <Loader height={250} label={`${type}(s) Loading`} />
     )
 }

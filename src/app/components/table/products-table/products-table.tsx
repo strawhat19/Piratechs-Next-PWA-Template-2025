@@ -4,6 +4,7 @@ import Table from '../table';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
+import { Types } from '@/shared/types/types';
 import { GridColDef } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
 import { AddShoppingCart } from '@mui/icons-material';
@@ -47,7 +48,10 @@ const ProductActionsCell = ({ row, onAddToCart }: { row: Product; onAddToCart: (
     );
 };
 
-export default function ProductsTable({ onAddToCart = () => {} }: { onAddToCart?: (product: Product) => void }) {
+export default function ProductsTable({ 
+    type = Types.Product, 
+    onAddToCart = () => {}, 
+}: any) {
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
 
     const productColumns: GridColDef[] = [
@@ -84,8 +88,9 @@ export default function ProductsTable({ onAddToCart = () => {} }: { onAddToCart?
 
     return (
         <Table
+            type={type}
             rows={products}
-            title={`Product(s)`}
+            title={`${type}(s)`}
             columns={productColumns}
             className={`productsTableComponent`}
         />
