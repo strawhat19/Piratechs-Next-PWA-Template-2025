@@ -10,11 +10,11 @@ import { GridColDef } from '@mui/x-data-grid';
 import { auth } from '@/shared/server/firebase';
 import IconText from '../../icon-text/icon-text';
 import { Order } from '@/shared/types/models/Order';
-import { minRole } from '@/shared/scripts/constants';
 import { useContext, useMemo, useState } from 'react';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { Sync, ReceiptLong } from '@mui/icons-material';
+import { capWords, minRole } from '@/shared/scripts/constants';
 
 const storeDollarSignColor = `var(--green_neon)`;
 
@@ -26,7 +26,7 @@ const formatDate = (date?: string | number | Date) => {
 
 const paymentMethodLabel = (order: Order) => {
     const method = order?.paymentMethod || {};
-    const brand = method?.brand ? method?.brand?.toUpperCase() : method?.type || `Payment`;
+    const brand = method?.brand ? method?.brand?.toUpperCase() : capWords(method?.type || `Payment`);
     return method?.last4 ? `${brand} **** ${method.last4}` : brand;
 };
 
