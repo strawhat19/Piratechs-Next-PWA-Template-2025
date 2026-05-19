@@ -67,11 +67,11 @@ export default function OrdersTable({
     };
     const orderColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87, },
-        { field: `amountTotal`, headerName: `Total`, width: 105, renderCell: ({ row }: any) => <IconText dollarSign number={Number(row?.amountTotal || row?.amount || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} /> },
-        { field: `status`, headerName: `Status`, width: 125, renderCell: ({ value }: any) => <TableStatus label={value} color={getOrderStatusColor(value)} wrap /> },
-        { field: `userEmail`, headerName: `Customer`, width: 210 },
+        { field: `amountTotal`, headerName: `Total`, width: 75, renderCell: ({ row }: any) => <IconText dollarSign number={Number(row?.amountTotal || row?.amount || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} /> },
+        { field: `status`, headerName: `Status`, width: 85, renderCell: ({ value }: any) => <TableStatus label={value} color={getOrderStatusColor(value)} wrap /> },
+        { field: `userEmail`, headerName: `Customer`, width: 175 },
         { field: `description`, headerName: `Description`, width: 230, flex: 1, valueGetter: (_value: any, row: any) => orderDescriptionLabel(row) },
-        { field: `paymentMethod`, headerName: `Method`, width: 145, valueGetter: (_value: any, row: any) => paymentMethodLabel(row) },
+        { field: `paymentMethod`, headerName: `Method`, width: 85, valueGetter: (_value: any, row: any) => paymentMethodLabel(row) },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
         { field: `created`, headerName: `Date`, width: 175, valueGetter: (_value: any, row: any) => formatDate(row?.stripe_created || row?.stripeCreated || row?.created) },
         {

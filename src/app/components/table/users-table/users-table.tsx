@@ -160,7 +160,7 @@ export default function UsersTable({
         { 
             minWidth: 150,
             field: `signedIn`, 
-            headerName: `Actions`, 
+            headerName: `Action(s)`, 
             renderCell: ({ row, value }: any) => (
                 <ActionsCell
                     row={row}

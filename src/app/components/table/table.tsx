@@ -4,15 +4,15 @@ import { useContext } from 'react';
 import Loader from '../loaders/loader';
 import { Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
-import { GridToolbar } from '@mui/x-data-grid/internals';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridToolbar } from '@mui/x-data-grid/internals';
 
 const paginationModel = { page: 0, pageSize: 12 };
 
 const default_columns: GridColDef[] = [
   { field: `id`, headerName: `ID`, width: 87 },
-  { field: `firstName`, headerName: `First Name`, width: 130 },
   { field: `lastName`, headerName: `Last Name`, width: 130 },
+  { field: `firstName`, headerName: `First Name`, width: 130 },
   { field: `age`, type: `number`, headerName: `Age`, width: 90, },
   {
     width: 160,
@@ -73,8 +73,8 @@ export default function Table({
               showToolbar={toolbar}
               checkboxSelection={selectable}
               slots={{ toolbar: GridToolbar, }}
-              localeText={{ noRowsLabel: emptyRowsLabel }}
               pageSizeOptions={page_size_options}
+              localeText={{ noRowsLabel: emptyRowsLabel }}
               initialState={{ pagination: { paginationModel: pagination_options } }}
               slotProps={{ toolbar: { showQuickFilter: search, quickFilterProps: { debounceMs: search_delay, }, }, }}
               sx={{ 

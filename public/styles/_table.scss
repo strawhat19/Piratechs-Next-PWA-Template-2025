@@ -50,7 +50,6 @@
   .statusText {
     color: white;
     font-size: 12px;
-    min-width: 45px;
   }
 
   .actions {
@@ -72,10 +71,6 @@
 
   &.productActionsCell {
     gap: 9px;
-
-    .statusText {
-      min-width: 68px;
-    }
 
     .actions {
       margin-left: auto;

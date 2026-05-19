@@ -185,8 +185,10 @@ export default function ProductForm({
         if (!form?.name?.trim()) return toast.error(`Product Name Required`);
         setSaving(true);
         try {
-            const price = dollarsToCents(form?.price);
+            const editing = product != null;
             const stock = Number(form?.stock || 0);
+            const price = dollarsToCents(form?.price);
+            const username = (user != null ? user?.email : Roles.Guest);
             const number = Number(form?.number || product?.number || nextProductNumber);
             const productDraft = new Product({
                 ...product,
@@ -196,6 +198,7 @@ export default function ProductForm({
                 sku: form?.sku,
                 name: form?.name,
                 brand: form?.brand,
+                updated_by: username,
                 status: form?.status,
                 vendor: form?.vendor,
                 taxable: form?.taxable,
@@ -211,10 +214,9 @@ export default function ProductForm({
                 trackInventory: form?.trackInventory,
                 requiresShipping: form?.requiresShipping,
                 shortDescription: form?.shortDescription,
+                ...(editing ? {} : { created_by: username, }),
                 compareAtPrice: dollarsToCents(form?.compareAtPrice),
-                updated_by: (user != null ? user?.email : Roles.Guest),
                 lowStockThreshold: Number(form?.lowStockThreshold || 5),
-                created_by: product?.created_by ?? (user != null ? user?.email : Roles.Guest),
             });
             const urlImages = getImageObjects(productDraft, parseList(form?.imageURLs));
             const uploadedImages = await uploadProductImages(files, productDraft, urlImages?.length);
@@ -268,13 +270,13 @@ export default function ProductForm({
                     <ProductField label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
                     <ProductField label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
                     <ProductField label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
-                    <ProductSelectField label={`Category`} name={`category`} value={form?.category} onChange={updateForm}>
-                        {Object.values(ProductCategory).map(category => <option key={category} value={category}>{category}</option>)}
-                    </ProductSelectField>
-                    <ProductSelectField label={`Type`} name={`productType`} value={form?.productType} onChange={updateForm}>
-                        {Object.values(ProductType).map(type => <option key={type} value={type}>{type}</option>)}
-                    </ProductSelectField>
-                    {product != null && (
+                    {product != null && <>
+                        <ProductSelectField label={`Category`} name={`category`} value={form?.category} onChange={updateForm}>
+                            {Object.values(ProductCategory).map(category => <option key={category} value={category}>{category}</option>)}
+                        </ProductSelectField>
+                        <ProductSelectField label={`Type`} name={`productType`} value={form?.productType} onChange={updateForm}>
+                            {Object.values(ProductType).map(type => <option key={type} value={type}>{type}</option>)}
+                        </ProductSelectField>
                         <ProductSelectField label={`Status`} name={`status`} value={form?.status} onChange={updateForm}>
                             <option value={ProductStatus.Active}>
                                 {ProductStatus.Active}
@@ -283,7 +285,7 @@ export default function ProductForm({
                                 {ProductStatus.Archived}
                             </option>
                         </ProductSelectField>
-                    )}
+                    </>}
                     <ProductField label={`Image(s)`} name={`imageURLs`} type={`upload`} value={form?.imageURLs} onChange={updateForm} showInput={true} />
                     {/* <div>
                         <span className={`productFieldLabelText`}>Image(s)</span>

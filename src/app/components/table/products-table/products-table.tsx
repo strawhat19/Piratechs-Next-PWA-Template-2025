@@ -19,24 +19,35 @@ import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/ser
 
 const storeDollarSignColor = `var(--green_neon)`;
 
-const getProductStatus = (product: Product) => {
-    const status = String(product?.status || ``).toLowerCase();
+const getProductStatus = (product: Product, string: boolean = false) => {
     const stock = Number(product?.stock || 0);
-    if (status.includes(`out`) || status.includes(`archived`) || stock <= 0) {
+    const status = String(product?.status || ``).toLowerCase();
+    const err = stock <= 0;
+    const success = status?.includes(`active`) && stock > 0;
+    // const unavailable = (status?.includes(`out`) || status?.includes(`archived`));
+    if (err) {
         return {
-            label: `Unavailable`,
             color: `red`,
+            label: stock <= 0 ? (
+                string == true ? ProductStatus.OutOfStock : stock
+            ) : (status?.includes(`archived`) ? (
+                string == true ? ProductStatus.Archived : stock
+            ) : ProductStatus.Draft),
         };
     }
-    if (status.includes(`active`) && stock > 0) {
+    if (success) {
         return {
-            label: `Active`,
             color: `var(--green_neon)`,
+            label: stock > 0 ? (string == true ? ProductStatus.Active : stock) : ProductStatus.Active,
         };
     }
     return {
-        label: `Pending`,
-        color: `rgba(255,255,255,0.35)`,
+        color: `rgba(255, 255, 255, 0.35)`,
+        label: stock <= 0 ? (
+            string == true ? ProductStatus.OutOfStock : stock
+        ) : (status?.includes(`archived`) ? (
+            string == true ? ProductStatus.Archived : stock
+        ) : ProductStatus.Pending),
     };
 };
 
@@ -44,8 +55,8 @@ const getProductStatusColor = (product: Product) => {
     return getProductStatus(product)?.color;
 };
 
-const getProductStatusLabel = (product: Product) => {
-    return getProductStatus(product)?.label;
+const getProductStatusLabel = (product: Product, string: boolean = false) => {
+    return getProductStatus(product, string)?.label;
 };
 
 const ProductImageCell = ({ row }: { row: Product }) => {
@@ -71,7 +82,7 @@ const ProductActionsCell = ({ row, onEdit, onAddToCart }: { row: Product; onEdit
 
     return (
         <div className={`actionsCell productActionsCell`}>
-            <TableStatus label={statusColor == `red` ? `${row?.status} (${getProductStatusLabel(row)})` : row?.status} color={statusColor} />
+            <TableStatus label={getProductStatusLabel(row)} color={statusColor} title={getProductStatusLabel(row, true)} />
             <div className={`actions`}>
                 {!isArchived ? (
                     <Icon_Button
@@ -152,23 +163,19 @@ export default function ProductsTable({
     const productColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87 },
         {
+            width: 105,
+            field: `price`,
+            headerName: `Price`,
+            renderCell: ({ value }: any) => <IconText dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />,
+        },
+        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 300, },
+        {
             width: 70,
             sortable: false,
             field: `imageURL`,
             filterable: false,
             headerName: `Image`,
             renderCell: ({ row }: any) => <ProductImageCell row={row} />,
-        },
-        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 300, },
-        { field: `sku`, headerName: `SKU`, width: 130 },
-        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
-        { field: `productType`, headerName: `Type`, width: 120 },
-        { field: `category`, headerName: `Category`, width: 145 },
-        {
-            width: 105,
-            field: `price`,
-            headerName: `Price`,
-            renderCell: ({ value }: any) => <IconText dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />,
         },
         {
             width: 85,
@@ -177,9 +184,15 @@ export default function ProductsTable({
             headerName: `Stock`,
             renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
         },
+        { field: `category`, headerName: `Category`, width: 100 },
+        { field: `created_by`, headerName: `Created By`, width: 175 },
+        { field: `updated_by`, headerName: `Updated By`, width: 175 },
+        // { field: `sku`, headerName: `SKU`, width: 130 },
+        // { field: `productType`, headerName: `Type`, width: 120 },
+        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
         {
-            width: 250,
-            minWidth: 250,
+            width: 150,
+            minWidth: 150,
             sortable: false,
             field: `actions`,
             filterable: false,

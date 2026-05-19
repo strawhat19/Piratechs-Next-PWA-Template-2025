@@ -44,9 +44,9 @@ export const auth = getAuth(firebaseApp);
 setPersistence(auth, browserLocalPersistence);
 
 export const usersAPI = apiRoutes.users.url;
-export const boardsAPI = apiRoutes.boards.url;
 export const listsAPI = apiRoutes.lists.url;
 export const itemsAPI = apiRoutes.items.url;
+export const boardsAPI = apiRoutes.boards.url;
 export const productsAPI = apiRoutes.products.url;
 
 export const userConverter = {
