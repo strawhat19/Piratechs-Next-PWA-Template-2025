@@ -1,12 +1,12 @@
 'use client';
 
-import { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import type { Stripe } from '@stripe/stripe-js';
 import { Lock } from '@mui/icons-material';
+import type { Stripe } from '@stripe/stripe-js';
 import type { CartItem } from './use-store-cart';
 import { StateGlobals } from '@/shared/global-context';
+import { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { stripeAdvancedFraudSignalsEnabled, stripePaymentsDisabledMessage, stripePaymentsEnabled, stripePublishableKey, stripePublishableKeyMissingMessage } from '@/shared/scripts/payments';
 
 let stripePromise: Promise<Stripe | null> | null = null;

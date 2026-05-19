@@ -1,9 +1,9 @@
 'use client';
 
-import { useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import type { Product } from '@/shared/types/models/Product';
 import { StateGlobals } from '@/shared/global-context';
+import type { Product } from '@/shared/types/models/Product';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 
 export type CartItem = Product & {

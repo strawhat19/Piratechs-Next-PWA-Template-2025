@@ -2,12 +2,12 @@ import { User } from '../types/models/User';
 import { List } from '../types/models/List';
 import { Item } from '../types/models/Item';
 import { Task } from '../types/models/Task';
-import { Order } from '../types/models/Order';
 import { initializeApp } from 'firebase/app';
-import { getStorage } from 'firebase/storage';
+import { Order } from '../types/models/Order';
 import { Board } from '../types/models/Board';
-import { Product } from '../types/models/Product';
+import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
+import { Product } from '../types/models/Product';
 import { apiRoutes, customDate, getIDParts, logToast } from '../scripts/constants';
 import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
 

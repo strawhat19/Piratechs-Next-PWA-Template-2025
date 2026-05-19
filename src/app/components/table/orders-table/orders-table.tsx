@@ -1,18 +1,18 @@
 'use client';
 
 import Table from '../table';
-import { toast } from 'react-toastify';
-import { useContext, useMemo, useState } from 'react';
-import Loader from '../../loaders/loader';
 import { Button } from '@mui/material';
+import { toast } from 'react-toastify';
+import Loader from '../../loaders/loader';
 import { getIdToken } from 'firebase/auth';
 import { Roles } from '@/shared/types/types';
 import { GridColDef } from '@mui/x-data-grid';
-import { Sync, ReceiptLong } from '@mui/icons-material';
-import { minRole } from '@/shared/scripts/constants';
-import { StateGlobals } from '@/shared/global-context';
 import { auth } from '@/shared/server/firebase';
 import { Order } from '@/shared/types/models/Order';
+import { minRole } from '@/shared/scripts/constants';
+import { useContext, useMemo, useState } from 'react';
+import { StateGlobals } from '@/shared/global-context';
+import { Sync, ReceiptLong } from '@mui/icons-material';
 
 const formatMoney = (amount = 0, currency = `usd`) => new Intl.NumberFormat(`en-US`, { style: `currency`, currency: currency?.toUpperCase() || `USD` }).format(Number(amount || 0) / 100);
 
@@ -24,7 +24,7 @@ const formatDate = (date?: string | number | Date) => {
 
 const paymentMethodLabel = (order: Order) => {
     const method = order?.paymentMethod || {};
-    const brand = method?.brand ? method.brand.toUpperCase() : method?.type || `Payment`;
+    const brand = method?.brand ? method?.brand?.toUpperCase() : method?.type || `Payment`;
     return method?.last4 ? `${brand} **** ${method.last4}` : brand;
 };
 
@@ -34,14 +34,14 @@ export default function OrdersTable({ type = `Order` }: any) {
     const canManageOrders = minRole(user?.role, Roles.Editor);
     const visibleOrders = useMemo(() => {
         if (!canManageOrders && !user) return [];
-        const userOrders = canManageOrders ? orders : orders.filter((order: Order) => Boolean(order?.userID) && [user?.id, user?.uid].includes(order.userID) || Boolean(order?.userEmail && user?.email && order.userEmail == user.email));
+        const userOrders = canManageOrders ? orders : orders.filter((order: Order) => Boolean(order?.userID) && [user?.id, user?.uid].includes(order?.userID) || Boolean(order?.userEmail && user?.email && order?.userEmail == user?.email));
         return userOrders.map((order: Order, index: number) => ({ ...order, tableID: order?.id || order?.stripePaymentIntentID || `order-${index}` }));
     }, [canManageOrders, orders, user?.email, user?.id, user?.uid]);
     const syncStripeOrders = async () => {
         if (!canManageOrders) return toast.warn(`Editor access is required to sync Stripe orders.`);
         try {
             setSyncing(true);
-            const token = auth?.currentUser ? await getIdToken(auth.currentUser) : user?.uid;
+            const token = auth?.currentUser ? await getIdToken(auth?.currentUser) : user?.uid;
             const response = await fetch(`/api/store/stripe/orders/sync`, { method: `POST`, headers: { Authorization: `Bearer ${token}`, [`Content-Type`]: `application/json` }, body: JSON.stringify({ limit: 50 }) });
             const data = await response.json();
             if (!response.ok || data?.ok == false) throw new Error(data?.message || `Unable to sync Stripe orders.`);

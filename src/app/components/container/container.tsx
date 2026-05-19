@@ -5,8 +5,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import './container.scss';
 
 import Logo from '../logo/logo';
-import { useContext, useEffect } from 'react';
 import TopBar from '../topbar/topbar';
+import { useContext, useEffect } from 'react';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
 import { usePathname } from 'next/navigation';

@@ -1,6 +1,6 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, Tables } from './firebase';
 import { customDate } from '../scripts/constants';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Order, OrderLineItem, OrderStatus, PaymentMethodSummary } from '../types/models/Order';
 
 export type StripeOrderCustomer = {

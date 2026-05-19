@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { tokenRequired } from '@/shared/scripts/constants';
-import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 import { getStripeServerKey, syncRecentStripeOrders } from '@/shared/server/stripe-orders';
+import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 
 type SyncOrdersRequest = {
     limit?: number;

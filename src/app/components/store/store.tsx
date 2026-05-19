@@ -6,9 +6,9 @@ import Loader from '../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 import { Roles } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
-import { constants, minRole } from '@/shared/scripts/constants';
 import UsersTable from '../table/users-table/users-table';
 import OrdersTable from '../table/orders-table/orders-table';
+import { constants, minRole } from '@/shared/scripts/constants';
 import ProductsTable from '../table/products-table/products-table';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 
