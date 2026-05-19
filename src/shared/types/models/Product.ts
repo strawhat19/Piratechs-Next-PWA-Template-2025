@@ -17,13 +17,85 @@ export enum ProductType {
   Subscription = `Subscription`,
 }
 
+export interface ProductOption {
+  id?: number | string;
+  product_id?: number | string;
+  productID?: number | string;
+  name: string;
+  position?: number;
+  values: string[];
+}
+
+export interface ProductImage {
+  id?: number | string;
+  alt?: string | null;
+  position?: number;
+  product_id?: number | string;
+  productID?: number | string;
+  created_at?: string;
+  createdAt?: string;
+  updated_at?: string;
+  updatedAt?: string;
+  admin_graphql_api_id?: string;
+  adminGraphqlApiID?: string;
+  width?: number;
+  height?: number;
+  src?: string;
+  variant_ids?: Array<number | string>;
+  variantIDs?: Array<number | string>;
+}
+
+export interface ProductVariant {
+  id?: number | string;
+  title?: string;
+  option1?: string;
+  option2?: string;
+  option3?: string;
+  sku?: string;
+  requires_shipping?: boolean;
+  requiresShipping?: boolean;
+  taxable?: boolean;
+  featured_image?: ProductImage;
+  featuredImage?: ProductImage;
+  available?: boolean;
+  price?: string | number;
+  priceCents?: number;
+  grams?: number;
+  compare_at_price?: string | number | null;
+  compareAtPrice?: string | number | null;
+  inventory_quantity?: number;
+  inventoryQuantity?: number;
+  position?: number;
+  product_id?: number | string;
+  productID?: number | string;
+  created_at?: string;
+  createdAt?: string;
+  updated_at?: string;
+  updatedAt?: string;
+}
+
+const toSlug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, `-`).replace(/^-|-$/g, ``);
+const toPriceCents = (value: string | number | null | undefined, fallback = 0) => {
+  if (value == undefined || value == null || value == ``) return fallback;
+  if (typeof value == `number`) return Number.isInteger(value) ? value : Math.round(value * 100);
+  const cleanValue = value.replace(/[^0-9.-]/g, ``);
+  if (cleanValue == ``) return fallback;
+  return cleanValue.includes(`.`) ? Math.round(Number(cleanValue) * 100) : Number(cleanValue);
+}
+const normalizeTags = (tags?: string[] | string) => Array.isArray(tags) ? tags : String(tags || ``).split(`,`).map(tag => tag.trim()).filter(Boolean);
+const sumInventory = (variants: ProductVariant[] = []) => variants.reduce((total, variant) => total + Number(variant.inventoryQuantity ?? variant.inventory_quantity ?? 0), 0);
+
 export class Product extends Data {
+  [key: string]: any;
+
   sku: string = ``;
   slug: string = ``;
+  label?: string = ``;
   imageURL?: string = ``;
   imageURLs?: string[] = [];
   description?: string = ``;
   shortDescription?: string = ``;
+  bodyHTML?: string = ``;
 
   price: number = 0;
   compareAtPrice?: number = 0;
@@ -54,18 +126,85 @@ export class Product extends Data {
   stripePriceID?: string = ``;
   stripeProductID?: string = ``;
 
+  shopifyID?: number | string;
+  adminGraphqlApiID?: string = ``;
+  handle?: string = ``;
+  publishedAt?: string = ``;
+  templateSuffix?: string | null = ``;
+  publishedScope?: string = ``;
+  options?: ProductOption[] = [];
+  images?: ProductImage[] = [];
+  image?: ProductImage;
+  altImage?: ProductImage;
+  variants?: ProductVariant[] = [];
+  variantIDs?: Array<number | string> = [];
+  variantID?: number | string;
+  variant?: ProductVariant;
+  selectedOptions?: Record<string, string> = {};
+  inventoryQuantity?: number = 0;
+  totalInventory?: number = 0;
+  available?: boolean = false;
+  requiresShipping?: boolean = false;
+  grams?: number = 0;
+  cartID?: string = ``;
+  rawShopify?: Record<string, any> = {};
+
   type: Types = Types.Product;
   productType: ProductType | string = ProductType.Digital;
   status: ProductStatus | string = ProductStatus.Draft;
   dataSource?: DataSources | string = DataSources.firebase;
   metadata?: Record<string, string | number | boolean> = {};
 
-  constructor(data: Partial<Product>) {
-    super({ ...data, type: Types.Product });
-    Object.assign(this, data);
+  constructor(data: Partial<Product> = {}) {
+    const productData = data as Partial<Product> & Record<string, any>;
+    const productName = productData.name || productData.title;
+    super({ ...productData, name: productName, type: Types.Product, created: productData.created ?? productData.created_at, updated: productData.updated ?? productData.updated_at });
+    Object.assign(this, productData);
+
+    const variants = Array.isArray(this.variants) ? this.variants : [];
+    const firstVariant = this.variant || variants[0];
+    const images = Array.isArray(this.images) ? this.images : [];
+    const firstImage = this.image || images[0];
+
+    if (isValid(productData.id) && !isValid(this.shopifyID) && typeof productData.id == `number`) this.shopifyID = productData.id;
+    if (isValid(productData.title) && !isValid(this.name)) this.name = String(productData.title);
+    if (isValid(productData.body_html) && !isValid(this.description)) this.description = String(productData.body_html);
+    if (isValid(productData.body_html) && !isValid(this.bodyHTML)) this.bodyHTML = String(productData.body_html);
+    if (isValid(productData.product_type)) this.productType = String(productData.product_type);
+    if (isValid(productData.product_type) && !isValid(this.category)) this.category = String(productData.product_type);
+    if (isValid(productData.status)) this.status = capWords(String(productData.status));
+    if (isValid(productData.handle) && !isValid(this.handle)) this.handle = String(productData.handle);
+    if (isValid(productData.handle) && !isValid(this.slug)) this.slug = String(productData.handle);
+    if (isValid(productData.admin_graphql_api_id) && !isValid(this.adminGraphqlApiID)) this.adminGraphqlApiID = String(productData.admin_graphql_api_id);
+    if (isValid(productData.published_at) && !isValid(this.publishedAt)) this.publishedAt = String(productData.published_at);
+    if (productData.template_suffix !== undefined && !isValid(this.templateSuffix)) this.templateSuffix = productData.template_suffix;
+    if (isValid(productData.published_scope) && !isValid(this.publishedScope)) this.publishedScope = productData.published_scope;
+    if (isValid(productData.created_at)) this.created = productData.created_at;
+    if (isValid(productData.updated_at)) this.updated = productData.updated_at;
+    if (!isValid(this.tags)) this.tags = normalizeTags(productData.tags);
+    if (!isValid(this.label)) this.label = this.name || productData.title || this.sku;
+    if (!isValid(this.image) && firstImage) this.image = firstImage;
+    if (!isValid(this.imageURL) && isValid(firstImage?.src)) this.imageURL = firstImage?.src;
+    if (!isValid(this.imageURLs) && images.length > 0) this.imageURLs = images.map(image => image.src || ``).filter(Boolean);
+    if (!isValid(this.variant) && firstVariant) this.variant = firstVariant;
+    if (!isValid(this.variantID) && isValid(firstVariant?.id)) this.variantID = firstVariant?.id;
+    if (!isValid(this.variantIDs) && variants.length > 0) this.variantIDs = variants.map(variant => variant.id || ``).filter(Boolean);
+    if (!isValid(this.sku) && isValid(firstVariant?.sku)) this.sku = firstVariant?.sku || ``;
+    if (!isValid(productData.price) && isValid(firstVariant?.price)) this.price = toPriceCents(firstVariant?.price, this.price);
+    else this.price = toPriceCents(this.price, 0);
+    if (!isValid(productData.compareAtPrice) && isValid(firstVariant?.compare_at_price)) this.compareAtPrice = toPriceCents(firstVariant?.compare_at_price, this.compareAtPrice || 0);
+    else this.compareAtPrice = toPriceCents(this.compareAtPrice, 0);
+    if (variants.length > 0) {
+      this.totalInventory = sumInventory(variants);
+      if (!isValid(productData.stock)) this.stock = this.totalInventory;
+      if (productData.inventoryQuantity == undefined && productData.inventory_quantity == undefined) this.inventoryQuantity = this.totalInventory;
+    }
+    if (productData.available == undefined) this.available = this.stock > 0 || variants.some(variant => variant.available == true);
+    if (productData.requiresShipping == undefined && productData.requires_shipping == undefined && firstVariant?.requires_shipping !== undefined) this.requiresShipping = firstVariant.requires_shipping;
+    if (productData.grams == undefined && isValid(firstVariant?.grams)) this.grams = firstVariant?.grams;
 
     if (isValid(this.name) && !isValid(this.slug)) {
-      this.slug = this.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, `-`).replace(/^-|-$/g, ``);
+      this.slug = toSlug(this.name);
     }
 
     if (isValid(this.name) && !isValid(this.sku)) {

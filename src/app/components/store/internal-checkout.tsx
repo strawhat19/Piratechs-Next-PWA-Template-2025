@@ -3,13 +3,24 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import type { Stripe } from '@stripe/stripe-js';
 import { Lock } from '@mui/icons-material';
 import type { CartItem } from './use-store-cart';
+import { stripeAdvancedFraudSignalsEnabled, stripePaymentsDisabledMessage, stripePaymentsEnabled, stripePublishableKey, stripePublishableKeyMissingMessage } from '@/shared/scripts/payments';
 
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-    ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-    : null;
+let stripePromise: Promise<Stripe | null> | null = null;
+let stripeLoadParametersSet = false;
+
+const getStripePromise = async () => {
+    if (stripePromise) return stripePromise;
+    const { loadStripe } = await import('@stripe/stripe-js/pure');
+    if (!stripeAdvancedFraudSignalsEnabled && !stripeLoadParametersSet) {
+        loadStripe.setLoadParameters({ advancedFraudSignals: false });
+        stripeLoadParametersSet = true;
+    }
+    stripePromise = loadStripe(stripePublishableKey);
+    return stripePromise;
+}
 
 type InternalCheckoutProps = {
     cart: CartItem[];
@@ -84,20 +95,28 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
     const [clientSecret, setClientSecret] = useState(``);
     const [message, setMessage] = useState(``);
     const [loading, setLoading] = useState(false);
+    const [checkoutStripe, setCheckoutStripe] = useState<Stripe | null>(null);
 
     const cartSignature = useMemo(() => {
         return cart.map((item) => `${item.id}:${item.quantity}:${item.price}`).join(`|`);
     }, [cart]);
 
     useEffect(() => {
+        let active = true;
+
         const createPaymentIntent = async () => {
             if (cart.length == 0) {
                 setClientSecret(``);
                 return;
             }
 
-            if (!stripePromise) {
-                setMessage(`Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY. Add your Stripe publishable key to use internal checkout.`);
+            if (!stripePaymentsEnabled) {
+                setMessage(stripePaymentsDisabledMessage);
+                return;
+            }
+
+            if (!stripePublishableKey) {
+                setMessage(stripePublishableKeyMissingMessage);
                 return;
             }
 
@@ -105,6 +124,10 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
             setMessage(``);
 
             try {
+                const nextStripe = await getStripePromise();
+                if (!active) return;
+                setCheckoutStripe(nextStripe);
+
                 const response = await fetch(`/api/store/stripe/payment-intent`, {
                     method: `POST`,
                     headers: { [`Content-Type`]: `application/json` },
@@ -134,19 +157,22 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
         };
 
         createPaymentIntent();
+        return () => {
+            active = false;
+        };
     }, [cartSignature]);
 
     if (cart.length == 0) return null;
 
     if (message) return <p className={`internalCheckoutMessage`}>{message}</p>;
 
-    if (loading || !clientSecret || !stripePromise) {
+    if (loading || !clientSecret || !checkoutStripe) {
         return <p className={`internalCheckoutMessage`}>Preparing secure checkout...</p>;
     }
 
     return (
         <Elements
-            stripe={stripePromise}
+            stripe={checkoutStripe}
             options={{
                 clientSecret,
                 appearance: {

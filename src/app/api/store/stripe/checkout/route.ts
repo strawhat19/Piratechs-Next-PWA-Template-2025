@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 
 type CheckoutRequest = {
     amount?: number;
@@ -36,6 +37,10 @@ const getReturnPath = (returnPath?: string) => {
 
 export const POST = async (request: NextRequest) => {
     try {
+        if (!stripePaymentsEnabled) {
+            return NextResponse.json({ ok: false, message: stripePaymentsDisabledMessage }, { status: 503 });
+        }
+
         const stripeServerKey = getStripeServerKey();
 
         if (!stripeServerKey) {

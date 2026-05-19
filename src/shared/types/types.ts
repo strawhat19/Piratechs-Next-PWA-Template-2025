@@ -46,6 +46,7 @@ export enum Types {
   Chat = `Chat`,
   Post = `Post`,
   List = `List`,
+  Shop = `Shop`,
   Order = `Order`,
   Board = `Board`,
   Stock = `Stock`,

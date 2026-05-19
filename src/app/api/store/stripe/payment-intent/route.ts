@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 
 type PaymentIntentRequest = {
     items?: PaymentIntentItem[];
@@ -36,6 +37,10 @@ const getLineItems = (items?: PaymentIntentItem[]) => {
 
 export const POST = async (request: Request) => {
     try {
+        if (!stripePaymentsEnabled) {
+            return NextResponse.json({ ok: false, message: stripePaymentsDisabledMessage }, { status: 503 });
+        }
+
         const stripeServerKey = getStripeServerKey();
 
         if (!stripeServerKey) {

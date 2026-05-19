@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import type { Product } from '@/shared/types/models/Product';
+import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 
 export type CartItem = Product & {
     quantity: number;
@@ -83,6 +84,11 @@ export const useStoreCart = () => {
     };
 
     const checkoutCart = async () => {
+        if (!stripePaymentsEnabled) {
+            toast.info(stripePaymentsDisabledMessage);
+            return;
+        }
+
         if (cart.length == 0) {
             toast.error(`Add at least one product before checkout.`);
             return;
