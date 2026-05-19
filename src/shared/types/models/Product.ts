@@ -5,8 +5,10 @@ import { capWords, countPropertiesInObject, genID, isAppCollectionID, isValid } 
 export enum ProductStatus {
   Draft = `Draft`,
   Active = `Active`,
+  Pending = `Pending`,
   Archived = `Archived`,
   Backorder = `Backorder`,
+  Unavailable = `Unavailable`,
   OutOfStock = `Out of Stock`,
 }
 
@@ -109,6 +111,7 @@ const toPriceCents = (value: string | number | null | undefined, fallback = 0) =
   if (cleanValue == ``) return fallback;
   return cleanValue.includes(`.`) ? Math.round(Number(cleanValue) * 100) : Number(cleanValue);
 }
+const toNumber = (value: any, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const normalizeTags = (tags?: string[] | string) => Array.isArray(tags) ? tags : String(tags || ``).split(`,`).map(tag => tag.trim()).filter(Boolean);
 const sumInventory = (variants: ProductVariant[] = []) => variants.reduce((total, variant) => total + Number(variant.inventoryQuantity ?? variant.inventory_quantity ?? 0), 0);
 
@@ -131,6 +134,10 @@ export class Product extends Data {
   cost?: number = 0;
   currency: string = `usd`;
   compareAtPrice?: number = 0;
+
+  ratings?: number = 0;
+  reviews?: number = 0;
+  purchases?: number = 0;
 
   stock: number = 0;
   lowStockThreshold?: number = 5;
@@ -216,8 +223,9 @@ export class Product extends Data {
     if (isValid(productData.body_html) && !isValid(this.bodyHTML)) this.bodyHTML = String(productData.body_html);
     if (isValid(productData.product_type)) this.productType = String(productData.product_type);
     if (isValid(productData.product_type) && !isValid(this.category)) this.category = String(productData.product_type);
+    if (isValid(productData.createdBy) && !isValid(this.created_by)) this.created_by = String(productData.createdBy);
+    if (isValid(productData.updatedBy) && !isValid(this.updated_by)) this.updated_by = String(productData.updatedBy);
     if (!isValid(this.productType)) this.productType = ProductType.Sticker;
-    if (!isValid(this.category)) this.category = ProductCategory.Art;
     if (isValid(productData.status)) this.status = capWords(String(productData.status));
     if (isValid(productData.handle) && !isValid(this.handle)) this.handle = String(productData.handle);
     if (isValid(productData.handle) && !isValid(this.slug)) this.slug = String(productData.handle);
@@ -227,7 +235,16 @@ export class Product extends Data {
     if (isValid(productData.published_scope) && !isValid(this.publishedScope)) this.publishedScope = productData.published_scope;
     if (isValid(productData.created_at)) this.created = productData.created_at;
     if (isValid(productData.updated_at)) this.updated = productData.updated_at;
-    if (!isValid(this.tags)) this.tags = normalizeTags(productData.tags);
+    this.tags = normalizeTags(this.tags || productData.tags);
+    this.ratings = toNumber(this.ratings, 0);
+    this.reviews = toNumber(this.reviews, 0);
+    this.purchases = toNumber(this.purchases, 0);
+    const categoryInput = productData.category || productData.product_type || productData.productType;
+    this.categories = normalizeTags(this.categories || productData.categories);
+    if (isValid(categoryInput)) this.category = String(categoryInput);
+    else if (isValid(this.categories)) this.category = this.categories?.[0] || ProductCategory.Art;
+    if (!isValid(this.category)) this.category = ProductCategory.Art;
+    if (isValid(this.category) && !this.categories?.includes(this.category)) this.categories = [this.category, ...(this.categories || [])];
     if (!isValid(this.label)) this.label = this.name || productData.title || this.sku;
     if (!isValid(this.imageURL) && isValid(firstImage?.url)) this.imageURL = firstImage?.url;
     if (!isValid(this.image) && firstImage) this.image = firstImage;
@@ -263,6 +280,10 @@ export class Product extends Data {
       if (productData.inventoryQuantity == undefined && productData.inventory_quantity == undefined) this.inventoryQuantity = this.totalInventory;
     }
     if (productData.available == undefined) this.available = this.stock > 0 || variants.some(variant => variant.available == true);
+    const unavailableStatuses = [ProductStatus.Archived, ProductStatus.Unavailable, ProductStatus.OutOfStock].map(status => status.toLowerCase());
+    const statusValue = String(this.status || ``).toLowerCase();
+    if (unavailableStatuses.includes(statusValue)) this.available = false;
+    if (statusValue == ProductStatus.Backorder.toLowerCase()) this.available = this.allowBackorder;
     if (productData.requiresShipping == undefined && productData.requires_shipping == undefined && firstVariant?.requires_shipping !== undefined) this.requiresShipping = firstVariant.requires_shipping;
     if (productData.grams == undefined && isValid(firstVariant?.grams)) this.grams = firstVariant?.grams;
 

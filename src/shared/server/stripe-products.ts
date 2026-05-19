@@ -17,14 +17,34 @@ const postStripeForm = async (stripeServerKey: string, path: string, params: URL
   return data;
 }
 
+const setStripeMetadata = (params: URLSearchParams, metadata: Record<string, any>) => {
+  Object.entries(metadata)?.forEach(([key, value]) => {
+    if (value == undefined || value == null || value == ``) return;
+    const metadataValue = Array.isArray(value) ? value.join(`, `) : String(value);
+    params.set(`metadata[${key}]`, metadataValue.slice(0, 500));
+  });
+}
+
 const getStripeProductParams = (product: Product) => {
-  const active = String(product?.status || ``).toLowerCase() != ProductStatus.Archived.toLowerCase();
+  const status = String(product?.status || ``).toLowerCase();
+  const inactiveStatuses = [ProductStatus.Archived, ProductStatus.Unavailable].map(status => status.toLowerCase());
+  const active = !inactiveStatuses.includes(status);
   const params = new URLSearchParams({
     active: String(active),
     name: product?.name || product?.title || `Product`,
-    [`metadata[sku]`]: String(product?.sku || ``),
-    [`metadata[number]`]: String(product?.number || ``),
-    [`metadata[app_product_id]`]: String(product?.id || ``),
+  });
+  setStripeMetadata(params, {
+    sku: product?.sku,
+    tags: product?.tags,
+    number: product?.number,
+    ratings: product?.ratings,
+    reviews: product?.reviews,
+    category: product?.category,
+    purchases: product?.purchases,
+    created_by: product?.created_by,
+    updated_by: product?.updated_by,
+    product_type: product?.productType,
+    app_product_id: product?.id,
   });
   if (product?.description) params.set(`description`, String(product?.description).slice(0, 500));
   product?.imageURLs?.slice(0, 8)?.forEach((imageURL, index) => params.set(`images[${index}]`, imageURL));
@@ -51,9 +71,8 @@ export const syncStripeProduct = async (product: Product) => {
       currency: priceCurrency,
       unit_amount: String(priceAmount),
       product: stripeProduct?.id,
-      [`metadata[sku]`]: String(product?.sku || ``),
-      [`metadata[app_product_id]`]: String(product?.id || ``),
     });
+    setStripeMetadata(priceParams, { sku: product?.sku, number: product?.number, app_product_id: product?.id });
     const stripePrice = await postStripeForm(stripeServerKey, `prices`, priceParams);
     stripePriceID = stripePrice?.id || stripePriceID;
     const defaultPriceParams = new URLSearchParams({ default_price: stripePriceID });

@@ -241,6 +241,7 @@ export default function ProductForm({
                 taxable: form?.taxable,
                 category: form?.category,
                 currency: form?.currency,
+                categories: [form?.category].filter(Boolean),
                 tags: parseList(form?.tags),
                 title: capWords(form?.name),
                 productType: form?.productType,
@@ -316,12 +317,7 @@ export default function ProductForm({
                             {Object.values(ProductType).map(type => <option key={type} value={type}>{type}</option>)}
                         </ProductSelectField>
                         <ProductSelectField label={`Status`} name={`status`} value={form?.status} onChange={updateForm}>
-                            <option value={ProductStatus.Active}>
-                                {ProductStatus.Active}
-                            </option>
-                            <option value={ProductStatus.Archived}>
-                                {ProductStatus.Archived}
-                            </option>
+                            {Object.values(ProductStatus).map(status => <option key={status} value={status}>{status}</option>)}
                         </ProductSelectField>
                     </>}
                     <ProductField label={`Image(s)`} name={`imageURLs`} type={`upload`} value={form?.imageURLs} onChange={updateForm} showInput={true} />

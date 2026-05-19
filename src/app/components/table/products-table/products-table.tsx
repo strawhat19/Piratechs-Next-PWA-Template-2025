@@ -18,37 +18,22 @@ import { AddShoppingCart, Archive, Delete, Edit, Restore } from '@mui/icons-mate
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 
 const storeDollarSignColor = `var(--green_neon)`;
+const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
 
 const getProductStatus = (product: Product, string: boolean = false) => {
     const stock = Number(product?.stock || 0);
     const status = String(product?.status || ``).toLowerCase();
-    const err = stock <= 0;
-    const success = status?.includes(`active`) && stock > 0;
-    // const unavailable = (status?.includes(`out`) || status?.includes(`archived`));
-    if (err) {
-        return {
-            color: `red`,
-            label: stock <= 0 ? (
-                string == true ? ProductStatus.OutOfStock : stock
-            ) : (status?.includes(`archived`) ? (
-                string == true ? ProductStatus.Archived : stock
-            ) : ProductStatus.Draft),
-        };
-    }
-    if (success) {
-        return {
-            color: `var(--green_neon)`,
-            label: stock > 0 ? (string == true ? ProductStatus.Active : stock) : ProductStatus.Active,
-        };
-    }
-    return {
-        color: `rgba(255, 255, 255, 0.35)`,
-        label: stock <= 0 ? (
-            string == true ? ProductStatus.OutOfStock : stock
-        ) : (status?.includes(`archived`) ? (
-            string == true ? ProductStatus.Archived : stock
-        ) : ProductStatus.Pending),
-    };
+    const active = status?.includes(`active`);
+    const archived = status?.includes(`archived`);
+    // const backorder = status?.includes(`backorder`);
+    // const pending = status?.includes(`pending`) || status?.includes(`draft`);
+    // const unavailable = status?.includes(`unavailable`) || status?.includes(`out`);
+    // if (archived) return { color: `red`, label: string == true ? ProductStatus.Archived : stock };
+    if (stock <= 0) return { color: `red`, label: string == true ? ProductStatus.OutOfStock : stock };
+    if (active) return { color: `var(--green_neon)`, label: string == true ? ProductStatus.Active : stock };
+    // if (pending) return { color: tableStatusGray, label: string == true ? ProductStatus.Pending : stock };
+    // if (backorder) return { color: tableStatusGray, label: string == true ? ProductStatus.Backorder : stock };
+    return { color: tableStatusGray, label: string == true ? (archived ? ProductStatus.Archived : ProductStatus.Draft) : stock };
 };
 
 const getProductStatusColor = (product: Product) => {

@@ -6,13 +6,24 @@
   animation: none;
   isolation: isolate;
   position: relative;
+
   --br: inherit;
   --pulsateSize: 14px;
   --pulsateColor: var(--green_neon);
+  --pulsateDuration: 2.4s;
+  --pulsateScale: 1.75;
+
   &.circular {
     --br: var(--circle);
   }
-  &::after {
+
+  &:not(.statusDotWrap) {
+    &::before, &::after {
+      display: none;
+    }
+  }
+
+  &::before, &::after {
     top: 50%;
     left: 50%;
     opacity: 0;
@@ -23,25 +34,33 @@
     border-radius: var(--br);
     width: var(--pulsateSize);
     border: 1px solid var(--pulsateColor);
-    transform: translate(-50%, -50%)scale(1.5);
-    animation: 2.2s ease-out infinite pulsateRing;
+    transform: translate(-50%, -50%) scale(1);
     height: var(--pulsateHeight, var(--pulsateSize));
+    animation: pulsateRing var(--pulsateDuration) ease-out infinite;
+  }
+
+  &::after {
+    animation-delay: calc(var(--pulsateDuration) / 2);
   }
 }
 
 @keyframes pulsateRing {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(0.25);
   }
 
-  18% {
-    opacity: 0.45;
+  12% {
+    opacity: 0.65;
+  }
+
+  70% {
+    opacity: 0.25;
   }
 
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(var(--pulsateScale));
   }
 }
 
