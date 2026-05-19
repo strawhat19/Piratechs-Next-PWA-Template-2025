@@ -1,38 +1,21 @@
 import { NextResponse } from 'next/server';
 import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
+import { createPendingStripeOrder, getStripeServerKey, normalizeStripeLineItems, setStripeMetadataParams, stripeApiVersion, stripeOrderMetadata } from '@/shared/server/stripe-orders';
 
 type PaymentIntentRequest = {
     items?: PaymentIntentItem[];
+    userID?: string;
+    userEmail?: string;
+    userName?: string;
 };
 
 type PaymentIntentItem = {
+    id?: string | number;
+    sku?: string;
+    category?: string;
     name?: string;
     price?: number;
     quantity?: number;
-};
-
-const stripeApiVersion = `2025-04-30.basil`;
-
-const getStripeServerKey = () => {
-    return process.env.STRIPE_SECRET_KEY || process.env.STRIPE_RESTRICTED_KEY;
-};
-
-const getLineItems = (items?: PaymentIntentItem[]) => {
-    if (!Array.isArray(items) || items.length == 0) {
-        throw new Error(`Add at least one cart item before checkout.`);
-    }
-
-    return items.slice(0, 20).map((item) => {
-        const amount = Number(item?.price);
-        const quantity = Math.max(1, Math.min(99, Number(item?.quantity ?? 1)));
-        const productName = item?.name?.trim() || `Piratechs Store Item`;
-
-        if (!Number.isInteger(amount) || amount < 50 || amount > 999999) {
-            throw new Error(`Each item price must be a whole number of cents between 50 and 999999.`);
-        }
-
-        return { amount, quantity, productName };
-    });
 };
 
 export const POST = async (request: Request) => {
@@ -51,11 +34,12 @@ export const POST = async (request: Request) => {
         }
 
         const body = await request.json() as PaymentIntentRequest;
-        const lineItems = getLineItems(body?.items);
-        const amount = lineItems.reduce((total, item) => total + (item.amount * item.quantity), 0);
-        const description = lineItems.map((item) => `${item.productName} x${item.quantity}`).join(`, `).slice(0, 500);
+        const order = await createPendingStripeOrder(body?.items, { userID: body?.userID, userEmail: body?.userEmail, userName: body?.userName }, `Stripe Payment Intent`);
+        const lineItems = normalizeStripeLineItems(body?.items);
+        const amount = lineItems.reduce((total, item) => total + item.amount, 0);
+        const description = lineItems.map((item) => `${item.name} x${item.quantity}`).join(`, `).slice(0, 500);
         const metadataItems = JSON.stringify(lineItems.map((item) => ({
-            name: item.productName,
+            name: item.name,
             quantity: item.quantity,
             amount: item.amount,
         }))).slice(0, 500);
@@ -67,6 +51,7 @@ export const POST = async (request: Request) => {
             [`automatic_payment_methods[enabled]`]: `true`,
             [`metadata[cart_items]`]: metadataItems,
         });
+        setStripeMetadataParams(params, stripeOrderMetadata(order));
 
         const stripeResponse = await fetch(`https://api.stripe.com/v1/payment_intents`, {
             method: `POST`,
@@ -89,6 +74,7 @@ export const POST = async (request: Request) => {
 
         return NextResponse.json({
             ok: true,
+            orderID: order.id,
             clientSecret: paymentIntent?.client_secret,
             id: paymentIntent?.id,
         });

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import type { Product } from '@/shared/types/models/Product';
+import { StateGlobals } from '@/shared/global-context';
 import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
 
 export type CartItem = Product & {
@@ -47,6 +48,7 @@ export const writeStoreCart = (items: CartItem[]) => {
 };
 
 export const useStoreCart = () => {
+    const { user } = useContext<any>(StateGlobals);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [checkingOut, setCheckingOut] = useState(false);
 
@@ -102,9 +104,15 @@ export const useStoreCart = () => {
                 headers: { [`Content-Type`]: `application/json` },
                 body: JSON.stringify({
                     returnPath: window.location.pathname,
+                    userID: user?.id,
+                    userEmail: user?.email,
+                    userName: user?.name,
                     items: cart.map((item) => ({
+                        id: item.id,
+                        sku: item.sku,
                         name: item.name,
                         price: item.price,
+                        category: item.category,
                         quantity: item.quantity,
                     })),
                 }),
@@ -152,16 +160,31 @@ export const useCheckoutReturnToast = (saveCart: (items: CartItem[]) => void) =>
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const checkout = params.get(`checkout`);
+        const sessionID = params.get(`session_id`);
 
-        if (checkout == `success`) {
-            saveCart([]);
-            toast.success(`Payment Completed Successfully`);
-        } else if (checkout == `canceled`) {
-            toast.error(`Payment Checkout was Canceled`);
+        const completeCheckout = async () => {
+            if (checkout == `success`) {
+                if (sessionID) {
+                    const response = await fetch(`/api/store/stripe/order/complete`, {
+                        method: `POST`,
+                        headers: { [`Content-Type`]: `application/json` },
+                        body: JSON.stringify({ checkoutSessionID: sessionID }),
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result?.ok) throw new Error(result?.message || `Payment completed, but order sync failed.`);
+                }
+                saveCart([]);
+                toast.success(`Payment Completed Successfully`);
+            } else if (checkout == `canceled`) {
+                toast.error(`Payment Checkout was Canceled`);
+            }
         }
+
+        completeCheckout().catch(error => toast.error(error instanceof Error ? error.message : `Payment completed, but order sync failed.`));
 
         if (checkout) {
             params.delete(`checkout`);
+            params.delete(`session_id`);
             const query = params.toString();
             const cleanUrl = `${window.location.pathname}${query ? `?${query}` : ``}`;
             window.history.replaceState({}, ``, cleanUrl);

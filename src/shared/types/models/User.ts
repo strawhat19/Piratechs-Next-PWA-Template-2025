@@ -2,6 +2,7 @@ import { Data } from './Data';
 import { Item } from './Item';
 import { List } from './List';
 import { Board } from './Board';
+import type { PaymentMethodSummary } from './Order';
 import { DataSources, Roles, Types } from '../types';
 import { capWords, countPropertiesInObject, genID, getIDParts, isValid } from '@/shared/scripts/constants';
 
@@ -84,6 +85,7 @@ export class User extends Data {
   customerData?: any = {};
   customerID?: number | string;
   shopifyID?: number | string;
+  paymentMethods?: PaymentMethodSummary[] = [];
   displayName?: string = ``;
   creationTime?: string = ``;
   lastRefresh?: string = ``;

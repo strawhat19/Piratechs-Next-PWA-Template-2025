@@ -152,6 +152,7 @@ export default function UsersTable({
     type = `User`,
 }: any) {
     const { user, users } = useContext<any>(StateGlobals);
+    const canViewUsers = minRole(user?.role, Roles.Editor);
     const user_columns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87, },
         { field: `name`, headerName: `Name`, width: 130, editable: true, },
@@ -165,8 +166,8 @@ export default function UsersTable({
             ),
         },
         { field: `dataSource`, headerName: `Source`, width: 100, },
-        { field: `created`, headerName: `Registered`, width: 165, },
-        { field: `lastSignIn`, headerName: `Last Sign In`, width: 165, },
+        { field: `created`, headerName: `Registered`, width: 160, },
+        { field: `lastSignIn`, headerName: `Last Sign In`, width: 160, },
         { field: `updated`, headerName: `Updated`, width: 165, },
         { field: `email`, headerName: `Email`, width: 175 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
@@ -178,11 +179,12 @@ export default function UsersTable({
                 <ActionsCell
                     row={row}
                     value={value}
-                    canManage={(user != null && row?.id == user?.id) || minRole(user?.role, Roles.Moderator)}
+                    canManage={minRole(user?.role, Roles.Moderator)}
                 />
             ), 
         },
     ];
+    if (!canViewUsers) return <Loader height={250} label={`${type}(s) Restricted`} />;
     return (
         users?.length > 0 ? <>
             <Table title={`${type}(s)`} rows={users} columns={user_columns} />

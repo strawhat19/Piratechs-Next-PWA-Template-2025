@@ -1,11 +1,12 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import type { Stripe } from '@stripe/stripe-js';
 import { Lock } from '@mui/icons-material';
 import type { CartItem } from './use-store-cart';
+import { StateGlobals } from '@/shared/global-context';
 import { stripeAdvancedFraudSignalsEnabled, stripePaymentsDisabledMessage, stripePaymentsEnabled, stripePublishableKey, stripePublishableKeyMissingMessage } from '@/shared/scripts/payments';
 
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -30,9 +31,10 @@ type InternalCheckoutProps = {
 
 type PaymentFormProps = InternalCheckoutProps & {
     clientSecret: string;
+    onPaymentConfirmed: (paymentIntentID: string) => Promise<void>;
 };
 
-const PaymentForm = ({ cart, total, onSuccess }: PaymentFormProps) => {
+const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentFormProps) => {
     const stripe = useStripe();
     const elements = useElements();
     const [submitting, setSubmitting] = useState(false);
@@ -63,8 +65,15 @@ const PaymentForm = ({ cart, total, onSuccess }: PaymentFormProps) => {
         }
 
         if (result.paymentIntent?.status == `succeeded`) {
-            toast.success(`Payment Completed Successfully`);
-            onSuccess();
+            try {
+                await onPaymentConfirmed(result.paymentIntent.id);
+                toast.success(`Payment Completed Successfully`);
+                onSuccess();
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : `Payment completed, but order sync failed.`;
+                setMessage(errorMessage);
+                toast.error(errorMessage);
+            }
             setSubmitting(false);
             return;
         }
@@ -92,6 +101,7 @@ const PaymentForm = ({ cart, total, onSuccess }: PaymentFormProps) => {
 };
 
 export default function InternalCheckout({ cart, total, onSuccess }: InternalCheckoutProps) {
+    const { user } = useContext<any>(StateGlobals);
     const [clientSecret, setClientSecret] = useState(``);
     const [message, setMessage] = useState(``);
     const [loading, setLoading] = useState(false);
@@ -132,9 +142,15 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                     method: `POST`,
                     headers: { [`Content-Type`]: `application/json` },
                     body: JSON.stringify({
+                        userID: user?.id,
+                        userEmail: user?.email,
+                        userName: user?.name,
                         items: cart.map((item) => ({
+                            id: item.id,
+                            sku: item.sku,
                             name: item.name,
                             price: item.price,
+                            category: item.category,
                             quantity: item.quantity,
                         })),
                     }),
@@ -160,7 +176,17 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
         return () => {
             active = false;
         };
-    }, [cartSignature]);
+    }, [cartSignature, user?.id]);
+
+    const onPaymentConfirmed = async (paymentIntentID: string) => {
+        const response = await fetch(`/api/store/stripe/order/complete`, {
+            method: `POST`,
+            headers: { [`Content-Type`]: `application/json` },
+            body: JSON.stringify({ paymentIntentID }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result?.ok) throw new Error(result?.message || `Payment completed, but order sync failed.`);
+    }
 
     if (cart.length == 0) return null;
 
@@ -186,7 +212,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                 },
             }}
         >
-            <PaymentForm cart={cart} total={total} clientSecret={clientSecret} onSuccess={onSuccess} />
+            <PaymentForm cart={cart} total={total} clientSecret={clientSecret} onSuccess={onSuccess} onPaymentConfirmed={onPaymentConfirmed} />
         </Elements>
     );
 }

@@ -2,6 +2,7 @@ import { User } from '../types/models/User';
 import { List } from '../types/models/List';
 import { Item } from '../types/models/Item';
 import { Task } from '../types/models/Task';
+import { Order } from '../types/models/Order';
 import { initializeApp } from 'firebase/app';
 import { getStorage } from 'firebase/storage';
 import { Board } from '../types/models/Board';
@@ -16,6 +17,7 @@ export enum Tables {
   lists = `lists`,
   tasks = `tasks`,
   boards = `boards`,
+  orders = `orders`,
   products = `products`,
   features = `features`,
   notifications = `notifications`,
@@ -313,6 +315,16 @@ export const productConverter = {
   fromFirestore: (snapshot: any, options: any) => {
     const data = snapshot.data(options);
     return new Product(data);
+  }
+}
+
+export const orderConverter = {
+  toFirestore: (ord: Order) => {
+    return JSON.parse(JSON.stringify(ord));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new Order(data);
   }
 }
 

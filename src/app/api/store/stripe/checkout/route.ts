@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
+import { createPendingStripeOrder, getStripeServerKey, normalizeStripeLineItems, setStripeMetadataParams, stripeApiVersion, stripeOrderMetadata } from '@/shared/server/stripe-orders';
 
 type CheckoutRequest = {
     amount?: number;
@@ -7,18 +8,18 @@ type CheckoutRequest = {
     name?: string;
     quantity?: number;
     returnPath?: string;
+    userID?: string;
+    userEmail?: string;
+    userName?: string;
 };
 
 type CheckoutItem = {
+    id?: string | number;
+    sku?: string;
+    category?: string;
     name?: string;
     price?: number;
     quantity?: number;
-};
-
-const stripeApiVersion = `2025-04-30.basil`;
-
-const getStripeServerKey = () => {
-    return process.env.STRIPE_SECRET_KEY || process.env.STRIPE_RESTRICTED_KEY;
 };
 
 const getBaseUrl = (request: NextRequest) => {
@@ -59,31 +60,27 @@ export const POST = async (request: NextRequest) => {
                 quantity: body?.quantity,
             }];
 
-        const lineItems = checkoutItems.map((item) => {
-            const amount = Number(item?.price ?? 999);
-            const quantity = Math.max(1, Math.min(99, Number(item?.quantity ?? 1)));
-            const productName = item?.name?.trim() || `Piratechs Store Item`;
-
-            if (!Number.isInteger(amount) || amount < 50 || amount > 999999) {
-                throw new Error(`Each item price must be a whole number of cents between 50 and 999999.`);
-            }
-
-            return { amount, quantity, productName };
-        });
+        const order = await createPendingStripeOrder(checkoutItems, { userID: body?.userID, userEmail: body?.userEmail, userName: body?.userName }, `Stripe Checkout`);
+        const lineItems = normalizeStripeLineItems(checkoutItems);
 
         const baseUrl = getBaseUrl(request);
         const returnPath = getReturnPath(body?.returnPath);
         const params = new URLSearchParams({
             mode: `payment`,
-            success_url: `${baseUrl}${returnPath}?checkout=success`,
+            client_reference_id: String(order.id),
+            success_url: `${baseUrl}${returnPath}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${baseUrl}${returnPath}?checkout=canceled`,
         });
+        if (body?.userEmail) params.set(`customer_email`, body.userEmail);
+        const metadata = stripeOrderMetadata(order);
+        setStripeMetadataParams(params, metadata);
+        setStripeMetadataParams(params, metadata, `payment_intent_data[metadata]`);
 
         lineItems.forEach((item, index) => {
             params.set(`line_items[${index}][quantity]`, String(item.quantity));
             params.set(`line_items[${index}][price_data][currency]`, `usd`);
-            params.set(`line_items[${index}][price_data][unit_amount]`, String(item.amount));
-            params.set(`line_items[${index}][price_data][product_data][name]`, item.productName);
+            params.set(`line_items[${index}][price_data][unit_amount]`, String(item.price));
+            params.set(`line_items[${index}][price_data][product_data][name]`, item.name);
         });
 
         const stripeResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions`, {
@@ -107,6 +104,7 @@ export const POST = async (request: NextRequest) => {
 
         return NextResponse.json({
             ok: true,
+            orderID: order.id,
             id: session?.id,
             url: session?.url,
         });

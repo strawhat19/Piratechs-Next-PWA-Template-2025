@@ -6,9 +6,10 @@ import { Item } from './types/models/Item';
 import { Task } from './types/models/Task';
 import { Board } from './types/models/Board';
 import { Product } from './types/models/Product';
+import { Order as StoreOrder } from './types/models/Order';
 import { User } from '@/shared/types/models/User';
 import { Stock } from './types/models/stocks/Stock';
-import { Order } from './types/models/stocks/Order';
+import { Order as StockOrder } from './types/models/stocks/Order';
 import { Position } from './types/models/stocks/Position';
 import { AuthStates, RobinhoodAccountTypes } from '@/shared/types/types';
 import { defaultBoardForm } from '@/app/components/board/form/board-form';
@@ -18,7 +19,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
 import { sampleStockAccount, sampleStocksDB } from '@/shared/server/database/samples/stocks/stocks';
 import { capWords, constants, customDate, debounce, dev, devEnv, isInStandaloneMode, logToast } from '@/shared/scripts/constants';
-import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter, productConverter, updateUserInDatabase } from '@/shared/server/firebase';
+import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userConverter, listConverter, itemConverter, taskConverter, productConverter, orderConverter, updateUserInDatabase } from '@/shared/server/firebase';
 
 export const StateGlobals = createContext({});
 
@@ -53,6 +54,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     let [products, setProducts] = useState<Product[]>([]);
     let [productsLoading, setProductsLoading] = useState(true);
+    let [orders, setOrders] = useState<StoreOrder[]>([]);
+    let [ordersLoading, setOrdersLoading] = useState(true);
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
@@ -66,7 +69,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     let [stocksObj, setStocksObj] = useState<any>({});
     let [realtime, setRealtime] = useState<boolean>(false);
     let [syncedSet, setSyncedSet] = useState<boolean>(false);
-    let [stockOrders, setStockOrders] = useState<Order[]>([]);
+    let [stockOrders, setStockOrders] = useState<StockOrder[]>([]);
     let [stocksAcc, setStocksAcc] = useState<any>(sampleStockAccount);
     let [robinhood, setRobinhood] = useState(robinhoodAccountsDefault);
     let [stockPositions, setStockPositions] = useState<Position[]>([]);
@@ -370,6 +373,20 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }, []);
 
     useEffect(() => {
+        setOrdersLoading(true);
+        const ordersDB = collection(db, Tables.orders).withConverter(orderConverter);
+        const ordersDBQueryListener = onSnapshot(ordersDB, ordersDBDocs => {
+            const dbOrders = ordersDBDocs.docs.map(d => new StoreOrder(d.data())).sort((a, b) => new Date(b?.stripeCreated || b?.created || 0).getTime() - new Date(a?.stripeCreated || a?.created || 0).getTime());
+            setOrders(dbOrders);
+            setOrdersLoading(false);
+            dev() && console.log(`Order(s)`, dbOrders);
+        });
+        return () => {
+            ordersDBQueryListener();
+        }
+    }, []);
+
+    useEffect(() => {
         if (typeof window != `undefined`) {
             let isOnPWA = isInStandaloneMode();
             setIsPWA(isOnPWA);
@@ -403,6 +420,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
         products, setProducts,
         productsLoading, setProductsLoading,
+        orders, setOrders,
+        ordersLoading, setOrdersLoading,
 
         isPWA, setIsPWA,
         loaded, setLoaded,
@@ -435,7 +454,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
         onBoards, boardForm, boardItems, boards, dataLoading,
-        products, productsLoading, 
+        products, productsLoading, orders, ordersLoading,
         stocks, histories, stockOrders, stocksAcc, 
         stocksObj, stockPositions, robinhoodAccountTypes, syncedSet,
         realtime, alpacaPositions, stocksFullyLoaded, webSocketConnected, 
