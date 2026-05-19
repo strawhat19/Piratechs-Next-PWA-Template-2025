@@ -65,17 +65,77 @@
 }
 
 .table {
-    position: relative;
-    padding-right: 0px;
-    position: relative;
-    border: 1px solid var(--buttons);
-    border-right-width: 2px !important;
-    .table_header {
-        top: 13px;
-        left: 13px;
-        z-index: 1;
-        position: absolute;
+  position: relative;
+  padding-right: 0px;
+  position: relative;
+  border: 1px solid var(--buttons);
+  border-right-width: 2px !important;
+  .table_header {
+    top: 13px;
+    left: 13px;
+    z-index: 1;
+    position: absolute;
+    &:has(.tableHeaderComponent) {
+      top: 7.5px;
+      width: 90%;
+      display: flex;
+      align-items: center;
     }
+  }
+}
+
+.funsized {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 2px !important;
+  flex-direction: row-reverse;
+  form {
+    grid-gap: 2px !important;
+    display: flex !important;
+    flex-direction: row-reverse;
+    align-items: center !important;
+    input {
+      min-height: 30px;
+      padding: 3px 10px;
+    }
+  }
+  .productFormHeader {
+    width: 100%;
+    min-width: 235px;
+    max-height: 30px;
+    max-width: fit-content;
+    justify-content: flex-end;
+  }
+  .productFormGrid {
+    gap: 2px;
+    width: 100%;
+  }
+  .productFormActions {
+    width: 100%;
+    max-height: 30px;
+    grid-gap: 2px !important;
+    justify-content: space-evenly;
+    button {
+      height: 30px !important;
+      min-height: 30px !important;
+      max-height: 30px !important;
+    }
+  }
+}
+
+.tableHeaderComponent {
+  width: 100%;
+  display: flex;
+  grid-gap: 8px;
+  align-items: center;
+}
+
+.table_header_row_count {
+  font-weight: 700;
+  margin-left: 2px;
+  margin-right: 4px;
+  color: var(--links);
 }
 
 .tableDropDown {

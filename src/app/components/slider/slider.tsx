@@ -5,16 +5,19 @@ import './slider.scss';
 
 // import 'swiper/css/effect-cards';
 import { Swiper } from 'swiper/react';
-import { Button } from '@mui/material';
 import { useRef, useState } from 'react';
 import { Autoplay } from 'swiper/modules';
+import { Button, Tooltip } from '@mui/material';
 // import { EffectCards } from 'swiper/modules';
 // import { State } from '../container/container';
 import { generateArray } from '@/shared/scripts/constants';
 import { Circle, CircleTwoTone } from '@mui/icons-material';
+import Icon_Button from '../buttons/icon-button/icon-button';
 
 export default function Slider({ 
-    children, 
+    children,
+    key = `icon`,
+    slideNames = [], 
     autoplay = false, 
     spaceBetween = 15, 
     slidesPerView = 1, 
@@ -25,9 +28,11 @@ export default function Slider({
     paginationClass = `paginationClass`, 
 }: any) {
     let swiperRef = useRef<any>(null);
+    let [realSlideIndex, setRealSlideIndex] = useState(startingSlideIndex);
     let [activeSlideIndex, setActiveSlideIndex] = useState(startingSlideIndex);
 
     const onSlideChange = (e: any) => {
+        setRealSlideIndex(e?.realIndex);
         setActiveSlideIndex(e?.activeIndex);
     }
 
@@ -66,9 +71,18 @@ export default function Slider({
     return <>
         <div className={`slider ${className} ${getDotsNumToShow() > 1 ? `multi-slider` : `single-slider`}`}>
             {children?.length > 1 && showButtons && (
-                <Button className={`sliderButton`} onClick={() => slide(-1)}>
-                    {`<`}
-                </Button>
+                <Icon_Button rounded={false} button={true} className={`sliderButton sliderButtonPrev`} onClick={() => slide(-1)}>
+                    <Tooltip arrow title={slideNames?.length > 0 ? slideNames?.[(realSlideIndex - 1 + slideNames?.length) % slideNames?.length]?.label : ``}>
+                       <div className={`slideNameContent`}>
+                            <span className={`pointerEventsNoneI`}>
+                                {`<`}
+                            </span>
+                            <span className={`slideName slideNamePrev pointerEventsNoneI`}>
+                                {slideNames?.length > 0 ? slideNames?.[(realSlideIndex - 1 + slideNames?.length) % slideNames?.length]?.[key] : ``}
+                            </span>
+                       </div>
+                    </Tooltip>
+                </Icon_Button>
             )}
 
             {/* {autoplay ? (
@@ -109,9 +123,18 @@ export default function Slider({
             {/* )} */}
             
             {children?.length > 1 && showButtons && (
-                <Button className={`sliderButton`} onClick={() => slide(1)}>
-                    {`>`}
-                </Button>
+                <Icon_Button rounded={false} button={true} className={`sliderButton sliderButtonNext`} onClick={() => slide(1)}>
+                    <Tooltip arrow title={slideNames?.length > 0 ? slideNames?.[(realSlideIndex + 1) % slideNames?.length]?.label : ``}>
+                        <div className={`slideNameContent`}>
+                            <span className={`slideName slideNameNext pointerEventsNoneI`}>
+                                {slideNames?.length > 0 ? slideNames?.[(realSlideIndex + 1) % slideNames?.length]?.[key] : ``}
+                            </span>
+                            <span className={`pointerEventsNoneI`}>
+                                {`>`}
+                            </span>
+                        </div>
+                    </Tooltip>
+                </Icon_Button>
             )}
 
             {children?.length > 1 && showPaginationDots && (

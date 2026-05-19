@@ -1,3 +1,25 @@
+.slideName {
+    max-width: 26px;
+    user-select: none;
+    margin-right: -10px;
+    white-space: nowrap;
+    letter-spacing: -8px;
+    -webkit-user-select: none;
+    text-orientation: upright;
+    writing-mode: vertical-rl;
+    &.slideNameNext {
+        margin-left: -2px;
+        margin-right: 0px;
+    }
+}
+
+.slideNameContent {
+    display: flex;
+    grid-gap: 3px;
+    font-size: 0.75em;
+    align-items: center;
+}
+
 .boardListPaginationDots {
     top: 10px;
     z-index: 2;

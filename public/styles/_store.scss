@@ -11,13 +11,13 @@
 
 .productFormComponent {
     --productFormAccent: var(--success);
-
-    width: 100%;
+    width: 99.9%;
     padding: 14px;
+    margin: 0 auto;
     color: white;
     background: var(--bg);
+    border: 1px solid var(--buttons);
     border-radius: var(--borderRadius);
-    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
     &.productFormEditing {
         --pulsateSize: 100%;
         --pulsateHeight: 100%;
@@ -225,6 +225,10 @@
 .productFormFull, .productFormRestricted {
     margin: 0 auto 0 0;
     width: min(88.5dvw, 96vw);
+    &:is(.productFormFull) {
+        margin: 0 auto;
+        width: min(95dvw, 95dvw);
+    }
 }
 
 .productFormRestricted {

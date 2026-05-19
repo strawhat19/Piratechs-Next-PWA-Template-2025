@@ -1,18 +1,21 @@
 'use client';
 
-import { useContext, useState } from 'react';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
-import { Roles } from '@/shared/types/types';
+import { useContext, useState } from 'react';
+import { Roles, Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
+import { Product } from '@/shared/types/models/Product';
 import UsersTable from '../table/users-table/users-table';
 import OrdersTable from '../table/orders-table/orders-table';
-import { Product } from '@/shared/types/models/Product';
 import { constants, minRole } from '@/shared/scripts/constants';
+import { ProductFormDialog } from './product-form/product-form';
 import ProductsTable from '../table/products-table/products-table';
-import ProductForm, { ProductFormDialog } from './product-form/product-form';
+import { Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
+
+const { Order, Customer } = Types;
 
 export default function Store({ className = `storeComponent` }) {
     const { user, width, loaded } = useContext<any>(StateGlobals);
@@ -21,22 +24,30 @@ export default function Store({ className = `storeComponent` }) {
     const [fullEditProduct, setFullEditProduct] = useState<Product | null>(null);
     const [quickEditProduct, setQuickEditProduct] = useState<Product | null>(null);
     const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct(prev => prev?.id == product?.id ? null : product);
+    
     useCheckoutReturnToast(saveCart);
 
     return (
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
-                <Slider className={`componentSlider`} showButtons={width > constants?.breakpoints?.tabletSmall}>
+                <Slider 
+                    className={`componentSlider`} 
+                    showButtons={width > constants?.breakpoints?.tabletSmall}
+                    slideNames={[
+                        { key: 0, icon: <ShoppingCart />, label: `${Types.Product}s` }, 
+                        { key: 1, icon: <ReceiptLong />, label: `${Order}s` }, 
+                        { key: 2, icon: <Person />, label: `${Customer}s` }
+                    ]} 
+                >
                     <SwiperSlide>
                         <div className={`storeProductsPanel`}>
-                            <ProductForm
-                                widget
-                                product={quickEditProduct}
-                                onSaved={() => setQuickEditProduct(null)}
-                                onCancelEdit={() => setQuickEditProduct(null)}
-                                onFullEdit={(product: Product | null) => setFullEditProduct(product)}
+                            <ProductsTable 
+                                onAddToCart={addToCart} 
+                                quickEditProduct={quickEditProduct} 
+                                onQuickEdit={toggleQuickEditProduct} 
+                                setFullEditProduct={setFullEditProduct}
+                                setQuickEditProduct={setQuickEditProduct}
                             />
-                            <ProductsTable quickEditProduct={quickEditProduct} onAddToCart={addToCart} onQuickEdit={toggleQuickEditProduct} />
                         </div>
                     </SwiperSlide>
                     <SwiperSlide>

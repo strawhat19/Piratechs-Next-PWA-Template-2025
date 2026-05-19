@@ -13,9 +13,10 @@ import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { Product, ProductStatus } from '@/shared/types/models/Product';
-import { ProductFormDialog } from '../../store/product-form/product-form';
+import ProductForm, { ProductFormDialog } from '../../store/product-form/product-form';
 import { AddShoppingCart, Archive, Delete, Edit, Restore } from '@mui/icons-material';
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
+import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
 
 const storeDollarSignColor = `var(--green_neon)`;
 const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
@@ -99,7 +100,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                 {canManageProducts ? <>
                     <Icon_Button
                         size={26}
-                        title={quickEditing ? `Cancel Quick Edit` : `Quick Edit Product`}
+                        title={quickEditing ? `Cancel Edit` : `Edit Product`}
                         className={`actionIconButton editAction ${quickEditing ? `quickEditActive pulsate circular` : ``}`}
                         onClick={(event: any) => {
                             event.stopPropagation();
@@ -140,6 +141,8 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
 };
 
 export default function ProductsTable({ 
+    setFullEditProduct,
+    setQuickEditProduct,
     type = Types.Product, 
     onAddToCart = () => {}, 
     onQuickEdit = undefined,
@@ -148,6 +151,12 @@ export default function ProductsTable({
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const editProduct = (product: Product | null) => onQuickEdit ? onQuickEdit(product) : setSelectedProduct(product);
+
+    const { saveCart } = useStoreCart();
+    // const canManageStore = minRole(user?.role, Roles.Editor);
+    // const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct((prev: any) => prev?.id == product?.id ? null : product);
+
+    useCheckoutReturnToast(saveCart);
 
     const productColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87 },
@@ -199,9 +208,21 @@ export default function ProductsTable({
             <Table
                 type={type}
                 rows={products}
-                title={`${type}(s)`}
                 columns={productColumns}
                 className={`productsTableComponent`}
+                title={(
+                    <div className={`tableHeaderComponent`}>
+                        {type}(s)
+                        <ProductForm
+                            widget
+                            funsized
+                            product={quickEditProduct}
+                            onSaved={() => setQuickEditProduct(null)}
+                            onCancelEdit={() => setQuickEditProduct(null)}
+                            onFullEdit={(product: Product | null) => setFullEditProduct(product)}
+                        />
+                    </div>
+                )}
             />
             <ProductFormDialog
                 product={selectedProduct}

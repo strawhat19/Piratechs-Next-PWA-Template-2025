@@ -55,6 +55,7 @@ export enum Types {
   Product = `Product`,
   Feature = `Feature`,
   Position = `Position`,
+  Customer = `Customer`,
   Robinhood = `Robinhood`,
   Notification = `Notification`,
   RobinhoodStock = `RobinhoodStock`,

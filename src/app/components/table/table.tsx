@@ -62,7 +62,9 @@ export default function Table({
         {loaded ? <>
           {toolbar ? <>
             <div className={`table_header`}>
-              <span style={{ color: `var(--links)`, fontWeight: 700, marginRight: 4, marginLeft: 2 }}>({rowCount})</span> {title}
+              <span className={`table_header_row_count`}>
+                ({rowCount})
+              </span> {title}
             </div>
           </> : <></>}
           {/* <MUI> */}

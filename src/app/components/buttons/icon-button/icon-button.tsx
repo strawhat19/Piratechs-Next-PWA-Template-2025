@@ -1,18 +1,20 @@
 import { MouseEventHandler } from 'react';
 import { useRouter } from 'next/navigation';
-import { IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 
 export default function Icon_Button({ 
     size,
     title, 
     children, 
     url = ``,
+    button = false,
+    rounded = true,
     target = `_self`,
     disabled = false, 
     onClick = () => {}, 
     id = `iconButtonID`,
-    style = { position: `relative` },
     className = `iconButtonComponent`, 
+    style = { position: `relative`, ...(rounded == false ? { borderRadius: 2 } : {}), },
 }: any) {
     const router = useRouter();
     const handleClick = (e?: MouseEventHandler<HTMLButtonElement> | any) => {
@@ -28,20 +30,37 @@ export default function Icon_Button({
     };
     return (
         <Tooltip title={title} arrow>
-            <IconButton 
-                id={id}
-                size={`small`} 
-                onClick={disabled ? undefined : handleClick}
-                className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
-                style={{ 
-                    ...style, 
-                    maxWidth: size, 
-                    maxHeight: size, 
-                    ...(disabled ? { pointerEvents: `none` } : {}), 
-                }} 
-            >
-                {children}
-            </IconButton>
+            {button == true ? (
+                <Button 
+                    id={id}
+                    size={`small`} 
+                    onClick={disabled ? undefined : handleClick}
+                    className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
+                    style={{ 
+                        ...style, 
+                        maxWidth: size, 
+                        maxHeight: size, 
+                        ...(disabled ? { pointerEvents: `none` } : {}), 
+                    }} 
+                >
+                    {children}
+                </Button>
+            ) : (
+                <IconButton 
+                    id={id}
+                    size={`small`} 
+                    onClick={disabled ? undefined : handleClick}
+                    className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
+                    style={{ 
+                        ...style, 
+                        maxWidth: size, 
+                        maxHeight: size, 
+                        ...(disabled ? { pointerEvents: `none` } : {}), 
+                    }} 
+                >
+                    {children}
+                </IconButton>
+            )}
         </Tooltip>
     )
 }

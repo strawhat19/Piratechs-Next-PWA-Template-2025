@@ -6,8 +6,8 @@ import { Roles } from '@/shared/types/types';
 import { Button, Dialog } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { ChangeEvent, FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Add, ClearAll, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
+import { ChangeEvent, FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { addProductToDatabase, storage, updateProductInDatabase } from '@/shared/server/firebase';
 import { capWords, customDate, getNextCollectionNumber, minRole, stringNoSpaces } from '@/shared/scripts/constants';
 import { Product, ProductCategory, ProductImage, ProductStatus, ProductType, ProductVariant } from '@/shared/types/models/Product';
@@ -16,12 +16,13 @@ type ProductFormProps = {
     full?: boolean;
     open?: boolean;
     widget?: boolean;
-    product?: Product | null;
-    onClose?: () => void;
-    onSaved?: (product: Product) => void;
+    funsized?: boolean;
     className?: string;
+    onClose?: () => void;
     fullFormURL?: string;
+    product?: Product | null;
     onCancelEdit?: () => void;
+    onSaved?: (product: Product) => void;
     onFullEdit?: (product: Product | null) => void;
 };
 
@@ -101,9 +102,9 @@ const uploadProductImages = async (files: File[], product: Product, startIndex =
     return Promise.all(uploads);
 }
 
-const ProductField = ({ label, showInput = true, ...props }: any) => (
+const ProductField = ({ label, showInput = true, funsized = false, ...props }: any) => (
     <label className={`productField`}>
-        <span>{label}</span>
+        {!funsized && <span>{label}</span>}
         {showInput && <input placeholder={label} {...props} />}
     </label>
 );
@@ -126,10 +127,11 @@ export default function ProductForm({
     full = false,
     product = null,
     widget = false,
+    funsized = false,
     onClose = () => {},
     onSaved = () => {},
-    onCancelEdit = undefined,
     onFullEdit = undefined,
+    onCancelEdit = undefined,
     className = `productFormComponent`,
     fullFormURL = `/store/product-form`,
 }: ProductFormProps) {
@@ -241,7 +243,6 @@ export default function ProductForm({
                 taxable: form?.taxable,
                 category: form?.category,
                 currency: form?.currency,
-                categories: [form?.category].filter(Boolean),
                 tags: parseList(form?.tags),
                 title: capWords(form?.name),
                 productType: form?.productType,
@@ -252,6 +253,7 @@ export default function ProductForm({
                 trackInventory: form?.trackInventory,
                 requiresShipping: form?.requiresShipping,
                 shortDescription: form?.shortDescription,
+                categories: [form?.category].filter(Boolean),
                 ...(editing ? {} : { created_by: username, }),
                 compareAtPrice: dollarsToCents(form?.compareAtPrice),
                 lowStockThreshold: Number(form?.lowStockThreshold || 5),
@@ -284,19 +286,25 @@ export default function ProductForm({
         }
     }
 
-    if (!canManageProducts) return compact ? null : <div className={`productFormRestricted`}>Product Form Restricted</div>;
+    if (!canManageProducts) return compact ? null : (
+        <div className={`productFormRestricted`}>
+            Product Form Restricted
+        </div>
+    );
 
     return (
-        <div className={`${className} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
+        <div className={`${className} ${funsized ? `funsized` : ``} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
             <form ref={formRef} onSubmit={saveProduct}>
                 <div className={`productFormHeader`}>
-                    <div>
-                        <h3>
-                            {product?.id ? `Editing Product #${form?.number} "${form?.name}"` : (
-                                compact ? `Create Product (${form?.number})` : `Product Form`
-                            )}
-                        </h3>
-                    </div>
+                    {!funsized && (
+                        <div className={`productFormTitle`}>
+                            <h3>
+                                {product?.id ? `Editing Product #${form?.number} "${form?.name}"` : (
+                                    compact ? `Create Product (${form?.number})` : `Product Form`
+                                )}
+                            </h3>
+                        </div>
+                    )}
                     <div className={`productFormActions`}>
                         {compact ? <Button type={`button`} className={`productFormButton`} onClick={openFullForm}><OpenInFull fontSize={`small`} /> Full</Button> : <></>}
                         <Button type={`button`} className={`productFormButton`} onClick={clearProductForm}><ClearAll fontSize={`small`} /> Clear</Button>
@@ -305,10 +313,10 @@ export default function ProductForm({
                     </div>
                 </div>
                 <div className={`productFormGrid`}>
-                    {!compact ? <ProductField disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} /> : <></>}
-                    <ProductField label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
-                    <ProductField label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
-                    <ProductField label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
+                    {!compact ? <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} /> : <></>}
+                    <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
+                    <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
+                    <ProductField funsized={funsized} label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
                     {product != null && <>
                         <ProductSelectField label={`Category`} name={`category`} value={form?.category} onChange={updateForm}>
                             {Object.values(ProductCategory).map(category => <option key={category} value={category}>{category}</option>)}
@@ -320,7 +328,7 @@ export default function ProductForm({
                             {Object.values(ProductStatus).map(status => <option key={status} value={status}>{status}</option>)}
                         </ProductSelectField>
                     </>}
-                    <ProductField label={`Image(s)`} name={`imageURLs`} type={`upload`} value={form?.imageURLs} onChange={updateForm} showInput={true} />
+                    <ProductField funsized={funsized} label={`Image(s)`} name={`imageURLs`} type={`upload`} value={form?.imageURLs} onChange={updateForm} showInput={true} />
                     {/* <div>
                         <span className={`productFieldLabelText`}>Image(s)</span>
                         <label className={`productUploadField`}>
@@ -332,17 +340,17 @@ export default function ProductForm({
                 </div>
                 {!compact ? <>
                     <div className={`productFormGrid`}>
-                        <ProductField label={`SKU`} name={`sku`} type={`text`} value={form?.sku} onChange={updateForm} />
-                        <ProductField label={`Vendor`} name={`vendor`} type={`text`} value={form?.vendor} onChange={updateForm} />
-                        <ProductField label={`Brand`} name={`brand`} type={`text`} value={form?.brand} onChange={updateForm} />
-                        <ProductField label={`Tag(s)`} name={`tags`} type={`text`} value={form?.tags} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`SKU`} name={`sku`} type={`text`} value={form?.sku} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Vendor`} name={`vendor`} type={`text`} value={form?.vendor} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Brand`} name={`brand`} type={`text`} value={form?.brand} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Tag(s)`} name={`tags`} type={`text`} value={form?.tags} onChange={updateForm} />
                     </div>
                     <div className={`productFormGrid`}>
-                        <ProductField label={`Cost`} name={`cost`} type={`number`} min={`0`} step={`0.01`} value={form?.cost} onChange={updateForm} />
-                        <ProductField label={`Weight`} name={`weight`} type={`number`} min={`0`} step={`0.01`} value={form?.weight} onChange={updateForm} />
-                        <ProductField label={`Currency`} name={`currency`} type={`text`} value={form?.currency} onChange={updateForm} />
-                        <ProductField label={`Compare At`} name={`compareAtPrice`} type={`number`} min={`0`} step={`0.01`} value={form?.compareAtPrice} onChange={updateForm} />
-                        <ProductField label={`Low Stock`} name={`lowStockThreshold`} type={`number`} min={`0`} step={`1`} value={form?.lowStockThreshold} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Cost`} name={`cost`} type={`number`} min={`0`} step={`0.01`} value={form?.cost} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Weight`} name={`weight`} type={`number`} min={`0`} step={`0.01`} value={form?.weight} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Currency`} name={`currency`} type={`text`} value={form?.currency} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Compare At`} name={`compareAtPrice`} type={`number`} min={`0`} step={`0.01`} value={form?.compareAtPrice} onChange={updateForm} />
+                        <ProductField funsized={funsized} label={`Low Stock`} name={`lowStockThreshold`} type={`number`} min={`0`} step={`1`} value={form?.lowStockThreshold} onChange={updateForm} />
                     </div>
                     <div className={`productFormChecks`}>
                         <label><input name={`taxable`} type={`checkbox`} checked={form?.taxable} onChange={updateForm} /> Taxable</label>
@@ -362,11 +370,11 @@ export default function ProductForm({
                         </div>
                         {variants.map((variant, index) => (
                             <div key={`${index}_${variant?.sku}`} className={`productVariantRow`}>
-                                <ProductField label={`Title`} value={variant?.title} onChange={(event: any) => updateVariant(index, `title`, event?.target?.value)} />
-                                <ProductField label={`Option`} value={variant?.option1} onChange={(event: any) => updateVariant(index, `option1`, event?.target?.value)} />
-                                <ProductField label={`SKU`} value={variant?.sku} onChange={(event: any) => updateVariant(index, `sku`, event?.target?.value)} />
-                                <ProductField label={`Price`} type={`number`} min={`0`} step={`0.01`} value={variant?.price} onChange={(event: any) => updateVariant(index, `price`, event?.target?.value)} />
-                                <ProductField label={`Qty`} type={`number`} min={`0`} step={`1`} value={variant?.inventoryQuantity} onChange={(event: any) => updateVariant(index, `inventoryQuantity`, event?.target?.value)} />
+                                <ProductField funsized={funsized} label={`Title`} value={variant?.title} onChange={(event: any) => updateVariant(index, `title`, event?.target?.value)} />
+                                <ProductField funsized={funsized} label={`Option`} value={variant?.option1} onChange={(event: any) => updateVariant(index, `option1`, event?.target?.value)} />
+                                <ProductField funsized={funsized} label={`SKU`} value={variant?.sku} onChange={(event: any) => updateVariant(index, `sku`, event?.target?.value)} />
+                                <ProductField funsized={funsized} label={`Price`} type={`number`} min={`0`} step={`0.01`} value={variant?.price} onChange={(event: any) => updateVariant(index, `price`, event?.target?.value)} />
+                                <ProductField funsized={funsized} label={`Qty`} type={`number`} min={`0`} step={`1`} value={variant?.inventoryQuantity} onChange={(event: any) => updateVariant(index, `inventoryQuantity`, event?.target?.value)} />
                                 <label><input type={`checkbox`} checked={variant?.taxable} onChange={(event) => updateVariant(index, `taxable`, event?.target?.checked)} /> Tax</label>
                                 <label><input type={`checkbox`} checked={variant?.requiresShipping} onChange={(event) => updateVariant(index, `requiresShipping`, event?.target?.checked)} /> Ship</label>
                                 <Button type={`button`} className={`productFormButton productRemoveButton`} onClick={() => removeVariant(index)}><Remove fontSize={`small`} /></Button>
