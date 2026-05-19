@@ -7,10 +7,11 @@ import { Roles } from '@/shared/types/types';
 import { GridColDef } from '@mui/x-data-grid';
 import { JSX, useContext, useState } from 'react';
 import { minRole } from '@/shared/scripts/constants';
+import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
-import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown, ShoppingCart, Circle, Logout, Delete } from '@mui/icons-material';
+import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown, ShoppingCart, Logout, Delete } from '@mui/icons-material';
 
 const roleIcons: Record<Roles, JSX.Element> = {
   [Roles.Guest]: <Person fontSize={`small`} color={`secondary`} />,
@@ -93,22 +94,7 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
     };
   return (
     <div className="actionsCell">
-        <div className={`rowStatus`}>
-            <span className="statusDotWrap">
-                <Circle
-                    className="statusDot"
-                    style={{
-                        color: statusColor,
-                        filter: online
-                        ? `drop-shadow(0 0 6px var(--forest_neon_green))`
-                        : `none`,
-                    }}
-                />
-            </span>
-            <span className="statusText">
-                {statusLabel}
-            </span>
-        </div>
+        <TableStatus label={statusLabel} color={statusColor} />
         <div className={`actions`}>
             {minRole(user?.role, Roles.Editor) ? <>
                 <Icon_Button title="Edit User" size="small"

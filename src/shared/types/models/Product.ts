@@ -1,6 +1,6 @@
 import { Data } from './Data';
 import { DataSources, Types } from '../types';
-import { capWords, countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
+import { capWords, countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
 
 export enum ProductStatus {
   Draft = `Draft`,
@@ -126,6 +126,7 @@ export class Product extends Data {
   stripePriceID?: string = ``;
   stripeProductID?: string = ``;
 
+  externalProductID?: string = ``;
   shopifyID?: number | string;
   adminGraphqlApiID?: string = ``;
   handle?: string = ``;
@@ -158,13 +159,23 @@ export class Product extends Data {
   constructor(data: Partial<Product> = {}) {
     const productData = data as Partial<Product> & Record<string, any>;
     const productName = productData.name || productData.title;
-    super({ ...productData, name: productName, type: Types.Product, created: productData.created ?? productData.created_at, updated: productData.updated ?? productData.updated_at });
+    const hasAppProductID = isAppCollectionID(productData?.id, Types.Product);
+    super({ ...productData, id: hasAppProductID ? productData?.id : undefined, name: productName, type: Types.Product, created: productData.created ?? productData.created_at, updated: productData.updated ?? productData.updated_at });
+    const appID = this.id;
+    const appUUID = this.uuid;
+    const appTitle = this.title;
     Object.assign(this, productData);
+    if (!hasAppProductID) {
+      this.id = appID;
+      this.uuid = appUUID;
+      this.title = appTitle;
+      if (isValid(productData?.id) && !isValid(this.externalProductID)) this.externalProductID = String(productData?.id);
+    }
 
     const variants = Array.isArray(this.variants) ? this.variants : [];
-    const firstVariant = this.variant || variants[0];
+    const firstVariant = this.variant || variants?.[0];
     const images = Array.isArray(this.images) ? this.images : [];
-    const firstImage = this.image || images[0];
+    const firstImage = this.image || images?.[0];
 
     if (isValid(productData.id) && !isValid(this.shopifyID) && typeof productData.id == `number`) this.shopifyID = productData.id;
     if (isValid(productData.title) && !isValid(this.name)) this.name = String(productData.title);

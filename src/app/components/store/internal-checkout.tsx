@@ -57,7 +57,7 @@ const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentForm
         });
 
         if (result.error) {
-            const errorMessage = result.error.message || `Payment could not be completed.`;
+            const errorMessage = result.error.message || `Payment Could Not Be Completed`;
             setMessage(errorMessage);
             toast.error(errorMessage);
             setSubmitting(false);
@@ -70,7 +70,7 @@ const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentForm
                 toast.success(`Payment Completed Successfully`);
                 onSuccess();
             } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : `Payment completed, but order sync failed.`;
+                const errorMessage = error instanceof Error ? error.message : `Payment Completed, Order Sync Failed`;
                 setMessage(errorMessage);
                 toast.error(errorMessage);
             }
@@ -159,12 +159,12 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                 const paymentIntent = await response.json();
 
                 if (!response.ok || !paymentIntent?.clientSecret) {
-                    throw new Error(paymentIntent?.message || `Unable to start internal checkout.`);
+                    throw new Error(paymentIntent?.message || `Unable To Start Internal Checkout`);
                 }
 
                 setClientSecret(paymentIntent.clientSecret);
             } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : `Unable to start internal checkout.`;
+                const errorMessage = error instanceof Error ? error.message : `Unable To Start Internal Checkout`;
                 setMessage(errorMessage);
                 toast.error(errorMessage);
             } finally {
@@ -185,7 +185,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
             body: JSON.stringify({ paymentIntentID }),
         });
         const result = await response.json();
-        if (!response.ok || !result?.ok) throw new Error(result?.message || `Payment completed, but order sync failed.`);
+        if (!response.ok || !result?.ok) throw new Error(result?.message || `Payment Completed, Order Sync Failed`);
     }
 
     if (cart.length == 0) return null;

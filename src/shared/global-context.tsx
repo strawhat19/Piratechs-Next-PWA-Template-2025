@@ -222,12 +222,18 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }
 
     const boardsUnsubRef = useRef<null | (() => void)>(null);
+    const boardDataUnsubsRef = useRef<(() => void)[]>([]);
 
     const stopBoardsListener = () => {
         if (boardsUnsubRef.current) {
             boardsUnsubRef.current();
             boardsUnsubRef.current = null;
         }
+    };
+
+    const stopBoardDataListeners = () => {
+        boardDataUnsubsRef.current.forEach(unsub => unsub?.());
+        boardDataUnsubsRef.current = [];
     };
 
     // useEffect(() => {
@@ -257,37 +263,53 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }
 
     useEffect(() => {
-        if (!onBoards) return;
+        if (!onBoards) {
+            stopBoardDataListeners();
+            return;
+        }
         let selectedBoard: Board = user?.data?.board;
-        if (!selectedBoard?.id) return;
+        if (!selectedBoard?.id) {
+            stopBoardDataListeners();
+            return;
+        }
         const listsRef = collection(db, Tables.lists).withConverter(listConverter);
         const listsQuery = query(listsRef, where(`boardIDs`, `array-contains`, selectedBoard?.id));
         const unsubLists = onSnapshot(listsQuery, listSnap => {
+            stopBoardDataListeners();
             const lists = listSnap.docs.map(d => new List({ ...d.data(), board: selectedBoard }));
             setUser((prev: User | any) => prev ? ({ ...prev, lists, data: { ...prev?.data, board: { ...prev?.data?.board, lists } } }) : prev);
-            const unsubItemsArr = lists.map((list: List) => {
+            boardDataUnsubsRef.current = lists.map((list: List) => {
                 const itemsRef = collection(db, Tables.items).withConverter(itemConverter);
                 const itemsQuery = query(itemsRef, where(`listIDs`, `array-contains`, list?.id));
-                return onSnapshot(itemsQuery, itemSnap => {
+                let taskUnsubs: (() => void)[] = [];
+                const unsubItems = onSnapshot(itemsQuery, itemSnap => {
+                    taskUnsubs.forEach(unsub => unsub?.());
+                    taskUnsubs = [];
                     const items = itemSnap.docs.map(d => new Item({ ...d.data(), board: selectedBoard, list }));
                     const updatedLists = lists?.map(l => new List({ ...l, items: items?.filter(i => i?.listID == l?.id) }));
                     setUser((prev: User | any) => prev ? ({ ...prev, items, lists: updatedLists, data: { ...prev?.data, lists: updatedLists, items } }) : prev);
-                    items.forEach((item: Item) => {
+                    taskUnsubs = items.map((item: Item) => {
                         const tasksRef = collection(db, Tables.tasks).withConverter(taskConverter);
                         const tasksQuery = query(tasksRef, where(`itemIDs`, `array-contains`, item?.id));
-                        onSnapshot(tasksQuery, taskSnap => {
+                        return onSnapshot(tasksQuery, taskSnap => {
                             const tasks = taskSnap.docs.map(d => new Task({ ...d.data(), board: selectedBoard, list, item }));
                             dev() && tasks?.length > 0 && console.log(`Tasks for Item "${item?.name}"`, tasks);
                         });
                     });
                     // dev() && items?.length > 0 && console.log(`Items for List "${list?.name}"`, items);
                 });
+                return () => {
+                    unsubItems?.();
+                    taskUnsubs.forEach(unsub => unsub?.());
+                };
             });
             // dev() && lists?.length > 0 && console.log(`Lists for Board "${selectedBoard?.name}"`, lists);
-            return () => unsubItemsArr.forEach(unsub => unsub());
         });
-        return () => unsubLists();
-    }, [user?.data?.board?.id]);
+        return () => {
+            unsubLists?.();
+            stopBoardDataListeners();
+        };
+    }, [onBoards, user?.data?.board?.id]);
 
     useEffect(() => {
         if (!user?.id) {
@@ -376,7 +398,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         setOrdersLoading(true);
         const ordersDB = collection(db, Tables.orders).withConverter(orderConverter);
         const ordersDBQueryListener = onSnapshot(ordersDB, ordersDBDocs => {
-            const dbOrders = ordersDBDocs.docs.map(d => new StoreOrder(d.data())).sort((a, b) => new Date(b?.stripeCreated || b?.created || 0).getTime() - new Date(a?.stripeCreated || a?.created || 0).getTime());
+            const dbOrders = ordersDBDocs.docs.map(d => new StoreOrder(d.data())).sort((a, b) => new Date(b?.stripe_created || b?.stripeCreated || b?.created || 0).getTime() - new Date(a?.stripe_created || a?.stripeCreated || a?.created || 0).getTime());
             setOrders(dbOrders);
             setOrdersLoading(false);
             dev() && console.log(`Order(s)`, dbOrders);

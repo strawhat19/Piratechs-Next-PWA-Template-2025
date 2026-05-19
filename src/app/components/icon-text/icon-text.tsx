@@ -18,6 +18,7 @@ export default function IconText({
     fontWeight = 400,
     decimalPlaces = 2,
     dollarSign = false, 
+    dollarSignColor = `var(--success)`,
     profitLoss = false,
     style = { opacity: 1 },
     className = `iconTextComponent`, 
@@ -28,7 +29,7 @@ export default function IconText({
             {text == `` ? <>
                 {showIcon ? (
                     dollarSign ? (
-                        <strong style={{ color: `var(--success)` }}>
+                        <strong style={{ color: dollarSignColor }}>
                             $
                         </strong>
                     ) : icon

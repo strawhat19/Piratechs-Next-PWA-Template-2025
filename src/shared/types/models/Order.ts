@@ -1,6 +1,6 @@
 import { Data } from './Data';
 import { DataSources, Types } from '../types';
-import { countPropertiesInObject, genID, isValid } from '@/shared/scripts/constants';
+import { countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
 
 export enum OrderStatus {
   Pending = `Pending`,
@@ -42,6 +42,17 @@ export class Order extends Data {
   userEmail?: string = ``;
   userName?: string = ``;
   customerID?: string = ``;
+  stripe_order_id?: string = ``;
+  stripe_customer_id?: string = ``;
+  stripe_payment_method_id?: string = ``;
+  stripe_payment_intent_id?: string = ``;
+  stripe_checkout_session_id?: string = ``;
+  stripe_charge_id?: string = ``;
+  stripe_balance_transaction_id?: string = ``;
+  stripe_receipt_url?: string = ``;
+  stripe_created?: string = ``;
+  stripe_status?: string = ``;
+  stripe_livemode?: boolean = false;
   stripeCustomerID?: string = ``;
   stripePaymentIntentID?: string = ``;
   stripeCheckoutSessionID?: string = ``;
@@ -50,6 +61,7 @@ export class Order extends Data {
   stripeCreated?: string = ``;
   stripeStatus?: string = ``;
   stripeLivemode?: boolean = false;
+  stripeDescription?: string = ``;
   receiptURL?: string = ``;
   amount: number = 0;
   amountSubtotal: number = 0;
@@ -70,9 +82,36 @@ export class Order extends Data {
   metadata?: Record<string, string | number | boolean> = {};
 
   constructor(data: Partial<Order> = {}) {
-    super({ ...data, type: Types.Order });
+    const orderData = data as Partial<Order> & Record<string, any>;
+    const hasAppOrderID = isAppCollectionID(orderData?.id, Types.Order);
+    const possibleStripeOrderID = !hasAppOrderID && isValid(orderData?.id) ? String(orderData?.id) : orderData?.stripe_order_id || orderData?.stripe_payment_intent_id || orderData?.stripePaymentIntentID || orderData?.stripe_checkout_session_id || orderData?.stripeCheckoutSessionID || orderData?.stripe_charge_id || orderData?.stripeChargeID;
+    super({ ...data, id: hasAppOrderID ? orderData?.id : undefined, type: Types.Order });
+    const appID = this.id;
+    const appUUID = this.uuid;
+    const appTitle = this.title;
     Object.assign(this, data);
 
+    if (!hasAppOrderID) {
+      this.id = appID;
+      this.uuid = appUUID;
+      this.title = appTitle;
+      if (!isValid(this.stripe_order_id) && isValid(possibleStripeOrderID)) this.stripe_order_id = possibleStripeOrderID;
+    }
+    if (!isValid(this.stripePaymentIntentID) && isValid(this.stripe_payment_intent_id)) this.stripePaymentIntentID = this.stripe_payment_intent_id;
+    if (!isValid(this.stripe_payment_intent_id) && isValid(this.stripePaymentIntentID)) this.stripe_payment_intent_id = this.stripePaymentIntentID;
+    if (!isValid(this.stripeCheckoutSessionID) && isValid(this.stripe_checkout_session_id)) this.stripeCheckoutSessionID = this.stripe_checkout_session_id;
+    if (!isValid(this.stripe_checkout_session_id) && isValid(this.stripeCheckoutSessionID)) this.stripe_checkout_session_id = this.stripeCheckoutSessionID;
+    if (!isValid(this.stripeChargeID) && isValid(this.stripe_charge_id)) this.stripeChargeID = this.stripe_charge_id;
+    if (!isValid(this.stripe_charge_id) && isValid(this.stripeChargeID)) this.stripe_charge_id = this.stripeChargeID;
+    if (!isValid(this.stripeCustomerID) && isValid(this.stripe_customer_id)) this.stripeCustomerID = this.stripe_customer_id;
+    if (!isValid(this.stripe_customer_id) && isValid(this.stripeCustomerID)) this.stripe_customer_id = this.stripeCustomerID;
+    if (!isValid(this.stripeCreated) && isValid(this.stripe_created)) this.stripeCreated = this.stripe_created;
+    if (!isValid(this.stripe_created) && isValid(this.stripeCreated)) this.stripe_created = this.stripeCreated;
+    if (!isValid(this.stripeStatus) && isValid(this.stripe_status)) this.stripeStatus = this.stripe_status;
+    if (!isValid(this.stripe_status) && isValid(this.stripeStatus)) this.stripe_status = this.stripeStatus;
+    if (!isValid(this.receiptURL) && isValid(this.stripe_receipt_url)) this.receiptURL = this.stripe_receipt_url;
+    if (!isValid(this.stripe_receipt_url) && isValid(this.receiptURL)) this.stripe_receipt_url = this.receiptURL;
+    if (!isValid(this.stripe_order_id)) this.stripe_order_id = this.stripePaymentIntentID || this.stripeCheckoutSessionID || this.stripeChargeID || ``;
     if (!isValid(this.name)) this.name = `Order`;
     if (!isValid(this.lineItems) && isValid(this.cartItems)) this.lineItems = this.cartItems;
     if (!isValid(this.cartItems) && isValid(this.lineItems)) this.cartItems = this.lineItems;

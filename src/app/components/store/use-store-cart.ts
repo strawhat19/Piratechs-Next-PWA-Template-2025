@@ -82,7 +82,7 @@ export const useStoreCart = () => {
 
     const clearCart = () => {
         saveCart([]);
-        toast.info(`Cart cleared.`);
+        toast.info(`Cart Cleared`);
     };
 
     const checkoutCart = async () => {
@@ -92,7 +92,7 @@ export const useStoreCart = () => {
         }
 
         if (cart.length == 0) {
-            toast.error(`Add at least one product before checkout.`);
+            toast.error(`Add Product(s) Before Checkout`);
             return;
         }
 
@@ -121,12 +121,12 @@ export const useStoreCart = () => {
             const checkout = await response.json();
 
             if (!response.ok || !checkout?.url) {
-                throw new Error(checkout?.message || `Stripe checkout is unavailable.`);
+                throw new Error(checkout?.message || `Stripe Checkout Unavailable`);
             }
 
             window.location.href = checkout.url;
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : `Stripe checkout is unavailable.`);
+            toast.error(error instanceof Error ? error.message : `Stripe Checkout Unavailable`);
             setCheckingOut(false);
         }
     };
@@ -176,11 +176,11 @@ export const useCheckoutReturnToast = (saveCart: (items: CartItem[]) => void) =>
                 saveCart([]);
                 toast.success(`Payment Completed Successfully`);
             } else if (checkout == `canceled`) {
-                toast.error(`Payment Checkout was Canceled`);
+                toast.error(`Payment Checkout Canceled`);
             }
         }
 
-        completeCheckout().catch(error => toast.error(error instanceof Error ? error.message : `Payment completed, but order sync failed.`));
+        completeCheckout().catch(error => toast.error(error instanceof Error ? error.message : `Payment Completed, Order Sync Failed`));
 
         if (checkout) {
             params.delete(`checkout`);

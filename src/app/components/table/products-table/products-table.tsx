@@ -1,41 +1,43 @@
 'use client';
 
 import Table from '../table';
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
-import { useContext } from 'react';
-import Icon_Button from '../../buttons/icon-button/icon-button';
-import { Product } from '@/shared/types/models/Product';
-import { StateGlobals } from '@/shared/global-context';
-import { AddShoppingCart, Inventory2 } from '@mui/icons-material';
 import { GridColDef } from '@mui/x-data-grid';
+import IconText from '../../icon-text/icon-text';
+import { AddShoppingCart } from '@mui/icons-material';
+import TableStatus from '../table-status/table-status';
+import { StateGlobals } from '@/shared/global-context';
+import { Product } from '@/shared/types/models/Product';
+import Icon_Button from '../../buttons/icon-button/icon-button';
 
-const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(`en-US`, {
-        style: `currency`,
-        currency: `USD`,
-    }).format(price / 100);
-};
+const storeDollarSignColor = `var(--green_neon)`;
+
+const getProductStatusColor = (product: Product) => {
+    const status = String(product?.status || ``).toLowerCase();
+    if (status.includes(`out`) || status.includes(`archived`) || product?.stock <= 0) return `red`;
+    if (status.includes(`active`) && product?.stock > 0) return `var(--green_neon)`;
+    return `rgba(255,255,255,0.35)`;
+}
 
 const ProductActionsCell = ({ row, onAddToCart }: { row: Product; onAddToCart: (product: Product) => void }) => {
     const canAddToCart = row.stock > 0;
+    const statusColor = getProductStatusColor(row);
 
     return (
         <div className={`actionsCell productActionsCell`}>
-            <div className={`rowStatus`}>
-                <Inventory2 className={`statusDot`} htmlColor={canAddToCart ? `var(--green_neon)` : `var(--disabled)`} />
-                <span className={`statusText`}>{row.status}</span>
-            </div>
+            <TableStatus label={row?.status} color={statusColor} />
             <div className={`actions`}>
                 <Icon_Button
                     size={26}
-                    title={canAddToCart ? `Add to Cart` : `Out of Stock`}
+                    title={canAddToCart ? `Add To Cart` : `Out Of Stock`}
                     disabled={!canAddToCart}
                     className={`actionIconButton addToCartAction`}
                     onClick={(event: any) => {
                         event.stopPropagation();
                         onAddToCart(row);
-                        toast.success(`${row.name} added to cart.`);
+                        toast.success(`${row?.name} Added To Cart`);
                     }}
                 >
                     <AddShoppingCart fontSize={`small`} />
@@ -57,9 +59,15 @@ export default function ProductsTable({ onAddToCart = () => {} }: { onAddToCart?
             field: `price`,
             headerName: `Price`,
             width: 105,
-            renderCell: ({ value }: any) => <>{formatPrice(value)}</>,
+            renderCell: ({ value }: any) => <IconText dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />,
         },
-        { field: `stock`, type: `number`, headerName: `Stock`, width: 95 },
+        {
+            field: `stock`,
+            type: `number`,
+            headerName: `Stock`,
+            width: 95,
+            renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
+        },
         {
             minWidth: 165,
             field: `actions`,
