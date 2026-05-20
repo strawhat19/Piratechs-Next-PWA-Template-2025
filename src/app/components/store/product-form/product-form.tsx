@@ -1,7 +1,6 @@
 'use client';
 
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 import { Roles } from '@/shared/types/types';
 import Img from '@/app/components/image/image';
 import { Button, Dialog, Skeleton } from '@mui/material';
@@ -19,7 +18,6 @@ type ProductFormProps = {
     funsized?: boolean;
     className?: string;
     onClose?: () => void;
-    fullFormURL?: string;
     product?: Product | null;
     onCancelEdit?: () => void;
     onSaved?: (product: Product) => void;
@@ -211,9 +209,7 @@ export default function ProductForm({
     onFullEdit = undefined,
     onCancelEdit = undefined,
     className = `productFormComponent`,
-    fullFormURL = `/store/product-form`,
 }: ProductFormProps) {
-    const router = useRouter();
     const preserveFormOnProductClearRef = useRef(false);
     const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -240,11 +236,10 @@ export default function ProductForm({
     }
 
     const openFullForm = () => {
-        if (product?.id && onFullEdit) {
-            onFullEdit(product);
+        if (onFullEdit) {
+            onFullEdit(product?.id ? product : null);
             return;
         }
-        router.push(fullFormURL);
     }
 
     const updateForm = (event: any) => {
@@ -355,9 +350,9 @@ export default function ProductForm({
                 requiresShipping: form?.requiresShipping,
                 shortDescription: form?.shortDescription,
                 categories: [form?.category].filter(Boolean),
-                ...(editing ? {} : { created_by: username, }),
                 compareAtPrice: dollarsToCents(form?.compareAtPrice),
                 lowStockThreshold: Number(form?.lowStockThreshold || 5),
+                ...(editing ? {} : { created_by: username, created_at: customDate()?.update }),
             });
             const productToSave = new Product({
                 ...productDraft,
@@ -410,7 +405,7 @@ export default function ProductForm({
                         </div>
                     )}
                     <div className={`productFormActions`}>
-                        {compact ? (
+                        {(compact && product != null) ? (
                             <Button type={`button`} className={`productFormButton`} onClick={openFullForm}>
                                 <OpenInFull fontSize={`small`} /> Full
                             </Button>

@@ -175,7 +175,7 @@ export default function ProductsTable({
                 <IconText format={false} dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />
             ),
         },
-        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 300, },
+        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 220, },
         {
             width: 70,
             sortable: false,
@@ -192,9 +192,11 @@ export default function ProductsTable({
         //     headerName: `Stock`,
         //     renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
         // },
-        { field: `category`, headerName: `Category`, width: 100 },
-        { field: `created_by`, headerName: `Created By`, width: 175 },
-        { field: `updated_by`, headerName: `Updated By`, width: 175 },
+        { field: `category`, headerName: `Category`, width: 85 },
+        { field: `created_by`, headerName: `Created By`, width: 145 },
+        { field: `updated_by`, headerName: `Updated By`, width: 145 },
+        { field: `created_at`, headerName: `Created`, width: 145 },
+        { field: `updated`, headerName: `Updated`, width: 145 },
         // { field: `sku`, headerName: `SKU`, width: 130 },
         // { field: `productType`, headerName: `Type`, width: 120 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },

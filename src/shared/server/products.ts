@@ -2,8 +2,8 @@ import { Types } from '../types/types';
 import { db, Tables } from './firebase';
 import { Product, ProductStatus } from '../types/models/Product';
 import { archiveStripeProduct, syncStripeProduct } from './stripe-products';
-import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { customDate, getAppCollectionIDNumber, getNextCollectionNumber, isAppCollectionID } from '../scripts/constants';
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 
 const cleanFirestoreData = (value: any) => JSON.parse(JSON.stringify(value));
 const attachmentKey = (attachment: any) => JSON.stringify({
@@ -36,7 +36,7 @@ export const normalizeProductForSave = async (data: any, previousDocumentID?: st
   const numberAvailable = requestedNumber > 0 && !otherProducts.some(product => Number(product?.number || getAppCollectionIDNumber(product?.id, Types.Product)) == requestedNumber);
   const number = numberAvailable ? requestedNumber : getNextCollectionNumber(otherProducts);
   const keepID = isAppCollectionID(data?.id, Types.Product) && getAppCollectionIDNumber(data?.id, Types.Product) == number;
-  return new Product({ ...data, id: keepID ? data?.id : undefined, number, updated: customDate()?.datetime });
+  return new Product({ ...data, id: keepID ? data?.id : undefined, number, updated: customDate()?.update });
 }
 
 export const saveProduct = async (data: any, previousDocumentID?: string) => {

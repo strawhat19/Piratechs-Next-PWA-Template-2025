@@ -102,7 +102,7 @@
   }
   .productFormHeader {
     width: 100%;
-    min-width: 235px;
+    min-width: 155px;
     max-height: 30px;
     max-width: fit-content;
     justify-content: flex-end;
@@ -120,6 +120,7 @@
       height: 27px !important;
       min-height: 27px !important;
       max-height: 27px !important;
+      border-radius: 4px !important;
     }
   }
 }
