@@ -10,6 +10,7 @@ import { auth } from '@/shared/server/firebase';
 import IconText from '../../icon-text/icon-text';
 import { Roles, Types } from '@/shared/types/types';
 import { Order } from '@/shared/types/models/Order';
+import ZeroState from '../../zero-state/zero-state';
 import { useContext, useMemo, useState } from 'react';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
@@ -116,6 +117,10 @@ export default function OrdersTable({
     ];
 
     if (ordersLoading) return <Loader height={250} label={`${type}(s) Loading`} />;
+
+    if (user == null) {
+        return <ZeroState type={Types.Order} />
+    }
 
     return (
         <div className={`ordersTableWrap`}>
