@@ -231,7 +231,7 @@ export default function ProductsTable({
                 columns={productColumns}
                 className={`productsTableComponent`}
                 title={(
-                    <div className={`tableHeaderComponent`}>
+                    <div className={`tableHeaderComponent tableHeaderForm`}>
                         {type}(s)
                         <ProductForm
                             widget

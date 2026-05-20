@@ -82,8 +82,25 @@
       width: 90%;
       display: flex;
       align-items: center;
+      &:has(.tableHeaderSimple) {
+        top: 12px !important;
+      }
     }
   }
+}
+
+.tableHeaderComponent {
+  width: 100%;
+  display: flex;
+  grid-gap: 15px;
+  align-items: center;
+}
+
+.tableButton {
+  height: 27px !important;
+  min-height: 27px !important;
+  max-height: 27px !important;
+  border-radius: 4px !important;
 }
 
 .funsized {
@@ -119,19 +136,13 @@
     grid-gap: 2px !important;
     justify-content: space-evenly;
     button {
-      height: 27px !important;
-      min-height: 27px !important;
-      max-height: 27px !important;
-      border-radius: 4px !important;
+      @extend .tableButton;
     }
   }
 }
 
-.tableHeaderComponent {
-  width: 100%;
-  display: flex;
-  grid-gap: 15px;
-  align-items: center;
+.tableControlsButton {
+  @extend .tableButton;
 }
 
 .table_header_row_count {

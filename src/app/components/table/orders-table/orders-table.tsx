@@ -133,11 +133,11 @@ export default function OrdersTable({
                 pagination_options={{ page: 0, pageSize: 10 }} 
                 emptyRowsLabel={`(${visibleOrders?.length}) ${type}(s), Sign In or Check Role Permission(s)`} 
                 title={(
-                    <div className={`tableHeaderComponent`}>
+                    <div className={`tableHeaderComponent tableHeaderSimple`}>
                         {type}(s)
                         {canManageOrders ? (
-                            <div className={`tableControls`} style={{ display: `flex`, justifyContent: `flex-end`, marginBottom: 8 }}>
-                                <Button size={`small`} variant={`outlined`} disabled={syncing} onClick={syncStripeOrders} startIcon={<Sync />}>
+                            <div className={`tableControls`} style={{ display: `flex`, justifyContent: `flex-end` }}>
+                                <Button className={`tableControlsButton`} size={`small`} variant={`outlined`} disabled={syncing} onClick={syncStripeOrders} startIcon={<Sync />}>
                                     {syncing ? `Syncing` : `Sync Stripe`}
                                 </Button>
                             </div>
