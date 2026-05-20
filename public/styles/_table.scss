@@ -196,6 +196,15 @@
     }
   }
 
+  .deleteAction {
+    color: white !important;
+    border-color: var(--error) !important;
+    background: var(--error) !important;
+    svg {
+      color: white !important;
+    }
+  }
+
   &.productActionsCell {
     gap: 9px;
 
@@ -232,9 +241,6 @@
       color: var(--yellow_neon) !important;
     }
 
-    .deleteAction {
-      color: red !important;
-    }
   }
 }
 

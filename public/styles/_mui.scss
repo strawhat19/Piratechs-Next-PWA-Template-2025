@@ -4,6 +4,24 @@
 
 .MuiPaper-root {
     background: var(--background) !important;
+    &:has(.dialogCustom) {
+        --ht: 150px;
+        --wd: 350px;
+        width: var(--wd) !important;
+        height: var(--ht) !important;
+        min-width: var(--wd) !important;
+        max-width: var(--wd) !important;
+        min-height: var(--ht) !important;
+        max-height: var(--ht) !important;
+        .dialogCustom {
+            width: var(--wd) !important;
+            height: var(--ht) !important;
+            min-width: var(--wd) !important;
+            max-width: var(--wd) !important;
+            min-height: var(--ht) !important;
+            max-height: var(--ht) !important;
+        }
+    }
 }
 
 .MuiMenuItem-root {

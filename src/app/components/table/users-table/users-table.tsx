@@ -76,7 +76,7 @@ const RoleCell = ({ row, value }: any) => {
 }
 
 const ActionsCell = ({ row, value, canManage = false }: any) => {
-    const { user } = useContext<any>(StateGlobals);
+    const { user, showConfirm } = useContext<any>(StateGlobals);
     const online = Boolean(value);
     const statusColor = online ? `var(--green_neon)` : `rgba(255,255,255,0.35)`;
     const statusLabel = online ? `Online` : `Offline`;
@@ -88,7 +88,16 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
         toast.info(`Editing ${row?.name}`);
         console.log(`Edit User`, row);
     };
-    const onDeleteUser = () => {
+    const onDeleteUser = async () => {
+        const confirmed = await showConfirm({
+            cancelText: `Cancel`,
+            confirmText: `Delete`,
+            title: `Delete Product`,
+            message: `Delete Product #${row?.number} "${row?.name}"?`,
+            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction` },
+            cancelAction: { color: `var(--buttons)` },
+        });
+        if (!confirmed) return;
         toast.info(`Deleting ${row?.name}`);
         console.log(`Delete User`, row);
     };

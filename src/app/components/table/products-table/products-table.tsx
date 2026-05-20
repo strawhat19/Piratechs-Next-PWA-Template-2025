@@ -58,7 +58,7 @@ const ProductImageCell = ({ row }: { row: Product }) => {
 }
 
 const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: { quickEditing?: boolean; row: Product; onEdit: (product: Product | null) => void; onAddToCart: (product: Product) => void }) => {
-    const { user } = useContext<any>(StateGlobals);
+    const { user, showConfirm } = useContext<any>(StateGlobals);
     const canManageProducts = minRole(user?.role, Roles.Administrator);
     const isArchived = String(row?.status || ``).toLowerCase() == ProductStatus.Archived.toLowerCase();
     const canAddToCart = !isArchived && row?.stock > 0;
@@ -67,8 +67,16 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
         toast.info(`Updating Product`);
         updateProductInDatabase(String(row?.id), { status }, user)?.then(() => toast.success(`Product Updated`));
     }
-    const deleteProduct = () => {
-        if (!window.confirm(`Delete ${row?.name}?`)) return;
+    const deleteProduct = async () => {
+        const confirmed = await showConfirm({
+            cancelText: `Cancel`,
+            confirmText: `Delete`,
+            title: `Delete Product`,
+            message: `Delete Product #${row?.number} "${row?.name}"?`,
+            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction` },
+            cancelAction: { color: `var(--buttons)` },
+        });
+        if (!confirmed) return;
         toast.info(`Deleting Product`);
         deleteProductFromDatabase(row, user)?.then(() => toast.success(`Product Deleted`));
     }

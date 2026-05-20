@@ -1,17 +1,19 @@
 import './dialog.scss';
 
-import { useContext } from 'react';
 import { Button } from '@mui/material';
+import React, { useContext } from 'react';
 import Dialog from '@mui/material/Dialog';
 import { Types } from '@/shared/types/types';
-import { dev } from '@/shared/scripts/constants';
+import TextField from '@mui/material/TextField';
 import { List } from '@/shared/types/models/List';
 import { Item } from '@/shared/types/models/Item';
 import { Task } from '@/shared/types/models/Task';
+import { User } from '@/shared/types/models/User';
 import { Board } from '@/shared/types/models/Board';
 import { Close, Delete } from '@mui/icons-material';
 import DialogTitle from '@mui/material/DialogTitle';
 import { StateGlobals } from '@/shared/global-context';
+import { Product } from '@/shared/types/models/Product';
 import Icon_Button from '../buttons/icon-button/icon-button';
 import ImagesCarousel from '../slider/images-carousel/images-carousel';
 import StatusTag, { statusIconSize, statusLineHeight } from '../board/status/status';
@@ -25,7 +27,7 @@ export interface SimpleDialogProps {
 function SimpleDialog(props: SimpleDialogProps) {
   const { open, selected, onClose } = props;
 
-  const deleteSelected = (e: any, selected: Board | List | Item | Task | any) => {
+  const deleteSelected = (e: any, selected: User | Board | List | Item | Task | Product | any) => {
     selected?.delete(selected);
     onClose();
   }
@@ -33,7 +35,7 @@ function SimpleDialog(props: SimpleDialogProps) {
   return (
     <Dialog onClose={onClose} open={open}>
       {selected != null && <>
-        <div style={{ flex: 1 }} className={`dialogContent`}>
+        <div style={{ flex: 1 }} className={`dialogContent `}>
           <div className={`dialogRow dialogHeader`}>
             <DialogTitle className={`dialogTitle flexCenter gap15`}>
               <div className={`dialogRow dialogField dialogTitleIndex`}>
@@ -135,7 +137,7 @@ function SimpleDialog(props: SimpleDialogProps) {
 }
 
 export default function DialogComponent() {
-  let { selected, setSelected } = useContext<any>(StateGlobals);
+  let { selected, setSelected, appDialog, closeAppDialog } = useContext<any>(StateGlobals);
   return (
     <div className={`dialogComponent`}>
       <SimpleDialog
@@ -143,6 +145,85 @@ export default function DialogComponent() {
         open={selected != null}
         onClose={() => setSelected(null)}
       />
+      <Dialog open={appDialog != null} onClose={() => closeAppDialog(appDialog?.mode == `alert` ? true : null)} maxWidth={`xs`} fullWidth>
+        <AppDialogContent appDialog={appDialog} closeAppDialog={closeAppDialog} />
+      </Dialog>
+    </div>
+  );
+}
+
+const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
+  const [value, setValue] = React.useState(``);
+  const confirmAction = appDialog?.confirmAction || {};
+  const cancelAction = appDialog?.cancelAction || {};
+  const confirmLabel = confirmAction?.label || appDialog?.confirmText || `OK`;
+  const cancelLabel = cancelAction?.label || appDialog?.cancelText || `Cancel`;
+  const confirmClassName = confirmAction?.className || ``;
+  const cancelClassName = cancelAction?.className || ``;
+  const confirmColor = confirmAction?.color || (String(confirmLabel || ``).toLowerCase().includes(`delete`) ? `var(--error)` : `var(--success)`);
+  const cancelColor = cancelAction?.color || `var(--buttons)`;
+  const confirmIcon = confirmAction?.icon || <Close fontSize={`inherit`} style={{ color: `white` }} />;
+  const cancelIcon = cancelAction?.icon || <Close fontSize={`inherit`} style={{ color: `white` }} />;
+
+  React.useEffect(() => {
+    setValue(appDialog?.defaultValue || ``);
+  }, [appDialog?.defaultValue, appDialog?.mode]);
+
+  if (!appDialog) return null;
+
+  return (
+    <div className={`dialogContent ${appDialog?.className}`} style={{ padding: 16, minWidth: 320 }}>
+      <h3 style={{ margin: 0, fontSize: 18 }}>
+        {appDialog?.title || `Dialog`}
+      </h3>
+      {appDialog?.message ? <p style={{ margin: `10px 0 0`, lineHeight: 1.45 }}>{appDialog?.message}</p> : <></>}
+      {appDialog?.mode == `prompt` ? (
+        <TextField
+          autoFocus
+          fullWidth
+          size={`small`}
+          value={value}
+          variant={`outlined`}
+          style={{ marginTop: 12 }}
+          onChange={(event: any) => setValue(event?.target?.value || ``)}
+          onKeyDown={(event: any) => {
+            if (event?.key == `Enter`) closeAppDialog(value);
+          }}
+        />
+      ) : <></>}
+      <div style={{ gap: 8, display: `flex`, marginTop: 14, justifyContent: `flex-end` }}>
+        {appDialog?.mode != `alert` ? (
+          <Icon_Button
+            button
+            size={32}
+            title={cancelLabel}
+            className={`dialogActionButton dialogCancelButton ${cancelClassName}`}
+            style={{ gap: 6, color: `white`, padding: `0 12px`, background: cancelColor }}
+            onClick={() => {
+              cancelAction?.onClick?.(null, { closeAppDialog, value, appDialog });
+              closeAppDialog(null);
+            }}
+          >
+            {cancelIcon}
+            <span>{cancelLabel}</span>
+          </Icon_Button>
+        ) : <></>}
+        <Icon_Button
+          button
+          size={32}
+          title={confirmLabel}
+          className={`dialogActionButton dialogConfirmButton ${confirmClassName}`}
+          style={{ gap: 6, color: `white`, padding: `0 12px`, background: confirmColor }}
+          onClick={() => {
+            const result = appDialog?.mode == `prompt` ? value : true;
+            confirmAction?.onClick?.(result, { closeAppDialog, value, appDialog });
+            closeAppDialog(result);
+          }}
+        >
+          {confirmIcon}
+          <span>{confirmLabel}</span>
+        </Icon_Button>
+      </div>
     </div>
   );
 }

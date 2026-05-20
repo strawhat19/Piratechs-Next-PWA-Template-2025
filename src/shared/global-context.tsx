@@ -59,6 +59,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     let [isPWA, setIsPWA] = useState(false);
     let [selected, setSelected] = useState<any>(null);
+    let [appDialog, setAppDialog] = useState<any>(null);
     let [smallScreen, setSmallScreen] = useState<any>(true);
     let [width, setWidth] = useState<any>(defaultSizes.window);
     let [menuExpanded, setMenuExpanded] = useState<any>(false);
@@ -193,6 +194,67 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         setAuthState(AuthStates.Next);
         await signOut(auth);
     }
+
+    const closeAppDialog = (result: any = null) => {
+        setAppDialog((prev: any) => {
+            prev?.resolve?.(result);
+            return null;
+        });
+    };
+
+    const showAlert = (messageOrOptions: string | { title?: string; message?: string; confirmText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
+        return new Promise<boolean>(resolve => {
+            const options = typeof messageOrOptions == `string` ? { message: messageOrOptions } : messageOrOptions;
+            setAppDialog({
+                resolve,
+                mode: `alert`,
+                cancelText: ``,
+                defaultValue: ``,
+                message: options?.message || ``,
+                title: options?.title || `Notice`,
+                confirmText: options?.confirmText || `OK`,
+                cancelAction: options?.cancelAction || {},
+                confirmAction: options?.confirmAction || {},
+                className: options?.className || `dialogAlert dialogCustom`,
+            });
+        });
+    };
+
+    const showConfirm = (messageOrOptions: string | { title?: string; message?: string; confirmText?: string; cancelText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
+        return new Promise<boolean>(resolve => {
+            const options = typeof messageOrOptions == `string` ? { message: messageOrOptions } : messageOrOptions;
+            setAppDialog({
+                resolve,
+                mode: `confirm`,
+                defaultValue: ``,
+                message: options?.message || ``,
+                title: options?.title || `Confirm`,
+                cancelAction: options?.cancelAction || {},
+                cancelText: options?.cancelText || `Cancel`,
+                confirmAction: options?.confirmAction || {},
+                confirmText: options?.confirmText || `Confirm`,
+                className: options?.className || `dialogConfirm dialogCustom`,
+            });
+        });
+    };
+
+    const showPrompt = (messageOrOptions: string | { title?: string; message?: string; defaultValue?: string; confirmText?: string; cancelText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
+        return new Promise<string | null>(resolve => {
+            const options = typeof messageOrOptions == `string` ? { message: messageOrOptions } : messageOrOptions;
+            setAppDialog({
+                resolve,
+                mode: `prompt`,
+                message: options?.message || ``,
+                title: options?.title || `Input`,
+                defaultValue: options?.defaultValue || ``,
+                cancelAction: options?.cancelAction || {},
+                cancelText: options?.cancelText || `Cancel`,
+                confirmAction: options?.confirmAction || {},
+                confirmText: options?.confirmText || `Submit`,
+                className: options?.className || `dialogPrompt dialogCustom`,
+            });
+        });
+    };
 
     const onSignInError = (error: any): any => {
         onSignOut();
@@ -446,10 +508,17 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         orders, setOrders,
         ordersLoading, setOrdersLoading,
 
+        // Functions
+        showAlert,
+        showPrompt,
+        showConfirm,
+        closeAppDialog,
+
         isPWA, setIsPWA,
         loaded, setLoaded,
         isDevEnv, setDevEnv,
         selected, setSelected,
+        appDialog, setAppDialog,
         authState, setAuthState,
         smallScreen, setSmallScreen,
         menuExpanded, setMenuExpanded,
@@ -476,6 +545,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         user, users, usersLoading, 
         width, height, selected, loaded, isDevEnv, 
         isPWA, authState, menuExpanded, smallScreen, 
+        appDialog,
         onBoards, boardForm, boardItems, boards, dataLoading,
         products, productsLoading, orders, ordersLoading,
         stocks, histories, stockOrders, stocksAcc, 
