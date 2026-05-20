@@ -10,11 +10,11 @@ import { Item } from '@/shared/types/models/Item';
 import { Task } from '@/shared/types/models/Task';
 import { User } from '@/shared/types/models/User';
 import { Board } from '@/shared/types/models/Board';
-import { Close, Delete } from '@mui/icons-material';
 import DialogTitle from '@mui/material/DialogTitle';
 import { StateGlobals } from '@/shared/global-context';
 import { Product } from '@/shared/types/models/Product';
 import Icon_Button from '../buttons/icon-button/icon-button';
+import { Close, Delete, DoDisturb } from '@mui/icons-material';
 import ImagesCarousel from '../slider/images-carousel/images-carousel';
 import StatusTag, { statusIconSize, statusLineHeight } from '../board/status/status';
 
@@ -163,7 +163,7 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
   const confirmColor = confirmAction?.color || (String(confirmLabel || ``).toLowerCase().includes(`delete`) ? `var(--error)` : `var(--success)`);
   const cancelColor = cancelAction?.color || `var(--buttons)`;
   const confirmIcon = confirmAction?.icon || <Close fontSize={`inherit`} style={{ color: `white` }} />;
-  const cancelIcon = cancelAction?.icon || <Close fontSize={`inherit`} style={{ color: `white` }} />;
+  const cancelIcon = cancelAction?.icon || <DoDisturb fontSize={`inherit`} style={{ color: `white` }} />;
 
   React.useEffect(() => {
     setValue(appDialog?.defaultValue || ``);
@@ -192,6 +192,21 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
         />
       ) : <></>}
       <div style={{ gap: 8, display: `flex`, marginTop: 14, justifyContent: `flex-end` }}>
+        <Icon_Button
+          button
+          size={32}
+          title={confirmLabel}
+          className={`dialogActionButton dialogConfirmButton ${confirmClassName}`}
+          style={{ gap: 6, color: `white`, padding: `0 12px`, background: confirmColor }}
+          onClick={() => {
+            const result = appDialog?.mode == `prompt` ? value : true;
+            confirmAction?.onClick?.(result, { closeAppDialog, value, appDialog });
+            closeAppDialog(result);
+          }}
+        >
+          {confirmIcon}
+          <span>{confirmLabel}</span>
+        </Icon_Button>
         {appDialog?.mode != `alert` ? (
           <Icon_Button
             button
@@ -208,21 +223,6 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
             <span>{cancelLabel}</span>
           </Icon_Button>
         ) : <></>}
-        <Icon_Button
-          button
-          size={32}
-          title={confirmLabel}
-          className={`dialogActionButton dialogConfirmButton ${confirmClassName}`}
-          style={{ gap: 6, color: `white`, padding: `0 12px`, background: confirmColor }}
-          onClick={() => {
-            const result = appDialog?.mode == `prompt` ? value : true;
-            confirmAction?.onClick?.(result, { closeAppDialog, value, appDialog });
-            closeAppDialog(result);
-          }}
-        >
-          {confirmIcon}
-          <span>{confirmLabel}</span>
-        </Icon_Button>
       </div>
     </div>
   );

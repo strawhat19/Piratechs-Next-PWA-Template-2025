@@ -123,6 +123,13 @@
     transition: var(--transition) !important;
 }
 
+.dialogConfirm {
+    .dialogConfirmButton {
+        --color: red !important;
+        --buttons: var(--color) !important;
+    }
+}
+
 .MuiDataGrid-overlay {
     color: white;
 }
