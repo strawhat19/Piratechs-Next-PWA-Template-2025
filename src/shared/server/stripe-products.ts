@@ -47,7 +47,9 @@ const getStripeProductParams = (product: Product) => {
     app_product_id: product?.id,
   });
   if (product?.description) params.set(`description`, String(product?.description).slice(0, 500));
-  product?.imageURLs?.slice(0, 8)?.forEach((imageURL, index) => params.set(`images[${index}]`, imageURL));
+  const attachmentURLs = product?.attachments?.map(attachment => attachment?.value)?.filter(Boolean) || [];
+  const imageURLs = attachmentURLs?.length > 0 ? attachmentURLs : (product?.imageURLs || []);
+  imageURLs?.slice(0, 8)?.forEach((imageURL, index) => params.set(`images[${index}]`, imageURL));
   return params;
 }
 

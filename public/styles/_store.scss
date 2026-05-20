@@ -57,15 +57,105 @@
 
 .productField {
     gap: 4px;
-    display: grid;
     min-width: 0;
-
+    display: grid;
+    &:has(input[name="name"]) {
+        width: 55%;
+    }
+    &:has(input[name="imageURL"]) {
+        width: 45%;
+    }
+    &:has(input[name="imageURLs"]) {
+        width: 40%;
+    }
+    &:has(input[type="number"]) {
+        min-width: 135px;
+    }
     span {
+        line-height: 1;
         font-size: 11px;
         font-weight: 700;
-        line-height: 1;
         color: rgba(255, 255, 255, 0.72);
     }
+}
+
+.productImageURLField {
+    .productImageURLInputWrap {
+        gap: 2px;
+        display: flex;
+        align-items: center;
+    }
+    input {
+        min-width: 0;
+    }
+}
+
+.productImageURLThumbWrap {
+    --sz: 30px;
+    display: flex;
+    font-size: 9px;
+    width: var(--sz);
+    overflow: hidden;
+    height: var(--sz);
+    position: relative;
+    border-radius: 7px;
+    flex: 0 0 var(--sz);
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+    &.error {
+        border-color: var(--error);
+    }
+    &:hover {
+        .productImageURLClearButton {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+    .MuiSkeleton-root {
+        transform: none;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+.productImageURLThumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    &.hidden {
+        display: none;
+    }
+}
+
+.productImageURLError {
+    color: var(--error);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.productImageURLClearButton {
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: none;
+    opacity: 0;
+    display: flex;
+    font-size: 12px;
+    cursor: pointer;
+    position: absolute;
+    align-items: center;
+    border-radius: 999px;
+    justify-content: center;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    color: var(--errorText, white);
+    background: rgba(var(--cool_neon_blue_rgb), 0.88);
+    transition: opacity 0.15s ease;
 }
 
 .productFormHeader,
@@ -95,8 +185,7 @@
     }
 }
 
-.productFormGrid,
-.productVariantRow {
+.productFormGrid, .productVariantRow {
     gap: 8px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
@@ -215,7 +304,8 @@
 .productFormWidget {
     padding: 12px;
     .productFormGrid {
-        grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+        display: flex;
+        justify-content: space-between;
     }
     .productField:first-child {
         grid-column: span 2;

@@ -8,15 +8,15 @@ import { useContext, useState } from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
 import { Roles, Types } from '@/shared/types/types';
-import { constants, minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../../buttons/icon-button/icon-button';
+import { constants, minRole } from '@/shared/scripts/constants';
 import { Product, ProductStatus } from '@/shared/types/models/Product';
-import ProductForm, { ProductFormDialog } from '../../store/product-form/product-form';
-import { AddShoppingCart, Archive, Delete, Edit, Restore } from '@mui/icons-material';
-import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
+import { AddShoppingCart, Archive, Delete, Edit, Restore } from '@mui/icons-material';
+import ProductForm, { ProductFormDialog } from '../../store/product-form/product-form';
+import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 
 const storeDollarSignColor = `var(--green_neon)`;
 const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
@@ -46,7 +46,7 @@ const getProductStatusLabel = (product: Product, string: boolean = false) => {
 };
 
 const ProductImageCell = ({ row }: { row: Product }) => {
-    let imageURL = row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
+    let imageURL = row?.attachments?.[0]?.value || row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
     if (!imageURL) imageURL = constants.images.icons.logo;
     return imageURL ? (
         <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`productTableImage`} />
@@ -155,8 +155,8 @@ export default function ProductsTable({
     onQuickEdit = undefined,
     quickEditProduct = null,
 }: any) {
-    const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const editProduct = (product: Product | null) => onQuickEdit ? onQuickEdit(product) : setSelectedProduct(product);
 
     const { saveCart } = useStoreCart();

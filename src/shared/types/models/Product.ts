@@ -1,6 +1,6 @@
 import { Data } from './Data';
 import { DataSources, Types } from '../types';
-import { capWords, countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
+import { capWords, customDate, countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
 
 export enum ProductStatus {
   Draft = `Draft`,
@@ -74,6 +74,13 @@ export interface ProductImage {
   variantIDs?: Array<number | string>;
 }
 
+export interface ProductAttachment {
+  id: string;
+  type: string;
+  value: string;
+  date: string;
+}
+
 export interface ProductVariant {
   id?: number | string;
   title?: string;
@@ -124,6 +131,7 @@ export class Product extends Data {
   bodyHTML?: string = ``;
   imageURL?: string = ``;
   imageURLs?: string[] = [];
+  attachments?: ProductAttachment[] = [];
   description?: string = ``;
   shortDescription?: string = ``;
 
@@ -213,9 +221,11 @@ export class Product extends Data {
     }
 
     const images = Array.isArray(this.images) ? this.images : [];
+    const attachments = Array.isArray(this.attachments) ? this.attachments : [];
     let variants = Array.isArray(this.variants) ? this.variants : [];
     let firstVariant = this.variant || variants?.[0];
     const firstImage = this.image || images?.[0];
+    const firstAttachment = attachments?.[0];
 
     if (isValid(productData.id) && !isValid(this.shopifyID) && typeof productData.id == `number`) this.shopifyID = productData.id;
     if (isValid(productData.title) && !isValid(this.name)) this.name = String(productData.title);
@@ -250,6 +260,18 @@ export class Product extends Data {
     if (!isValid(this.image) && firstImage) this.image = firstImage;
     if (!isValid(this.imageURL) && isValid(firstImage?.src)) this.imageURL = firstImage?.src;
     if (!isValid(this.imageURLs) && images.length > 0) this.imageURLs = images.map(image => image.src || image.url || ``).filter(Boolean);
+    if (!isValid(this.imageURL) && isValid(firstAttachment?.value)) this.imageURL = String(firstAttachment?.value);
+    if (!isValid(this.attachments) && isValid(this.imageURL)) {
+      this.attachments = [{
+        id: `${this.id}_Attachment_1`,
+        type: `image`,
+        value: this.imageURL || ``,
+        date: customDate()?.update,
+      }];
+    }
+    if (!isValid(this.imageURLs) && Array.isArray(this.attachments) && this.attachments.length > 0) {
+      this.imageURLs = this.attachments.map(attachment => attachment?.value || ``).filter(Boolean);
+    }
     if (variants.length == 0) {
       firstVariant = {
         id: `${this.id || Types.Product}_Variant_1`,

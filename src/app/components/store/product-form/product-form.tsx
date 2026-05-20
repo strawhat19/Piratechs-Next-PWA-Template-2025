@@ -3,14 +3,14 @@
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { Roles } from '@/shared/types/types';
-import { Button, Dialog } from '@mui/material';
+import Img from '@/app/components/image/image';
+import { Button, Dialog, Skeleton } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { Add, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
-import { ChangeEvent, FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { addProductToDatabase, storage, updateProductInDatabase } from '@/shared/server/firebase';
-import { capWords, customDate, getNextCollectionNumber, minRole, stringNoSpaces } from '@/shared/scripts/constants';
-import { Product, ProductCategory, ProductImage, ProductStatus, ProductType, ProductVariant } from '@/shared/types/models/Product';
+import { FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { addProductToDatabase, updateProductInDatabase } from '@/shared/server/firebase';
+import { capWords, customDate, getNextCollectionNumber, minRole } from '@/shared/scripts/constants';
+import { Product, ProductCategory, ProductStatus, ProductType, ProductVariant, ProductAttachment } from '@/shared/types/models/Product';
 
 type ProductFormProps = {
     full?: boolean;
@@ -39,8 +39,18 @@ type ProductFormVariant = {
 const centsToDollars = (value?: number | string) => ((Number(value || 0) / 100) || 0).toFixed(2);
 const dollarsToCents = (value?: number | string) => Math.round(Number(String(value || `0`).replace(/[^0-9.-]/g, ``) || 0) * 100);
 const parseList = (value?: string) => String(value || ``).split(/[\n,]/).map(item => item.trim()).filter(Boolean);
-const getFiles = (event: ChangeEvent<HTMLInputElement>) => Array.from(event?.target?.files || []);
 const comparableFormValue = (value: any) => JSON.stringify(value ?? ``);
+const lower = (value?: string) => String(value || ``).trim().toLowerCase();
+const isVideoURL = (value?: string) => /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(String(value || ``));
+const isImageURL = (value?: string) => /\.(png|jpe?g|webp|gif|bmp|svg|avif)(\?.*)?$/i.test(String(value || ``));
+const getAttachmentTypeFromURL = (value?: string) => {
+    const url = lower(value);
+    if (!url) return `unknown`;
+    if (isVideoURL(url)) return `video`;
+    if (url.includes(`.gif`)) return `gif`;
+    if (isImageURL(url)) return `image`;
+    return `file`;
+};
 
 const getVariantForm = (variant?: ProductVariant, product?: Product): ProductFormVariant => ({
     sku: variant?.sku || product?.sku || ``,
@@ -52,23 +62,31 @@ const getVariantForm = (variant?: ProductVariant, product?: Product): ProductFor
     requiresShipping: variant?.requiresShipping ?? variant?.requires_shipping ?? product?.requiresShipping ?? false,
 });
 
-const getProductForm = (product: Product | null | undefined, number: number) => ({
+const getProductForm = (product: Product | null | undefined, number: number) => {
+    const editing = !!product?.id;
+    const firstAttachmentValue = product?.attachments?.[0]?.value;
+    return {
     number: Number(product?.number || number),
     sku: product?.sku || ``,
     name: product?.name || ``,
     tags: product?.tags?.join(`, `) || ``,
     cost: centsToDollars(product?.cost),
-    stock: String(product?.stock ?? 0),
-    price: centsToDollars(product?.price),
+    // cost: editing ? centsToDollars(product?.cost) : ``,
+    stock: editing ? String(product?.stock ?? 0) : ``,
+    // stock: editing ? String(product?.stock ?? 0) : ``,
+    price: editing ? centsToDollars(product?.price) : ``,
+    // price: editing ? centsToDollars(product?.price) : ``,
     brand: product?.brand || product?.vendor || ``,
     status: product?.status || ProductStatus.Active,
     weight: String(product?.weight ?? 0),
     vendor: product?.vendor || product?.brand || ``,
     currency: product?.currency || `usd`,
+    imageURL: firstAttachmentValue || product?.imageURL || product?.imageURLs?.[0] || ``,
     category: product?.category || ProductCategory.Art,
-    imageURLs: product?.imageURLs?.join(`\n`) || product?.imageURL || ``,
+    imageURLs: ``,
     taxable: product?.taxable ?? true,
     compareAtPrice: centsToDollars(product?.compareAtPrice),
+    // compareAtPrice: editing ? centsToDollars(product?.compareAtPrice) : ``,
     productType: product?.productType || ProductType.Sticker,
     description: product?.description || product?.bodyHTML || ``,
     allowBackorder: product?.allowBackorder ?? false,
@@ -76,31 +94,8 @@ const getProductForm = (product: Product | null | undefined, number: number) => 
     trackInventory: product?.trackInventory ?? true,
     shortDescription: product?.shortDescription || ``,
     lowStockThreshold: String(product?.lowStockThreshold ?? 5),
-});
-
-const getImageObjects = (product: Product, imageURLs: string[]): ProductImage[] => imageURLs.map((src, index) => ({
-    src,
-    url: src,
-    alt: product?.name,
-    position: index + 1,
-    productID: product?.id,
-    product_id: product?.id,
-    createdAt: product?.created,
-    updatedAt: customDate()?.datetime,
-    id: `${product?.id}_Image_${index + 1}`,
-}));
-
-const uploadProductImages = async (files: File[], product: Product, startIndex = 0): Promise<ProductImage[]> => {
-    const uploads = files.map(async (file, index) => {
-        const position = startIndex + index + 1;
-        const storagePath = `products/${product?.id}/${Date.now()}_${position}_${stringNoSpaces(file?.name)}`;
-        const productImageRef = ref(storage, storagePath);
-        await uploadBytes(productImageRef, file, { contentType: file?.type, customMetadata: { productID: String(product?.id), productName: product?.name || `` } });
-        const src = await getDownloadURL(productImageRef);
-        return { src, url: src, storagePath, alt: product?.name, position, productID: product?.id, product_id: product?.id, id: `${product?.id}_Image_${position}`, createdAt: customDate()?.datetime, updatedAt: customDate()?.datetime };
-    });
-    return Promise.all(uploads);
-}
+    };
+};
 
 const ProductField = ({ label, showInput = true, funsized = false, ...props }: any) => (
     <label className={`productField`}>
@@ -123,6 +118,89 @@ const ProductSelectField = ({ label, children, ...props }: any) => (
     </label>
 );
 
+const ProductImageURLField = ({ label = `Attachment URL`, value = ``, onChange, onClear = () => {}, showClear = false, funsized = false }: any) => {
+    const trimmedValue = String(value || ``).trim();
+    const video = isVideoURL(trimmedValue);
+
+    const [loading, setLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
+
+    useEffect(() => {
+        if (!trimmedValue) {
+            setLoading(false);
+            setHasError(false);
+            return;
+        }
+        setLoading(true);
+        setHasError(false);
+    }, [trimmedValue]);
+
+    return (
+        <label className={`productField productImageURLField`}>
+            {!funsized && <span>{label}</span>}
+            <div className={`productImageURLInputWrap`}>
+                {trimmedValue ? (
+                    <div className={`productImageURLThumbWrap ${hasError ? `error` : ``}`}>
+                        {loading ? <Skeleton variant={`rounded`} width={40} height={40} /> : <></>}
+                        {video ? (
+                            <video
+                                muted
+                                playsInline
+                                preload={`metadata`}
+                                src={trimmedValue}
+                                className={`productImageURLThumb ${loading ? `hidden` : ``} ${hasError ? `hidden` : ``}`}
+                                onLoadedData={() => {
+                                    setLoading(false);
+                                    setHasError(false);
+                                }}
+                                onError={() => {
+                                    setLoading(false);
+                                    setHasError(true);
+                                }}
+                            />
+                        ) : (
+                            <Img
+                                width={40}
+                                height={40}
+                                alt={label}
+                                useLazyLoad={true}
+                                src={trimmedValue}
+                                className={`productImageURLThumb ${loading ? `hidden` : ``} ${hasError ? `hidden` : ``}`}
+                                onImageLoad={() => {
+                                    setLoading(false);
+                                    setHasError(false);
+                                }}
+                                onImageError={() => {
+                                    setLoading(false);
+                                    setHasError(true);
+                                }}
+                            />
+                        )}
+                        {showClear ? (
+                            <button
+                                type={`button`}
+                                className={`productImageURLClearButton`}
+                                onClick={onClear}
+                            >
+                                <Close fontSize={`inherit`} />
+                            </button>
+                        ) : <></>}
+                        {hasError ? <span className={`productImageURLError`}>Error</span> : <></>}
+                    </div>
+                ) : <></>}
+                <input
+                    type={`url`}
+                    value={value}
+                    name={`imageURL`}
+                    onChange={onChange}
+                    placeholder={label}
+                    id={`product-image-url-input`}
+                />
+            </div>
+        </label>
+    );
+}
+
 export default function ProductForm({
     full = false,
     product = null,
@@ -136,18 +214,17 @@ export default function ProductForm({
     fullFormURL = `/store/product-form`,
 }: ProductFormProps) {
     const router = useRouter();
-    const formRef = useRef<HTMLFormElement | null>(null);
     const preserveFormOnProductClearRef = useRef(false);
+    const formRef = useRef<HTMLFormElement | null>(null);
 
     const { user, products = [] } = useContext<any>(StateGlobals);
 
     const canManageProducts = minRole(user?.role, Roles.Administrator);
     const nextProductNumber = useMemo(() => getNextCollectionNumber(products), [products]);
 
-    const [files, setFiles] = useState<File[]>([]);
     const [saving, setSaving] = useState(false);
-
     const [form, setForm] = useState(() => getProductForm(product, nextProductNumber));
+
     const [variants, setVariants] = useState<ProductFormVariant[]>(() => (
         product?.variants?.length ? product.variants : [{} as ProductVariant]).map(
             variant => getVariantForm(variant, product || undefined)
@@ -155,12 +232,13 @@ export default function ProductForm({
     );
 
     const compact = widget || !full;
+
     const resetProductForm = (productToUse: Product | null | undefined = product) => {
         formRef?.current?.reset();
-        setFiles([]);
         setForm(getProductForm(productToUse, productToUse?.number || nextProductNumber));
         setVariants((productToUse?.variants?.length ? productToUse.variants : [{} as ProductVariant]).map(variant => getVariantForm(variant, productToUse || undefined)));
     }
+
     const openFullForm = () => {
         if (product?.id && onFullEdit) {
             onFullEdit(product);
@@ -168,28 +246,42 @@ export default function ProductForm({
         }
         router.push(fullFormURL);
     }
+
     const updateForm = (event: any) => {
         const target = event?.target;
         const value = target?.type == `checkbox` ? target?.checked : target?.value;
         setForm(prev => ({ ...prev, [target?.name]: value }));
     }
+    const clearImageURL = () => {
+        setForm(prev => ({ ...prev, imageURL: `` }));
+        setTimeout(() => {
+            const input = document.getElementById(`product-image-url-input`) as HTMLInputElement | null;
+            input?.focus();
+        }, 0);
+    };
+
     const updateVariant = (index: number, field: keyof ProductFormVariant, value: string | boolean) => setVariants(prev => prev.map((variant, variantIndex) => variantIndex == index ? { ...variant, [field]: value } : variant));
+
     const addVariant = () => setVariants(prev => [...prev, getVariantForm(undefined, new Product({ name: form?.name, sku: form?.sku, price: dollarsToCents(form?.price), stock: Number(form?.stock || 0) }))]);
+
     const removeVariant = (index: number) => setVariants(prev => prev.length > 1 ? prev.filter((_, variantIndex) => variantIndex != index) : prev);
+
     const cancelProductEdit = () => {
         preserveFormOnProductClearRef.current = false;
         resetProductForm(null);
         onCancelEdit?.();
     }
+
     const clearProductForm = () => {
         resetProductForm(product);
     }
 
     const requiredFieldsFilled = () => form?.name?.trim() && Number(form?.price || 0) >= 0;
+
     const formMatchesProduct = () => {
         if (!product?.id) return false;
         const currentForm = getProductForm(product, product?.number || nextProductNumber);
-        return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURLs`].every(key => comparableFormValue((form as any)?.[key]) == comparableFormValue((currentForm as any)?.[key]));
+        return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].every(key => comparableFormValue((form as any)?.[key]) == comparableFormValue((currentForm as any)?.[key]));
     }
 
     useEffect(() => {
@@ -229,6 +321,14 @@ export default function ProductForm({
             const price = dollarsToCents(form?.price);
             const username = (user != null ? user?.email : Roles.Guest);
             const number = Number(form?.number || product?.number || nextProductNumber);
+            const imageURL = String(form?.imageURL || ``).trim();
+            const attachmentNumber = Number(product?.attachments?.length || 0) + 1;
+            const attachments: ProductAttachment[] = imageURL ? [{
+                value: imageURL,
+                date: customDate()?.update,
+                type: getAttachmentTypeFromURL(imageURL),
+                id: `${product?.id || `Product_${number}`}_Attachment_${attachmentNumber}`,
+            }] : [];
             const productDraft = new Product({
                 ...product,
                 // number,
@@ -246,6 +346,7 @@ export default function ProductForm({
                 tags: parseList(form?.tags),
                 title: capWords(form?.name),
                 productType: form?.productType,
+                imageURL,
                 description: form?.description,
                 cost: dollarsToCents(form?.cost),
                 weight: Number(form?.weight || 0),
@@ -258,23 +359,26 @@ export default function ProductForm({
                 compareAtPrice: dollarsToCents(form?.compareAtPrice),
                 lowStockThreshold: Number(form?.lowStockThreshold || 5),
             });
-            const urlImages = getImageObjects(productDraft, parseList(form?.imageURLs));
-            const uploadedImages = await uploadProductImages(files, productDraft, urlImages?.length);
-            const images = [...urlImages, ...uploadedImages];
             const productToSave = new Product({
                 ...productDraft,
-                images,
-                image: images?.[0],
-                imageURL: images?.[0]?.src || ``,
+                images: [],
+                image: undefined,
+                altImage: undefined,
+                attachments,
+                imageURLs: attachments?.map(attachment => attachment?.value).filter(Boolean),
+                imageURL: attachments?.[0]?.value || ``,
                 variants: buildVariants(productDraft?.id, productDraft?.sku),
-                imageURLs: images?.map(image => image?.src || image?.url || ``).filter(Boolean),
+                email: productDraft?.email ? productDraft?.email : user?.email,
             });
-            const savedProduct = product?.id ? await updateProductInDatabase(String(product?.id), productToSave, user) : await addProductToDatabase(productToSave, user);
+            const savedProduct = product?.id ? (
+                await updateProductInDatabase(String(product?.id), productToSave, user)
+            ) : (
+                await addProductToDatabase(productToSave, user)
+            );
             if (!savedProduct) throw new Error(`Product Save Failed`);
             toast.success(`Product Saved`);
             onSaved(savedProduct);
             if (!product?.id) {
-                setFiles([]);
                 setForm(getProductForm(null, Number(number) + 1));
                 setVariants([getVariantForm(undefined, new Product({ price, stock, name: form?.name, sku: form?.sku }))]);
             }
@@ -325,8 +429,18 @@ export default function ProductForm({
                     </div>
                 </div>
                 <div className={`productFormGrid`}>
-                    {!compact ? <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} /> : <></>}
+                    {!compact ? (
+                    <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
+                    ) : <></>}
                     <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
+                    <ProductImageURLField 
+                        funsized={funsized} 
+                        label={`Attachment URL`} 
+                        onChange={updateForm}
+                        value={form?.imageURL} 
+                        onClear={clearImageURL}
+                        showClear={Boolean(product?.id && String(form?.imageURL || ``).trim())}
+                    />
                     <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
                     <ProductField funsized={funsized} label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
                     {!funsized && product != null && <>
@@ -340,7 +454,6 @@ export default function ProductForm({
                             {Object.values(ProductStatus).map(status => <option key={status} value={status}>{status}</option>)}
                         </ProductSelectField>
                     </>}
-                    <ProductField funsized={funsized} label={`Image(s)`} name={`imageURLs`} type={`upload`} value={form?.imageURLs} onChange={updateForm} showInput={true} />
                     {/* <div>
                         <span className={`productFieldLabelText`}>Image(s)</span>
                         <label className={`productUploadField`}>
@@ -373,7 +486,6 @@ export default function ProductForm({
                     <div className={`productFormGrid productTextGrid`}>
                         <ProductTextAreaField label={`Short Description`} name={`shortDescription`} value={form?.shortDescription} onChange={updateForm} />
                         <ProductTextAreaField label={`Description`} name={`description`} value={form?.description} onChange={updateForm} />
-                        <ProductTextAreaField label={`Image URL(s)`} name={`imageURLs`} value={form?.imageURLs} onChange={updateForm} />
                     </div>
                     <div className={`productVariantSection`}>
                         <div className={`productVariantHeader`}>
@@ -402,8 +514,17 @@ export default function ProductForm({
 export const ProductFormDialog = ({ open = false, onClose = () => {}, product = null }: ProductFormProps) => (
     <Dialog open={open} onClose={onClose} maxWidth={`lg`} fullWidth>
         <div className={`productFormDialog`}>
-            <Button className={`productDialogClose`} onClick={onClose}><Close fontSize={`small`} /></Button>
-            {open ? <ProductForm full key={String(product?.id || `new-product`)} product={product} onClose={onClose} /> : <></>}
+            <Button className={`productDialogClose`} onClick={onClose}>
+                <Close fontSize={`small`} />
+            </Button>
+            {open ? (
+                <ProductForm 
+                    full 
+                    onClose={onClose} 
+                    product={product} 
+                    key={String(product?.id || `new-product`)} 
+                />
+            ) : <></>}
         </div>
     </Dialog>
 );

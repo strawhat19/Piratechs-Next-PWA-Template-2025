@@ -2,10 +2,16 @@ import { Types } from '../types/types';
 import { db, Tables } from './firebase';
 import { Product, ProductStatus } from '../types/models/Product';
 import { archiveStripeProduct, syncStripeProduct } from './stripe-products';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { customDate, getAppCollectionIDNumber, getNextCollectionNumber, isAppCollectionID } from '../scripts/constants';
 
 const cleanFirestoreData = (value: any) => JSON.parse(JSON.stringify(value));
+const attachmentKey = (attachment: any) => JSON.stringify({
+  id: attachment?.id || ``,
+  type: attachment?.type || ``,
+  value: attachment?.value || ``,
+  date: attachment?.date || ``,
+});
 
 export const getNextProductNumber = async (excludeDocumentID?: string) => {
   const productsSnap = await getDocs(collection(db, Tables.products));
@@ -36,7 +42,8 @@ export const normalizeProductForSave = async (data: any, previousDocumentID?: st
 export const saveProduct = async (data: any, previousDocumentID?: string) => {
   const product = await normalizeProductForSave(data, previousDocumentID);
   const syncedProduct = await syncStripeProduct(product);
-  await setDoc(doc(db, Tables.products, String(syncedProduct?.id)), cleanFirestoreData(syncedProduct), { merge: true });
+  const productRef = doc(db, Tables.products, String(syncedProduct?.id));
+  await setDoc(productRef, cleanFirestoreData(syncedProduct), { merge: true });
   if (previousDocumentID && previousDocumentID != syncedProduct?.id) await deleteDoc(doc(db, Tables.products, previousDocumentID));
   return syncedProduct;
 }
@@ -44,7 +51,23 @@ export const saveProduct = async (data: any, previousDocumentID?: string) => {
 export const updateProduct = async (id: string, updates: any) => {
   const existingProductDocument = await findProductDocument(id);
   if (!existingProductDocument) throw new Error(`Product Not Found`);
-  return saveProduct({ ...existingProductDocument?.data, ...updates, id: existingProductDocument?.data?.id || existingProductDocument?.documentID }, existingProductDocument?.documentID);
+  const mergedProduct = await normalizeProductForSave({ ...existingProductDocument?.data, ...updates, id: existingProductDocument?.data?.id || existingProductDocument?.documentID }, existingProductDocument?.documentID);
+  const syncedProduct = await syncStripeProduct(mergedProduct);
+  const productRef = doc(db, Tables.products, String(syncedProduct?.id));
+  const existingAttachments = Array.isArray(existingProductDocument?.data?.attachments) ? existingProductDocument?.data?.attachments : [];
+  const nextAttachments = Array.isArray(syncedProduct?.attachments) ? syncedProduct.attachments : [];
+  const existingMap = new Map(existingAttachments.map((attachment: any) => [attachmentKey(attachment), attachment]));
+  const nextMap = new Map(nextAttachments.map((attachment: any) => [attachmentKey(attachment), attachment]));
+  const removedAttachments = existingAttachments.filter((attachment: any) => !nextMap.has(attachmentKey(attachment)));
+  const addedAttachments = nextAttachments.filter((attachment: any) => !existingMap.has(attachmentKey(attachment)));
+  const payload = cleanFirestoreData({ ...syncedProduct });
+  delete payload.attachments;
+  await setDoc(productRef, payload, { merge: true });
+  if (removedAttachments?.length > 0) await updateDoc(productRef, { attachments: arrayRemove(...removedAttachments) });
+  if (addedAttachments?.length > 0) await updateDoc(productRef, { attachments: arrayUnion(...addedAttachments) });
+  if (nextAttachments.length == 0) await updateDoc(productRef, { attachments: [] });
+  if (existingProductDocument?.documentID != syncedProduct?.id) await deleteDoc(doc(db, Tables.products, existingProductDocument?.documentID));
+  return syncedProduct;
 }
 
 export const deleteProduct = async (id: string) => {
