@@ -119,10 +119,27 @@ export default function OrdersTable({
 
     return (
         <div className={`ordersTableWrap`}>
-            {canManageOrders ? <div className={`tableControls`} style={{ display: `flex`, justifyContent: `flex-end`, marginBottom: 8 }}>
-                <Button size={`small`} variant={`outlined`} disabled={syncing} onClick={syncStripeOrders} startIcon={<Sync />}>{syncing ? `Syncing` : `Sync Stripe`}</Button>
-            </div> : <></>}
-            <Table type={type} title={`${type}(s)`} rows={visibleOrders} columns={orderColumns} className={`ordersTableComponent`} selectable={canManageOrders} pagination_options={{ page: 0, pageSize: 10 }} />
+            <Table 
+                type={type} 
+                rows={visibleOrders} 
+                columns={orderColumns} 
+                selectable={canManageOrders}
+                className={`ordersTableComponent`} 
+                pagination_options={{ page: 0, pageSize: 10 }} 
+                emptyRowsLabel={`(${visibleOrders?.length}) ${type}(s), Sign In or Check Role Permission(s)`} 
+                title={(
+                    <div className={`tableHeaderComponent`}>
+                        {type}(s)
+                        {canManageOrders ? (
+                            <div className={`tableControls`} style={{ display: `flex`, justifyContent: `flex-end`, marginBottom: 8 }}>
+                                <Button size={`small`} variant={`outlined`} disabled={syncing} onClick={syncStripeOrders} startIcon={<Sync />}>
+                                    {syncing ? `Syncing` : `Sync Stripe`}
+                                </Button>
+                            </div>
+                        ) : <></>}
+                    </div>
+                )}
+            />
         </div>
     );
 }

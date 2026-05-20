@@ -69,6 +69,9 @@
     --stockSliderHeight: 535px;
     --stockSliderOffset_Default: 78px;
     --stockSliderOffset: var(--stockSliderOffset_Default);
+    @media (max-height: 600px) {
+        --stockSliderHeight: calc(100dvh - 235px) !important;
+    }
     @media (min-height: 700px) {
         --stockSliderHeight: 675px;
         @media (max-height: 915px) {

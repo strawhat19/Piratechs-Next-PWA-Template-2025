@@ -99,7 +99,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                     >
                         <AddShoppingCart fontSize={`small`} />
                     </Icon_Button>
-                ) : (isArchived ? <>
+                ) : ((isArchived && canManageProducts) ? <>
                     <Icon_Button
                         size={26}
                         title={`Restore Product`}
@@ -183,7 +183,7 @@ export default function ProductsTable({
                 <IconText format={false} dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />
             ),
         },
-        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 220, },
+        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 150, },
         {
             width: 70,
             sortable: false,
@@ -203,8 +203,8 @@ export default function ProductsTable({
         { field: `category`, headerName: `Category`, width: 85 },
         { field: `created_by`, headerName: `Created By`, width: 145 },
         { field: `updated_by`, headerName: `Updated By`, width: 145 },
-        { field: `created_at`, headerName: `Created`, width: 145 },
-        { field: `updated`, headerName: `Updated`, width: 145 },
+        { field: `created_at`, headerName: `Created`, width: 150 },
+        { field: `updated`, headerName: `Updated`, width: 150 },
         // { field: `sku`, headerName: `SKU`, width: 130 },
         // { field: `productType`, headerName: `Type`, width: 120 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },

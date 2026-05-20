@@ -51,12 +51,12 @@ export default function Table({
   rows = default_rows, 
   columns = default_columns, 
   className = `tableComponent`, 
+  rowCount = rows?.length || 0,
   page_size_options = [5, 10, 12],
   pagination_options = paginationModel, 
+  emptyRowsLabel = `(${rowCount}) ${type}(s)`,
 }: any) {
   const { loaded } = useContext<any>(StateGlobals);
-  const rowCount = rows?.length || 0;
-  const emptyRowsLabel = `(${rowCount}) ${type}(s)`;
   return (
       <div className={`table ${className}`}>
         {loaded ? <>
