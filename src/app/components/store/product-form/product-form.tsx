@@ -6,6 +6,7 @@ import Img from '@/app/components/image/image';
 import { Button, Dialog, Skeleton } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
 import { Add, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
+import ProductSelectField, { categoryColors, categoryIcons, statusColors, statusIcons, typeColors, typeIcons } from './product-select-field';
 import { FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { addProductToDatabase, updateProductInDatabase } from '@/shared/server/firebase';
 import { capWords, customDate, getNextCollectionNumber, minRole } from '@/shared/scripts/constants';
@@ -106,13 +107,6 @@ const ProductTextAreaField = ({ label, ...props }: any) => (
     <label className={`productField productTextAreaField`}>
         <span>{label}</span>
         <textarea placeholder={label} {...props} />
-    </label>
-);
-
-const ProductSelectField = ({ label, children, ...props }: any) => (
-    <label className={`productField`}>
-        <span>{label}</span>
-        <select {...props}>{children}</select>
     </label>
 );
 
@@ -247,6 +241,9 @@ export default function ProductForm({
         const value = target?.type == `checkbox` ? target?.checked : target?.value;
         setForm(prev => ({ ...prev, [target?.name]: value }));
     }
+    const updateSelectValue = (field: `category` | `productType` | `status`, value: string) => {
+        setForm(prev => ({ ...prev, [field]: value }));
+    };
     const clearImageURL = () => {
         setForm(prev => ({ ...prev, imageURL: `` }));
         setTimeout(() => {
@@ -439,15 +436,30 @@ export default function ProductForm({
                     <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
                     <ProductField funsized={funsized} label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
                     {!funsized && product != null && <>
-                        <ProductSelectField label={`Category`} name={`category`} value={form?.category} onChange={updateForm}>
-                            {Object.values(ProductCategory).map(category => <option key={category} value={category}>{category}</option>)}
-                        </ProductSelectField>
-                        <ProductSelectField label={`Type`} name={`productType`} value={form?.productType} onChange={updateForm}>
-                            {Object.values(ProductType).map(type => <option key={type} value={type}>{type}</option>)}
-                        </ProductSelectField>
-                        <ProductSelectField label={`Status`} name={`status`} value={form?.status} onChange={updateForm}>
-                            {Object.values(ProductStatus).map(status => <option key={status} value={status}>{status}</option>)}
-                        </ProductSelectField>
+                        <ProductSelectField
+                            label={`Category`}
+                            value={form?.category}
+                            options={Object.values(ProductCategory)}
+                            icons={categoryIcons}
+                            colors={categoryColors}
+                            onChange={(value: string) => updateSelectValue(`category`, value)}
+                        />
+                        <ProductSelectField
+                            label={`Type`}
+                            value={form?.productType}
+                            options={Object.values(ProductType)}
+                            icons={typeIcons}
+                            colors={typeColors}
+                            onChange={(value: string) => updateSelectValue(`productType`, value)}
+                        />
+                        <ProductSelectField
+                            label={`Status`}
+                            value={form?.status}
+                            options={Object.values(ProductStatus)}
+                            icons={statusIcons}
+                            colors={statusColors}
+                            onChange={(value: string) => updateSelectValue(`status`, value)}
+                        />
                     </>}
                     {/* <div>
                         <span className={`productFieldLabelText`}>Image(s)</span>
