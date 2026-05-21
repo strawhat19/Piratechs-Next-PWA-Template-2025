@@ -3,7 +3,8 @@
 import Table from '../table';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import { Button } from '@mui/material';
+import { flushSync } from 'react-dom';
+import { Button, LinearProgress, Skeleton } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
@@ -94,6 +95,8 @@ const ProductActionsCell = ({
     onAddToCart, 
     quickEditing = false, 
     onBatchDeleteProducts, 
+    onBatchArchiveProducts,
+    selectedActiveProductIDs, 
     selectedInactiveProductIDs, 
 }: any) => {
     const { user, showConfirm } = useContext<any>(StateGlobals);
@@ -102,9 +105,26 @@ const ProductActionsCell = ({
     const isArchived = currentStatus == ProductStatus.Archived.toLowerCase();
     const canAddToCart = !isArchived && currentStatus == ProductStatus.Active.toLowerCase() && row?.stock > 0;
     const statusColor = getProductStatusColor(row);
-    const updateStatus = (status: ProductStatus) => {
+    const updateStatus = async (status: ProductStatus) => {
         const safeStatus = status == ProductStatus.Active && Number(row?.stock || 0) <= 0 ? ProductStatus.Unavailable : status;
-        updateProductInDatabase(String(row?.id), { status: safeStatus }, user)?.then(() => toast.success(`Product Updated`));
+        await updateProductInDatabase(String(row?.id), { status: safeStatus }, user)?.then(() => toast.success(`Product Updated`));
+    }
+    const archiveProduct = async () => {
+        if (selectedActiveProductIDs?.length > 1) {
+            onBatchArchiveProducts();
+            return;
+        }
+        const confirmed = await showConfirm({
+            cancelText: `Cancel`,
+            confirmText: `Archive`,
+            title: `Archive Product`,
+            cancelAction: { color: `var(--buttons)` },
+            message: `Archive Product #${row?.number} "${row?.name}"?`,
+            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Archive /> },
+        });
+        if (!confirmed) return;
+        toast.info(`Archiving Product`);
+        await updateStatus(ProductStatus.Archived)?.then(() => toast.success(`Product Archived`));
     }
     const deleteProduct = async () => {
         if (selectedInactiveProductIDs?.length > 1) {
@@ -115,15 +135,14 @@ const ProductActionsCell = ({
             cancelText: `Cancel`,
             confirmText: `Delete`,
             title: `Delete Product`,
-            message: `Delete Product #${row?.number} "${row?.name}"?`,
-            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction` },
             cancelAction: { color: `var(--buttons)` },
+            message: `Delete Product #${row?.number} "${row?.name}"?`,
+            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Delete /> },
         });
         if (!confirmed) return;
         toast.info(`Deleting Product`);
         deleteProductFromDatabase(row, user)?.then(() => toast.success(`Product Deleted`));
     }
-
     return (
         <div className={`actionsCell productActionsCell`}>
             <TableStatus label={getProductStatusLabel(row)} color={statusColor} title={getProductStatusLabel(row, true)} />
@@ -191,7 +210,7 @@ const ProductActionsCell = ({
                             className={`actionIconButton archiveAction`}
                             onClick={(event: any) => {
                                 event.stopPropagation();
-                                updateStatus(ProductStatus.Archived);
+                                archiveProduct();
                             }}
                         >
                             <Archive fontSize={`small`} />
@@ -363,6 +382,7 @@ export default function ProductsTable({
     const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
     const [pendingPriceByID, setPendingPriceByID] = useState<Record<string, number>>({});
     const [pendingStockByID, setPendingStockByID] = useState<Record<string, number>>({});
+    const [selectedActiveProductIDs, setSelectedActiveProductIDs] = useState<string[]>([]);
     const [optimisticNameByID, setOptimisticNameByID] = useState<Record<string, string>>({});
     const [optimisticPriceByID, setOptimisticPriceByID] = useState<Record<string, number>>({});
     const [optimisticStockByID, setOptimisticStockByID] = useState<Record<string, number>>({});
@@ -377,17 +397,23 @@ export default function ProductsTable({
 
     useCheckoutReturnToast(saveCart);
 
-    const renderBatchDeleteProgress = (processed = 0, total = 0, failed = 0) => {
+    const renderBatchProgress = ({
+        total = 0,
+        failed = 0,
+        processed = 0,
+        actionLabel = `Deleting`,
+    }: any = {}) => {
         const progress = total > 0 ? Math.round((processed / total) * 100) : 0;
         return (
-            <div style={{ width: `100%`, marginTop: 2 }}>
-                <Loader
-                    height={84}
-                    width={`100%`}
-                    labelSize={13}
-                    showLoading={true}
-                    className={`batchDeleteLoader`}
-                    label={`Deleting Product(s) ${processed}/${total}${failed > 0 ? ` • Failed ${failed}` : ``}`}
+            <div style={{ width: `100%`, marginTop: 8 }}>
+                <Skeleton variant={`rectangular`} animation={`wave`} height={44} style={{ borderRadius: 6, marginBottom: 10 }} />
+                <div style={{ opacity: 0.92, fontSize: 12, marginBottom: 6 }}>
+                    {`${actionLabel} Product(s) ${processed}/${total}${failed > 0 ? ` - Failed ${failed}` : ``}`}
+                </div>
+                <LinearProgress
+                    value={progress}
+                    variant={`determinate`}
+                    style={{ borderRadius: 9999 }}
                 />
                 <div style={{ marginTop: 8, opacity: 0.85, fontSize: 12 }}>
                     {progress}% Complete
@@ -396,56 +422,111 @@ export default function ProductsTable({
         );
     };
 
-    const onBatchDeleteProducts = async () => {
-        const selectedProducts = products?.filter((product: Product) => selectedInactiveProductIDs?.includes(String(product?.id))) || [];
-        if (selectedProducts?.length <= 1) return;
-        const archivedProducts = selectedProducts?.filter((product: Product) => String(product?.status || ``)?.toLowerCase() == ProductStatus.Archived.toLowerCase());
-        if (archivedProducts?.length <= 0) {
-            toast.warn(`Select Archived Product(s) To Delete`);
+    const runProductBatchAction = async ({
+        mode = `delete`,
+        selectedIDs = [],
+        productsToProcess = [],
+        title = `Batch Action`,
+        actionLabel = `Processing`,
+        confirmMessage = `Continue?`,
+        successMessage = `Done`,
+        confirmColor = `var(--error)`,
+        confirmText = `Confirm`,
+        confirmActionIcon = <Delete />,
+    }: any = {}) => {
+        if (selectedIDs?.length <= 1 || productsToProcess?.length <= 0) {
+            toast.warn(`Select Multiple Product(s)`);
             return;
         }
-        const blockedCount = selectedProducts?.length - archivedProducts?.length;
         const confirmed = await showConfirm({
             cancelText: `Cancel`,
-            confirmText: `Delete`,
-            title: `Delete Product(s)`,
-            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Delete /> },
-            message: blockedCount > 0
-                ? `Delete ${archivedProducts?.length} Archived Product(s)? ${blockedCount} Selected Product(s) Are Not Archived And Will Be Skipped`
-                : `Delete ${archivedProducts?.length} Archived Product(s)? This Cannot Be Undone`,
+            title,
+            confirmText,
+            message: confirmMessage,
+            confirmAction: { color: confirmColor, className: `dialogDeleteAction`, icon: confirmActionIcon },
+            cancelAction: { color: `var(--buttons)` },
         });
         if (!confirmed) return;
         showAlert({
-            title: `Deleting Product(s)`,
-            message: `Please Wait While Product(s) Are Deleted`,
+            title,
+            message: `Please Wait`,
             confirmText: `Hide`,
-            content: renderBatchDeleteProgress(0, archivedProducts?.length, 0),
+            content: renderBatchProgress({ actionLabel, processed: 0, failed: 0, total: productsToProcess?.length }),
             className: `dialogAlert dialogCustom`,
         });
         let processed = 0;
         let failed = 0;
-        for (const product of archivedProducts) {
+        for (const product of productsToProcess) {
             try {
-                const deleted = await deleteProductFromDatabase(product, user);
-                if (!deleted) failed += 1;
+                if (mode == `archive`) {
+                    const archived = await updateProductInDatabase(String(product?.id), { status: ProductStatus.Archived }, user, true);
+                    if (!archived) failed += 1;
+                } else {
+                    const deleted = await deleteProductFromDatabase(product, user);
+                    if (!deleted) failed += 1;
+                }
             } catch {
                 failed += 1;
             } finally {
                 processed += 1;
-                setAppDialog((prev: any) => prev ? ({
-                    ...prev,
-                    content: renderBatchDeleteProgress(processed, archivedProducts?.length, failed),
-                }) : prev);
+                flushSync(() => {
+                    setAppDialog((prev: any) => prev ? ({
+                        ...prev,
+                        content: renderBatchProgress({ actionLabel, failed, processed, total: productsToProcess?.length }),
+                    }) : prev);
+                });
+                await new Promise(resolve => requestAnimationFrame(() => resolve(true)));
             }
         }
         closeAppDialog(true);
         setSelectedProductIDs([]);
+        setSelectedActiveProductIDs([]);
         setSelectedInactiveProductIDs([]);
         if (failed > 0) {
-            toast.warn(`Deleted ${processed - failed}/${archivedProducts?.length} Product(s)`);
+            toast.warn(`${actionLabel} ${processed - failed}/${productsToProcess?.length} Product(s)`);
             return;
         }
-        toast.success(`Deleted ${archivedProducts?.length} Product(s)`);
+        toast.success(successMessage);
+    };
+
+    const onBatchDeleteProducts = async () => {
+        const selectedProducts = products?.filter((product: Product) => selectedInactiveProductIDs?.includes(String(product?.id))) || [];
+        const archivedProducts = selectedProducts?.filter((product: Product) => String(product?.status || ``)?.toLowerCase() == ProductStatus.Archived.toLowerCase());
+        const blockedCount = selectedProducts?.length - archivedProducts?.length;
+        await runProductBatchAction({
+            mode: `delete`,
+            confirmText: `Delete`,
+            selectedIDs: selectedInactiveProductIDs,
+            productsToProcess: archivedProducts,
+            title: `Delete Product(s)`,
+            actionLabel: `Deleting`,
+            confirmActionIcon: <Delete />,
+            successMessage: `Deleted ${archivedProducts?.length} Product(s)`,
+            confirmColor: `var(--error)`,
+            confirmMessage: blockedCount > 0
+                ? `Delete ${archivedProducts?.length} Archived Product(s)? ${blockedCount} Selected Product(s) Are Not Archived And Will Be Skipped`
+                : `Delete ${archivedProducts?.length} Archived Product(s)? This Cannot Be Undone`,
+        });
+    };
+
+    const onBatchArchiveProducts = async () => {
+        const selectedProducts = products?.filter((product: Product) => selectedActiveProductIDs?.includes(String(product?.id))) || [];
+        const nonArchivedProducts = selectedProducts?.filter((product: Product) => String(product?.status || ``)?.toLowerCase() != ProductStatus.Archived.toLowerCase());
+        const blockedCount = selectedProducts?.length - nonArchivedProducts?.length;
+        await runProductBatchAction({
+            mode: `archive`,
+            confirmText: `Archive`,
+            selectedIDs: selectedActiveProductIDs,
+            productsToProcess: nonArchivedProducts,
+            title: `Archive Product(s)`,
+            actionLabel: `Archiving`,
+            successMessage: `Archived ${nonArchivedProducts?.length} Product(s)`,
+            confirmColor: `var(--links)`,
+            confirmActionIcon: <Archive />,
+            confirmMessage: blockedCount > 0
+                ? `Archive ${nonArchivedProducts?.length} Product(s)? ${blockedCount} Product(s) Already Archived And Will Be Skipped`
+                : `Archive ${nonArchivedProducts?.length} Product(s)?`,
+        });
     };
 
     useEffect(() => {
@@ -485,6 +566,9 @@ export default function ProductsTable({
             });
             return changed ? next : prev;
         });
+        const productIDs = products?.map((p: Product | null) => p?.id);
+        const uniqueIDs = [ ...new Set(selectedProductIDs?.filter(id => productIDs?.includes(id))) ];
+        onSelectedRowsChange(uniqueIDs);
     }, [products]);
 
     const onChangeNameDraft = (row: Product, nextName: string) => {
@@ -699,11 +783,24 @@ export default function ProductsTable({
                     onAddToCart={onAddToCart} 
                     onBatchDeleteProducts={onBatchDeleteProducts}
                     quickEditing={quickEditProduct?.id == row?.id} 
+                    onBatchArchiveProducts={onBatchArchiveProducts}
+                    selectedActiveProductIDs={selectedActiveProductIDs}
                     selectedInactiveProductIDs={selectedInactiveProductIDs}
                 />
             ),
         },
     ];
+
+    const onSelectedRowsChange = (selectedIDs: string[]) => {
+        setSelectedProductIDs(selectedIDs);
+        const rows = products?.filter((p: Product | null) => selectedIDs?.includes(p?.id));
+        const inactiveRows = rows?.filter((p: Product | null) => p?.status == ProductStatus.Archived);
+        const activeRows = rows?.filter((p: Product | null) => p?.status != ProductStatus.Archived);
+        const inactiveIds = inactiveRows?.map((p: Product | null) => p?.id);
+        const activeIds = activeRows?.map((p: Product | null) => p?.id);
+        setSelectedInactiveProductIDs(inactiveIds);
+        setSelectedActiveProductIDs(activeIds);
+    }
 
     if (productsLoading) {
         return <Loader height={250} label={`Product(s) Loading`} />;
@@ -719,16 +816,34 @@ export default function ProductsTable({
                 dataGridProps={{
                     onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
                         const ids = Array.from(selectionModel?.ids || [])?.map(id => String(id));
-                        setSelectedProductIDs(ids);
-                        const rows = products?.filter((p: Product | null) => ids?.includes(p?.id));
-                        const inactiveRows = rows?.filter((p: Product | null) => p?.status == ProductStatus.Archived);
-                        const inactiveIds = inactiveRows?.map((p: Product | null) => p?.id);
-                        setSelectedInactiveProductIDs(inactiveIds);
+                        onSelectedRowsChange(ids);
                     },
                 }}
                 title={(
                     <div className={`tableHeaderComponent tableHeaderForm`}>
                         {type}(s)
+                        {/* {selectedActiveProductIDs?.length > 1 ? (
+                            <Button
+                                size={`small`}
+                                onClick={onBatchArchiveProducts}
+                                className={`tableControlsButton`}
+                                startIcon={<Archive fontSize={`small`} />}
+                                style={{ color: `white`, marginLeft: 8, background: `var(--links)` }}
+                            >
+                                Archive Selected ({selectedActiveProductIDs?.length})
+                            </Button>
+                        ) : <></>}
+                        {selectedInactiveProductIDs?.length > 1 ? (
+                            <Button
+                                size={`small`}
+                                onClick={onBatchDeleteProducts}
+                                className={`tableControlsButton`}
+                                startIcon={<Delete fontSize={`small`} />}
+                                style={{ color: `white`, marginLeft: 8, background: `var(--error)` }}
+                            >
+                                Delete Selected ({selectedInactiveProductIDs?.length})
+                            </Button>
+                        ) : <></>} */}
                         <ProductForm
                             widget
                             funsized
@@ -737,17 +852,6 @@ export default function ProductsTable({
                             onCancelEdit={() => setQuickEditProduct(null)}
                             onFullEdit={(product: Product | null) => setFullEditProduct(product)}
                         />
-                        {/* {selectedInactiveProductIDs?.length > 1 ? (
-                            <Button
-                                size={`small`}
-                                onClick={onBatchDeleteProducts}
-                                className={`tableControlsButton`}
-                                startIcon={<Delete fontSize={`small`} />}
-                                style={{ background: `var(--error)`, color: `white`, marginLeft: 8 }}
-                            >
-                                Delete Selected ({selectedInactiveProductIDs?.length})
-                            </Button>
-                        ) : <></>} */}
                     </div>
                 )}
             />

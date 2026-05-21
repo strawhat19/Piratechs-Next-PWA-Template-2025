@@ -325,7 +325,10 @@ export default function ProductForm({
         if (!requiredFieldsFilled()) return toast.error(`Required Product Field(s) Missing`);
         if (formMatchesProduct()) return toast.error(`Product Unchanged`);
         setSaving(true);
+        // let params: any = { form: { ...form }, product: { ...product } };
+        resetProductForm(product);
         try {
+            // let { form, product } = params;
             const editing = product != null;
             const stock = Number(form?.stock || 0);
             const price = dollarsToCents(form?.price ?? 0);
