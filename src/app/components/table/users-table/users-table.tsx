@@ -153,6 +153,7 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
 
 export default function UsersTable({
     type = Types.User,
+    onOpenUserDetails = () => {},
 }: any) {
     const { user, users } = useContext<any>(StateGlobals);
     const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
@@ -253,7 +254,18 @@ export default function UsersTable({
     if (!canViewUsers) return <Loader height={250} label={`${type}(s) Restricted`} />;
     return (
         users?.length > 0 ? <>
-            <Table type={type} title={`${type}(s)`} rows={users} columns={user_columns} />
+            <Table
+                type={type}
+                title={`${type}(s)`}
+                rows={users}
+                columns={user_columns}
+                dataGridProps={{
+                    onCellClick: ({ row, field }: any) => {
+                        if (field == `signedIn` || field == `actions`) return;
+                        onOpenUserDetails(row);
+                    },
+                }}
+            />
         </> : <Loader height={250} label={`${type}(s) Loading`} />
     )
 }

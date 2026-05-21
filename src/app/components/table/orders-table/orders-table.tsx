@@ -43,6 +43,7 @@ const getOrderStatusColor = (status?: string) => {
 
 export default function OrdersTable({
     type = Types.Order,
+    onOpenOrderDetails = () => {},
 }: any) {
     const { user, orders = [], ordersLoading = false } = useContext<any>(StateGlobals);
     const [syncing, setSyncing] = useState(false);
@@ -132,6 +133,12 @@ export default function OrdersTable({
                 className={`ordersTableComponent`} 
                 pagination_options={{ page: 0, pageSize: 10 }} 
                 emptyRowsLabel={`(${visibleOrders?.length}) ${type}(s), Sign In or Check Role Permission(s)`} 
+                dataGridProps={{
+                    onCellClick: ({ row, field }: any) => {
+                        if (field == `actions`) return;
+                        onOpenOrderDetails(row);
+                    },
+                }}
                 title={(
                     <div className={`tableHeaderComponent tableHeaderSimple contentAtEnd`}>
                         {type}(s)
