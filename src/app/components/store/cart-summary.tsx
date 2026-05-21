@@ -1,10 +1,46 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import InternalCheckout from './internal-checkout';
 import type { CartItem } from './use-store-cart';
 import { Add, DeleteSweep, Remove, ShoppingCartCheckout, Storefront } from '@mui/icons-material';
+import { constants } from '@/shared/scripts/constants';
+
+const getCartItemImageURL = (item: CartItem) => (
+    item?.attachments?.[0]?.value
+    || item?.imageURL
+    || item?.imageURLs?.[0]
+    || item?.images?.[0]?.src
+    || item?.images?.[0]?.url
+    || constants?.images?.icons?.logo
+);
+
+const CartItemImage = ({ item }: { item: CartItem }) => {
+    const [hasError, setHasError] = useState(false);
+    const imageURL = getCartItemImageURL(item);
+
+    if (!imageURL || hasError) {
+        return (
+            <div className={`storeCartItemImage storeCartItemImageEmpty`} aria-hidden={`true`}>
+                {item?.name?.[0] || `P`}
+            </div>
+        );
+    }
+
+    return (
+        <Image
+            unoptimized
+            width={48}
+            height={48}
+            alt={item?.name || `Product`}
+            src={imageURL}
+            className={`storeCartItemImage`}
+            onError={() => setHasError(true)}
+        />
+    );
+};
 
 type CartSummaryProps = {
     cart: CartItem[];
@@ -41,9 +77,12 @@ export default function CartSummary({
             <div className={`storeCartItems`}>
                 {cart.length > 0 ? cart.map((item) => (
                     <div className={`storeCartItem`} key={item.id}>
-                        <div className={`storeCartItemInfo`}>
-                            <strong>{item.name}</strong>
-                            <span>{item.sku} - {item.category}</span>
+                        <div className={`storeCartItemMain`}>
+                            <CartItemImage item={item} />
+                            <div className={`storeCartItemInfo`}>
+                                <strong>{item.name}</strong>
+                                <span>{item.sku} - {item.category}</span>
+                            </div>
                         </div>
                         <div className={`storeCartItemMeta`}>
                             <div className={`storeCartQuantityControls`}>

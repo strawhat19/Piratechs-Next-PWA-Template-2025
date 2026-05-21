@@ -188,7 +188,7 @@ export const useStoreCart = () => {
             return false;
         }
 
-        const currentQuantity = normalizeCartQuantity(currentItem?.quantity || 0);
+        const currentQuantity = currentItem ? normalizeCartQuantity(currentItem?.quantity) : 0;
         if (currentQuantity >= stockLimit) {
             toast.info(`${source?.name || `Product`} is limited to ${stockLimit} in cart`);
             return false;
