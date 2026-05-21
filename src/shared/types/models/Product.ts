@@ -3,10 +3,10 @@ import { DataSources, Types } from '../types';
 import { capWords, customDate, countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
 
 export enum ProductStatus {
-  // Draft = `Draft`,
+  Draft = `Draft`,
   Active = `Active`,
-  Pending = `Pending`,
   Archived = `Archived`,
+  // Pending = `Pending`,
   // Backorder = `Backorder`,
   Unavailable = `Unavailable`,
 }

@@ -179,7 +179,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
             setUser(usr);
             if (usr?.signedIn == false) {
                 let { datetime } = customDate();
-                updateUserInDatabase(usr?.id, { lastSignIn: datetime, signedIn: true });
+                updateUserInDatabase(usr?.id, { lastSignIn: datetime, signedIn: true }, true);
             }
         }
         setAuthState(AuthStates.Sign_Out);
@@ -189,7 +189,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
     }
 
     const onSignOut = async (usr: User | null = user) => {
-        if (usr) updateUserInDatabase(usr?.id, { signedIn: false });
+        if (usr) updateUserInDatabase(usr?.id, { signedIn: false }, true);
         setUser(null);
         setAuthState(AuthStates.Next);
         await signOut(auth);

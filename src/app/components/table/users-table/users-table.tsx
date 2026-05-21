@@ -39,7 +39,6 @@ const RoleCell = ({ row, value }: any) => {
       let oldRole = value;
       let userName = row?.name;
       let msg = (end: string = `ing`) => `Updat${end} ${userName} from Role "${oldRole}" to "${newRole}"`;
-      toast.info(msg());
       updateUserInDatabase(row?.id, { role: newRole })?.then(() => {
         toast.success(msg(`ed`));
       });
@@ -190,7 +189,6 @@ export default function UsersTable({
         if (safeName == String(originalName || ``).trim()) return onCancelNameDraft(row);
         setOptimisticNameByID(prev => ({ ...prev, [rowID]: safeName }));
         onCancelNameDraft(row);
-        toast.info(`Updating User Name`);
         updateUserInDatabase(rowID, { name: safeName })?.then(() => {
             toast.success(`User Name Updated`);
         }).catch(() => {
@@ -212,7 +210,10 @@ export default function UsersTable({
                 <EditableCell
                     mode={`text`}
                     value={value}
+                    showActions={false}
                     showStepper={false}
+                    saveOnEnter={true}
+                    cancelOnBlur={true}
                     canEdit={minRole(user?.role, Roles.Editor)}
                     pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
                     onChangeValue={(next: string) => onChangeNameDraft(row, next)}

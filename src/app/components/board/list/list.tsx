@@ -164,7 +164,6 @@ export default function ListComponent({
   };
 
   const statusChange = async (e: any, itm: Item) => {
-    toast.info(`Updating Item`);
     let { date } = getIDParts();
     let newStatus = statuses[itm.status].transition;
     let updates = { status: newStatus, updated: date };
@@ -198,7 +197,6 @@ export default function ListComponent({
     const { active, over } = e;
     if (!over || active.id === over.id) return;
     let { date: updated } = getIDParts();
-    toast.info(`Updating List`);
     let itmIDs: string[] = items?.map(i => i?.id);
     let oldI = itmIDs?.findIndex(i => i == active?.id);
     let newII = itmIDs?.findIndex(i => i == over?.id);

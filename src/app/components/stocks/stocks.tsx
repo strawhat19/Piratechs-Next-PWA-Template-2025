@@ -205,7 +205,7 @@ export default function Stocks({ className = `stocksComponent` }) {
         // let id = e?.target?.id;
         // let socketField = id == `robinhood_socket_token_field`;
         // console.log({ e, robinhoodToken, robinhoodSocketToken });
-        updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken, z_token_robinhood_socket: robinhoodSocketToken });
+        updateUserInDatabase(user?.id, { z_token_robinhood: robinhoodToken, z_token_robinhood_socket: robinhoodSocketToken }, true);
         toast.warn(`Refreshing...`, { position: `top-right` });
         setTimeout(() => { window?.location?.reload(); }, 1500);
     }

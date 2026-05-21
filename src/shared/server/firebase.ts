@@ -7,6 +7,7 @@ import { Order } from '../types/models/Order';
 import { Board } from '../types/models/Board';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 import { Product } from '../types/models/Product';
 import { apiRoutes, customDate, getIDParts, logToast } from '../scripts/constants';
 import { GoogleAuthProvider, browserLocalPersistence, getAuth, getIdToken, setPersistence } from 'firebase/auth';
@@ -49,6 +50,10 @@ export const itemsAPI = apiRoutes.items.url;
 export const boardsAPI = apiRoutes.boards.url;
 export const productsAPI = apiRoutes.products.url;
 
+const toastSaveInfo = (label: string, silent = false) => {
+  if (!silent) toast.info(label);
+};
+
 export const userConverter = {
   toFirestore: (usr: User) => {
     return JSON.parse(JSON.stringify(usr));
@@ -59,7 +64,8 @@ export const userConverter = {
   }
 }
 
-export const addUserToDatabase = async (usr: User) => {
+export const addUserToDatabase = async (usr: User, silent = false) => {
+  toastSaveInfo(`Saving User`, silent);
   const res = await fetch(usersAPI, {
     method: `POST`,
     body: JSON.stringify(usr),
@@ -73,7 +79,8 @@ export const addUserToDatabase = async (usr: User) => {
   return res.json();
 }
 
-export const updateUserInDatabase = async (id: string, updates: Partial<User>) => {
+export const updateUserInDatabase = async (id: string, updates: Partial<User>, silent = false) => {
+  toastSaveInfo(`Saving User`, silent);
   const { update } = customDate();
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
@@ -122,7 +129,8 @@ export const boardConverter = {
   }
 }
 
-export const addBoardToDatabase = async (brd: Board, user: User) => {
+export const addBoardToDatabase = async (brd: Board, user: User, silent = false) => {
+  toastSaveInfo(`Saving Board`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(boardsAPI, {
@@ -173,7 +181,8 @@ export const listConverter = {
   }
 }
 
-export const addListToDatabase = async (lst: List, user: User) => {
+export const addListToDatabase = async (lst: List, user: User, silent = false) => {
+  toastSaveInfo(`Saving List`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(listsAPI, {
@@ -192,7 +201,8 @@ export const addListToDatabase = async (lst: List, user: User) => {
   return res.json();
 }
 
-export const updateListInDatabase = async (id: string, updates: Partial<List>) => {
+export const updateListInDatabase = async (id: string, updates: Partial<List>, silent = false) => {
+  toastSaveInfo(`Saving List`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : updates?.uid;
   const res = await fetch(listsAPI + `/` + id, {
@@ -242,7 +252,8 @@ export const itemConverter = {
   }
 }
 
-export const addItemToDatabase = async (itm: Item, user: User) => {
+export const addItemToDatabase = async (itm: Item, user: User, silent = false) => {
+  toastSaveInfo(`Saving Item`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(itemsAPI, {
@@ -261,7 +272,8 @@ export const addItemToDatabase = async (itm: Item, user: User) => {
   return res.json();
 }
 
-export const updateItemInDatabase = async (updates: Partial<Item>, user: User) => {
+export const updateItemInDatabase = async (updates: Partial<Item>, user: User, silent = false) => {
+  toastSaveInfo(`Saving Item`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(itemsAPI + `/` + updates?.id, {
@@ -319,7 +331,8 @@ export const productConverter = {
   }
 }
 
-export const addProductToDatabase = async (prd: Product, user: User) => {
+export const addProductToDatabase = async (prd: Product, user: User, silent = false) => {
+  toastSaveInfo(`Saving Product`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(productsAPI, {
@@ -338,7 +351,8 @@ export const addProductToDatabase = async (prd: Product, user: User) => {
   return res.json();
 }
 
-export const updateProductInDatabase = async (id: string, updates: Partial<Product>, user: User) => {
+export const updateProductInDatabase = async (id: string, updates: Partial<Product>, user: User, silent = false) => {
+  toastSaveInfo(`Saving Product`, silent);
   const currentUser = auth?.currentUser;
   const token = currentUser ? await getIdToken(currentUser) : user?.uid;
   const res = await fetch(productsAPI + `/` + id, {

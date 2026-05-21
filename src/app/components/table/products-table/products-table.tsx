@@ -36,6 +36,7 @@ const getProductStatus = (product: Product, string: boolean = false) => {
     // if (archived) return { color: `red`, label: string == true ? ProductStatus.Archived : stock };
     if (stock <= 0 || product?.status == ProductStatus.Unavailable) return { color: `red`, label: string == true ? ProductStatus.Unavailable : stock };
     if (active) return { color: `var(--green_neon)`, label: string == true ? ProductStatus.Active : stock };
+    if (product?.status == ProductStatus.Draft) return { color: `var(--links)`, label: string == true ? ProductStatus.Draft : stock };
     // if (pending) return { color: tableStatusGray, label: string == true ? ProductStatus.Pending : stock };
     // if (backorder) return { color: tableStatusGray, label: string == true ? ProductStatus.Backorder : stock };
     return { color: tableStatusGray, label: string == true ? (archived ? ProductStatus.Archived : product?.status) : stock };
@@ -93,7 +94,6 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
     const canAddToCart = !isArchived && row?.stock > 0 && available;
     const statusColor = getProductStatusColor(row);
     const updateStatus = (status: ProductStatus) => {
-        toast.info(`Updating Product`);
         updateProductInDatabase(String(row?.id), { status }, user)?.then(() => toast.success(`Product Updated`));
     }
     const deleteProduct = async () => {
@@ -200,7 +200,6 @@ const ProductCategoryCell = ({ row, value }: any) => {
         label: category,
         icon: categoryIcons?.[category as ProductCategory],
         onClick: () => {
-            toast.info(`Updating Product Category`);
             updateProductInDatabase(String(row?.id), { category }, user)?.then(() => toast.success(`Product Category Updated`));
         },
     }));
@@ -251,7 +250,6 @@ const ProductTypeCell = ({ row, value }: any) => {
         label: productType,
         icon: typeIcons?.[productType as ProductType],
         onClick: () => {
-            toast.info(`Updating Product Type`);
             updateProductInDatabase(String(row?.id), { productType }, user)?.then(() => toast.success(`Product Type Updated`));
         },
     }));
@@ -305,7 +303,6 @@ const ProductStatusCell = ({ row, value }: any) => {
         label: status,
         icon: statusIcons?.[status as ProductStatus],
         onClick: () => {
-            toast.info(`Updating Product Status`);
             const updates: any = { status };
             if (String(status || ``).toLowerCase() == ProductStatus.Unavailable.toLowerCase()) updates.stock = 0;
             updateProductInDatabase(String(row?.id), updates, user)?.then(() => toast.success(`Product Status Updated`));
@@ -519,6 +516,35 @@ export default function ProductsTable({
     const productColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 50 },
         {
+            width: 70,
+            field: `imageURL`,
+            filterable: false,
+            headerName: `Image`,
+            headerClassName: `imageHeaderCell`,
+            renderCell: ({ row }: any) => <ProductImageCell row={row} />,
+        },
+        {
+            flex: 1,
+            field: `name`,
+            maxWidth: 155,
+            headerName: `Product`,
+            renderCell: ({ row, value }: any) => (
+                <EditableCell
+                    mode={`text`}
+                    value={value}
+                    showActions={false}
+                    showStepper={false}
+                    saveOnEnter={true}
+                    cancelOnBlur={true}
+                    canEdit={minRole(user?.role, Roles.Administrator)}
+                    pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
+                    onChangeValue={(next: string) => onChangeNameDraft(row, next)}
+                    onCancel={() => onCancelNameDraft(row)}
+                    onSave={(next: string, original: string) => onSaveNameDraft(row, next, original)}
+                />
+            ),
+        },
+        {
             width: 115,
             field: `price`,
             type: `number`,
@@ -564,32 +590,6 @@ export default function ProductsTable({
                     pendingStock={(pendingStockByID?.[String(row?.id)] ?? optimisticStockByID?.[String(row?.id)])}
                 />
             ),
-        },
-        {
-            field: `name`,
-            headerName: `Product`,
-            flex: 1,
-            maxWidth: 150,
-            renderCell: ({ row, value }: any) => (
-                <EditableCell
-                    mode={`text`}
-                    value={value}
-                    showStepper={false}
-                    canEdit={minRole(user?.role, Roles.Administrator)}
-                    pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
-                    onChangeValue={(next: string) => onChangeNameDraft(row, next)}
-                    onCancel={() => onCancelNameDraft(row)}
-                    onSave={(next: string, original: string) => onSaveNameDraft(row, next, original)}
-                />
-            ),
-        },
-        {
-            width: 70,
-            field: `imageURL`,
-            filterable: false,
-            headerName: `Image`,
-            headerClassName: `imageHeaderCell`,
-            renderCell: ({ row }: any) => <ProductImageCell row={row} />,
         },
         // { field: `created_by`, headerName: `Created By`, width: 145 },
         // { field: `updated_by`, headerName: `Updated By`, width: 145 },
