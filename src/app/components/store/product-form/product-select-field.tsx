@@ -1,57 +1,11 @@
 'use client';
 
-import MenuTrigger from '../../menu/menu-trigger';
-import { Button } from '@mui/material';
 import { JSX } from 'react';
-import { KeyboardArrowDown } from '@mui/icons-material';
+import { Button } from '@mui/material';
+import MenuTrigger from '../../menu/menu-trigger';
 import { ProductCategory, ProductType, ProductStatus } from '@/shared/types/models/Product';
+import { KeyboardArrowDown, LocalOffer, Checkroom, Palette, Newspaper, Computer, Draw, Backpack, AutoAwesome, TheaterComedy, ShoppingBag, PushPin, Print, BusinessCenter, Autorenew, Download, Drafts, CheckCircle, HourglassTop, Archive, Cancel, SentimentDissatisfied } from '@mui/icons-material';
 
-// Icon and color mappings for ProductCategory
-export const categoryIcons: Record<ProductCategory, JSX.Element> = {
-    [ProductCategory.Art]: <span style={{ fontSize: 16 }}>🎨</span>,
-    [ProductCategory.Apparel]: <span style={{ fontSize: 16 }}>👕</span>,
-    [ProductCategory.Stickers]: <span style={{ fontSize: 16 }}>🏷️</span>,
-    [ProductCategory.Paintings]: <span style={{ fontSize: 16 }}>🖼️</span>,
-    [ProductCategory.Prints]: <span style={{ fontSize: 16 }}>📄</span>,
-    [ProductCategory.Posters]: <span style={{ fontSize: 16 }}>📰</span>,
-    [ProductCategory.Graphics]: <span style={{ fontSize: 16 }}>💻</span>,
-    [ProductCategory.Commissions]: <span style={{ fontSize: 16 }}>✍️</span>,
-    [ProductCategory.Accessories]: <span style={{ fontSize: 16 }}>🎒</span>,
-    [ProductCategory.DigitalArt]: <span style={{ fontSize: 16 }}>🖥️</span>,
-    [ProductCategory.OriginalArt]: <span style={{ fontSize: 16 }}>✨</span>,
-    [ProductCategory.CustomArt]: <span style={{ fontSize: 16 }}>🎭</span>,
-    [ProductCategory.Merchandise]: <span style={{ fontSize: 16 }}>🛍️</span>,
-};
-
-// Icon and color mappings for ProductType
-export const typeIcons: Record<ProductType, JSX.Element> = {
-    [ProductType.Pin]: <span style={{ fontSize: 16 }}>📌</span>,
-    [ProductType.Print]: <span style={{ fontSize: 16 }}>🖨️</span>,
-    [ProductType.Shirt]: <span style={{ fontSize: 16 }}>👕</span>,
-    [ProductType.Poster]: <span style={{ fontSize: 16 }}>📰</span>,
-    [ProductType.Sticker]: <span style={{ fontSize: 16 }}>🏷️</span>,
-    [ProductType.Graphic]: <span style={{ fontSize: 16 }}>🎨</span>,
-    [ProductType.Service]: <span style={{ fontSize: 16 }}>💼</span>,
-    [ProductType.Digital]: <span style={{ fontSize: 16 }}>💾</span>,
-    [ProductType.Painting]: <span style={{ fontSize: 16 }}>🖼️</span>,
-    [ProductType.Physical]: <span style={{ fontSize: 16 }}>📦</span>,
-    [ProductType.Commission]: <span style={{ fontSize: 16 }}>✍️</span>,
-    [ProductType.Subscription]: <span style={{ fontSize: 16 }}>🔄</span>,
-    [ProductType.DigitalDownload]: <span style={{ fontSize: 16 }}>⬇️</span>,
-};
-
-// Icon and color mappings for ProductStatus
-export const statusIcons: Record<ProductStatus, JSX.Element> = {
-    [ProductStatus.Draft]: <span style={{ fontSize: 16 }}>📝</span>,
-    [ProductStatus.Active]: <span style={{ fontSize: 16 }}>✅</span>,
-    [ProductStatus.Pending]: <span style={{ fontSize: 16 }}>⏳</span>,
-    [ProductStatus.Archived]: <span style={{ fontSize: 16 }}>🗄️</span>,
-    [ProductStatus.Backorder]: <span style={{ fontSize: 16 }}>🔄</span>,
-    [ProductStatus.Unavailable]: <span style={{ fontSize: 16 }}>❌</span>,
-    [ProductStatus.OutOfStock]: <span style={{ fontSize: 16 }}>😞</span>,
-};
-
-// Status colors using SCSS theme variables
 export const statusColors: Record<ProductStatus, string> = {
     [ProductStatus.Draft]: `var(--disabled)`,
     [ProductStatus.Active]: `var(--success)`,
@@ -62,38 +16,77 @@ export const statusColors: Record<ProductStatus, string> = {
     [ProductStatus.OutOfStock]: `var(--pink_neon)`,
 };
 
-// Category colors using SCSS theme variables
 export const categoryColors: Record<ProductCategory, string> = {
     [ProductCategory.Art]: `var(--pink_neon)`,
     [ProductCategory.Apparel]: `var(--blueneon)`,
     [ProductCategory.Prints]: `var(--bluelight)`,
-    [ProductCategory.Paintings]: `var(--success)`,
-    [ProductCategory.Graphics]: `var(--pink_neon)`,
+    [ProductCategory.Paintings]: `var(--emerald_neon)`,
+    [ProductCategory.Digital]: `var(--emerald_neon)`,
     [ProductCategory.Accessories]: `var(--success)`,
-    [ProductCategory.DigitalArt]: `var(--blueneon)`,
     [ProductCategory.Stickers]: `var(--yellow_neon)`,
     [ProductCategory.OriginalArt]: `var(--pink_neon)`,
     [ProductCategory.CustomArt]: `var(--yellow_neon)`,
     [ProductCategory.Merchandise]: `var(--bluelight)`,
     [ProductCategory.Posters]: `var(--cool_neon_blue)`,
-    [ProductCategory.Commissions]: `var(--yellow_neon)`,
+    [ProductCategory.Commissions]: `var(--emerald_neon)`,
 };
 
-// Type colors using SCSS theme variables
 export const typeColors: Record<ProductType, string> = {
-    [ProductType.Pin]: `var(--blueneon)`,
-    [ProductType.Shirt]: `var(--blueneon)`,
-    [ProductType.Service]: `var(--success)`,
-    [ProductType.Print]: `var(--bluelight)`,
-    [ProductType.Digital]: `var(--blueneon)`,
-    [ProductType.Painting]: `var(--success)`,
-    [ProductType.Graphic]: `var(--pink_neon)`,
-    [ProductType.Physical]: `var(--bluelight)`,
-    [ProductType.Sticker]: `var(--yellow_neon)`,
-    [ProductType.Poster]: `var(--cool_neon_blue)`,
-    [ProductType.Commission]: `var(--yellow_neon)`,
-    [ProductType.Subscription]: `var(--green_neon)`,
-    [ProductType.DigitalDownload]: `var(--blueneon)`,
+    [ProductType.Pin]: categoryColors?.[ProductCategory.Stickers],
+    [ProductType.Shirt]: categoryColors?.[ProductCategory.Apparel],
+    [ProductType.Service]: `var(--pink_neon)`,
+    [ProductType.Print]: categoryColors?.[ProductCategory.Prints],
+    [ProductType.Painting]: categoryColors?.[ProductCategory.Paintings],
+    [ProductType.Digital]: categoryColors?.[ProductCategory.Digital],
+    [ProductType.Download]: `var(--blueneon)`,
+    [ProductType.Physical]: categoryColors?.[ProductCategory.Art],
+    [ProductType.Sticker]: categoryColors?.[ProductCategory.Stickers],
+    [ProductType.Poster]: categoryColors?.[ProductCategory.Posters],
+    [ProductType.Commission]: categoryColors?.[ProductCategory.Commissions],
+    [ProductType.Subscription]: `var(--emerald_neon)`,
+};
+
+// Icon and color mappings for ProductCategory
+export const categoryIcons: Record<ProductCategory, JSX.Element> = {
+    [ProductCategory.Art]: <Palette fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Art]} />,
+    [ProductCategory.Apparel]: <Checkroom fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Apparel]} />,
+    [ProductCategory.Stickers]: <LocalOffer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Stickers]} />,
+    [ProductCategory.Paintings]: <Palette fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Paintings]} />,
+    [ProductCategory.Prints]: <Print fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Prints]} />,
+    [ProductCategory.Posters]: <Newspaper fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Posters]} />,
+    [ProductCategory.Digital]: <Computer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Digital]} />,
+    [ProductCategory.Commissions]: <Draw fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Commissions]} />,
+    [ProductCategory.Accessories]: <Backpack fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Accessories]} />,
+    [ProductCategory.OriginalArt]: <AutoAwesome fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.OriginalArt]} />,
+    [ProductCategory.CustomArt]: <TheaterComedy fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.CustomArt]} />,
+    [ProductCategory.Merchandise]: <ShoppingBag fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Merchandise]} />,
+};
+
+// Icon and color mappings for ProductType
+export const typeIcons: Record<ProductType, JSX.Element> = {
+    [ProductType.Pin]: <PushPin fontSize={`small`} htmlColor={typeColors?.[ProductType.Pin]} />,
+    [ProductType.Print]: <Print fontSize={`small`} htmlColor={typeColors?.[ProductType.Print]} />,
+    [ProductType.Shirt]: <Checkroom fontSize={`small`} htmlColor={typeColors?.[ProductType.Shirt]} />,
+    [ProductType.Poster]: <Newspaper fontSize={`small`} htmlColor={typeColors?.[ProductType.Poster]} />,
+    [ProductType.Sticker]: <LocalOffer fontSize={`small`} htmlColor={typeColors?.[ProductType.Sticker]} />,
+    [ProductType.Digital]: <Computer fontSize={`small`} htmlColor={typeColors?.[ProductType.Digital]} />,
+    [ProductType.Service]: <BusinessCenter fontSize={`small`} htmlColor={typeColors?.[ProductType.Service]} />,
+    [ProductType.Painting]: <Palette fontSize={`small`} htmlColor={typeColors?.[ProductType.Painting]} />,
+    [ProductType.Physical]: <Backpack fontSize={`small`} htmlColor={typeColors?.[ProductType.Physical]} />,
+    [ProductType.Commission]: <Draw fontSize={`small`} htmlColor={typeColors?.[ProductType.Commission]} />,
+    [ProductType.Subscription]: <Autorenew fontSize={`small`} htmlColor={typeColors?.[ProductType.Subscription]} />,
+    [ProductType.Download]: <Download fontSize={`small`} htmlColor={typeColors?.[ProductType.Download]} />,
+};
+
+// Icon and color mappings for ProductStatus
+export const statusIcons: Record<ProductStatus, JSX.Element> = {
+    [ProductStatus.Draft]: <Drafts fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
+    [ProductStatus.Active]: <CheckCircle fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Active]} />,
+    [ProductStatus.Pending]: <HourglassTop fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Pending]} />,
+    [ProductStatus.Archived]: <Archive fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Archived]} />,
+    [ProductStatus.Backorder]: <Autorenew fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Backorder]} />,
+    [ProductStatus.Unavailable]: <Cancel fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Unavailable]} />,
+    [ProductStatus.OutOfStock]: <SentimentDissatisfied fontSize={`small`} htmlColor={statusColors?.[ProductStatus.OutOfStock]} />,
 };
 
 interface ProductSelectFieldProps {
@@ -135,6 +128,7 @@ export default function ProductSelectField({
             <div className={`productSelectField ${className}`}>
                 <span className={`productFieldLabelText`}>{label}</span>
                 <MenuTrigger
+                    search={true}
                     id={`${label.toLowerCase().replace(/\s/g, '-')}-menu-trigger`}
                     colors={true}
                     topOffset={0.5}

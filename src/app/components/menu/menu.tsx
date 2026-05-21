@@ -19,6 +19,7 @@ export default function Menu({
                 <MuiMenu 
                     id={id}
                     open={open} 
+                    onClose={onClose}
                     anchorEl={anchorEl} 
                     className={`menuComponent ${className}`} 
                     anchorOrigin={{ vertical: `bottom`, horizontal: `right`, }} 

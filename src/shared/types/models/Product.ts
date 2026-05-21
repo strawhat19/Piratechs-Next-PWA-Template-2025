@@ -14,18 +14,17 @@ export enum ProductStatus {
 
 export enum ProductType {
   Pin = `Pin`,
+  Digital = `Digital`,
+  Sticker = `Sticker`,
   Print = `Print`,
   Shirt = `Shirt`,
-  Poster = `Poster`,
-  Sticker = `Sticker`,
-  Graphic = `Graphic`,
-  Service = `Service`,
-  Digital = `Digital`,
   Painting = `Painting`,
+  Poster = `Poster`,
+  Service = `Service`,
+  Download = `Download`,
   Physical = `Physical`,
   Commission = `Commission`,
   Subscription = `Subscription`,
-  DigitalDownload = `Digital Download`,
 }
 
 export enum ProductCategory {
@@ -34,14 +33,13 @@ export enum ProductCategory {
   Stickers = `Stickers`,
   Paintings = `Paintings`,
   Prints = `Prints`,
-  Posters = `Posters`,
-  Graphics = `Graphics`,
-  Commissions = `Commissions`,
   Accessories = `Accessories`,
-  DigitalArt = `Digital Art`,
+  Posters = `Posters`,
+  Digital = `Digital Art`,
   OriginalArt = `Original Art`,
   CustomArt = `Custom Art`,
   Merchandise = `Merchandise`,
+  Commissions = `Commissions`,
 }
 
 export interface ProductOption {

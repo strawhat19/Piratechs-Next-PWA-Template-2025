@@ -3,20 +3,23 @@
 import Table from '../table';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
+import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { useContext, useState } from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
+import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { constants, minRole } from '@/shared/scripts/constants';
-import { Product, ProductStatus } from '@/shared/types/models/Product';
 import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
-import { AddShoppingCart, Archive, Delete, Edit, Restore } from '@mui/icons-material';
 import ProductForm, { ProductFormDialog } from '../../store/product-form/product-form';
+import { categoryIcons, typeIcons } from '../../store/product-form/product-select-field';
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
+import { Product, ProductType, ProductStatus, ProductCategory } from '@/shared/types/models/Product';
+import { AddShoppingCart, Archive, Delete, Edit, Restore, KeyboardArrowDown } from '@mui/icons-material';
 
 const storeDollarSignColor = `var(--green_neon)`;
 const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
@@ -160,6 +163,108 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
     );
 };
 
+const ProductCategoryCell = ({ row, value }: any) => {
+    const { user } = useContext<any>(StateGlobals);
+    const currentValue = String(value || ProductCategory.Art);
+    const canManageProducts = minRole(user?.role, Roles.Administrator);
+    if (!canManageProducts) return <>{currentValue}</>;
+    const categoryOptions = Object.values(ProductCategory)?.filter(option => option != currentValue);
+    const categoryItems = categoryOptions?.map((category: ProductCategory | string) => ({
+        id: category,
+        label: category,
+        icon: categoryIcons?.[category as ProductCategory],
+        onClick: () => {
+            toast.info(`Updating Product Category`);
+            updateProductInDatabase(String(row?.id), { category }, user)?.then(() => toast.success(`Product Category Updated`));
+        },
+    }));
+    return (
+        <MenuTrigger
+            colors={true}
+            search={false}
+            topOffset={0.5}
+            menuItems={categoryItems}
+            className={`roleDropdownMenu`}
+            id={`product-category-menu-trigger-${row?.id}`}
+            targetID={`product-category-menu-${row?.id}`}
+            renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
+                <Button
+                    id={id}
+                    size={`small`}
+                    onClick={onClick}
+                    endIcon={<KeyboardArrowDown />}
+                    className={`tableDropDown roleDropdownButton`}
+                    startIcon={categoryIcons?.[currentValue as ProductCategory]}
+                >
+                    <span className={`dropDownBtnLabel`}>
+                        {searchValue || currentValue}
+                    </span>
+                    {/* <input
+                        onFocus={onFocus}
+                        onChange={onType}
+                        placeholder={currentValue}
+                        className={`dropDownBtnLabel`}
+                        value={searchValue || currentValue}
+                        onClick={(event) => event.stopPropagation()}
+                        style={{ border: `none`, width: `100%`, color: `inherit`, background: `transparent` }}
+                    /> */}
+                </Button>
+            )}
+        />
+    );
+};
+
+const ProductTypeCell = ({ row, value }: any) => {
+    const { user } = useContext<any>(StateGlobals);
+    const currentValue = String(value || ProductType.Sticker);
+    const canManageProducts = minRole(user?.role, Roles.Administrator);
+    if (!canManageProducts) return <>{currentValue}</>;
+    const typeOptions = Object.values(ProductType)?.filter(option => option != currentValue);
+    const typeItems = typeOptions?.map((productType: ProductType | string) => ({
+        id: productType,
+        label: productType,
+        icon: typeIcons?.[productType as ProductType],
+        onClick: () => {
+            toast.info(`Updating Product Type`);
+            updateProductInDatabase(String(row?.id), { productType }, user)?.then(() => toast.success(`Product Type Updated`));
+        },
+    }));
+    return (
+        <MenuTrigger
+            colors={true}
+            search={false}
+            topOffset={0.5}
+            menuItems={typeItems}
+            className={`roleDropdownMenu`}
+            id={`product-type-menu-trigger-${row?.id}`}
+            targetID={`product-type-menu-${row?.id}`}
+            renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
+                <Button
+                    id={id}
+                    size={`small`}
+                    onClick={onClick}
+                    endIcon={<KeyboardArrowDown />}
+                    className={`tableDropDown roleDropdownButton`}
+                    startIcon={typeIcons?.[currentValue as ProductType]}
+                >
+                    <span className={`dropDownBtnLabel`}>
+                        {searchValue || currentValue}
+                    </span>
+                    {/* <input
+                        onFocus={onFocus}
+                        onChange={onType}
+                        placeholder={currentValue}
+                        className={`dropDownBtnLabel`}
+                        value={searchValue || currentValue}
+                        onClick={(event) => event.stopPropagation()}
+                        style={{ border: `none`, width: `100%`, color: `inherit`, background: `transparent` }}
+                    /> */}
+                </Button>
+            )}
+        />
+    );
+};
+
 export default function ProductsTable({ 
     setFullEditProduct,
     setQuickEditProduct,
@@ -181,13 +286,14 @@ export default function ProductsTable({
     const productColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 87 },
         {
-            width: 105,
+            width: 85,
             field: `price`,
             headerName: `Price`,
             renderCell: ({ value }: any) => (
                 <IconText format={false} dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />
             ),
         },
+        { width: 65, field: `stock`, type: `number`, headerName: `Stock`, },
         { field: `name`, headerName: `Product`, flex: 1, maxWidth: 150, },
         {
             width: 70,
@@ -198,20 +304,13 @@ export default function ProductsTable({
             headerClassName: `imageHeaderCell`,
             renderCell: ({ row }: any) => <ProductImageCell row={row} />,
         },
-        // {
-        //     width: 85,
-        //     field: `stock`,
-        //     type: `number`,
-        //     headerName: `Stock`,
-        //     renderCell: ({ value }: any) => <IconText showIcon={false} number={Number(value || 0)} decimalPlaces={0} className={`stockText`} />,
-        // },
-        { field: `category`, headerName: `Category`, width: 85 },
+        { width: 165, field: `category`, headerName: `Category`, renderCell: ({ row, value }: any) => <ProductCategoryCell row={row} value={value} /> },
+        { width: 165, field: `productType`, headerName: `Type`, renderCell: ({ row, value }: any) => <ProductTypeCell row={row} value={value} /> },
         { field: `created_by`, headerName: `Created By`, width: 145 },
         { field: `updated_by`, headerName: `Updated By`, width: 145 },
         { field: `created_at`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },
         // { field: `sku`, headerName: `SKU`, width: 130 },
-        // { field: `productType`, headerName: `Type`, width: 120 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
         {
             width: 150,
