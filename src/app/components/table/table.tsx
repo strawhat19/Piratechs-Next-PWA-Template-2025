@@ -1,10 +1,10 @@
 'use client';
 
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import Loader from '../loaders/loader';
 import { Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridToolbar } from '@mui/x-data-grid/internals';
 
 const paginationModel = { page: 0, pageSize: 12 };
@@ -58,6 +58,8 @@ export default function Table({
   emptyRowsLabel = `(${rowCount}) ${type}(s)`,
 }: any) {
   const { loaded } = useContext<any>(StateGlobals);
+  const checkedRowsRef = useRef<GridRowSelectionModel>({ type: `include`, ids: new Set() });
+
   return (
       <div className={`table ${className}`}>
         {loaded ? <>
@@ -76,6 +78,11 @@ export default function Table({
               density={density}
               showToolbar={toolbar}
               checkboxSelection={selectable}
+              onRowSelectionModelChange={(nextRowSelectionModel: GridRowSelectionModel, details: any) => {
+                checkedRowsRef.current = nextRowSelectionModel;
+                console.log(`Checked Rows`, Array.from(nextRowSelectionModel?.ids || []));
+                dataGridProps?.onRowSelectionModelChange?.(nextRowSelectionModel, details);
+              }}
               slots={{ toolbar: GridToolbar, }}
               pageSizeOptions={page_size_options}
               localeText={{ noRowsLabel: emptyRowsLabel }}

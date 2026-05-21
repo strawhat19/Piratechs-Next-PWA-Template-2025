@@ -3,8 +3,10 @@ import './dialog.scss';
 import { Button } from '@mui/material';
 import React, { useContext } from 'react';
 import Dialog from '@mui/material/Dialog';
+import Backdrop, { BackdropProps } from '@mui/material/Backdrop';
 import { Types } from '@/shared/types/types';
 import TextField from '@mui/material/TextField';
+import DialogContent from '@mui/material/DialogContent';
 import { List } from '@/shared/types/models/List';
 import { Item } from '@/shared/types/models/Item';
 import { Task } from '@/shared/types/models/Task';
@@ -138,6 +140,7 @@ function SimpleDialog(props: SimpleDialogProps) {
 
 export default function DialogComponent() {
   let { selected, setSelected, appDialog, closeAppDialog } = useContext<any>(StateGlobals);
+  const FastBackdrop = (props: BackdropProps) => <Backdrop {...props} transitionDuration={0} />;
   return (
     <div className={`dialogComponent`}>
       <SimpleDialog
@@ -145,7 +148,16 @@ export default function DialogComponent() {
         open={selected != null}
         onClose={() => setSelected(null)}
       />
-      <Dialog open={appDialog != null} onClose={() => closeAppDialog(appDialog?.mode == `alert` ? true : null)} maxWidth={`xs`} fullWidth>
+      <Dialog
+        open={appDialog != null}
+        keepMounted
+        fullWidth
+        maxWidth={`xs`}
+        className={`fastDialog`}
+        transitionDuration={0}
+        slots={{ backdrop: FastBackdrop }}
+        onClose={() => closeAppDialog(appDialog?.mode == `alert` ? true : null)}
+      >
         <AppDialogContent appDialog={appDialog} closeAppDialog={closeAppDialog} />
       </Dialog>
     </div>
@@ -160,6 +172,7 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
   const cancelLabel = cancelAction?.label || appDialog?.cancelText || `Cancel`;
   const confirmClassName = confirmAction?.className || ``;
   const cancelClassName = cancelAction?.className || ``;
+  const customContent = appDialog?.content;
   const confirmColor = confirmAction?.color || (String(confirmLabel || ``).toLowerCase().includes(`delete`) ? `var(--error)` : `var(--success)`);
   const cancelColor = cancelAction?.color || `var(--buttons)`;
   const confirmIcon = confirmAction?.icon || <Close fontSize={`inherit`} style={{ color: `white` }} />;
@@ -177,6 +190,13 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
         {appDialog?.title || `Dialog`}
       </h3>
       {appDialog?.message ? <p style={{ margin: `10px 0 0`, lineHeight: 1.45 }}>{appDialog?.message}</p> : <></>}
+      {customContent ? (
+        <DialogContent sx={{ p: 0, mt: 1.5 }}>
+          {typeof customContent == `function`
+            ? customContent({ closeAppDialog, value, setValue, appDialog })
+            : customContent}
+        </DialogContent>
+      ) : <></>}
       {appDialog?.mode == `prompt` ? (
         <TextField
           autoFocus

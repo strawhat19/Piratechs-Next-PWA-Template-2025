@@ -14,7 +14,6 @@ export const statusColors: Record<ProductStatus, string> = {
 };
 
 export const categoryColors: Record<ProductCategory, string> = {
-    [ProductCategory.Art]: statusColors?.[ProductStatus.Unavailable],
     [ProductCategory.Apparel]: `var(--blueneon)`,
     [ProductCategory.Prints]: `var(--bluelight)`,
     [ProductCategory.Accessories]: `var(--success)`,
@@ -24,20 +23,21 @@ export const categoryColors: Record<ProductCategory, string> = {
     [ProductCategory.Merchandise]: `var(--bluelight)`,
     [ProductCategory.Posters]: `var(--cool_neon_blue)`,
     [ProductCategory.Commissions]: `var(--emerald_neon)`,
+    [ProductCategory.Art]: statusColors?.[ProductStatus.Unavailable],
     [ProductCategory.OriginalArt]: statusColors?.[ProductStatus.Unavailable],
 };
 
 export const typeColors: Record<ProductType, string> = {
+    [ProductType.Print]: categoryColors?.[ProductCategory.Prints],
     [ProductType.Pin]: categoryColors?.[ProductCategory.Stickers],
     [ProductType.Shirt]: categoryColors?.[ProductCategory.Stickers],
+    [ProductType.Poster]: categoryColors?.[ProductCategory.Posters],
     [ProductType.Service]: statusColors?.[ProductStatus.Unavailable],
-    [ProductType.Print]: categoryColors?.[ProductCategory.Prints],
-    [ProductType.Painting]: statusColors?.[ProductStatus.Unavailable],
     [ProductType.Digital]: categoryColors?.[ProductCategory.Digital],
     [ProductType.Download]: categoryColors?.[ProductCategory.Apparel],
+    [ProductType.Painting]: statusColors?.[ProductStatus.Unavailable],
     [ProductType.Physical]: statusColors?.[ProductStatus.Unavailable],
     [ProductType.Sticker]: categoryColors?.[ProductCategory.Stickers],
-    [ProductType.Poster]: categoryColors?.[ProductCategory.Posters],
     [ProductType.Commission]: categoryColors?.[ProductCategory.Commissions],
     [ProductType.Subscription]: categoryColors?.[ProductCategory.Stickers],
 };
@@ -45,12 +45,12 @@ export const typeColors: Record<ProductType, string> = {
 // Icon and color mappings for ProductCategory
 export const categoryIcons: Record<ProductCategory, JSX.Element> = {
     [ProductCategory.Art]: <Palette fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Art]} />,
-    [ProductCategory.Apparel]: <Checkroom fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Apparel]} />,
-    [ProductCategory.Stickers]: <LocalOffer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Stickers]} />,
     [ProductCategory.Prints]: <Print fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Prints]} />,
-    [ProductCategory.Posters]: <Newspaper fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Posters]} />,
     [ProductCategory.Digital]: <Computer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Digital]} />,
+    [ProductCategory.Apparel]: <Checkroom fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Apparel]} />,
+    [ProductCategory.Posters]: <Newspaper fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Posters]} />,
     [ProductCategory.Commissions]: <Draw fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Commissions]} />,
+    [ProductCategory.Stickers]: <LocalOffer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Stickers]} />,
     [ProductCategory.Accessories]: <Backpack fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Accessories]} />,
     [ProductCategory.OriginalArt]: <AutoAwesome fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.OriginalArt]} />,
     [ProductCategory.CustomArt]: <TheaterComedy fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.CustomArt]} />,
@@ -63,14 +63,14 @@ export const typeIcons: Record<ProductType, JSX.Element> = {
     [ProductType.Print]: <Print fontSize={`small`} htmlColor={typeColors?.[ProductType.Print]} />,
     [ProductType.Shirt]: <Checkroom fontSize={`small`} htmlColor={typeColors?.[ProductType.Shirt]} />,
     [ProductType.Poster]: <Newspaper fontSize={`small`} htmlColor={typeColors?.[ProductType.Poster]} />,
-    [ProductType.Sticker]: <LocalOffer fontSize={`small`} htmlColor={typeColors?.[ProductType.Sticker]} />,
     [ProductType.Digital]: <Computer fontSize={`small`} htmlColor={typeColors?.[ProductType.Digital]} />,
-    [ProductType.Service]: <BusinessCenter fontSize={`small`} htmlColor={typeColors?.[ProductType.Service]} />,
     [ProductType.Painting]: <Palette fontSize={`small`} htmlColor={typeColors?.[ProductType.Painting]} />,
     [ProductType.Physical]: <Backpack fontSize={`small`} htmlColor={typeColors?.[ProductType.Physical]} />,
     [ProductType.Commission]: <Draw fontSize={`small`} htmlColor={typeColors?.[ProductType.Commission]} />,
-    [ProductType.Subscription]: <Autorenew fontSize={`small`} htmlColor={typeColors?.[ProductType.Subscription]} />,
     [ProductType.Download]: <Download fontSize={`small`} htmlColor={typeColors?.[ProductType.Download]} />,
+    [ProductType.Sticker]: <LocalOffer fontSize={`small`} htmlColor={typeColors?.[ProductType.Sticker]} />,
+    [ProductType.Service]: <BusinessCenter fontSize={`small`} htmlColor={typeColors?.[ProductType.Service]} />,
+    [ProductType.Subscription]: <Autorenew fontSize={`small`} htmlColor={typeColors?.[ProductType.Subscription]} />,
 };
 
 // Icon and color mappings for ProductStatus
@@ -78,9 +78,9 @@ export const statusIcons: Record<ProductStatus, JSX.Element> = {
     [ProductStatus.Draft]: <Edit fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
     // [ProductStatus.Draft]: <Drafts fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
     [ProductStatus.Active]: <CheckCircle fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Active]} />,
-    // [ProductStatus.Pending]: <HourglassTop fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Pending]} />,
     [ProductStatus.Archived]: <Archive fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Archived]} />,
     [ProductStatus.Unavailable]: <Cancel fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Unavailable]} />,
+    // [ProductStatus.Pending]: <HourglassTop fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Pending]} />,
 };
 
 interface ProductSelectFieldProps {

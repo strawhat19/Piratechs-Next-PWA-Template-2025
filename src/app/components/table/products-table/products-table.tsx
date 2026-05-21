@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
@@ -88,7 +88,14 @@ const ProductImageCell = ({ row }: { row: Product }) => {
     );
 }
 
-const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: { quickEditing?: boolean; row: Product; onEdit: (product: Product | null) => void; onAddToCart: (product: Product) => void }) => {
+const ProductActionsCell = ({ 
+    row, 
+    onEdit, 
+    onAddToCart, 
+    quickEditing = false, 
+    onBatchDeleteProducts, 
+    selectedInactiveProductIDs, 
+}: any) => {
     const { user, showConfirm } = useContext<any>(StateGlobals);
     const canManageProducts = minRole(user?.role, Roles.Administrator);
     const currentStatus = String(getProductStatusLabel(row, true) || row?.status || ProductStatus.Draft).toLowerCase();
@@ -100,6 +107,10 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
         updateProductInDatabase(String(row?.id), { status: safeStatus }, user)?.then(() => toast.success(`Product Updated`));
     }
     const deleteProduct = async () => {
+        if (selectedInactiveProductIDs?.length > 1) {
+            onBatchDeleteProducts();
+            return;
+        }
         const confirmed = await showConfirm({
             cancelText: `Cancel`,
             confirmText: `Delete`,
@@ -347,6 +358,7 @@ export default function ProductsTable({
     onQuickEdit = undefined,
     quickEditProduct = null,
 }: any) {
+    const [selectedProductIDs, setSelectedProductIDs] = useState<string[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
     const [pendingPriceByID, setPendingPriceByID] = useState<Record<string, number>>({});
@@ -354,8 +366,9 @@ export default function ProductsTable({
     const [optimisticNameByID, setOptimisticNameByID] = useState<Record<string, string>>({});
     const [optimisticPriceByID, setOptimisticPriceByID] = useState<Record<string, number>>({});
     const [optimisticStockByID, setOptimisticStockByID] = useState<Record<string, number>>({});
+    const [selectedInactiveProductIDs, setSelectedInactiveProductIDs] = useState<string[]>([]);
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
-    const { user } = useContext<any>(StateGlobals);
+    const { user, showAlert, showConfirm, setAppDialog, closeAppDialog } = useContext<any>(StateGlobals);
     const editProduct = (product: Product | null) => onQuickEdit ? onQuickEdit(product) : setSelectedProduct(product);
 
     const { saveCart } = useStoreCart();
@@ -363,6 +376,77 @@ export default function ProductsTable({
     // const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct((prev: any) => prev?.id == product?.id ? null : product);
 
     useCheckoutReturnToast(saveCart);
+
+    const renderBatchDeleteProgress = (processed = 0, total = 0, failed = 0) => {
+        const progress = total > 0 ? Math.round((processed / total) * 100) : 0;
+        return (
+            <div style={{ width: `100%`, marginTop: 2 }}>
+                <Loader
+                    height={84}
+                    width={`100%`}
+                    labelSize={13}
+                    showLoading={true}
+                    className={`batchDeleteLoader`}
+                    label={`Deleting Product(s) ${processed}/${total}${failed > 0 ? ` • Failed ${failed}` : ``}`}
+                />
+                <div style={{ marginTop: 8, opacity: 0.85, fontSize: 12 }}>
+                    {progress}% Complete
+                </div>
+            </div>
+        );
+    };
+
+    const onBatchDeleteProducts = async () => {
+        const selectedProducts = products?.filter((product: Product) => selectedInactiveProductIDs?.includes(String(product?.id))) || [];
+        if (selectedProducts?.length <= 1) return;
+        const archivedProducts = selectedProducts?.filter((product: Product) => String(product?.status || ``)?.toLowerCase() == ProductStatus.Archived.toLowerCase());
+        if (archivedProducts?.length <= 0) {
+            toast.warn(`Select Archived Product(s) To Delete`);
+            return;
+        }
+        const blockedCount = selectedProducts?.length - archivedProducts?.length;
+        const confirmed = await showConfirm({
+            cancelText: `Cancel`,
+            confirmText: `Delete`,
+            title: `Delete Product(s)`,
+            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Delete /> },
+            message: blockedCount > 0
+                ? `Delete ${archivedProducts?.length} Archived Product(s)? ${blockedCount} Selected Product(s) Are Not Archived And Will Be Skipped`
+                : `Delete ${archivedProducts?.length} Archived Product(s)? This Cannot Be Undone`,
+        });
+        if (!confirmed) return;
+        showAlert({
+            title: `Deleting Product(s)`,
+            message: `Please Wait While Product(s) Are Deleted`,
+            confirmText: `Hide`,
+            content: renderBatchDeleteProgress(0, archivedProducts?.length, 0),
+            className: `dialogAlert dialogCustom`,
+        });
+        let processed = 0;
+        let failed = 0;
+        for (const product of archivedProducts) {
+            try {
+                const deleted = await deleteProductFromDatabase(product, user);
+                if (!deleted) failed += 1;
+            } catch {
+                failed += 1;
+            } finally {
+                processed += 1;
+                setAppDialog((prev: any) => prev ? ({
+                    ...prev,
+                    content: renderBatchDeleteProgress(processed, archivedProducts?.length, failed),
+                }) : prev);
+            }
+        }
+        closeAppDialog(true);
+        setSelectedProductIDs([]);
+        setSelectedInactiveProductIDs([]);
+        if (failed > 0) {
+            toast.warn(`Deleted ${processed - failed}/${archivedProducts?.length} Product(s)`);
+            return;
+        }
+        toast.success(`Deleted ${archivedProducts?.length} Product(s)`);
+    };
 
     useEffect(() => {
         setOptimisticNameByID(prev => {
@@ -533,9 +617,9 @@ export default function ProductsTable({
                 <EditableCell
                     mode={`text`}
                     value={value}
-                    showActions={false}
-                    showStepper={false}
                     saveOnEnter={true}
+                    showStepper={false}
+                    showActions={false}
                     cancelOnBlur={true}
                     canEdit={minRole(user?.role, Roles.Administrator)}
                     pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
@@ -608,7 +692,16 @@ export default function ProductsTable({
             filterable: false,
             headerName: `Action(s)`,
             valueGetter: (_value: any, row: any) => getProductStatusLabel(row, true) || ``,
-            renderCell: ({ row }: any) => <ProductActionsCell row={row} onAddToCart={onAddToCart} onEdit={editProduct} quickEditing={quickEditProduct?.id == row?.id} />,
+            renderCell: ({ row }: any) => (
+                <ProductActionsCell 
+                    row={row} 
+                    onEdit={editProduct} 
+                    onAddToCart={onAddToCart} 
+                    onBatchDeleteProducts={onBatchDeleteProducts}
+                    quickEditing={quickEditProduct?.id == row?.id} 
+                    selectedInactiveProductIDs={selectedInactiveProductIDs}
+                />
+            ),
         },
     ];
 
@@ -623,6 +716,16 @@ export default function ProductsTable({
                 rows={products}
                 columns={productColumns}
                 className={`productsTableComponent`}
+                dataGridProps={{
+                    onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
+                        const ids = Array.from(selectionModel?.ids || [])?.map(id => String(id));
+                        setSelectedProductIDs(ids);
+                        const rows = products?.filter((p: Product | null) => ids?.includes(p?.id));
+                        const inactiveRows = rows?.filter((p: Product | null) => p?.status == ProductStatus.Archived);
+                        const inactiveIds = inactiveRows?.map((p: Product | null) => p?.id);
+                        setSelectedInactiveProductIDs(inactiveIds);
+                    },
+                }}
                 title={(
                     <div className={`tableHeaderComponent tableHeaderForm`}>
                         {type}(s)
@@ -634,6 +737,17 @@ export default function ProductsTable({
                             onCancelEdit={() => setQuickEditProduct(null)}
                             onFullEdit={(product: Product | null) => setFullEditProduct(product)}
                         />
+                        {/* {selectedInactiveProductIDs?.length > 1 ? (
+                            <Button
+                                size={`small`}
+                                onClick={onBatchDeleteProducts}
+                                className={`tableControlsButton`}
+                                startIcon={<Delete fontSize={`small`} />}
+                                style={{ background: `var(--error)`, color: `white`, marginLeft: 8 }}
+                            >
+                                Delete Selected ({selectedInactiveProductIDs?.length})
+                            </Button>
+                        ) : <></>} */}
                     </div>
                 )}
             />

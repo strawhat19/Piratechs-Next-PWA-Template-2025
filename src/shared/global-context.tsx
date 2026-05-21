@@ -202,7 +202,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         });
     };
 
-    const showAlert = (messageOrOptions: string | { title?: string; message?: string; confirmText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
+    const showAlert = (messageOrOptions: string | { title?: string; message?: string; content?: any; confirmText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
         return new Promise<boolean>(resolve => {
             const options = typeof messageOrOptions == `string` ? { message: messageOrOptions } : messageOrOptions;
             setAppDialog({
@@ -211,6 +211,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 cancelText: ``,
                 defaultValue: ``,
                 message: options?.message || ``,
+                content: options?.content || null,
                 title: options?.title || `Notice`,
                 confirmText: options?.confirmText || `OK`,
                 cancelAction: options?.cancelAction || {},
@@ -220,7 +221,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         });
     };
 
-    const showConfirm = (messageOrOptions: string | { title?: string; message?: string; confirmText?: string; cancelText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
+    const showConfirm = (messageOrOptions: string | { title?: string; message?: string; content?: any; confirmText?: string; cancelText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
         return new Promise<boolean>(resolve => {
             const options = typeof messageOrOptions == `string` ? { message: messageOrOptions } : messageOrOptions;
             setAppDialog({
@@ -228,6 +229,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 mode: `confirm`,
                 defaultValue: ``,
                 message: options?.message || ``,
+                content: options?.content || null,
                 title: options?.title || `Confirm`,
                 cancelAction: options?.cancelAction || {},
                 cancelText: options?.cancelText || `Cancel`,
@@ -238,13 +240,14 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         });
     };
 
-    const showPrompt = (messageOrOptions: string | { title?: string; message?: string; defaultValue?: string; confirmText?: string; cancelText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
+    const showPrompt = (messageOrOptions: string | { title?: string; message?: string; content?: any; defaultValue?: string; confirmText?: string; cancelText?: string; className?: string; confirmAction?: any; cancelAction?: any; }) => {
         return new Promise<string | null>(resolve => {
             const options = typeof messageOrOptions == `string` ? { message: messageOrOptions } : messageOrOptions;
             setAppDialog({
                 resolve,
                 mode: `prompt`,
                 message: options?.message || ``,
+                content: options?.content || null,
                 title: options?.title || `Input`,
                 defaultValue: options?.defaultValue || ``,
                 cancelAction: options?.cancelAction || {},

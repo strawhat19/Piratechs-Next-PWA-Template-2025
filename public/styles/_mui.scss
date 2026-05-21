@@ -10,7 +10,7 @@
     background: var(--background) !important;
     &:has(.dialogCustom) {
         --ht: 150px;
-        --wd: 350px;
+        --wd: 455px;
         width: var(--wd) !important;
         height: var(--ht) !important;
         min-width: var(--wd) !important;
@@ -31,7 +31,7 @@
 .MuiMenuItem-root {
     color: white !important;
     font-size: 13px !important;
-    min-height: 30px !important;
+    min-height: 26px !important;
     padding: 0px 10px !important;
     transition: var(--transition);
     &.noColors {
@@ -71,6 +71,12 @@
         @media (max-width: 995px) {
             min-width: 90%;
         }
+    }
+}
+
+.MuiDialog-root.fastDialog {
+    .MuiBackdrop-root {
+        backdrop-filter: none;
     }
 }
 
@@ -129,13 +135,22 @@
 
 .dialogConfirm {
     .dialogConfirmButton {
-        --color: red !important;
+        --color: var(--error) !important;
         --buttons: var(--color) !important;
     }
 }
 
 .MuiDataGrid-overlay {
     color: white;
+}
+
+.MuiCheckbox-root {
+    svg {
+        path {
+            transform: scale(1.33);
+            transform-origin: center;
+        }
+    }
 }
 
 .MuiDataGrid-root {
