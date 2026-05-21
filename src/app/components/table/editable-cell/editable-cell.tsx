@@ -31,22 +31,22 @@ const cleanNumberDraft = (input: any) => {
 };
 
 export default function EditableCell({
+    min = 0,
+    step = 1,
     value = ``,
+    mode = `text`,
     canEdit = true,
     valueFirst = true,
-    pendingValue = undefined,
-    mode = `text`,
-    step = 1,
-    min = 0,
-    showStepper = false,
-    showActions = true,
-    saveOnEnter = false,
-    cancelOnBlur = false,
     onSave = () => {},
+    showActions = true,
+    showStepper = false,
+    saveOnEnter = false,
     onCancel = () => {},
+    cancelOnBlur = false,
     onIncrease = () => {},
     onDecrease = () => {},
     renderValue = undefined,
+    pendingValue = undefined,
 }: any) {
     const blurIntentRef = useRef<`save` | `cancel` | null>(null);
     const focusedRef = useRef(false);

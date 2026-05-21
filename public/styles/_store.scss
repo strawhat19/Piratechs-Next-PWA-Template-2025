@@ -21,8 +21,8 @@
     align-items: center;
     justify-content: center;
     &.qtyBlue {
-        background: var(--links) !important;
-        border-color: var(--links) !important;
+        background: var(--buttons) !important;
+        border-color: var(--buttons) !important;
     }
     &.qtyRed {
         background: var(--error) !important;
@@ -172,9 +172,9 @@
 }
 
 .productImageURLError {
-    color: var(--error);
     font-size: 9px;
     font-weight: 700;
+    color: var(--error);
 }
 
 .productImageURLClearButton {

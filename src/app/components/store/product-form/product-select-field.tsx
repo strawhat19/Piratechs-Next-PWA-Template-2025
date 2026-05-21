@@ -4,11 +4,11 @@ import { JSX } from 'react';
 import { Button } from '@mui/material';
 import MenuTrigger from '../../menu/menu-trigger';
 import { ProductCategory, ProductType, ProductStatus } from '@/shared/types/models/Product';
-import { KeyboardArrowDown, LocalOffer, Checkroom, Palette, Newspaper, Computer, Draw, Backpack, AutoAwesome, TheaterComedy, ShoppingBag, PushPin, Print, BusinessCenter, Autorenew, Download, CheckCircle, HourglassTop, Archive, Cancel, Drafts } from '@mui/icons-material';
+import { KeyboardArrowDown, LocalOffer, Checkroom, Palette, Newspaper, Computer, Draw, Backpack, AutoAwesome, TheaterComedy, ShoppingBag, PushPin, Print, BusinessCenter, Autorenew, Download, CheckCircle, Archive, Cancel, Edit } from '@mui/icons-material';
 
 export const statusColors: Record<ProductStatus, string> = {
     [ProductStatus.Draft]: `var(--links)`,
-    [ProductStatus.Active]: `var(--success)`,
+    [ProductStatus.Active]: `var(--emerald_neon)`,
     [ProductStatus.Unavailable]: `var(--error)`,
     [ProductStatus.Archived]: `var(--soft-silver)`,
 };
@@ -77,7 +77,8 @@ export const typeIcons: Record<ProductType, JSX.Element> = {
 
 // Icon and color mappings for ProductStatus
 export const statusIcons: Record<ProductStatus, JSX.Element> = {
-    [ProductStatus.Draft]: <Drafts fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
+    [ProductStatus.Draft]: <Edit fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
+    // [ProductStatus.Draft]: <Drafts fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
     [ProductStatus.Active]: <CheckCircle fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Active]} />,
     // [ProductStatus.Pending]: <HourglassTop fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Pending]} />,
     [ProductStatus.Archived]: <Archive fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Archived]} />,

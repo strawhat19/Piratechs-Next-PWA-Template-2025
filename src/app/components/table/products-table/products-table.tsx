@@ -58,13 +58,13 @@ const ProductStockCell = ({ row, value, pendingStock, onIncrease, onDecrease, on
         <EditableCell
             min={0}
             step={0.01}
-            mode={`number`}
             value={value}
-            canEdit={canManageProducts}
-            valueFirst={valueFirst}
-            pendingValue={pendingStock}
+            mode={`number`}
             showStepper={true}
+            valueFirst={valueFirst}
             renderValue={renderValue}
+            pendingValue={pendingStock}
+            canEdit={canManageProducts}
             onCancel={() => onCancel?.(row)}
             onChangeValue={(next: string) => onChangeValue?.(row, next)}
             onIncrease={(current: number) => onIncrease?.(row, current)}
