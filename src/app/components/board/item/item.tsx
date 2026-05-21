@@ -9,8 +9,9 @@ import { useSortable } from '@dnd-kit/sortable';
 import { Item } from '@/shared/types/models/Item';
 import { StateGlobals } from '@/shared/global-context';
 import { DateRangeSharp, Delete } from '@mui/icons-material';
-import { constants, isValid } from '@/shared/scripts/constants';
+import { constants } from '@/shared/scripts/constants';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { RichTextContent, toRichTextMarkup } from '../../rich-text/rich-text';
 
 export const type = Types.Item;
 
@@ -144,10 +145,8 @@ export default function ItemComponent({
                         )}
                     </h3>
                 </div>
-                {isValid(item?.description) && <>
-                    <div className={`itemDescription lineClamp2`} style={{ flex: 1 }}>
-                        {item?.description}
-                    </div>
+                {toRichTextMarkup(item?.description) && <>
+                    <RichTextContent value={item?.description} className={`itemDescription lineClamp2`} />
                 </>}
             </div>
             <div className={`itemEndContainer`}>

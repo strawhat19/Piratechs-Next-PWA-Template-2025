@@ -19,6 +19,7 @@ import Icon_Button from '../buttons/icon-button/icon-button';
 import { Close, Delete, DoDisturb } from '@mui/icons-material';
 import ImagesCarousel from '../slider/images-carousel/images-carousel';
 import StatusTag, { statusIconSize, statusLineHeight } from '../board/status/status';
+import { RichTextContent, toRichTextMarkup } from '../rich-text/rich-text';
 
 export interface SimpleDialogProps {
   open: boolean;
@@ -109,12 +110,12 @@ function SimpleDialog(props: SimpleDialogProps) {
               </div>
             </div>
             <div className={`dialogFieldGroup gap15 dialogRow column mt15`}>
-              {selected?.description && selected?.description != `` && (
+              {toRichTextMarkup(selected?.description) && (
                 <div className={`dialogRow dialogField gap10 column alignStartI justifyStart`}>
                   <h4 className={`main`}>
                     <strong>Description</strong>
                   </h4>
-                  <p>{selected?.description}</p>
+                  <RichTextContent value={selected?.description} className={`dialogRichText`} />
                 </div>
               )}
               {selected?.imageURLs?.length > 0 && (

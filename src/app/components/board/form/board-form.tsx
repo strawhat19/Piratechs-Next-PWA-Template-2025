@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { Button, Tooltip } from '@mui/material';
 import { Add, Search } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
+import RichTextEditorField from '@/app/components/rich-text/rich-text';
 
 export const defaultBoardForm = { name: ``, description: ``, imageURL: `` };
 
@@ -19,9 +20,15 @@ export default function BoardForm({
 
     const submitButtonShowing = () => showIconButton && (!boardSearch || (boardSearch && width > 768));
 
+    const updateFormValue = (name: string, value: any) => {
+        setBoardForm((prevFormData: any) => ({ ...prevFormData, form: className, [name]: value }));
+    };
+
     const updateForm = (e: any) => {
         const formField = e?.target;
-        setBoardForm((prevFormData: any) => ({ ...prevFormData, form: className, [formField?.name]: formField?.value }));
+        if (!formField?.name) return;
+        const nextValue = formField?.type == `checkbox` ? formField?.checked : formField?.value;
+        updateFormValue(formField?.name, nextValue);
     }
 
     const isDisabled = () => {
@@ -35,10 +42,7 @@ export default function BoardForm({
         const dsbld = isDisabled();
         if (dsbld) return;
         const form = e?.target;
-        const formData = new FormData(form);
         const hasSubmitBtn = submitButtonShowing();
-        const formValues: any = Object.fromEntries(formData?.entries());
-        setBoardForm(formValues);
         if (!hasSubmitBtn) {
             onClick();
         }
@@ -54,7 +58,13 @@ export default function BoardForm({
                 </> : <>
                     <input name={`name`} type={`text`} className={`nameField`} placeholder={placeholder} required />
                     {!newDataForm && <>
-                        <input name={`description`} type={`text`} className={`descriptionField`} placeholder={`Description`} />
+                        <RichTextEditorField
+                            label={`Description`}
+                            className={`descriptionField`}
+                            minHeight={120}
+                            value={boardForm?.description}
+                            onChange={(value: string) => updateFormValue(`description`, value)}
+                        />
                         <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
                     </>}
                 </>}

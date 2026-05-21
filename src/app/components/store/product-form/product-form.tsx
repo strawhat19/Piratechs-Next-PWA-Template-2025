@@ -11,6 +11,7 @@ import { FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'rea
 import { addProductToDatabase, updateProductInDatabase } from '@/shared/server/firebase';
 import { capWords, customDate, getNextCollectionNumber, minRole } from '@/shared/scripts/constants';
 import { Product, ProductCategory, ProductStatus, ProductType, ProductVariant, ProductAttachment } from '@/shared/types/models/Product';
+import RichTextEditorField from '@/app/components/rich-text/rich-text';
 
 type ProductFormProps = {
     full?: boolean;
@@ -18,6 +19,7 @@ type ProductFormProps = {
     widget?: boolean;
     funsized?: boolean;
     className?: string;
+    formId?: string;
     onClose?: () => void;
     product?: Product | null;
     onCancelEdit?: () => void;
@@ -96,6 +98,36 @@ const getProductForm = (product: Product | null | undefined, number: number) => 
     };
 };
 
+const productComparableFields = [
+    `sku`,
+    `name`,
+    `tags`,
+    `cost`,
+    `stock`,
+    `price`,
+    `brand`,
+    `status`,
+    `weight`,
+    `vendor`,
+    `currency`,
+    `imageURL`,
+    `category`,
+    `taxable`,
+    `compareAtPrice`,
+    `productType`,
+    `description`,
+    `allowBackorder`,
+    `requiresShipping`,
+    `trackInventory`,
+    `shortDescription`,
+    `lowStockThreshold`,
+] as const;
+
+const getComparableProductForm = (source: any) => productComparableFields.reduce((acc: any, key) => ({
+    ...acc,
+    [key]: source?.[key] ?? ``,
+}), {});
+
 const ProductField = ({ label, showInput = true, funsized = false, ...props }: any) => {
     const isNumberField = props?.type == `number`;
     const rawValue = props?.value;
@@ -107,13 +139,6 @@ const ProductField = ({ label, showInput = true, funsized = false, ...props }: a
         </label>
     );
 };
-
-const ProductTextAreaField = ({ label, ...props }: any) => (
-    <label className={`productField productTextAreaField`}>
-        <span>{label}</span>
-        <textarea placeholder={label} {...props} />
-    </label>
-);
 
 const ProductImageURLField = ({ label = `Attachment URL`, value = ``, onChange, onClear = () => {}, showClear = false, funsized = false }: any) => {
     const trimmedValue = String(value || ``).trim();
@@ -203,6 +228,7 @@ export default function ProductForm({
     product = null,
     widget = false,
     funsized = false,
+    formId = `product-form-${product?.id || `new`}${widget ? `-widget` : `-dialog`}`,
     onClose = () => {},
     onSaved = () => {},
     onFullEdit = undefined,
@@ -219,6 +245,7 @@ export default function ProductForm({
 
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState(() => getProductForm(product, nextProductNumber));
+    const formValueRef = useRef<any>(getProductForm(product, nextProductNumber));
 
     const [variants, setVariants] = useState<ProductFormVariant[]>(() => (
         product?.variants?.length ? product.variants : [{} as ProductVariant]).map(
@@ -228,9 +255,17 @@ export default function ProductForm({
 
     const compact = widget || !full;
 
+    const setFormValue = (nextForm: any) => {
+        const resolvedForm = typeof nextForm == `function`
+            ? nextForm(formValueRef.current || form)
+            : nextForm;
+        formValueRef.current = resolvedForm;
+        setForm(resolvedForm);
+    };
+
     const resetProductForm = (productToUse: Product | null | undefined = product) => {
         formRef?.current?.reset();
-        setForm(getProductForm(productToUse, productToUse?.number || nextProductNumber));
+        setFormValue(getProductForm(productToUse, productToUse?.number || nextProductNumber));
         setVariants((productToUse?.variants?.length ? productToUse.variants : [{} as ProductVariant]).map(variant => getVariantForm(variant, productToUse || undefined)));
     }
 
@@ -244,17 +279,21 @@ export default function ProductForm({
     const updateForm = (event: any) => {
         const target = event?.target;
         const value = target?.type == `checkbox` ? target?.checked : target?.value;
-        setForm(prev => ({ ...prev, [target?.name]: value }));
+        if (!target?.name) return;
+        setFormValue((prev: any) => ({ ...prev, [target?.name]: value }));
     }
+    const updateFormValue = (field: keyof typeof form | string, value: any) => {
+        setFormValue((prev: any) => ({ ...prev, [field]: value }));
+    };
     const updateSelectValue = (field: `category` | `productType` | `status`, value: string) => {
-        setForm(prev => ({
+        setFormValue((prev: any) => ({
             ...prev,
             [field]: value,
             ...(field == `status` && String(value || ``).toLowerCase() == ProductStatus.Unavailable.toLowerCase() ? { stock: `0` } : {}),
         }));
     };
     const clearImageURL = () => {
-        setForm(prev => ({ ...prev, imageURL: `` }));
+        setFormValue((prev: any) => ({ ...prev, imageURL: `` }));
         setTimeout(() => {
             const input = document.getElementById(`product-image-url-input`) as HTMLInputElement | null;
             input?.focus();
@@ -280,7 +319,7 @@ export default function ProductForm({
     const formMatchesProduct = () => {
         if (!product?.id) return false;
         const currentForm = getProductForm(product, product?.number || nextProductNumber);
-        return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].every(key => comparableFormValue((form as any)?.[key]) == comparableFormValue((currentForm as any)?.[key]));
+        return comparableFormValue(getComparableProductForm(form)) == comparableFormValue(getComparableProductForm(currentForm));
     }
 
     const requiredFieldsFilled = () => form?.name?.trim();
@@ -289,7 +328,7 @@ export default function ProductForm({
 
     const isFormDirty = () => {
         const currentForm = getProductForm(product, product?.number || nextProductNumber);
-        return (product != null || [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].some(key => comparableFormValue((form as any)?.[key]) != comparableFormValue((currentForm as any)?.[key])));
+        return (product != null || comparableFormValue(getComparableProductForm(form)) != comparableFormValue(getComparableProductForm(currentForm)));
     };
 
     const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
@@ -302,7 +341,7 @@ export default function ProductForm({
         resetProductForm(product);
     }, [product?.id, product?.updated, nextProductNumber]);
 
-    const buildVariants = (productID: string | number, productSKU = form?.sku) => variants.map((variant, index) => ({
+    const buildVariants = (productID: string | number, productSKU = form?.sku, variantsList: ProductFormVariant[] = variants) => variantsList.map((variant, index) => ({
         productID,
         position: index + 1,
         product_id: productID,
@@ -325,16 +364,16 @@ export default function ProductForm({
         if (!requiredFieldsFilled()) return toast.error(`Required Product Field(s) Missing`);
         if (formMatchesProduct()) return toast.error(`Product Unchanged`);
         setSaving(true);
-        // let params: any = { form: { ...form }, product: { ...product } };
-        resetProductForm(product);
+        const currentForm = formValueRef.current || form;
+        const currentVariants = variants;
         try {
             // let { form, product } = params;
             const editing = product != null;
-            const stock = Number(form?.stock || 0);
-            const price = dollarsToCents(form?.price ?? 0);
+            const stock = Number(currentForm?.stock || 0);
+            const price = dollarsToCents(currentForm?.price ?? 0);
             const username = (user != null ? user?.email : Roles.Guest);
-            const number = Number(form?.number || product?.number || nextProductNumber);
-            const imageURL = String(form?.imageURL || ``).trim();
+            const number = Number(currentForm?.number || product?.number || nextProductNumber);
+            const imageURL = String(currentForm?.imageURL || ``).trim();
             const attachmentNumber = Number(product?.attachments?.length || 0) + 1;
             const attachments: ProductAttachment[] = imageURL ? [{
                 value: imageURL,
@@ -348,28 +387,28 @@ export default function ProductForm({
                 price,
                 stock,
                 imageURL,
-                sku: form?.sku,
-                name: form?.name,
-                brand: form?.brand,
+                sku: currentForm?.sku,
+                name: currentForm?.name,
+                brand: currentForm?.brand,
                 updated_by: username,
-                status: form?.status,
-                vendor: form?.vendor,
-                taxable: form?.taxable,
-                category: form?.category,
-                currency: form?.currency,
-                tags: parseList(form?.tags),
-                title: capWords(form?.name),
-                productType: form?.productType,
-                description: form?.description,
-                cost: dollarsToCents(form?.cost),
-                weight: Number(form?.weight || 0),
-                allowBackorder: form?.allowBackorder,
-                trackInventory: form?.trackInventory,
-                requiresShipping: form?.requiresShipping,
-                shortDescription: form?.shortDescription,
-                categories: [form?.category].filter(Boolean),
-                compareAtPrice: dollarsToCents(form?.compareAtPrice),
-                lowStockThreshold: Number(form?.lowStockThreshold || 5),
+                status: currentForm?.status,
+                vendor: currentForm?.vendor,
+                taxable: currentForm?.taxable,
+                category: currentForm?.category,
+                currency: currentForm?.currency,
+                tags: parseList(currentForm?.tags),
+                title: capWords(currentForm?.name),
+                productType: currentForm?.productType,
+                description: currentForm?.description,
+                cost: dollarsToCents(currentForm?.cost),
+                weight: Number(currentForm?.weight || 0),
+                allowBackorder: currentForm?.allowBackorder,
+                trackInventory: currentForm?.trackInventory,
+                requiresShipping: currentForm?.requiresShipping,
+                shortDescription: currentForm?.shortDescription,
+                categories: [currentForm?.category].filter(Boolean),
+                compareAtPrice: dollarsToCents(currentForm?.compareAtPrice),
+                lowStockThreshold: Number(currentForm?.lowStockThreshold || 5),
                 ...(editing ? {} : { created_by: username, created_at: customDate()?.update }),
             });
             const productToSave = new Product({
@@ -380,7 +419,7 @@ export default function ProductForm({
                 attachments,
                 imageURLs: attachments?.map(attachment => attachment?.value).filter(Boolean),
                 imageURL: attachments?.[0]?.value || ``,
-                variants: buildVariants(productDraft?.id, productDraft?.sku),
+                variants: buildVariants(productDraft?.id, productDraft?.sku, currentVariants),
                 email: productDraft?.email ? productDraft?.email : user?.email,
             });
             const savedProduct = product?.id ? (
@@ -392,8 +431,8 @@ export default function ProductForm({
             toast.success(`Product Saved`);
             onSaved(savedProduct);
             if (!product?.id) {
-                setForm(getProductForm(null, Number(number) + 1));
-                setVariants([getVariantForm(undefined, new Product({ price, stock, name: form?.name, sku: form?.sku }))]);
+                setFormValue(getProductForm(null, Number(number) + 1));
+                setVariants([getVariantForm(undefined, new Product({ price, stock, name: currentForm?.name, sku: currentForm?.sku }))]);
             }
             onClose?.();
         } catch (error) {
@@ -411,7 +450,7 @@ export default function ProductForm({
 
     return (
         <div className={`productFormContainer ${className} ${funsized ? `funsized` : ``} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
-            <form ref={formRef} onSubmit={saveProduct}>
+            <form ref={formRef} id={formId} onSubmit={saveProduct}>
                 <div className={`productFormHeader ${showWidgetDirtyActions ? `dirtied` : `notDirtied`}`}>
                     {!funsized && (
                         <div className={`productFormTitle`}>
@@ -525,8 +564,20 @@ export default function ProductForm({
                         <label><input name={`requiresShipping`} type={`checkbox`} checked={form?.requiresShipping} onChange={updateForm} /> Requires Shipping</label>
                     </div>
                     <div className={`productFormGrid productTextGrid`}>
-                        <ProductTextAreaField label={`Short Description`} name={`shortDescription`} value={form?.shortDescription} onChange={updateForm} />
-                        <ProductTextAreaField label={`Description`} name={`description`} value={form?.description} onChange={updateForm} />
+                        <RichTextEditorField
+                            label={`Short Description`}
+                            className={`productTextAreaField`}
+                            minHeight={140}
+                            value={form?.shortDescription}
+                            onChange={(value: string) => updateFormValue(`shortDescription`, value)}
+                        />
+                        <RichTextEditorField
+                            label={`Description`}
+                            className={`productTextAreaField`}
+                            minHeight={220}
+                            value={form?.description}
+                            onChange={(value: string) => updateFormValue(`description`, value)}
+                        />
                     </div>
                     <div className={`productVariantSection`}>
                         <div className={`productVariantHeader`}>
@@ -559,12 +610,27 @@ export const ProductFormDialog = ({ open = false, onClose = () => {}, product = 
                 <Close fontSize={`small`} />
             </Button>
             {open ? (
-                <ProductForm 
-                    full 
-                    onClose={onClose} 
-                    product={product} 
-                    key={String(product?.id || `new-product`)} 
-                />
+                <>
+                    <ProductForm 
+                        full 
+                        onClose={onClose} 
+                        product={product} 
+                        key={String(product?.id || `new-product`)} 
+                        formId={`product-form-dialog-${String(product?.id || `new-product`)}`}
+                    />
+                    <div className={`productFormDialogActions`}>
+                        <Button className={`productFormButton productCancelButton`} onClick={onClose}>
+                            <Close fontSize={`small`} /> Close
+                        </Button>
+                        <Button
+                            type={`submit`}
+                            form={`product-form-dialog-${String(product?.id || `new-product`)}`}
+                            className={`productFormButton productSaveButton`}
+                        >
+                            <Save fontSize={`small`} /> {product?.id ? `Save Changes` : `Save Product`}
+                        </Button>
+                    </div>
+                </>
             ) : <></>}
         </div>
     </Dialog>

@@ -370,11 +370,28 @@
     min-width: 97%;
     position: relative;
     background: var(--dark_navy);
+    max-height: 92dvh;
+    overflow-y: auto;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
     .productFormContainer {
         border: none;
         box-shadow: none;
         background: var(--dark_navy);
     }
+}
+
+.productFormDialogActions {
+    gap: 10px;
+    display: flex;
+    padding-top: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(13, 22, 42, 0), rgba(13, 22, 42, 0.9) 28%, var(--dark_navy) 100%);
+    backdrop-filter: blur(8px);
 }
 
 .productDialogClose {
