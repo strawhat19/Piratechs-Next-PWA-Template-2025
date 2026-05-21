@@ -1,10 +1,11 @@
 import Table from '../table';
+import EditableCell from '../editable-cell/editable-cell';
 import MenuTrigger from '../../menu/menu-trigger';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
-import { JSX, useContext } from 'react';
+import { JSX, useContext, useEffect, useState } from 'react';
 import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
@@ -155,10 +156,71 @@ export default function UsersTable({
     type = Types.User,
 }: any) {
     const { user, users } = useContext<any>(StateGlobals);
+    const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
+    const [optimisticNameByID, setOptimisticNameByID] = useState<Record<string, string>>({});
     const canViewUsers = minRole(user?.role, Roles.Editor);
+    useEffect(() => {
+        setOptimisticNameByID(prev => {
+            let changed = false;
+            const next = { ...prev };
+            Object.entries(prev).forEach(([id, optimisticName]) => {
+                const liveName = String(users?.find((currentUser: any) => String(currentUser?.id) == id)?.name ?? ``);
+                if (liveName == String(optimisticName || ``)) {
+                    delete next[id];
+                    changed = true;
+                }
+            });
+            return changed ? next : prev;
+        });
+    }, [users]);
+    const onChangeNameDraft = (row: any, nextName: string) => {
+        setPendingNameByID(prev => ({ ...prev, [String(row?.id)]: nextName }));
+    };
+    const onCancelNameDraft = (row: any) => {
+        const rowID = String(row?.id);
+        setPendingNameByID(prev => {
+            const next = { ...prev };
+            delete next[rowID];
+            return next;
+        });
+    };
+    const onSaveNameDraft = (row: any, nextName: string, originalName: string) => {
+        const safeName = String(nextName || ``).trim();
+        const rowID = String(row?.id);
+        if (safeName == String(originalName || ``).trim()) return onCancelNameDraft(row);
+        setOptimisticNameByID(prev => ({ ...prev, [rowID]: safeName }));
+        onCancelNameDraft(row);
+        toast.info(`Updating User Name`);
+        updateUserInDatabase(rowID, { name: safeName })?.then(() => {
+            toast.success(`User Name Updated`);
+        }).catch(() => {
+            setOptimisticNameByID(prev => {
+                const next = { ...prev };
+                delete next[rowID];
+                return next;
+            });
+            toast.error(`User Name Update Failed`);
+        });
+    };
     const user_columns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 50 },
-        { field: `name`, headerName: `Name`, width: 130, editable: true, },
+        {
+            field: `name`,
+            width: 130,
+            headerName: `Name`,
+            renderCell: ({ row, value }: any) => (
+                <EditableCell
+                    mode={`text`}
+                    value={value}
+                    showStepper={false}
+                    canEdit={minRole(user?.role, Roles.Editor)}
+                    pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
+                    onChangeValue={(next: string) => onChangeNameDraft(row, next)}
+                    onCancel={() => onCancelNameDraft(row)}
+                    onSave={(next: string, original: string) => onSaveNameDraft(row, next, original)}
+                />
+            ),
+        },
         { field: `properties`, type: `number`, headerName: `Props`, width: 90, },
         {
             width: 160,

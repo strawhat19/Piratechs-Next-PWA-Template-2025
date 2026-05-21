@@ -5,21 +5,22 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
-import { useContext, useEffect, useState } from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
+import { useContext, useEffect, useState } from 'react';
+import EditableCell from '../editable-cell/editable-cell';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { constants, minRole } from '@/shared/scripts/constants';
 import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
 import ProductForm, { ProductFormDialog } from '../../store/product-form/product-form';
-import { statusIcons, categoryIcons, typeIcons } from '../../store/product-form/product-select-field';
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 import { Product, ProductType, ProductStatus, ProductCategory } from '@/shared/types/models/Product';
-import { AddShoppingCart, Archive, Delete, Edit, Restore, KeyboardArrowDown, Add, Save, Close, Remove, DoDisturb } from '@mui/icons-material';
+import { statusIcons, categoryIcons, typeIcons } from '../../store/product-form/product-select-field';
+import { AddShoppingCart, Archive, Delete, Edit, Restore, KeyboardArrowDown } from '@mui/icons-material';
 
 const storeDollarSignColor = `var(--green_neon)`;
 const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
@@ -47,86 +48,28 @@ const getProductStatusColor = (product: Product) => {
 const getProductStatusLabel = (product: Product, string: boolean = false) => {
     return getProductStatus(product, string)?.label;
 };
+const toStep = (value: number, step = 0.01) => Math.round(Number(value || 0) / step) * step;
 
-const ProductStockCell = ({ row, value, pendingStock, onIncrease, onDecrease, onSave, onCancel, valueFirst = true }: any) => {
+const ProductStockCell = ({ row, value, pendingStock, onIncrease, onDecrease, onSave, onCancel, onChangeValue, valueFirst = true, renderValue = undefined }: any) => {
     const { user } = useContext<any>(StateGlobals);
-    const stock = Math.max(0, Number(value || 0));
-    const stockToShow = pendingStock == undefined ? stock : Math.max(0, Number(pendingStock || 0));
-    const isDirty = pendingStock != undefined && stockToShow != stock;
     const canManageProducts = minRole(user?.role, Roles.Administrator);
-    if (!canManageProducts) return <span>{stockToShow}</span>;
     return (
-        <div className={`flexContainer`} style={{ width: `100%`, justifyContent: `space-between` }}>
-            {valueFirst && (
-                <span className={`stockText`}>
-                    {stockToShow}
-                </span>
-            )}
-            <div className={`flexContainer`} style={{ flexDirection: `column`, gap: 2 }}>
-                <div className={`flexContainer`} style={{ gap: 3, flexDirection: valueFirst ? `row-reverse` : `row` }}>
-                    <Icon_Button
-                        size={14}
-                        title={``}
-                        rounded={false}
-                        className={`qtyBtn actionIconButton grayAction qtyBlue`}
-                        onClick={(event: any) => {
-                            event.stopPropagation();
-                            onIncrease?.(row, stockToShow);
-                        }}
-                    >
-                        <Add style={{ fontSize: 18 }} fontSize={`small`} />
-                    </Icon_Button>
-                    {isDirty ? (
-                        <Icon_Button
-                            size={14}
-                            title={``}
-                            rounded={false}
-                            className={`qtyBtn actionIconButton grayAction qtySuccess`}
-                            onClick={(event: any) => {
-                                event.stopPropagation();
-                                onSave?.(row, stockToShow, stock);
-                            }}
-                        >
-                            <Save style={{ fontSize: 14 }} fontSize={`small`} />
-                        </Icon_Button>
-                    ) : null}
-                </div>
-                <div className={`flexContainer`} style={{ gap: 3, flexDirection: valueFirst ? `row-reverse` : `row` }}>
-                    <Icon_Button
-                        size={14}
-                        title={``}
-                        rounded={false}
-                        disabled={stockToShow <= 0}
-                        className={`qtyBtn actionIconButton grayAction ${isDirty ? `` : `qtyRed`}`}
-                        onClick={(event: any) => {
-                            event.stopPropagation();
-                            onDecrease?.(row, stockToShow);
-                        }}
-                    >
-                        <Remove style={{ fontSize: 18 }} fontSize={`small`} />
-                    </Icon_Button>
-                    {isDirty ? (
-                        <Icon_Button
-                            size={14}
-                            title={``}
-                            rounded={false}
-                            className={`qtyBtn actionIconButton grayAction qtyRed`}
-                            onClick={(event: any) => {
-                                event.stopPropagation();
-                                onCancel?.(row);
-                            }}
-                        >
-                            <DoDisturb style={{ fontSize: 15 }} fontSize={`small`} />
-                        </Icon_Button>
-                    ) : null}
-                </div>
-            </div>
-            {!valueFirst && (
-                <span className={`stockText`}>
-                    {stockToShow}
-                </span>
-            )}
-        </div>
+        <EditableCell
+            min={0}
+            step={0.01}
+            mode={`number`}
+            value={value}
+            canEdit={canManageProducts}
+            valueFirst={valueFirst}
+            pendingValue={pendingStock}
+            showStepper={true}
+            renderValue={renderValue}
+            onCancel={() => onCancel?.(row)}
+            onChangeValue={(next: string) => onChangeValue?.(row, next)}
+            onIncrease={(current: number) => onIncrease?.(row, current)}
+            onDecrease={(current: number) => onDecrease?.(row, current)}
+            onSave={(current: number, original: number) => onSave?.(row, current, original)}
+        />
     );
 };
 
@@ -405,7 +348,11 @@ export default function ProductsTable({
     quickEditProduct = null,
 }: any) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
+    const [pendingPriceByID, setPendingPriceByID] = useState<Record<string, number>>({});
     const [pendingStockByID, setPendingStockByID] = useState<Record<string, number>>({});
+    const [optimisticNameByID, setOptimisticNameByID] = useState<Record<string, string>>({});
+    const [optimisticPriceByID, setOptimisticPriceByID] = useState<Record<string, number>>({});
     const [optimisticStockByID, setOptimisticStockByID] = useState<Record<string, number>>({});
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const { user } = useContext<any>(StateGlobals);
@@ -418,6 +365,30 @@ export default function ProductsTable({
     useCheckoutReturnToast(saveCart);
 
     useEffect(() => {
+        setOptimisticNameByID(prev => {
+            let changed = false;
+            const next = { ...prev };
+            Object.entries(prev).forEach(([id, optimisticName]) => {
+                const liveName = String(products?.find((product: Product) => String(product?.id) == id)?.name ?? ``);
+                if (liveName == String(optimisticName || ``)) {
+                    delete next[id];
+                    changed = true;
+                }
+            });
+            return changed ? next : prev;
+        });
+        setOptimisticPriceByID(prev => {
+            let changed = false;
+            const next = { ...prev };
+            Object.entries(prev).forEach(([id, optimisticPrice]) => {
+                const livePrice = Number(products?.find((product: Product) => String(product?.id) == id)?.price ?? NaN);
+                if (!Number.isNaN(livePrice) && livePrice == Number(optimisticPrice)) {
+                    delete next[id];
+                    changed = true;
+                }
+            });
+            return changed ? next : prev;
+        });
         setOptimisticStockByID(prev => {
             let changed = false;
             const next = { ...prev };
@@ -432,12 +403,86 @@ export default function ProductsTable({
         });
     }, [products]);
 
+    const onChangeNameDraft = (row: Product, nextName: string) => {
+        setPendingNameByID(prev => ({ ...prev, [String(row?.id)]: nextName }));
+    };
+
+    const onCancelNameDraft = (row: Product) => {
+        const rowID = String(row?.id);
+        setPendingNameByID(prev => {
+            const next = { ...prev };
+            delete next[rowID];
+            return next;
+        });
+    };
+
+    const onSaveNameDraft = (row: Product, nextName: string, originalName: string) => {
+        const safeName = String(nextName || ``).trim();
+        const rowID = String(row?.id);
+        if (safeName == String(originalName || ``).trim()) return onCancelNameDraft(row);
+        setOptimisticNameByID(prev => ({ ...prev, [rowID]: safeName }));
+        onCancelNameDraft(row);
+        updateProductInDatabase(rowID, { name: safeName }, user)?.then(() => {
+            toast.success(`Product Name Updated`);
+        }).catch(() => {
+            setOptimisticNameByID(prev => {
+                const next = { ...prev };
+                delete next[rowID];
+                return next;
+            });
+            toast.error(`Product Name Update Failed`);
+        });
+    };
+
+    const onIncreasePriceDraft = (row: Product, currentPrice: number) => {
+        const step = 1;
+        setPendingPriceByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, toStep(Number(currentPrice || 0) + step)) }));
+    };
+
+    const onDecreasePriceDraft = (row: Product, currentPrice: number) => {
+        const step = 1;
+        setPendingPriceByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, toStep(Number(currentPrice || 0) - step)) }));
+    };
+    const onChangePriceDraft = (row: Product, nextPrice: string | number) => {
+        setPendingPriceByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, toStep(Number(nextPrice || 0))) }));
+    };
+
+    const onCancelPriceDraft = (row: Product) => {
+        const rowID = String(row?.id);
+        setPendingPriceByID(prev => {
+            const next = { ...prev };
+            delete next[rowID];
+            return next;
+        });
+    };
+
+    const onSavePriceDraft = (row: Product, nextPrice: number, originalPrice: number) => {
+        const safePrice = Math.max(0, toStep(Number(nextPrice || 0)));
+        const rowID = String(row?.id);
+        if (safePrice == Math.max(0, Number(originalPrice || 0))) return onCancelPriceDraft(row);
+        setOptimisticPriceByID(prev => ({ ...prev, [rowID]: safePrice }));
+        onCancelPriceDraft(row);
+        updateProductInDatabase(rowID, { price: safePrice }, user)?.then(() => {
+            toast.success(`Product Price Updated`);
+        }).catch(() => {
+            setOptimisticPriceByID(prev => {
+                const next = { ...prev };
+                delete next[rowID];
+                return next;
+            });
+            toast.error(`Product Price Update Failed`);
+        });
+    };
+
     const onIncreaseStockDraft = (row: Product, currentStock: number) => {
-        setPendingStockByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, Number(currentStock || 0) + 1) }));
+        setPendingStockByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, toStep(Number(currentStock || 0) + 0.01)) }));
     };
 
     const onDecreaseStockDraft = (row: Product, currentStock: number) => {
-        setPendingStockByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, Number(currentStock || 0) - 1) }));
+        setPendingStockByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, toStep(Number(currentStock || 0) - 0.01)) }));
+    };
+    const onChangeStockDraft = (row: Product, nextStock: string | number) => {
+        setPendingStockByID(prev => ({ ...prev, [String(row?.id)]: Math.max(0, toStep(Number(nextStock || 0))) }));
     };
 
     const onCancelStockDraft = (row: Product) => {
@@ -450,7 +495,7 @@ export default function ProductsTable({
     };
 
     const onSaveStockDraft = (row: Product, nextStock: number, originalStock: number) => {
-        const safeStock = Math.max(0, Number(nextStock || 0));
+        const safeStock = Math.max(0, toStep(Number(nextStock || 0)));
         const rowID = String(row?.id);
         if (safeStock == Math.max(0, Number(originalStock || 0))) return onCancelStockDraft(row);
         const updates: any = { stock: safeStock };
@@ -474,13 +519,31 @@ export default function ProductsTable({
     const productColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 50 },
         {
-            width: 85,
+            width: 115,
             field: `price`,
             type: `number`,
             headerName: `Price`,
             headerClassName: `numberHeaderCell`,
-            renderCell: ({ value }: any) => (
-                <IconText format={false} dollarSign number={Number(value || 0) / 100} dollarSignColor={storeDollarSignColor} className={`stockText`} />
+            renderCell: ({ row, value }: any) => (
+                <ProductStockCell
+                    row={row}
+                    value={value}
+                    onSave={onSavePriceDraft}
+                    onCancel={onCancelPriceDraft}
+                    onChangeValue={onChangePriceDraft}
+                    onIncrease={onIncreasePriceDraft}
+                    onDecrease={onDecreasePriceDraft}
+                    pendingStock={(pendingPriceByID?.[String(row?.id)] ?? optimisticPriceByID?.[String(row?.id)])}
+                    renderValue={(priceCents: number) => (
+                        <IconText 
+                            dollarSign 
+                            format={false} 
+                            className={`stockText`} 
+                            number={Number(priceCents || 0) / 100} 
+                            dollarSignColor={storeDollarSignColor} 
+                        />
+                    )}
+                />
             ),
         },
         {
@@ -495,13 +558,31 @@ export default function ProductsTable({
                     value={value}
                     onSave={onSaveStockDraft}
                     onCancel={onCancelStockDraft}
+                    onChangeValue={onChangeStockDraft}
                     onIncrease={onIncreaseStockDraft}
                     onDecrease={onDecreaseStockDraft}
                     pendingStock={(pendingStockByID?.[String(row?.id)] ?? optimisticStockByID?.[String(row?.id)])}
                 />
             ),
         },
-        { field: `name`, headerName: `Product`, flex: 1, maxWidth: 150, },
+        {
+            field: `name`,
+            headerName: `Product`,
+            flex: 1,
+            maxWidth: 150,
+            renderCell: ({ row, value }: any) => (
+                <EditableCell
+                    mode={`text`}
+                    value={value}
+                    showStepper={false}
+                    canEdit={minRole(user?.role, Roles.Administrator)}
+                    pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
+                    onChangeValue={(next: string) => onChangeNameDraft(row, next)}
+                    onCancel={() => onCancelNameDraft(row)}
+                    onSave={(next: string, original: string) => onSaveNameDraft(row, next, original)}
+                />
+            ),
+        },
         {
             width: 70,
             field: `imageURL`,

@@ -109,7 +109,7 @@
         width: 40%;
     }
     &:has(input[type="number"]) {
-        min-width: 135px;
+        max-width: 95px;
     }
     span {
         line-height: 1;

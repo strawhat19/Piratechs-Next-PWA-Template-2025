@@ -283,7 +283,7 @@ export default function ProductForm({
 
     const isFormDirty = () => {
         const currentForm = getProductForm(product, product?.number || nextProductNumber);
-        return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].some(key => comparableFormValue((form as any)?.[key]) != comparableFormValue((currentForm as any)?.[key]));
+        return (product != null || [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].some(key => comparableFormValue((form as any)?.[key]) != comparableFormValue((currentForm as any)?.[key])));
     };
 
     const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
@@ -451,7 +451,7 @@ export default function ProductForm({
                     ) : <></>}
                     <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
                     <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
-                    <ProductField funsized={funsized} label={`Quantity`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
+                    <ProductField funsized={funsized} label={`Quantity`} name={`stock`} type={`number`} min={`0`} step={`0.01`} value={form?.stock} onChange={updateForm} />
                     <ProductImageURLField 
                         funsized={funsized} 
                         label={`Attachment URL`} 

@@ -130,7 +130,7 @@
     max-height: 30px;
     max-width: fit-content;
     justify-content: flex-end;
-    transition: var(--transition);
+    // transition: var(--transition);
     &.notDirtied {
       max-width: 0;
       min-width: 0;
@@ -313,8 +313,35 @@
     min-width: 42px;
     justify-content: flex-end;
   }
-
   .MuiDataGrid-cell {
     align-items: center;
   }
+}
+
+.editableCellWrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--borderRadius);
+  transition: box-shadow var(--transition), background var(--transition);
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(var(--cool_neon_blue_rgb), 0.35), 0 0 8px rgba(var(--cool_neon_blue_rgb), 0.22);
+  }
+}
+
+.editableCellInput {
+  top: 0;
+  width: 100%;
+  border: none;
+  height: 100%;
+  outline: none;
+  color: inherit;
+  font-size: 13px;
+  padding-right: 0;
+  position: relative;
+  background: transparent;
+  font-family: var(--font);
 }
