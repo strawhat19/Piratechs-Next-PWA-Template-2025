@@ -55,6 +55,23 @@ export const toRichTextMarkup = (value?: string) => {
   return escapeHtml(text).replace(/\n/g, `<br />`);
 };
 
+export const richTextToPlainText = (value?: string) => {
+  const text = normalizeRichTextValue(value);
+  if (!text) return ``;
+  return text
+    .replace(/<\s*br\s*\/?\s*>/gi, ` `)
+    .replace(/<\/(p|div|li|h[1-6])>/gi, ` `)
+    .replace(/<[^>]+>/g, ` `)
+    .replace(/&nbsp;/gi, ` `)
+    .replace(/&amp;/gi, `&`)
+    .replace(/&lt;/gi, `<`)
+    .replace(/&gt;/gi, `>`)
+    .replace(/&quot;/gi, `"`)
+    .replace(/&#39;/gi, `'`)
+    .replace(/\s+/g, ` `)
+    .trim();
+};
+
 type RichTextEditorFieldProps = {
   label: string;
   value?: string;

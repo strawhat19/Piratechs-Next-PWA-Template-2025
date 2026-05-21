@@ -403,6 +403,155 @@
     color: white !important;
 }
 
+.announcementFormContainer {
+    gap: 12px;
+    display: grid;
+    color: white;
+    padding: 14px;
+    border-radius: var(--borderRadius);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.28);
+    background: var(--navy);
+}
+
+.announcementFormWidget {
+    padding: 12px;
+}
+
+.announcementFormFull {
+    margin: 0 auto 0 0;
+    width: min(88.5dvw, 96vw);
+    min-height: 62dvh;
+}
+
+.announcementFormDialog {
+    .MuiPaper-root {
+        padding: 16px;
+        min-width: 97%;
+        position: relative;
+        background: var(--dark_navy);
+        max-height: 92dvh;
+        overflow-y: auto;
+        display: flex;
+        gap: 12px;
+        flex-direction: column;
+    }
+}
+
+.announcementDialogClose {
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    min-width: 32px !important;
+    position: absolute !important;
+    color: white !important;
+}
+
+.announcementFormHeader {
+    gap: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.announcementFormHeaderCopy {
+    gap: 4px;
+    display: grid;
+}
+
+.announcementFormTitle {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.announcementFormSubTitle {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.announcementFormHeaderActions {
+    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.announcementFormHeaderButton,
+.announcementFormActionButton {
+    min-height: 34px;
+}
+
+.announcementFormGrid {
+    gap: 12px;
+    display: grid;
+    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.announcementField {
+    gap: 6px;
+    display: grid;
+    grid-column: span 1;
+    span {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        color: rgba(255, 255, 255, 0.72);
+    }
+    input[type='text'],
+    input[type='number'] {
+        width: 100%;
+        color: white;
+        min-height: 38px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+}
+
+.announcementToggleField {
+    display: flex;
+    grid-column: span 1;
+    min-height: 38px;
+    align-items: center;
+    gap: 8px;
+    padding-top: 16px;
+    input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        min-height: 16px;
+    }
+    span {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.82);
+    }
+}
+
+.announcementNameField,
+.announcementDescriptionField {
+    grid-column: span 2;
+}
+
+.announcementDescriptionField {
+    min-width: 0;
+}
+
+.announcementFormActions {
+    gap: 10px;
+    display: flex;
+    padding-top: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(13, 22, 42, 0), rgba(13, 22, 42, 0.9) 28%, var(--dark_navy) 100%);
+    backdrop-filter: blur(8px);
+}
+
 .storeCartComponent {
     gap: 14px;
     width: 100%;

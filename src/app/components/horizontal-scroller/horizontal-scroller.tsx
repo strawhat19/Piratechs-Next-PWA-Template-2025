@@ -2,9 +2,11 @@
 
 import './horizontal-scroller.scss';
 
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import Slider from '../slider/slider';
 import { SwiperSlide } from 'swiper/react';
+import { StateGlobals } from '@/shared/global-context';
+import { AnnouncementStatus } from '@/shared/types/models/Announcement';
 import {
     AutoAwesome,
     Bolt,
@@ -31,6 +33,8 @@ import {
     SupportAgent,
     Verified,
 } from '@mui/icons-material';
+import { richTextToPlainText } from '../rich-text/rich-text';
+import { announcementIcons } from '../store/announcement-form/announcement-select-field';
 
 export type HorizontalScrollerItem = {
     icon?: React.ReactNode;
@@ -65,16 +69,32 @@ export const defaultMessages: HorizontalScrollerItem[] = [
 ];
 
 export default function HorizontalScroller({
-    items = defaultMessages,
+    items,
     className = `horizontalScrollerComponent`,
 }: {
     className?: string;
     items?: HorizontalScrollerItem[];
 }) {
-    const scrollerItems = (items || [])?.filter((item: HorizontalScrollerItem | null) => item?.value)?.map((item: HorizontalScrollerItem) => ({
-        icon: item?.icon,
-        value: String(item?.value || ``),
-    }));
+    const { announcements = [], announcementsLoading = false } = useContext<any>(StateGlobals);
+    const announcementItems = useMemo(() => {
+        if (announcementsLoading || !Array.isArray(announcements) || announcements.length <= 0) return [];
+        return announcements
+            ?.filter((announcement: any) => String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft)) == AnnouncementStatus.Active)
+            ?.map((announcement: any) => {
+                const value = richTextToPlainText(announcement?.description) || String(announcement?.name || announcement?.title || ``).trim();
+                return value ? {
+                    icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
+                    value,
+                } : null;
+            })
+            ?.filter(Boolean) as HorizontalScrollerItem[];
+    }, [announcements, announcementsLoading]);
+    const scrollerItems = (items?.length ? items : announcementItems?.length ? announcementItems : defaultMessages)
+        ?.filter((item: HorizontalScrollerItem | null) => item?.value)
+        ?.map((item: HorizontalScrollerItem) => ({
+            icon: item?.icon,
+            value: String(item?.value || ``),
+        }));
 
     if (scrollerItems?.length <= 0) return null;
 

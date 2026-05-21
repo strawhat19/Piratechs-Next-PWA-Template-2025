@@ -6,7 +6,8 @@ import { initializeApp } from 'firebase/app';
 import { Order } from '../types/models/Order';
 import { Board } from '../types/models/Board';
 import { getStorage } from 'firebase/storage';
-import { getFirestore } from 'firebase/firestore';
+import { Announcement } from '../types/models/Announcement';
+import { deleteDoc, doc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import { Product } from '../types/models/Product';
 import { apiRoutes, customDate, getIDParts, logToast } from '../scripts/constants';
@@ -20,6 +21,7 @@ export enum Tables {
   boards = `boards`,
   orders = `orders`,
   products = `products`,
+  announcements = `announcements`,
   features = `features`,
   notifications = `notifications`,
 }
@@ -397,6 +399,44 @@ export const orderConverter = {
     const data = snapshot.data(options);
     return new Order(data);
   }
+}
+
+export const announcementConverter = {
+  toFirestore: (announcement: Announcement) => {
+    return JSON.parse(JSON.stringify(announcement));
+  },
+  fromFirestore: (snapshot: any, options: any) => {
+    const data = snapshot.data(options);
+    return new Announcement(data);
+  }
+}
+
+export const addAnnouncementToDatabase = async (announcement: Announcement, silent = false) => {
+  toastSaveInfo(`Saving Announcement`, silent);
+  const { datetime: now } = customDate();
+  const nextAnnouncement = new Announcement({
+    ...announcement,
+    created: announcement?.created ?? now,
+    updated: now,
+  });
+  const announcementRef = doc(db, Tables.announcements, String(nextAnnouncement?.id)).withConverter(announcementConverter as any);
+  await setDoc(announcementRef, nextAnnouncement);
+  return nextAnnouncement;
+}
+
+export const updateAnnouncementInDatabase = async (id: string, updates: Partial<Announcement>, silent = false) => {
+  toastSaveInfo(`Saving Announcement`, silent);
+  const { datetime: now } = customDate();
+  const announcementRef = doc(db, Tables.announcements, String(id));
+  await updateDoc(announcementRef, { ...updates, updated: now });
+  return { id, ...updates, updated: now };
+}
+
+export const deleteAnnouncementFromDatabase = async (announcement: Announcement, silent = false) => {
+  toastSaveInfo(`Deleting Announcement`, silent);
+  const announcementRef = doc(db, Tables.announcements, String(announcement?.id));
+  await deleteDoc(announcementRef);
+  return announcement;
 }
 
 // export const deleteDatabaseData = async (

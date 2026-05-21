@@ -53,6 +53,7 @@ export enum Types {
   Upload = `Upload`,
   Message = `Message`,
   Product = `Product`,
+  Announcement = `Announcement`,
   Feature = `Feature`,
   Position = `Position`,
   Customer = `Customer`,

@@ -11,12 +11,13 @@ import { User } from '@/shared/types/models/User';
 import { Order as StoreOrder } from '@/shared/types/models/Order';
 import UsersTable from '../table/users-table/users-table';
 import OrdersTable from '../table/orders-table/orders-table';
+import AnnouncementsTable from '../table/announcements-table/announcements-table';
 import { constants, minRole } from '@/shared/scripts/constants';
 import { ProductFormDialog } from './product-form/product-form';
 import UserDetails from './user-details/user-details';
 import OrderDetails from './order-details/order-details';
 import ProductsTable from '../table/products-table/products-table';
-import { Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
+import { Campaign, Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 
@@ -38,6 +39,12 @@ export default function Store({ className = `storeComponent` }) {
     const routeDetailsMatch = pathname?.match(/(?:^|\/)(?:store\/)?(user|users|order|orders)\/([^/?#]+)/i);
     const routeDetailsType = String(routeDetailsMatch?.[1] || ``).toLowerCase();
     const routeDetailsID = decodeURIComponent(routeDetailsMatch?.[2] || ``);
+    const storeSlideNames = [
+        { key: 0, icon: <ShoppingCart />, label: `${Types.Product}s` }, 
+        { key: 1, icon: <ReceiptLong />, label: `${Order}s` }, 
+        { key: 2, icon: <Campaign />, label: `${Types.Announcement}s` },
+        ...(canManageStore ? [{ key: 3, icon: <Person />, label: `${Customer}s` }] : []),
+    ];
 
     const closeFullEdit = () => {
         setFullEditProduct(null);
@@ -113,11 +120,7 @@ export default function Store({ className = `storeComponent` }) {
                 <Slider 
                     className={`componentSlider`} 
                     showButtons={width > constants?.breakpoints?.tabletSmall}
-                    slideNames={[
-                        { key: 0, icon: <ShoppingCart />, label: `${Types.Product}s` }, 
-                        { key: 1, icon: <ReceiptLong />, label: `${Order}s` }, 
-                        { key: 2, icon: <Person />, label: `${Customer}s` }
-                    ]} 
+                    slideNames={storeSlideNames} 
                 >
                     <SwiperSlide>
                         <div className={`storeProductsPanel`}>
@@ -132,6 +135,9 @@ export default function Store({ className = `storeComponent` }) {
                     </SwiperSlide>
                     <SwiperSlide>
                         <OrdersTable onOpenOrderDetails={openOrderDetails} />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                        <AnnouncementsTable />
                     </SwiperSlide>
                     {canManageStore ? (
                         <SwiperSlide>
