@@ -19,6 +19,10 @@ export default function Slider({
     key = `icon`,
     slideNames = [], 
     autoplay = false, 
+    autoplaySpeed = 12000,
+    autoplayDelay = 0,
+    autoplayPauseOnHover = true,
+    autoplaySlidesPerView = `auto`,
     spaceBetween = 15, 
     slidesPerView = 1, 
     showButtons = true, 
@@ -69,7 +73,7 @@ export default function Slider({
     }
 
     return <>
-        <div className={`slider ${className} ${getDotsNumToShow() > 1 ? `multi-slider` : `single-slider`}`}>
+        <div className={`slider ${className} ${autoplay ? `autoplayLinear` : ``} ${getDotsNumToShow() > 1 ? `multi-slider` : `single-slider`}`}>
             {children?.length > 1 && showButtons && (
                 <Icon_Button rounded={false} button={true} className={`sliderButton sliderButtonPrev`} onClick={() => slide(-1)}>
                     <Tooltip arrow title={slideNames?.length > 0 ? slideNames?.[(realSlideIndex - 1 + slideNames?.length) % slideNames?.length]?.label : ``}>
@@ -107,13 +111,14 @@ export default function Slider({
                     noSwipingClass={`swiper-no-swiping`}
                     onSlideChange={(e) => onSlideChange(e)}
                     {...autoplay && {
-                        speed: 5000,
-                        freeMode: true,
-                        slidesPerView: 10,
+                        speed: autoplaySpeed,
+                        freeMode: false,
+                        slidesPerView: autoplaySlidesPerView,
+                        loopAdditionalSlides: Math.max(children?.length || 0, 10),
                         modules: [Autoplay],
                         autoplay: {
-                            delay: 0,
-                            pauseOnMouseEnter: true,
+                            delay: Math.max(1, Number(autoplayDelay || 0)),
+                            pauseOnMouseEnter: autoplayPauseOnHover,
                             disableOnInteraction: false,
                         },
                     }}

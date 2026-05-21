@@ -1,0 +1,36 @@
+.horizontalScrollerCarousel {
+    .swiper-wrapper {
+        top: 1px;
+    }
+    .swiper {
+        min-height: 35px;
+    }
+}
+
+.horizontalScrollerSlide {
+    width: fit-content !important;
+    min-width: fit-content;
+}
+
+.horizontalScrollerItem {
+    gap: 7px;
+    display: flex;
+    min-height: 34px;
+    color: var(--links);
+    align-items: center;
+    width: fit-content;
+    white-space: nowrap;
+}
+
+.horizontalScrollerIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.horizontalScrollerText {
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}

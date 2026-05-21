@@ -1,0 +1,36 @@
+.storeAnnouncementCarousel {
+    .swiper-wrapper {
+        top: 1px;
+    }
+    .swiper {
+        min-height: 35px;
+    }
+}
+
+.storeAnnouncementSlide {
+    width: fit-content !important;
+    min-width: fit-content;
+}
+
+.storeAnnouncementItem {
+    gap: 7px;
+    display: flex;
+    min-height: 34px;
+    color: var(--links);
+    align-items: center;
+    width: fit-content;
+    white-space: nowrap;
+}
+
+.storeAnnouncementIcon {
+    display: flex;
+    color: var(--green_neon);
+    align-items: center;
+    justify-content: center;
+}
+
+.storeAnnouncementText {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}

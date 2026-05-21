@@ -25,6 +25,7 @@ const BodyClassManager = ({ className }: { className: string }) => {
 export default function Container({ 
     children, 
     logoLabel = ``, 
+    topBarStyle = {},
     showPageLogo = true, 
     showPageFooter = true, 
     topBarComponent = null, 
@@ -43,7 +44,7 @@ export default function Container({
         <>
             <BodyClassManager className={bodyClassName} />
             {topBarComponent != null && (
-                <TopBar>
+                <TopBar style={topBarStyle}>
                     {topBarComponent}
                 </TopBar>
             )}

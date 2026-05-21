@@ -672,7 +672,16 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 <Loader height={35} label={`Stocks Loading`} className={`topBarLoader`} />
             ) : (
                 <>
-                    <Slider className={`stocksCarousel`} autoplay slidesPerView={12} spaceBetween={15} showButtons={false}>
+                    <Slider
+                        autoplay
+                        showButtons={false}
+                        spaceBetween={8}
+                        className={`stocksCarousel`}
+                        autoplaySpeed={20000}
+                        autoplayDelay={0}
+                        autoplayPauseOnHover={false}
+                        autoplaySlidesPerView={`auto`}
+                    >
                         {stocks?.map((stock: any, stockIndex: number) => (
                             <SwiperSlide key={stockIndex} className={`stockSlide`}>
                                 <Stock {...stock} />
