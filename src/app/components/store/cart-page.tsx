@@ -4,7 +4,7 @@ import CartSummary from './cart-summary';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 
 export default function CartPageComponent() {
-    const { cart, cartTotal, clearCart, saveCart } = useStoreCart();
+    const { cart, cartTotal, clearCart, saveCart, increaseCartItemQuantity, decreaseCartItemQuantity } = useStoreCart();
     useCheckoutReturnToast(saveCart);
 
     return (
@@ -14,6 +14,8 @@ export default function CartPageComponent() {
                 total={cartTotal}
                 onClearCart={clearCart}
                 onPaymentSuccess={() => saveCart([])}
+                onIncreaseQuantity={increaseCartItemQuantity}
+                onDecreaseQuantity={decreaseCartItemQuantity}
             />
         </div>
     );

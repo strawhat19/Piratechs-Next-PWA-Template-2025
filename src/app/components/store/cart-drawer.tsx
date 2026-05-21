@@ -11,6 +11,8 @@ type CartDrawerProps = {
     onClose: () => void;
     onClearCart: () => void;
     onPaymentSuccess: () => void;
+    onIncreaseQuantity?: (item: CartItem) => void;
+    onDecreaseQuantity?: (item: CartItem) => void;
 };
 
 export default function CartDrawer({
@@ -20,6 +22,8 @@ export default function CartDrawer({
     onClose,
     onClearCart,
     onPaymentSuccess,
+    onIncreaseQuantity = () => {},
+    onDecreaseQuantity = () => {},
 }: CartDrawerProps) {
     return (
         <Drawer
@@ -35,6 +39,8 @@ export default function CartDrawer({
                 showFullCartLink
                 onClearCart={onClearCart}
                 onPaymentSuccess={onPaymentSuccess}
+                onIncreaseQuantity={onIncreaseQuantity}
+                onDecreaseQuantity={onDecreaseQuantity}
             />
         </Drawer>
     );

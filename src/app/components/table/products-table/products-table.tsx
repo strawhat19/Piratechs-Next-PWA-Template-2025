@@ -159,8 +159,8 @@ const ProductActionsCell = ({
                         title={canAddToCart ? `Add To Cart` : (currentStatus == ProductStatus.Draft.toLowerCase() ? `Not Active` : (row?.stock > 0 ? `Unavailable` : `Out Of Stock`))}
                         onClick={(event: any) => {
                             event.stopPropagation();
-                            onAddToCart(row);
-                            toast.success(`${row?.name} Added To Cart`);
+                            const added = onAddToCart(row);
+                            if (added !== false) toast.success(`${row?.name} Added To Cart`);
                         }}
                     >
                         <AddShoppingCart fontSize={`small`} />
@@ -376,7 +376,7 @@ export default function ProductsTable({
     setFullEditProduct,
     setQuickEditProduct,
     type = Types.Product, 
-    onAddToCart = () => {}, 
+    onAddToCart = () => false, 
     onQuickEdit = undefined,
     quickEditProduct = null,
 }: any) {
@@ -795,7 +795,7 @@ export default function ProductsTable({
         { field: `created_at`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },
         // { field: `sku`, headerName: `SKU`, width: 130 },
-        { width: 133, field: `status`, headerName: `Status`, renderCell: ({ row, value }: any) => <ProductStatusCell row={row} value={value} /> },
+        { width: 150, field: `status`, headerName: `Status`, renderCell: ({ row, value }: any) => <ProductStatusCell row={row} value={value} /> },
         { width: 165, field: `category`, headerName: `Category`, renderCell: ({ row, value }: any) => <ProductCategoryCell row={row} value={value} /> },
         { width: 165, field: `productType`, headerName: `Type`, renderCell: ({ row, value }: any) => <ProductTypeCell row={row} value={value} /> },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },

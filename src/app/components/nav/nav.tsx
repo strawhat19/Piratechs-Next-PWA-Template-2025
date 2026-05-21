@@ -37,7 +37,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
     let { user, loaded, menuExpanded, setMenuExpanded, onSignOut } = useContext<any>(StateGlobals);
 
     let [cartDrawerOpen, setCartDrawerOpen] = useState(false);
-    const { cart, cartCount, cartTotal, clearCart, saveCart } = useStoreCart();
+    const { cart, cartCount, cartTotal, clearCart, saveCart, increaseCartItemQuantity, decreaseCartItemQuantity } = useStoreCart();
 
     const profileMenuItems = [
         {
@@ -189,6 +189,8 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 onClose={() => setCartDrawerOpen(false)}
                 onClearCart={clearCart}
                 onPaymentSuccess={() => saveCart([])}
+                onIncreaseQuantity={increaseCartItemQuantity}
+                onDecreaseQuantity={decreaseCartItemQuantity}
             />
         </nav>
     )

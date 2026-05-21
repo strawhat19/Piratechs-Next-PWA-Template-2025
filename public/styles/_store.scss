@@ -627,6 +627,12 @@
     background: var(--navy);
     justify-content: space-between;
     border-radius: var(--borderRadius);
+    .storeCartItemInfo {
+        gap: 2px;
+        min-width: 0;
+        display: grid;
+        flex: 1 1 auto;
+    }
     strong {
         font-size: 14px;
     }
@@ -642,6 +648,39 @@
     display: grid;
     min-width: 88px;
     text-align: right;
+}
+
+.storeCartQuantityControls {
+    gap: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    strong {
+        min-width: 26px;
+        text-align: center;
+    }
+}
+
+.storeCartQuantityButton {
+    border: none;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    color: white;
+    align-items: center;
+    border-radius: 999px;
+    justify-content: center;
+    background: rgba(var(--cool_neon_blue_rgb), 0.22);
+    transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        background: rgba(var(--cool_neon_blue_rgb), 0.35);
+    }
+    &:disabled {
+        opacity: 0.42;
+        cursor: not-allowed;
+        background: rgba(255, 255, 255, 0.08);
+    }
 }
 
 .emptyCart {
