@@ -21,7 +21,7 @@
 .p35 { padding: 35px; }
 
 .b0 { border: none !important; }
-.br4 { border-radius: 4px !important; }
+.br4 { border-radius: var(--borderRadius) !important; }
 .br8 { border-radius: 8px !important; }
 
 .invisible { opacity: 0; pointer-events: none; }

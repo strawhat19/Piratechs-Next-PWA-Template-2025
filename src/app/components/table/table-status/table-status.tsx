@@ -2,8 +2,8 @@ import { Tooltip } from '@mui/material';
 import { Circle } from '@mui/icons-material';
 
 export const tableStatusRed = `red`;
+export const tableStatusGray = `var(--gray)`;
 export const tableStatusGreen = `var(--green_neon)`;
-export const tableStatusGray = `rgba(255,255,255,0.35)`;
 
 export default function TableStatus({ title = ``, label = ``, color = tableStatusGray, className = ``, wrap = false }: any) {
     const rowStatus = (

@@ -88,6 +88,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                 {!isArchived ? (
                     <Icon_Button
                         size={26}
+                        placement={`top`}
                         disabled={!canAddToCart}
                         className={`actionIconButton addToCartAction`}
                         title={canAddToCart ? `Add To Cart` : `Out Of Stock`}
@@ -102,6 +103,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                 ) : ((isArchived && canManageProducts) ? <>
                     <Icon_Button
                         size={26}
+                        placement={`top`}
                         title={`Restore Product`}
                         className={`actionIconButton restoreAction`}
                         onClick={(event: any) => {
@@ -115,8 +117,9 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                 {canManageProducts ? <>
                     <Icon_Button
                         size={26}
+                        placement={`top`}
                         title={quickEditing ? `Cancel Edit` : `Edit Product`}
-                        className={`actionIconButton editAction ${quickEditing ? `quickEditActive pulsate circular` : ``}`}
+                        className={`actionIconButton grayAction editAction ${quickEditing ? `btnActivated quickEditActive pulsate circular` : ``}`}
                         onClick={(event: any) => {
                             event.stopPropagation();
                             onEdit(quickEditing ? null : row);
@@ -127,6 +130,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                     {isArchived ? <>
                         <Icon_Button
                             size={26}
+                            placement={`top`}
                             title={`Delete Product`}
                             className={`actionIconButton deleteAction`}
                             onClick={(event: any) => {
@@ -139,6 +143,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                     </> : (
                         <Icon_Button
                             size={26}
+                            placement={`top`}
                             title={`Archive Product`}
                             className={`actionIconButton archiveAction`}
                             onClick={(event: any) => {
@@ -203,8 +208,8 @@ export default function ProductsTable({
         { field: `category`, headerName: `Category`, width: 85 },
         { field: `created_by`, headerName: `Created By`, width: 145 },
         { field: `updated_by`, headerName: `Updated By`, width: 145 },
-        { field: `created_at`, headerName: `Created`, width: 150 },
-        { field: `updated`, headerName: `Updated`, width: 150 },
+        { field: `created_at`, headerName: `Created`, width: 155 },
+        { field: `updated`, headerName: `Updated`, width: 155 },
         // { field: `sku`, headerName: `SKU`, width: 130 },
         // { field: `productType`, headerName: `Type`, width: 120 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },

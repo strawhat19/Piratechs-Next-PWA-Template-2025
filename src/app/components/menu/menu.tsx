@@ -15,7 +15,7 @@ export default function Menu({
 }: any) {
     return (
         // <MUI>
-            <div className={`menuComponentContainer`}>
+            // <div className={`menuComponentContainer`}>
                 <MuiMenu 
                     id={id}
                     open={open} 
@@ -32,12 +32,19 @@ export default function Menu({
                                 mi?.onClick?.();
                                 onClose();
                             }}>
-                                {mi?.icon} {mi?.label}
+                                <div className={`menuItemContentContainer`}>
+                                    <div className={`menuItemIcon`}>
+                                        {mi?.icon}
+                                    </div>
+                                    <div className={`menuItemLabel`}>
+                                        {mi?.label}
+                                    </div>
+                                </div>
                             </MenuItem>
                         </div>
                     ))}
                 </MuiMenu>
-            </div>
+            // </div>
         // </MUI>
     )
 }

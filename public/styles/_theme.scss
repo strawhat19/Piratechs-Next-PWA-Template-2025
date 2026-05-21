@@ -8,7 +8,7 @@
 
     // Border Radius
     --circle: 100%;
-    --borderRadius: 5px;
+    --borderRadius: 4px;
 
     // Colors
     // whites
@@ -45,6 +45,10 @@
 
     // silver
     --soft-silver: #aaaaaa;
+    --gray_rgb: 255, 255, 255;
+    --silver_rgb: 159, 159, 159;
+    --gray: rgba(var(--gray_rgb), 0.35);
+    --silver: rgba(var(--silver_rgb), 1);
 
     // blacks
     --black: black;
@@ -125,6 +129,29 @@ p {
 
 ul {
     list-style: none;
+}
+
+.dropDownBtnLabel {
+    display: flex;
+    line-height: 0;
+    max-height: 22px;
+    margin-right: auto;
+    align-items: center;
+}
+
+.menuItemContentContainer {
+    width: 100%;
+    display: flex;
+    grid-gap: 7px;
+    align-items: center;
+    .menuItemIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .MuiSvgIcon-root {
+            margin-right: 0;
+        }
+    }
 }
 
 .pageTitleLogo {

@@ -7,12 +7,16 @@ export default function Icon_Button({
     title, 
     children, 
     url = ``,
+    arrow = true,
     button = false,
     rounded = true,
     target = `_self`,
+    color = `primary`,
     disabled = false, 
     onClick = () => {}, 
     id = `iconButtonID`,
+    placement = `bottom`,
+    followCursor = false,
     className = `iconButtonComponent`, 
     style = { position: `relative`, ...(rounded == false ? { borderRadius: 2 } : {}), },
 }: any) {
@@ -29,10 +33,27 @@ export default function Icon_Button({
         onClick?.(e);
     };
     return (
-        <Tooltip title={title} arrow>
+        <Tooltip 
+            color={color}
+            title={title} 
+            arrow={arrow} 
+            placement={placement} 
+            followCursor={followCursor} 
+            slotProps={{
+                popper: {
+                    modifiers: [
+                        {
+                            name: `flip`,
+                            enabled: false,
+                        },
+                    ],
+                },
+            }}
+        >
             {button == true ? (
                 <Button 
                     id={id}
+                    color={color}
                     size={`small`} 
                     onClick={disabled ? undefined : handleClick}
                     className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
@@ -48,6 +69,7 @@ export default function Icon_Button({
             ) : (
                 <IconButton 
                     id={id}
+                    color={color}
                     size={`small`} 
                     onClick={disabled ? undefined : handleClick}
                     className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 

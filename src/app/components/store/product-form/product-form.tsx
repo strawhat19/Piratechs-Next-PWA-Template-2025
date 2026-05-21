@@ -389,7 +389,7 @@ export default function ProductForm({
     );
 
     return (
-        <div className={`${className} ${funsized ? `funsized` : ``} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
+        <div className={`productFormContainer ${className} ${funsized ? `funsized` : ``} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
             <form ref={formRef} onSubmit={saveProduct}>
                 <div className={`productFormHeader`}>
                     {!funsized && (
@@ -402,14 +402,14 @@ export default function ProductForm({
                         </div>
                     )}
                     <div className={`productFormActions`}>
-                        {(compact && product != null) ? (
-                            <Button type={`button`} className={`productFormButton`} onClick={openFullForm}>
+                        {/* {(compact && product != null) ? (
+                            <Button type={`button`} className={`productFormButton grayAction`} onClick={openFullForm}>
                                 <OpenInFull fontSize={`small`} /> Full
                             </Button>
-                        ) : <></>}
+                        ) : <></>} */}
                         {product == null ? (
                             <Button disabled={saving || !requiredFieldsFilled() || formMatchesProduct()} type={`button`} className={`productFormButton productCancelButton ${(saving || !requiredFieldsFilled() || formMatchesProduct()) ? `disabled` : ``}`} onClick={clearProductForm}>
-                                <Close fontSize={`small`} /> Clear
+                                <Close fontSize={`small`} /> Cancel
                             </Button>
                         ) : <></>}
                         {product?.id && onCancelEdit ? <Button type={`button`} className={`productFormButton productCancelButton`} onClick={cancelProductEdit}>

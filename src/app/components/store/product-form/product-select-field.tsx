@@ -53,67 +53,67 @@ export const statusIcons: Record<ProductStatus, JSX.Element> = {
 
 // Status colors using SCSS theme variables
 export const statusColors: Record<ProductStatus, string> = {
-    [ProductStatus.Draft]: 'var(--disabled)',
-    [ProductStatus.Active]: 'var(--success)',
-    [ProductStatus.Pending]: 'var(--yellow_neon)',
-    [ProductStatus.Archived]: 'var(--soft-silver)',
-    [ProductStatus.Backorder]: 'var(--blueneon)',
-    [ProductStatus.Unavailable]: 'var(--error)',
-    [ProductStatus.OutOfStock]: 'var(--pink_neon)',
+    [ProductStatus.Draft]: `var(--disabled)`,
+    [ProductStatus.Active]: `var(--success)`,
+    [ProductStatus.Unavailable]: `var(--error)`,
+    [ProductStatus.Backorder]: `var(--blueneon)`,
+    [ProductStatus.Pending]: `var(--yellow_neon)`,
+    [ProductStatus.Archived]: `var(--soft-silver)`,
+    [ProductStatus.OutOfStock]: `var(--pink_neon)`,
 };
 
 // Category colors using SCSS theme variables
 export const categoryColors: Record<ProductCategory, string> = {
-    [ProductCategory.Art]: 'var(--pink_neon)',
-    [ProductCategory.Apparel]: 'var(--blueneon)',
-    [ProductCategory.Stickers]: 'var(--yellow_neon)',
-    [ProductCategory.Paintings]: 'var(--success)',
-    [ProductCategory.Prints]: 'var(--bluelight)',
-    [ProductCategory.Posters]: 'var(--cool_neon_blue)',
-    [ProductCategory.Graphics]: 'var(--pink_neon)',
-    [ProductCategory.Commissions]: 'var(--yellow_neon)',
-    [ProductCategory.Accessories]: 'var(--success)',
-    [ProductCategory.DigitalArt]: 'var(--blueneon)',
-    [ProductCategory.OriginalArt]: 'var(--pink_neon)',
-    [ProductCategory.CustomArt]: 'var(--yellow_neon)',
-    [ProductCategory.Merchandise]: 'var(--bluelight)',
+    [ProductCategory.Art]: `var(--pink_neon)`,
+    [ProductCategory.Apparel]: `var(--blueneon)`,
+    [ProductCategory.Prints]: `var(--bluelight)`,
+    [ProductCategory.Paintings]: `var(--success)`,
+    [ProductCategory.Graphics]: `var(--pink_neon)`,
+    [ProductCategory.Accessories]: `var(--success)`,
+    [ProductCategory.DigitalArt]: `var(--blueneon)`,
+    [ProductCategory.Stickers]: `var(--yellow_neon)`,
+    [ProductCategory.OriginalArt]: `var(--pink_neon)`,
+    [ProductCategory.CustomArt]: `var(--yellow_neon)`,
+    [ProductCategory.Merchandise]: `var(--bluelight)`,
+    [ProductCategory.Posters]: `var(--cool_neon_blue)`,
+    [ProductCategory.Commissions]: `var(--yellow_neon)`,
 };
 
 // Type colors using SCSS theme variables
 export const typeColors: Record<ProductType, string> = {
-    [ProductType.Pin]: 'var(--blueneon)',
-    [ProductType.Print]: 'var(--bluelight)',
-    [ProductType.Shirt]: 'var(--blueneon)',
-    [ProductType.Poster]: 'var(--cool_neon_blue)',
-    [ProductType.Sticker]: 'var(--yellow_neon)',
-    [ProductType.Graphic]: 'var(--pink_neon)',
-    [ProductType.Service]: 'var(--success)',
-    [ProductType.Digital]: 'var(--blueneon)',
-    [ProductType.Painting]: 'var(--success)',
-    [ProductType.Physical]: 'var(--bluelight)',
-    [ProductType.Commission]: 'var(--yellow_neon)',
-    [ProductType.Subscription]: 'var(--green_neon)',
-    [ProductType.DigitalDownload]: 'var(--blueneon)',
+    [ProductType.Pin]: `var(--blueneon)`,
+    [ProductType.Shirt]: `var(--blueneon)`,
+    [ProductType.Service]: `var(--success)`,
+    [ProductType.Print]: `var(--bluelight)`,
+    [ProductType.Digital]: `var(--blueneon)`,
+    [ProductType.Painting]: `var(--success)`,
+    [ProductType.Graphic]: `var(--pink_neon)`,
+    [ProductType.Physical]: `var(--bluelight)`,
+    [ProductType.Sticker]: `var(--yellow_neon)`,
+    [ProductType.Poster]: `var(--cool_neon_blue)`,
+    [ProductType.Commission]: `var(--yellow_neon)`,
+    [ProductType.Subscription]: `var(--green_neon)`,
+    [ProductType.DigitalDownload]: `var(--blueneon)`,
 };
 
 interface ProductSelectFieldProps {
     label: string;
     value: string;
     options: string[];
-    icons: Record<string, JSX.Element>;
+    className?: string;
     colors?: Record<string, string>;
     onChange: (value: string) => void;
-    className?: string;
+    icons: Record<string, JSX.Element>;
 }
 
 export default function ProductSelectField({
     label,
     value,
-    options,
     icons,
     colors,
+    options,
     onChange,
-    className = '',
+    className = ``,
 }: ProductSelectFieldProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -127,13 +127,13 @@ export default function ProductSelectField({
         setAnchorEl(null);
     };
 
-    const filteredOptions = options.filter(option => option !== value);
+    const filteredOptions = options?.filter(option => option !== value);
 
-    const menuItems = filteredOptions.map(option => ({
+    const menuItems = filteredOptions?.map(option => ({
         id: option,
         label: option,
+        className: ``,
         icon: icons[option],
-        className: '',
         onClick: () => {
             onChange(option);
         },
@@ -147,13 +147,13 @@ export default function ProductSelectField({
             <div className={`productSelectField ${className}`}>
                 <span className={`productFieldLabelText`}>{label}</span>
                 <Button
-                    size="small"
-                    className={`productSelectButton`}
+                    size={`small`}
                     onClick={handleClick}
                     startIcon={currentIcon}
                     endIcon={<KeyboardArrowDown />}
+                    className={`productSelectButton tableDropDown`}
                 >
-                    <span style={{ marginRight: 'auto', color: currentColor }}>
+                    <span className={`dropDownBtnLabel`}>
                         {value}
                     </span>
                 </Button>

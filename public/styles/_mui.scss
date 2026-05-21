@@ -2,6 +2,10 @@
     padding: 0 !important;
 }
 
+.MuiButton-startIcon {
+    margin-right: 0 !important;
+}
+
 .MuiPaper-root {
     background: var(--background) !important;
     &:has(.dialogCustom) {
@@ -27,8 +31,8 @@
 .MuiMenuItem-root {
     color: white !important;
     font-size: 13px !important;
-    min-height: 34px !important;
-    padding: 6px 10px !important;
+    min-height: 30px !important;
+    padding: 0px 10px !important;
     transition: var(--transition);
     &.noColors {
         .MuiSvgIcon-root {

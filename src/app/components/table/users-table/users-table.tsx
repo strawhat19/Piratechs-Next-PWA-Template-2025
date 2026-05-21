@@ -14,7 +14,7 @@ import Icon_Button from '../../buttons/icon-button/icon-button';
 import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown, ShoppingCart, Logout, Delete } from '@mui/icons-material';
 
 const roleIcons: Record<Roles, JSX.Element> = {
-  [Roles.Guest]: <Person fontSize={`small`} color={`secondary`} />,
+  [Roles.Guest]: <Person fontSize={`small`} htmlColor={`var(--gray)`} />,
   [Roles.Subscriber]: <Star fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
   [Roles.Customer]: <ShoppingCart style={{ fontSize: 18 }} htmlColor={`var(--blueneon)`} />,
   [Roles.Editor]: <Edit fontSize={`small`} htmlColor={`var(--success)`} />,
@@ -57,7 +57,7 @@ const RoleCell = ({ row, value }: any) => {
         startIcon={roleIcons[(value || Roles.Guest) as Roles]}
         endIcon={<KeyboardArrowDown />}
       >
-        <span style={{ marginRight: `auto` }}>
+        <span className={`dropDownBtnLabel`}>
             {value || Roles.Guest}
         </span>
       </Button>

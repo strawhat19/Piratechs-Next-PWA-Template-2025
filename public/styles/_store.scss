@@ -9,7 +9,7 @@
     display: grid;
 }
 
-.productFormComponent {
+.productFormContainer {
     --productFormAccent: var(--success);
     width: 99.9%;
     padding: 14px;
@@ -25,6 +25,14 @@
         background: color-mix(in srgb, var(--productFormAccent) 24%, var(--bg));
         border-color: var(--productFormAccent);
         box-shadow: 0 0 2px color-mix(in srgb, var(--productFormAccent) 24%, transparent);
+    }
+    &.productFormFull {
+        .productField {
+            width: 100%;
+        }
+        .tableDropDown {
+            padding-left: 8px !important;
+        }
     }
     select {
         outline: none;
@@ -53,6 +61,13 @@
             pointer-events: none;
         }
     }
+}
+
+.productSelectField {
+    display: flex;
+    grid-gap: 4px;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .productField {
@@ -150,17 +165,15 @@
     position: absolute;
     align-items: center;
     border-radius: 999px;
-    justify-content: center;
     pointer-events: none;
+    justify-content: center;
     transition: opacity 0.15s ease;
     color: var(--errorText, white);
     transform: translate(-50%, -50%);
     background: rgba(var(--cool_neon_blue_rgb), 0.88);
 }
 
-.productFormHeader,
-.productFormActions,
-.productVariantHeader {
+.productFormHeader, .productFormActions, .productVariantHeader {
     gap: 10px;
     display: flex;
     align-items: center;
@@ -215,10 +228,10 @@
 
 .productFormButton {
     gap: 5px;
-    color: white !important;
-    display: inline-flex !important;
-    font-size: 13px !important;
     min-height: 34px;
+    color: white !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
     background: var(--buttons) !important;
 }
 
@@ -243,10 +256,10 @@
     cursor: pointer;
     min-height: 36px;
     font-size: 13px;
-    padding: 4px 10px 8px;
     position: relative;
-    align-items: flex-start;
+    padding: 4px 10px 8px;
     flex-direction: column;
+    align-items: flex-start;
     justify-content: center;
     background: var(--navy);
     border-radius: var(--borderRadius);
@@ -331,10 +344,11 @@
     padding: 16px;
     min-width: 97%;
     position: relative;
-    background: var(--navy);
-    .productFormComponent {
+    background: var(--dark_navy);
+    .productFormContainer {
         border: none;
         box-shadow: none;
+        background: var(--dark_navy);
     }
 }
 

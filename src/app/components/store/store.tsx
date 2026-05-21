@@ -76,9 +76,9 @@ export default function Store({ className = `storeComponent` }) {
                     ) : <></>}
                 </Slider>
                 <ProductFormDialog
+                    onClose={closeFullEdit}
                     product={fullEditProduct}
                     open={fullEditProduct != null}
-                    onClose={closeFullEdit}
                 />
             </> : <Loader height={250} label={`Store Loading`} />}
         </div>
