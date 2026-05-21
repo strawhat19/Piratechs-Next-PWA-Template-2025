@@ -52,11 +52,11 @@ const getAttachmentTypeFromURL = (value?: string) => {
 };
 
 const getVariantForm = (variant?: ProductVariant, product?: Product): ProductFormVariant => ({
-    sku: variant?.sku || product?.sku || ``,
     title: variant?.title || `Default`,
-    price: centsToDollars(variant?.price || product?.price),
     option1: variant?.option1 || `Default`,
+    sku: variant?.sku || product?.sku || ``,
     taxable: variant?.taxable ?? product?.taxable ?? true,
+    price: centsToDollars(variant?.price || product?.price),
     inventoryQuantity: String(variant?.inventoryQuantity ?? variant?.inventory_quantity ?? product?.stock ?? 0),
     requiresShipping: variant?.requiresShipping ?? variant?.requires_shipping ?? product?.requiresShipping ?? false,
 });
@@ -278,7 +278,8 @@ export default function ProductForm({
         return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].every(key => comparableFormValue((form as any)?.[key]) == comparableFormValue((currentForm as any)?.[key]));
     }
 
-    const requiredFieldsFilled = () => form?.name?.trim() && Number(form?.price || 0) >= 0;
+    const requiredFieldsFilled = () => form?.name?.trim();
+    // const requiredFieldsFilled = () => form?.name?.trim() && Number(form?.price || 0) >= 0;
     const actionDisabled = saving || !requiredFieldsFilled() || formMatchesProduct();
 
     const isFormDirty = () => {
@@ -307,7 +308,7 @@ export default function ProductForm({
         id: `${productID}_Variant_${index + 1}`,
         requiresShipping: variant?.requiresShipping,
         requires_shipping: variant?.requiresShipping,
-        price: dollarsToCents(variant?.price || form?.price),
+        price: dollarsToCents((variant?.price ?? 0) || (form?.price ?? 0)),
         available: Number(variant?.inventoryQuantity || form?.stock || 0) > 0,
         inventoryQuantity: Number(variant?.inventoryQuantity || form?.stock || 0),
         inventory_quantity: Number(variant?.inventoryQuantity || form?.stock || 0),
@@ -322,7 +323,7 @@ export default function ProductForm({
         try {
             const editing = product != null;
             const stock = Number(form?.stock || 0);
-            const price = dollarsToCents(form?.price);
+            const price = dollarsToCents(form?.price ?? 0);
             const username = (user != null ? user?.email : Roles.Guest);
             const number = Number(form?.number || product?.number || nextProductNumber);
             const imageURL = String(form?.imageURL || ``).trim();
@@ -338,6 +339,7 @@ export default function ProductForm({
                 // number,
                 price,
                 stock,
+                imageURL,
                 sku: form?.sku,
                 name: form?.name,
                 brand: form?.brand,
@@ -350,7 +352,6 @@ export default function ProductForm({
                 tags: parseList(form?.tags),
                 title: capWords(form?.name),
                 productType: form?.productType,
-                imageURL,
                 description: form?.description,
                 cost: dollarsToCents(form?.cost),
                 weight: Number(form?.weight || 0),
@@ -450,7 +451,7 @@ export default function ProductForm({
                         <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
                     ) : <></>}
                     <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
-                    <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
+                    <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} />
                     <ProductField funsized={funsized} label={`Quantity`} name={`stock`} type={`number`} min={`0`} step={`0.01`} value={form?.stock} onChange={updateForm} />
                     <ProductImageURLField 
                         funsized={funsized} 

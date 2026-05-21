@@ -596,7 +596,7 @@ export default function ProductsTable({
         { field: `created_at`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },
         // { field: `sku`, headerName: `SKU`, width: 130 },
-        { width: 165, field: `status`, headerName: `Status`, renderCell: ({ row, value }: any) => <ProductStatusCell row={row} value={value} /> },
+        { width: 133, field: `status`, headerName: `Status`, renderCell: ({ row, value }: any) => <ProductStatusCell row={row} value={value} /> },
         { width: 165, field: `category`, headerName: `Category`, renderCell: ({ row, value }: any) => <ProductCategoryCell row={row} value={value} /> },
         { width: 165, field: `productType`, headerName: `Type`, renderCell: ({ row, value }: any) => <ProductTypeCell row={row} value={value} /> },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
