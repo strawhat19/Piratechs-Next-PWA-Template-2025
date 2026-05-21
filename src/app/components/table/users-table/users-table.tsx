@@ -1,17 +1,18 @@
 import Table from '../table';
-import Menu from '../../menu/menu';
+import MenuTrigger from '../../menu/menu-trigger';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
-import { JSX, useContext, useState } from 'react';
+import { JSX, useContext } from 'react';
 import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
-import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, KeyboardArrowDown, ShoppingCart, Logout, Delete } from '@mui/icons-material';
+// import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
+import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, ShoppingCart, Logout, Delete, KeyboardArrowDown } from '@mui/icons-material';
 
 const roleIcons: Record<Roles, JSX.Element> = {
   [Roles.Guest]: <Person fontSize={`small`} htmlColor={`var(--gray)`} />,
@@ -25,13 +26,11 @@ const roleIcons: Record<Roles, JSX.Element> = {
 };
 
 const RoleCell = ({ row, value }: any) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const closeMenu = () => setAnchorEl(null);
   const filteredRoles: Roles[] = Object.values(Roles)?.filter(r => r != value);
-  const roleItems = filteredRoles?.map((role: Roles) => ({
+  const roleItems = filteredRoles?.map((role: Roles | string) => ({
     id: role,
     label: role,
+    value: role,
     icon: roleIcons[role as Roles],
     className: role === value ? `selectedRoleItem` : ``,
     onClick: () => {
@@ -47,29 +46,38 @@ const RoleCell = ({ row, value }: any) => {
   }));
   return (
     <>
-      <Button
-        size={`small`}
-        className={`tableDropDown roleDropdownButton`}
-        onClick={(e) => {
-          e.stopPropagation();
-          setAnchorEl(e.currentTarget);
-        }}
-        startIcon={roleIcons[(value || Roles.Guest) as Roles]}
-        endIcon={<KeyboardArrowDown />}
-      >
-        <span className={`dropDownBtnLabel`}>
-            {value || Roles.Guest}
-        </span>
-      </Button>
-      <Menu
-        open={open}
+        {/* <CheckboxMulti optionsToUse={roleItems} placeholder={`Role(s) (${roleItems?.length})`} /> */}
+      <MenuTrigger
+        search={false}
         colors={true}
         topOffset={0.5}
-        anchorEl={anchorEl}
-        onClose={closeMenu}
         menuItems={roleItems}
         className={`roleDropdownMenu`}
         targetID={`role-menu-${row?.id}`}
+        id={`role-menu-trigger-${row?.id}`}
+        renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
+          <Button
+            id={id}
+            size={`small`}
+            onClick={onClick}
+            endIcon={<KeyboardArrowDown />}
+            className={`tableDropDown roleDropdownButton`}
+            startIcon={roleIcons[(value || Roles.Guest) as Roles]}
+          >
+            <span className={`dropDownBtnLabel`}>
+                {value || Roles.Guest}
+            </span>
+            {/* <input
+              onFocus={onFocus}
+              onChange={onType}
+              onClick={(event) => event.stopPropagation()}
+              className={`dropDownBtnLabel`}
+              value={searchValue || value || Roles.Guest}
+              placeholder={value || Roles.Guest}
+              style={{ border: `none`, width: `100%`, color: `inherit`, background: `transparent` }}
+            /> */}
+          </Button>
+        )}
       />
     </>
   );

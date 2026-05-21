@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import MenuComponent from '../menu/menu';
+import MenuTrigger from '../menu/menu-trigger';
 import { useContext, useState } from 'react';
 import { capWords } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
@@ -35,22 +35,8 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
 
     let { user, loaded, menuExpanded, setMenuExpanded, onSignOut } = useContext<any>(StateGlobals);
 
-    let [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
-    let [storeAnchorEl, setStoreAnchorEl] = useState<null | HTMLElement>(null);
     let [cartDrawerOpen, setCartDrawerOpen] = useState(false);
     const { cart, cartCount, cartTotal, clearCart, saveCart } = useStoreCart();
-
-    const openProfileMenu = (e: React.MouseEvent<HTMLElement>) => {
-        setProfileAnchorEl(e.currentTarget);
-    };
-
-    const closeProfileMenu = () => {
-        setProfileAnchorEl(null);
-    };
-
-    const closeStoreMenu = () => {
-        setStoreAnchorEl(null);
-    };
 
     const profileMenuItems = [
         {
@@ -113,17 +99,26 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
 
         if (hasCartItems) {
             return (
-                <button
-                    type={`button`}
-                    className={`smallFont colorwhite flexContainer navMenuLinkButton`}
-                    onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        setStoreAnchorEl(event.currentTarget);
-                    }}
-                >
-                    {content}
-                </button>
+                <MenuTrigger
+                    topOffset={1}
+                    menuItems={storeMenuItems}
+                    className={`storeCartMenu`}
+                    id={`store-menu-trigger`}
+                    targetID={`store-menu-trigger`}
+                    renderTrigger={({ id, onClick }) => (
+                        <button
+                            id={id}
+                            type={`button`}
+                            className={`smallFont colorwhite flexContainer navMenuLinkButton`}
+                            onClick={(event) => {
+                                event.preventDefault();
+                                onClick(event);
+                            }}
+                        >
+                            {content}
+                        </button>
+                    )}
+                />
             );
         }
 
@@ -146,13 +141,19 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                     </> : (
                         <li className={`menuButton`}>
                             {/* Welcome, {user?.name} */}
-                            <Icon_Button id={`profileMenuButton`} onClick={openProfileMenu} disabled={!loaded} title={`Profile`} className={`profileButton`}>
-                                <span className={`letter`}>
-                                    {user?.name?.[0]}
-                                </span>
-                                {/* <Person className={`settingsIcon`} style={{ fontSize: 20 }} /> */}
-                            </Icon_Button>
-                            <MenuComponent open={profileAnchorEl != null} anchorEl={profileAnchorEl} onClose={closeProfileMenu} topOffset={1} menuItems={profileMenuItems} />
+                            <MenuTrigger
+                                id={`profileMenuButton`}
+                                topOffset={1}
+                                menuItems={profileMenuItems}
+                                renderTrigger={({ id, onClick }) => (
+                                    <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Profile`} className={`profileButton`}>
+                                        <span className={`letter`}>
+                                            {user?.name?.[0]}
+                                        </span>
+                                        {/* <Person className={`settingsIcon`} style={{ fontSize: 20 }} /> */}
+                                    </Icon_Button>
+                                )}
+                            />
                         </li>
                     )}
                     <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>
@@ -170,16 +171,6 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 {Object.entries(routes).map(([path, config]: any) => (
                     <li key={path} onClick={() => !(path == `store` && cartCount > 0) && setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
                         {renderRouteLink(path, config)}
-                        {path == `store` ? (
-                            <MenuComponent
-                                open={storeAnchorEl != null}
-                                anchorEl={storeAnchorEl}
-                                onClose={closeStoreMenu}
-                                topOffset={1}
-                                menuItems={storeMenuItems}
-                                className={`storeCartMenu`}
-                            />
-                        ) : null}
                     </li>
                 ))}
                 {/* {className == `mobileNav` && (

@@ -23,7 +23,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize={`small`} />;
 export default function CheckboxMulti({
     optionsToUse = movies,
     placeholder = `Movies`,
-}) {
+}: any) {
     const { width, loaded } = useContext<any>(StateGlobals);
     const [options, ] = useState<AutoCompleteOption[]>(optionsToUse);
     const [selectedOptions, setSelectedOptions] = useState<AutoCompleteOption[]>([]);

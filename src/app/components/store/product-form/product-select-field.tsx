@@ -1,8 +1,8 @@
 'use client';
 
-import Menu from '../../menu/menu';
+import MenuTrigger from '../../menu/menu-trigger';
 import { Button } from '@mui/material';
-import React, { JSX, useState } from 'react';
+import { JSX } from 'react';
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { ProductCategory, ProductType, ProductStatus } from '@/shared/types/models/Product';
 
@@ -115,18 +115,6 @@ export default function ProductSelectField({
     onChange,
     className = ``,
 }: ProductSelectFieldProps) {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
     const filteredOptions = options?.filter(option => option !== value);
 
     const menuItems = filteredOptions?.map(option => ({
@@ -146,28 +134,36 @@ export default function ProductSelectField({
         <>
             <div className={`productSelectField ${className}`}>
                 <span className={`productFieldLabelText`}>{label}</span>
-                <Button
-                    size={`small`}
-                    onClick={handleClick}
-                    startIcon={currentIcon}
-                    endIcon={<KeyboardArrowDown />}
-                    className={`productSelectButton tableDropDown`}
-                >
-                    <span className={`dropDownBtnLabel`}>
-                        {value}
-                    </span>
-                </Button>
+                <MenuTrigger
+                    id={`${label.toLowerCase().replace(/\s/g, '-')}-menu-trigger`}
+                    colors={true}
+                    topOffset={0.5}
+                    menuItems={menuItems}
+                    className={`productSelectDropdown`}
+                    targetID={`${label.toLowerCase().replace(/\s/g, '-')}-menu`}
+                    renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
+                        <Button
+                            id={id}
+                            size={`small`}
+                            onClick={onClick}
+                            startIcon={currentIcon}
+                            endIcon={<KeyboardArrowDown />}
+                            className={`productSelectButton tableDropDown`}
+                            style={currentColor ? { color: currentColor } : undefined}
+                        >
+                            <input
+                                value={searchValue || value}
+                                onClick={(event) => event.stopPropagation()}
+                                onFocus={onFocus}
+                                onChange={onType}
+                                className={`dropDownBtnLabel`}
+                                placeholder={value}
+                                style={{ border: `none`, background: `transparent`, color: `inherit`, width: `100%` }}
+                            />
+                        </Button>
+                    )}
+                />
             </div>
-            <Menu
-                open={open}
-                colors={true}
-                topOffset={0.5}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                menuItems={menuItems}
-                className={`productSelectDropdown`}
-                targetID={`${label.toLowerCase().replace(/\s/g, '-')}-menu`}
-            />
         </>
     );
 }
