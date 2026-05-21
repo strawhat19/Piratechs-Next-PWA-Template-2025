@@ -6,6 +6,7 @@ import { Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridToolbar } from '@mui/x-data-grid/internals';
+import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
 
 const paginationModel = { page: 0, pageSize: 12 };
 
@@ -59,6 +60,15 @@ export default function Table({
 }: any) {
   const { loaded } = useContext<any>(StateGlobals);
   const checkedRowsRef = useRef<GridRowSelectionModel>({ type: `include`, ids: new Set() });
+  const handleCellClick = (params: any, event: any) => {
+    if (params?.field === GRID_CHECKBOX_SELECTION_FIELD) return;
+    if (event?.defaultMuiPrevented) return;
+    if (typeof dataGridProps?.onCellClick === `function`) {
+      dataGridProps.onCellClick(params, event);
+      return;
+    }
+    console.log(`Row Clicked`, params?.row);
+  };
 
   return (
       <div className={`table ${className}`}>
@@ -76,8 +86,10 @@ export default function Table({
               rows={rows}
               columns={columns}
               density={density}
+              disableRowSelectionOnClick={dataGridProps?.disableRowSelectionOnClick ?? true}
               showToolbar={toolbar}
               checkboxSelection={selectable}
+              onCellClick={handleCellClick}
               onRowSelectionModelChange={(nextRowSelectionModel: GridRowSelectionModel, details: any) => {
                 checkedRowsRef.current = nextRowSelectionModel;
                 console.log(`Checked Rows`, Array.from(nextRowSelectionModel?.ids || []));

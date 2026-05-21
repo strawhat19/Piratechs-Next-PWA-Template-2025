@@ -7,6 +7,7 @@ import { flushSync } from 'react-dom';
 import { Button, LinearProgress, Skeleton } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { usePathname, useRouter } from 'next/navigation';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
@@ -17,7 +18,8 @@ import EditableCell from '../editable-cell/editable-cell';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { constants, minRole } from '@/shared/scripts/constants';
 import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
-import ProductForm, { ProductFormDialog } from '../../store/product-form/product-form';
+import ProductForm from '../../store/product-form/product-form';
+import ProductDetails from '../../store/product-details/product-details';
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 import { Product, ProductType, ProductStatus, ProductCategory } from '@/shared/types/models/Product';
 import { statusIcons, categoryIcons, typeIcons } from '../../store/product-form/product-select-field';
@@ -25,6 +27,7 @@ import { AddShoppingCart, Archive, Delete, Edit, Restore, KeyboardArrowDown } fr
 
 const storeDollarSignColor = `var(--green_neon)`;
 const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
+const productRoutePattern = /(?:^|\/)(?:store\/)?products?\/([^/?#]+)/i;
 
 const getProductStatus = (product: Product, string: boolean = false) => {
     const stock = Number(product?.stock || 0);
@@ -377,6 +380,8 @@ export default function ProductsTable({
     onQuickEdit = undefined,
     quickEditProduct = null,
 }: any) {
+    const router = useRouter();
+    const pathname = usePathname();
     const [selectedProductIDs, setSelectedProductIDs] = useState<string[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
@@ -390,6 +395,17 @@ export default function ProductsTable({
     const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const { user, showAlert, showConfirm, setAppDialog, closeAppDialog } = useContext<any>(StateGlobals);
     const editProduct = (product: Product | null) => onQuickEdit ? onQuickEdit(product) : setSelectedProduct(product);
+    const routeProductID = decodeURIComponent(pathname?.match(productRoutePattern)?.[1] || ``);
+    const openProductDetails = (product: Product | null) => {
+        if (!product?.id) return;
+        setSelectedProduct(product);
+        const nextPath = `/store/product/${encodeURIComponent(String(product?.id))}`;
+        if (pathname != nextPath) router.push(nextPath);
+    };
+    const closeProductDetails = () => {
+        setSelectedProduct(null);
+        if (routeProductID) router.replace(`/store`);
+    };
 
     const { saveCart } = useStoreCart();
     // const canManageStore = minRole(user?.role, Roles.Editor);
@@ -528,6 +544,20 @@ export default function ProductsTable({
                 : `Archive ${nonArchivedProducts?.length} Product(s)?`,
         });
     };
+
+    useEffect(() => {
+        if (!routeProductID) {
+            if (selectedProduct != null) setSelectedProduct(null);
+            return;
+        }
+        if (productsLoading || products?.length == 0) return;
+        const matchedProduct = products?.find((product: Product) => String(product?.id) == routeProductID || String(product?.number) == routeProductID) || null;
+        if (matchedProduct?.id) {
+            setSelectedProduct(prev => String(prev?.id) == String(matchedProduct?.id) ? prev : matchedProduct);
+            return;
+        }
+        setSelectedProduct(null);
+    }, [products, productsLoading, routeProductID]);
 
     useEffect(() => {
         setOptimisticNameByID(prev => {
@@ -814,6 +844,10 @@ export default function ProductsTable({
                 columns={productColumns}
                 className={`productsTableComponent`}
                 dataGridProps={{
+                    onCellClick: ({ row, field }: any) => {
+                        if (field == `actions`) return;
+                        openProductDetails(row);
+                    },
                     onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
                         const ids = Array.from(selectionModel?.ids || [])?.map(id => String(id));
                         onSelectedRowsChange(ids);
@@ -855,10 +889,10 @@ export default function ProductsTable({
                     </div>
                 )}
             />
-            <ProductFormDialog
+            <ProductDetails
                 product={selectedProduct}
                 open={selectedProduct != null}
-                onClose={() => setSelectedProduct(null)}
+                onClose={closeProductDetails}
             />
         </>
     );

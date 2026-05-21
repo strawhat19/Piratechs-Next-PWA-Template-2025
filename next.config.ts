@@ -22,7 +22,13 @@ const nextConfig: NextConfig = {
   turbopack: {},
   devIndicators: false,
   reactStrictMode: true,
-  rewrites: async () => Object.keys(routes).map(key => ({ source: `/${key}`, destination: `/pages/${key}` })),
+  rewrites: async () => [
+    ...Object.keys(routes).map(key => ({ source: `/${key}`, destination: `/pages/${key}` })),
+    { source: `/store/product/:id`, destination: `/pages/store/product/:id` },
+    { source: `/store/products/:id`, destination: `/pages/store/product/:id` },
+    { source: `/product/:id`, destination: `/pages/store/product/:id` },
+    { source: `/products/:id`, destination: `/pages/store/product/:id` },
+  ],
   allowedDevOrigins: [`local-origin.dev`, `*.local-origin.dev`, `http://localhost:3000`, `http://127.0.0.1:3000`, `http://192.168.1.125:3000`],
   redirects: async () => Object.entries(routes).flatMap(([key, route]) => route.redirects.map(alias => ({ source: `/${alias}`, destination: `/${key}`, permanent: true }))),
 };
