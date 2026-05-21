@@ -76,7 +76,7 @@ const getProductForm = (product: Product | null | undefined, number: number) => 
     price: editing ? centsToDollars(product?.price) : ``,
     // price: editing ? centsToDollars(product?.price) : ``,
     brand: product?.brand || product?.vendor || ``,
-    status: product?.status || ProductStatus.Unavailable,
+    status: product?.status || ProductStatus.Draft,
     weight: String(product?.weight ?? 0),
     vendor: product?.vendor || product?.brand || ``,
     currency: product?.currency || `usd`,
@@ -96,12 +96,17 @@ const getProductForm = (product: Product | null | undefined, number: number) => 
     };
 };
 
-const ProductField = ({ label, showInput = true, funsized = false, ...props }: any) => (
-    <label className={`productField`}>
-        {!funsized && <span>{label}</span>}
-        {showInput && <input placeholder={label} {...props} />}
-    </label>
-);
+const ProductField = ({ label, showInput = true, funsized = false, ...props }: any) => {
+    const isNumberField = props?.type == `number`;
+    const rawValue = props?.value;
+    const hasZeroValue = isNumberField && String(rawValue ?? ``).trim() != `` && Number(rawValue) === 0;
+    return (
+        <label className={`productField`}>
+            {!funsized && <span>{label}</span>}
+            {showInput && <input placeholder={label} {...props} style={{ ...props?.style, color: hasZeroValue ? `var(--error)` : props?.style?.color }} />}
+        </label>
+    );
+};
 
 const ProductTextAreaField = ({ label, ...props }: any) => (
     <label className={`productField productTextAreaField`}>
@@ -309,7 +314,7 @@ export default function ProductForm({
         requiresShipping: variant?.requiresShipping,
         requires_shipping: variant?.requiresShipping,
         price: dollarsToCents((variant?.price ?? 0) || (form?.price ?? 0)),
-        available: Number(variant?.inventoryQuantity || form?.stock || 0) > 0,
+        available: Number(variant?.inventoryQuantity || form?.stock || 0) > 0 && String(form?.status || ``).toLowerCase() == ProductStatus.Active.toLowerCase(),
         inventoryQuantity: Number(variant?.inventoryQuantity || form?.stock || 0),
         inventory_quantity: Number(variant?.inventoryQuantity || form?.stock || 0),
     }));

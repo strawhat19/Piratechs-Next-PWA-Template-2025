@@ -8,39 +8,38 @@ import { KeyboardArrowDown, LocalOffer, Checkroom, Palette, Newspaper, Computer,
 
 export const statusColors: Record<ProductStatus, string> = {
     [ProductStatus.Draft]: `var(--links)`,
-    [ProductStatus.Active]: `var(--emerald_neon)`,
     [ProductStatus.Unavailable]: `var(--error)`,
+    [ProductStatus.Active]: `var(--emerald_neon)`,
     [ProductStatus.Archived]: `var(--soft-silver)`,
 };
 
 export const categoryColors: Record<ProductCategory, string> = {
-    [ProductCategory.Art]: `var(--pink_neon)`,
+    [ProductCategory.Art]: statusColors?.[ProductStatus.Unavailable],
     [ProductCategory.Apparel]: `var(--blueneon)`,
     [ProductCategory.Prints]: `var(--bluelight)`,
-    [ProductCategory.Paintings]: `var(--emerald_neon)`,
-    [ProductCategory.Digital]: `var(--emerald_neon)`,
     [ProductCategory.Accessories]: `var(--success)`,
     [ProductCategory.Stickers]: `var(--yellow_neon)`,
-    [ProductCategory.OriginalArt]: `var(--pink_neon)`,
+    [ProductCategory.Digital]: `var(--emerald_neon)`,
     [ProductCategory.CustomArt]: `var(--yellow_neon)`,
     [ProductCategory.Merchandise]: `var(--bluelight)`,
     [ProductCategory.Posters]: `var(--cool_neon_blue)`,
     [ProductCategory.Commissions]: `var(--emerald_neon)`,
+    [ProductCategory.OriginalArt]: statusColors?.[ProductStatus.Unavailable],
 };
 
 export const typeColors: Record<ProductType, string> = {
     [ProductType.Pin]: categoryColors?.[ProductCategory.Stickers],
-    [ProductType.Shirt]: categoryColors?.[ProductCategory.Apparel],
-    [ProductType.Service]: `var(--pink_neon)`,
+    [ProductType.Shirt]: categoryColors?.[ProductCategory.Stickers],
+    [ProductType.Service]: statusColors?.[ProductStatus.Unavailable],
     [ProductType.Print]: categoryColors?.[ProductCategory.Prints],
-    [ProductType.Painting]: categoryColors?.[ProductCategory.Paintings],
+    [ProductType.Painting]: statusColors?.[ProductStatus.Unavailable],
     [ProductType.Digital]: categoryColors?.[ProductCategory.Digital],
-    [ProductType.Download]: `var(--blueneon)`,
-    [ProductType.Physical]: categoryColors?.[ProductCategory.Art],
+    [ProductType.Download]: categoryColors?.[ProductCategory.Apparel],
+    [ProductType.Physical]: statusColors?.[ProductStatus.Unavailable],
     [ProductType.Sticker]: categoryColors?.[ProductCategory.Stickers],
     [ProductType.Poster]: categoryColors?.[ProductCategory.Posters],
     [ProductType.Commission]: categoryColors?.[ProductCategory.Commissions],
-    [ProductType.Subscription]: `var(--emerald_neon)`,
+    [ProductType.Subscription]: categoryColors?.[ProductCategory.Stickers],
 };
 
 // Icon and color mappings for ProductCategory
@@ -48,7 +47,6 @@ export const categoryIcons: Record<ProductCategory, JSX.Element> = {
     [ProductCategory.Art]: <Palette fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Art]} />,
     [ProductCategory.Apparel]: <Checkroom fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Apparel]} />,
     [ProductCategory.Stickers]: <LocalOffer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Stickers]} />,
-    [ProductCategory.Paintings]: <Palette fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Paintings]} />,
     [ProductCategory.Prints]: <Print fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Prints]} />,
     [ProductCategory.Posters]: <Newspaper fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Posters]} />,
     [ProductCategory.Digital]: <Computer fontSize={`small`} htmlColor={categoryColors?.[ProductCategory.Digital]} />,

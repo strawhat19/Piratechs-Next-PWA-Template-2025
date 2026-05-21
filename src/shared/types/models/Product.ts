@@ -30,7 +30,6 @@ export enum ProductCategory {
   Art = `Art`,
   Apparel = `Apparel`,
   Stickers = `Stickers`,
-  Paintings = `Paintings`,
   Prints = `Prints`,
   Accessories = `Accessories`,
   Posters = `Posters`,
@@ -196,7 +195,7 @@ export class Product extends Data {
   rawShopify?: Record<string, any> = {};
 
   type: Types = Types.Product;
-  status: ProductStatus | string = ProductStatus.Active;
+  status: ProductStatus | string = ProductStatus.Draft;
   productType: ProductType | string = ProductType.Sticker;
   dataSource?: DataSources | string = DataSources.firebase;
   metadata?: Record<string, string | number | boolean> = {};
@@ -234,6 +233,7 @@ export class Product extends Data {
     if (isValid(productData.updatedBy) && !isValid(this.updated_by)) this.updated_by = String(productData.updatedBy);
     if (!isValid(this.productType)) this.productType = ProductType.Sticker;
     if (isValid(productData.status)) this.status = capWords(String(productData.status));
+    if (!isValid(this.status)) this.status = ProductStatus.Draft;
     if (isValid(productData.handle) && !isValid(this.handle)) this.handle = String(productData.handle);
     if (isValid(productData.handle) && !isValid(this.slug)) this.slug = String(productData.handle);
     if (isValid(productData.admin_graphql_api_id) && !isValid(this.adminGraphqlApiID)) this.adminGraphqlApiID = String(productData.admin_graphql_api_id);
@@ -277,7 +277,7 @@ export class Product extends Data {
         price: this.price,
         position: 1,
         productID: this.id,
-        available: this.status != ProductStatus.Archived,
+        available: this.status == ProductStatus.Active && Number(this.stock || 0) > 0,
         taxable: this.taxable,
         inventoryQuantity: this.stock,
         requiresShipping: this.requiresShipping,
@@ -298,16 +298,16 @@ export class Product extends Data {
       if (!isValid(productData.stock)) this.stock = this.totalInventory;
       if (productData.inventoryQuantity == undefined && productData.inventory_quantity == undefined) this.inventoryQuantity = this.totalInventory;
     }
-    if (productData.available == undefined) this.available = this.stock > 0 || variants.some(variant => variant.available == true);
-    const statusValue = String(this.status || ``).toLowerCase();
+    if (productData.available == undefined) this.available = this.status == ProductStatus.Active && (this.stock > 0 || variants.some(variant => variant.available == true));
     const archivedValue = ProductStatus.Archived.toLowerCase();
     const unavailableValue = ProductStatus.Unavailable.toLowerCase();
     // const backorderValue = ProductStatus.Backorder.toLowerCase();
+    const statusValue = String(this.status || ``).toLowerCase();
     const hasNoStock = Number(this.stock || 0) <= 0;
     const isArchived = statusValue == archivedValue;
     if (hasNoStock && !isArchived) this.status = ProductStatus.Unavailable;
     const normalizedStatusValue = String(this.status || ``).toLowerCase();
-    const unavailableStatuses = [archivedValue, unavailableValue];
+    const unavailableStatuses = [archivedValue, unavailableValue, ProductStatus.Draft.toLowerCase()];
     if (unavailableStatuses.includes(normalizedStatusValue)) this.available = false;
     // if (normalizedStatusValue == backorderValue) this.available = this.allowBackorder;
     if (productData.requiresShipping == undefined && productData.requires_shipping == undefined && firstVariant?.requires_shipping !== undefined) this.requiresShipping = firstVariant.requires_shipping;

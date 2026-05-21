@@ -58,6 +58,7 @@ export default function EditableCell({
     const currentSaveValue = numericMode ? Number(currentValue || 0) : currentValue;
     const isDirty = `${currentSaveValue}` != `${originalValue}`;
     const minReached = numericMode ? Number(currentValue || 0) <= Number(min || 0) : false;
+    const zeroNumber = numericMode && String(currentValue ?? ``).trim() != `` && Number(currentSaveValue || 0) === 0;
     const saveCurrent = () => onSave?.(currentSaveValue, originalValue);
     const cancelCurrent = () => {
         setDraftValue(originalValue);
@@ -116,7 +117,7 @@ export default function EditableCell({
                 }
                 if (cancelOnBlur && isDirty) cancelCurrent();
             }}
-            style={{ border: `none`, width: `100%`, color: `inherit`, background: `transparent` }}
+            style={{ border: `none`, width: `100%`, color: zeroNumber ? `var(--error)` : `inherit`, background: `transparent` }}
         />
     );
     if (!canEdit) return <>{renderValue ? renderValue(currentValue) : currentValue}</>;

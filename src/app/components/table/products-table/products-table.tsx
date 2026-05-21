@@ -30,16 +30,18 @@ const getProductStatus = (product: Product, string: boolean = false) => {
     const status = String(product?.status || ``).toLowerCase();
     const active = status?.includes(`active`);
     const archived = status?.includes(`archived`);
+    const draft = status?.includes(`draft`);
+    const unavailableValue = ProductStatus.Unavailable.toLowerCase();
     // const backorder = status?.includes(`backorder`);
     // const pending = status?.includes(`pending`) || status?.includes(`draft`);
     // const unavailable = status?.includes(`unavailable`) || status?.includes(`out`);
-    // if (archived) return { color: `red`, label: string == true ? ProductStatus.Archived : stock };
-    if (stock <= 0 || product?.status == ProductStatus.Unavailable) return { color: `red`, label: string == true ? ProductStatus.Unavailable : stock };
+    if (archived) return { color: tableStatusGray, label: string == true ? ProductStatus.Archived : stock };
+    if (stock <= 0 || status == unavailableValue) return { color: `red`, label: string == true ? ProductStatus.Unavailable : stock };
     if (active) return { color: `var(--green_neon)`, label: string == true ? ProductStatus.Active : stock };
-    if (product?.status == ProductStatus.Draft) return { color: `var(--links)`, label: string == true ? ProductStatus.Draft : stock };
+    if (draft || !status) return { color: `var(--links)`, label: string == true ? ProductStatus.Draft : stock };
     // if (pending) return { color: tableStatusGray, label: string == true ? ProductStatus.Pending : stock };
     // if (backorder) return { color: tableStatusGray, label: string == true ? ProductStatus.Backorder : stock };
-    return { color: tableStatusGray, label: string == true ? (archived ? ProductStatus.Archived : product?.status) : stock };
+    return { color: tableStatusGray, label: string == true ? (archived ? ProductStatus.Archived : product?.status || ProductStatus.Draft) : stock };
 };
 
 const getProductStatusColor = (product: Product) => {
@@ -89,12 +91,13 @@ const ProductImageCell = ({ row }: { row: Product }) => {
 const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: { quickEditing?: boolean; row: Product; onEdit: (product: Product | null) => void; onAddToCart: (product: Product) => void }) => {
     const { user, showConfirm } = useContext<any>(StateGlobals);
     const canManageProducts = minRole(user?.role, Roles.Administrator);
-    const isArchived = String(row?.status || ``).toLowerCase() == ProductStatus.Archived.toLowerCase();
-    const available = String(row?.status || ``).toLowerCase() != ProductStatus.Unavailable.toLowerCase();
-    const canAddToCart = !isArchived && row?.stock > 0 && available;
+    const currentStatus = String(getProductStatusLabel(row, true) || row?.status || ProductStatus.Draft).toLowerCase();
+    const isArchived = currentStatus == ProductStatus.Archived.toLowerCase();
+    const canAddToCart = !isArchived && currentStatus == ProductStatus.Active.toLowerCase() && row?.stock > 0;
     const statusColor = getProductStatusColor(row);
     const updateStatus = (status: ProductStatus) => {
-        updateProductInDatabase(String(row?.id), { status }, user)?.then(() => toast.success(`Product Updated`));
+        const safeStatus = status == ProductStatus.Active && Number(row?.stock || 0) <= 0 ? ProductStatus.Unavailable : status;
+        updateProductInDatabase(String(row?.id), { status: safeStatus }, user)?.then(() => toast.success(`Product Updated`));
     }
     const deleteProduct = async () => {
         const confirmed = await showConfirm({
@@ -120,7 +123,7 @@ const ProductActionsCell = ({ quickEditing = false, row, onEdit, onAddToCart }: 
                         placement={`top`}
                         disabled={!canAddToCart}
                         className={`actionIconButton addToCartAction`}
-                        title={canAddToCart ? `Add To Cart` : `Out Of Stock`}
+                        title={canAddToCart ? `Add To Cart` : (currentStatus == ProductStatus.Draft.toLowerCase() ? `Not Active` : (row?.stock > 0 ? `Unavailable` : `Out Of Stock`))}
                         onClick={(event: any) => {
                             event.stopPropagation();
                             onAddToCart(row);
@@ -291,7 +294,7 @@ const ProductTypeCell = ({ row, value }: any) => {
 
 const ProductStatusCell = ({ row, value }: any) => {
     const { user } = useContext<any>(StateGlobals);
-    const currentValue = String(value || ProductStatus.Unavailable);
+    const currentValue = String(getProductStatusLabel(row, true) || value || ProductStatus.Draft);
     const stock = Number(row?.stock || 0);
     const isUnavailable = currentValue?.toLowerCase() == ProductStatus.Unavailable.toLowerCase();
     const statusLocked = isUnavailable && stock <= 0;
@@ -496,9 +499,7 @@ export default function ProductsTable({
         const rowID = String(row?.id);
         if (safeStock == Math.max(0, Number(originalStock || 0))) return onCancelStockDraft(row);
         const updates: any = { stock: safeStock };
-        if (safeStock > 0 && String(row?.status || ``).toLowerCase() == ProductStatus.Unavailable.toLowerCase()) {
-            updates.status = ProductStatus.Active;
-        }
+        if (safeStock <= 0 && String(row?.status || ``).toLowerCase() != ProductStatus.Archived.toLowerCase()) updates.status = ProductStatus.Unavailable;
         setOptimisticStockByID(prev => ({ ...prev, [rowID]: safeStock }));
         onCancelStockDraft(row);
         updateProductInDatabase(rowID, updates, user)?.then(() => {
