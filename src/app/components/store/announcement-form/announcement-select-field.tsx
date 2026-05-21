@@ -20,7 +20,7 @@ import {
     LocalFireDepartment,
     Loyalty,
     NewReleases,
-    NotificationsActive,
+    // NotificationsActive,
     Public,
     PushPin,
     Send,
@@ -52,7 +52,7 @@ export const announcementIconColors: Record<string, string> = {
     Campaign: `var(--yellow_neon)`,
     Announcement: `var(--links)`,
     NewReleases: `var(--success)`,
-    NotificationsActive: `var(--pink_neon)`,
+    // NotificationsActive: `var(--pink_neon)`,
     Info: `var(--green_neon)`,
     WarningAmber: `var(--error)`,
     Celebration: `var(--success)`,
@@ -76,26 +76,26 @@ export const announcementIconColors: Record<string, string> = {
 export const announcementIcons: Record<string, JSX.Element> = {
     Campaign: <Campaign fontSize={`small`} htmlColor={announcementIconColors.Campaign} />,
     Announcement: <AnnouncementMuiIcon fontSize={`small`} htmlColor={announcementIconColors.Announcement} />,
-    NewReleases: <NewReleases fontSize={`small`} htmlColor={announcementIconColors.NewReleases} />,
-    NotificationsActive: <NotificationsActive fontSize={`small`} htmlColor={announcementIconColors.NotificationsActive} />,
+    // NewReleases: <NewReleases fontSize={`small`} htmlColor={announcementIconColors.NewReleases} />,
+    // NotificationsActive: <NotificationsActive fontSize={`small`} htmlColor={announcementIconColors.NotificationsActive} />,
     Info: <Info fontSize={`small`} htmlColor={announcementIconColors.Info} />,
-    WarningAmber: <WarningAmber fontSize={`small`} htmlColor={announcementIconColors.WarningAmber} />,
+    // WarningAmber: <WarningAmber fontSize={`small`} htmlColor={announcementIconColors.WarningAmber} />,
     Celebration: <Celebration fontSize={`small`} htmlColor={announcementIconColors.Celebration} />,
-    AutoAwesome: <AutoAwesome fontSize={`small`} htmlColor={announcementIconColors.AutoAwesome} />,
+    // AutoAwesome: <AutoAwesome fontSize={`small`} htmlColor={announcementIconColors.AutoAwesome} />,
     Star: <Star fontSize={`small`} htmlColor={announcementIconColors.Star} />,
-    LocalFireDepartment: <LocalFireDepartment fontSize={`small`} htmlColor={announcementIconColors.LocalFireDepartment} />,
-    SupportAgent: <SupportAgent fontSize={`small`} htmlColor={announcementIconColors.SupportAgent} />,
+    // LocalFireDepartment: <LocalFireDepartment fontSize={`small`} htmlColor={announcementIconColors.LocalFireDepartment} />,
+    // SupportAgent: <SupportAgent fontSize={`small`} htmlColor={announcementIconColors.SupportAgent} />,
     Verified: <Verified fontSize={`small`} htmlColor={announcementIconColors.Verified} />,
     Bolt: <Bolt fontSize={`small`} htmlColor={announcementIconColors.Bolt} />,
     Loyalty: <Loyalty fontSize={`small`} htmlColor={announcementIconColors.Loyalty} />,
     Discount: <Discount fontSize={`small`} htmlColor={announcementIconColors.Discount} />,
     Send: <Send fontSize={`small`} htmlColor={announcementIconColors.Send} />,
-    ChatBubble: <ChatBubble fontSize={`small`} htmlColor={announcementIconColors.ChatBubble} />,
+    // ChatBubble: <ChatBubble fontSize={`small`} htmlColor={announcementIconColors.ChatBubble} />,
     Public: <Public fontSize={`small`} htmlColor={announcementIconColors.Public} />,
-    TrendingUp: <TrendingUp fontSize={`small`} htmlColor={announcementIconColors.TrendingUp} />,
+    // TrendingUp: <TrendingUp fontSize={`small`} htmlColor={announcementIconColors.TrendingUp} />,
     Handshake: <Handshake fontSize={`small`} htmlColor={announcementIconColors.Handshake} />,
-    EmojiEvents: <EmojiEvents fontSize={`small`} htmlColor={announcementIconColors.EmojiEvents} />,
-    PushPin: <PushPin fontSize={`small`} htmlColor={announcementIconColors.PushPin} />,
+    // EmojiEvents: <EmojiEvents fontSize={`small`} htmlColor={announcementIconColors.EmojiEvents} />,
+    // PushPin: <PushPin fontSize={`small`} htmlColor={announcementIconColors.PushPin} />,
 };
 
 export const announcementIconOptions = Object.keys(announcementIcons);
@@ -122,8 +122,8 @@ export default function AnnouncementSelectField({
     onChange,
     className = ``,
     search = false,
-    showLabel = true,
     showText = true,
+    showLabel = true,
 }: AnnouncementSelectFieldProps) {
     const filteredOptions = options?.filter(option => option !== value);
     const menuItems = filteredOptions?.map(option => ({
@@ -150,10 +150,13 @@ export default function AnnouncementSelectField({
                 renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
                     <Button
                         id={id}
+                        type={`button`}
                         size={`small`}
                         onClick={onClick}
+                        onMouseDown={(event) => event.stopPropagation()}
                         startIcon={currentIcon}
                         endIcon={<KeyboardArrowDown />}
+                        data-row-click-ignore={`true`}
                         className={`productSelectButton tableDropDown announcementSelectButton ${showText ? `` : `iconOnly`}`.trim()}
                         style={currentColor ? { color: currentColor } : undefined}
                     >
@@ -168,11 +171,9 @@ export default function AnnouncementSelectField({
                                 style={{ border: `none`, background: `transparent`, color: `inherit`, width: `100%` }}
                             />
                         ) : (
-                            showText ? (
-                                <span className={`dropDownBtnLabel`}>
-                                    {searchValue || value}
-                                </span>
-                            ) : null
+                            <span className={`dropDownBtnLabel`}>
+                                {searchValue || value}
+                            </span>
                         )}
                     </Button>
                 )}

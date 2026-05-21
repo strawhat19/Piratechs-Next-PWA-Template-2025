@@ -130,15 +130,18 @@ export default function ProductSelectField({
                     className={`productSelectDropdown`}
                     targetID={`${label.toLowerCase().replace(/\s/g, '-')}-menu`}
                     renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
-                        <Button
-                            id={id}
-                            size={`small`}
-                            onClick={onClick}
-                            startIcon={currentIcon}
-                            endIcon={<KeyboardArrowDown />}
-                            className={`productSelectButton tableDropDown`}
-                            style={currentColor ? { color: currentColor } : undefined}
-                        >
+                    <Button
+                        id={id}
+                        type={`button`}
+                        size={`small`}
+                        onClick={onClick}
+                        onMouseDown={(event) => event.stopPropagation()}
+                        startIcon={currentIcon}
+                        endIcon={<KeyboardArrowDown />}
+                        data-row-click-ignore={`true`}
+                        className={`productSelectButton tableDropDown`}
+                        style={currentColor ? { color: currentColor } : undefined}
+                    >
                             <input
                                 value={searchValue || value}
                                 onClick={(event) => event.stopPropagation()}

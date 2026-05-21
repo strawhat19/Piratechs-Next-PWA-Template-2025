@@ -5,8 +5,9 @@ import { Button } from '@mui/material';
 import { Close, DoDisturb, OpenInFull, Save } from '@mui/icons-material';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import RichTextEditorField from '@/app/components/rich-text/rich-text';
+import { richTextToPlainText } from '@/app/components/rich-text/rich-text';
 import { StateGlobals } from '@/shared/global-context';
-import { Roles } from '@/shared/types/types';
+import { Roles, Types } from '@/shared/types/types';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { addAnnouncementToDatabase, updateAnnouncementInDatabase } from '@/shared/server/firebase';
 import { capWords, getNextCollectionNumber, minRole } from '@/shared/scripts/constants';
@@ -147,7 +148,7 @@ export default function AnnouncementForm({
         const number = Number(currentForm?.number || nextAnnouncementNumber);
         const status = String(currentForm?.status || AnnouncementStatus.Draft);
         const icon = String(currentForm?.icon || `Campaign`);
-        const announcementToSave = new Announcement({
+        const announcementToSave = {
             ...(announcement || {}),
             ...currentForm,
             number,
@@ -156,13 +157,15 @@ export default function AnnouncementForm({
             icon,
             active: status == AnnouncementStatus.Active,
             description: currentForm?.description || ``,
-        });
+        };
+        const safeAnnouncementToSave = JSON.parse(JSON.stringify(announcementToSave));
+        const announcementModel = new Announcement(safeAnnouncementToSave);
 
         try {
             setSaving(true);
             const savedAnnouncement = announcement?.id
-                ? await updateAnnouncementInDatabase(String(announcement?.id), announcementToSave)
-                : await addAnnouncementToDatabase(announcementToSave);
+                ? await updateAnnouncementInDatabase(String(announcement?.id), safeAnnouncementToSave)
+                : await addAnnouncementToDatabase(announcementModel);
             toast.success(announcement?.id ? `Announcement Updated` : `Announcement Added`);
             onSaved(savedAnnouncement as Announcement);
             if (!announcement?.id) clearAnnouncementForm();
@@ -182,12 +185,12 @@ export default function AnnouncementForm({
     );
 
     const actionDisabled = saving || !String(form?.name || ``).trim() || !isFormDirty();
-    const showInlineActions = compact;
+    const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
 
     return (
         <div className={`productFormContainer ${className} ${funsized ? `funsized` : ``} ${compact ? `productFormWidget` : `productFormFull`} ${announcement?.id ? `productFormEditing pulsate` : ``}`}>
             <form ref={formRef} id={formId} onSubmit={saveAnnouncement}>
-                <div className={`productFormHeader ${showInlineActions ? `dirtied` : `notDirtied`}`}>
+                <div className={`productFormHeader ${showWidgetDirtyActions ? `dirtied` : `notDirtied`}`}>
                     {!funsized && (
                         <div className={`productFormTitle`}>
                             <h3>
@@ -206,7 +209,7 @@ export default function AnnouncementForm({
                                 <Close fontSize={`small`} /> Cancel
                             </Button>
                         ) : <></>}
-                        {showInlineActions ? <>
+                        {showWidgetDirtyActions ? <>
                             <Button
                                 type={`submit`}
                                 disabled={actionDisabled}
@@ -227,7 +230,7 @@ export default function AnnouncementForm({
                             {announcement?.id && onFullEdit ? (
                                 <Button
                                     type={`button`}
-                                    onClick={() => onFullEdit(new Announcement({ ...(announcement || {}), ...formValueRef.current, name: formValueRef.current?.name || announcement?.name || `Announcement` }))}
+                                    onClick={() => onFullEdit(new Announcement({ ...(announcement || {}), ...formValueRef.current, name: formValueRef.current?.name || announcement?.name || Types.Announcement }))}
                                     className={`productFormButton`}
                                 >
                                     <OpenInFull fontSize={`small`} /> Full
@@ -237,34 +240,39 @@ export default function AnnouncementForm({
                     </div>
                 </div>
 
-                <div className={`productFormGrid`}>
-                    {!compact ? (
+                {compact ? (
+                    <div className={`productFormGrid productTextGrid`}>
+                        <AnnouncementField funsized={funsized} label={`Announcement Title`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
+                        <AnnouncementField funsized={funsized} label={`Message`} name={`description`} type={`text`} value={richTextToPlainText(form?.description) || form?.description} onChange={updateForm} />
+                    </div>
+                ) : (
+                    <div className={`productFormGrid`}>
                         <AnnouncementField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
-                    ) : <></>}
-                    <AnnouncementField funsized={funsized} label={`Announcement Title`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
-                    <AnnouncementSelectField
-                        label={`Status`}
-                        value={form?.status}
-                        options={Object.values(AnnouncementStatus)}
-                        icons={announcementStatusIcons}
-                        colors={announcementStatusColors}
-                        onChange={(value: string) => updateFormValue(`status`, value)}
-                        className={`announcementStatusSelectField`}
-                        showLabel={!funsized}
-                        search={false}
-                    />
-                    <AnnouncementSelectField
-                        label={`Icon`}
-                        value={form?.icon}
-                        options={announcementIconOptions}
-                        icons={announcementIcons}
-                        colors={announcementIconColors}
-                        onChange={(value: string) => updateFormValue(`icon`, value)}
-                        className={`announcementIconSelectField`}
-                        showLabel={!funsized}
-                        search={false}
-                    />
+                        <AnnouncementField funsized={funsized} label={`Announcement Title`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
+                        <AnnouncementSelectField
+                            label={`Status`}
+                            value={form?.status}
+                            options={Object.values(AnnouncementStatus)}
+                            icons={announcementStatusIcons}
+                            colors={announcementStatusColors}
+                            onChange={(value: string) => updateFormValue(`status`, value)}
+                            className={`announcementStatusSelectField`}
+                            showLabel={!funsized}
+                            search={false}
+                        />
+                        <AnnouncementSelectField
+                            label={`Icon`}
+                            value={form?.icon}
+                            options={announcementIconOptions}
+                            icons={announcementIcons}
+                            colors={announcementIconColors}
+                            onChange={(value: string) => updateFormValue(`icon`, value)}
+                            className={`announcementIconSelectField`}
+                            showLabel={!funsized}
+                            search={false}
+                        />
                 </div>
+                )}
 
                 {!compact ? (
                     <div className={`productFormGrid productTextGrid`}>

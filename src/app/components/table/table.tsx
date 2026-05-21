@@ -10,6 +10,26 @@ import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
 
 const paginationModel = { page: 0, pageSize: 12 };
 
+const interactiveCellSelectors = [
+  `button`,
+  `a`,
+  `input`,
+  `select`,
+  `textarea`,
+  `[role="button"]`,
+  `[contenteditable="true"]`,
+  `.MuiButtonBase-root`,
+  `.MuiDataGrid-cellCheckbox`,
+  `.tableDropDown`,
+  `.roleDropdownButton`,
+  `.iconButton`,
+  `.actionIconButton`,
+  `.editableCellWrap`,
+  `.editableCellInput`,
+].join(`,`);
+
+const shouldIgnoreCellClick = (target: any) => Boolean(target?.closest?.(interactiveCellSelectors));
+
 const default_columns: GridColDef[] = [
   { field: `id`, headerName: `ID`, width: 50 },
   { field: `lastName`, headerName: `Last Name`, width: 130 },
@@ -63,6 +83,7 @@ export default function Table({
   const handleCellClick = (params: any, event: any) => {
     if (params?.field === GRID_CHECKBOX_SELECTION_FIELD) return;
     if (event?.defaultMuiPrevented) return;
+    if (shouldIgnoreCellClick(event?.target)) return;
     if (typeof dataGridProps?.onCellClick === `function`) {
       dataGridProps.onCellClick(params, event);
       return;

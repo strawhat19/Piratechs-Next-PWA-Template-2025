@@ -1,6 +1,7 @@
 'use client';
 
 import Table from '../table';
+import EditableCell from '../editable-cell/editable-cell';
 import Loader from '../../loaders/loader';
 import { toast } from 'react-toastify';
 import { GridColDef } from '@mui/x-data-grid';
@@ -175,6 +176,10 @@ export default function AnnouncementsTable({
     const { user, announcements = [], announcementsLoading = false } = useContext<any>(StateGlobals);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
     const [quickEditAnnouncement, setQuickEditAnnouncement] = useState<Announcement | null>(null);
+    const [pendingAnnouncementNameByID, setPendingAnnouncementNameByID] = useState<Record<string, string>>({});
+    const [pendingAnnouncementMessageByID, setPendingAnnouncementMessageByID] = useState<Record<string, string>>({});
+    const [optimisticAnnouncementNameByID, setOptimisticAnnouncementNameByID] = useState<Record<string, string>>({});
+    const [optimisticAnnouncementMessageByID, setOptimisticAnnouncementMessageByID] = useState<Record<string, string>>({});
     const routeAnnouncementID = decodeURIComponent(pathname?.match(announcementRoutePattern)?.[1] || ``);
     const canManageAnnouncements = minRole(user?.role, Roles.Administrator);
     const announcementsLabel = `Announcements`;
@@ -182,6 +187,97 @@ export default function AnnouncementsTable({
     const visibleAnnouncements = useMemo(() => (
         [...(announcements || [])].sort((a: Announcement, b: Announcement) => Number(a?.number || 0) - Number(b?.number || 0))
     ), [announcements]);
+
+    useEffect(() => {
+        setOptimisticAnnouncementNameByID(prev => {
+            let changed = false;
+            const next = { ...prev };
+            Object.entries(prev).forEach(([id, optimisticName]) => {
+                const liveAnnouncement = visibleAnnouncements?.find((announcement: Announcement) => String(announcement?.id) == id);
+                const liveName = String(liveAnnouncement?.name || liveAnnouncement?.title || ``).trim();
+                if (liveName && liveName == String(optimisticName || ``).trim()) {
+                    delete next[id];
+                    changed = true;
+                }
+            });
+            return changed ? next : prev;
+        });
+        setOptimisticAnnouncementMessageByID(prev => {
+            let changed = false;
+            const next = { ...prev };
+            Object.entries(prev).forEach(([id, optimisticMessage]) => {
+                const liveAnnouncement = visibleAnnouncements?.find((announcement: Announcement) => String(announcement?.id) == id);
+                const liveMessage = richTextToPlainText(liveAnnouncement?.description) || String(liveAnnouncement?.name || liveAnnouncement?.title || ``).trim();
+                if (liveMessage && liveMessage == String(optimisticMessage || ``).trim()) {
+                    delete next[id];
+                    changed = true;
+                }
+            });
+            return changed ? next : prev;
+        });
+    }, [visibleAnnouncements]);
+
+    const onChangeAnnouncementNameDraft = (row: Announcement, nextName: string) => {
+        setPendingAnnouncementNameByID(prev => ({ ...prev, [String(row?.id)]: nextName }));
+    };
+
+    const onCancelAnnouncementNameDraft = (row: Announcement) => {
+        const rowID = String(row?.id);
+        setPendingAnnouncementNameByID(prev => {
+            const next = { ...prev };
+            delete next[rowID];
+            return next;
+        });
+    };
+
+    const onSaveAnnouncementNameDraft = (row: Announcement, nextName: string, originalName: string) => {
+        const safeName = String(nextName || ``).trim();
+        const rowID = String(row?.id);
+        if (safeName == String(originalName || ``).trim()) return onCancelAnnouncementNameDraft(row);
+        setOptimisticAnnouncementNameByID(prev => ({ ...prev, [rowID]: safeName }));
+        onCancelAnnouncementNameDraft(row);
+        updateAnnouncementInDatabase(rowID, { name: safeName, title: safeName }, true)?.then(() => {
+            toast.success(`Announcement Title Updated`);
+        }).catch(() => {
+            setOptimisticAnnouncementNameByID(prev => {
+                const next = { ...prev };
+                delete next[rowID];
+                return next;
+            });
+            toast.error(`Announcement Title Update Failed`);
+        });
+    };
+
+    const onChangeAnnouncementMessageDraft = (row: Announcement, nextMessage: string) => {
+        setPendingAnnouncementMessageByID(prev => ({ ...prev, [String(row?.id)]: nextMessage }));
+    };
+
+    const onCancelAnnouncementMessageDraft = (row: Announcement) => {
+        const rowID = String(row?.id);
+        setPendingAnnouncementMessageByID(prev => {
+            const next = { ...prev };
+            delete next[rowID];
+            return next;
+        });
+    };
+
+    const onSaveAnnouncementMessageDraft = (row: Announcement, nextMessage: string, originalMessage: string) => {
+        const safeMessage = String(nextMessage || ``).trim();
+        const rowID = String(row?.id);
+        if (safeMessage == String(originalMessage || ``).trim()) return onCancelAnnouncementMessageDraft(row);
+        setOptimisticAnnouncementMessageByID(prev => ({ ...prev, [rowID]: safeMessage }));
+        onCancelAnnouncementMessageDraft(row);
+        updateAnnouncementInDatabase(rowID, { description: safeMessage }, true)?.then(() => {
+            toast.success(`Announcement Message Updated`);
+        }).catch(() => {
+            setOptimisticAnnouncementMessageByID(prev => {
+                const next = { ...prev };
+                delete next[rowID];
+                return next;
+            });
+            toast.error(`Announcement Message Update Failed`);
+        });
+    };
 
     const openAnnouncementDetails = (announcement: Announcement | null) => {
         if (!announcement?.id) return;
@@ -216,7 +312,7 @@ export default function AnnouncementsTable({
     const announcementColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 50 },
         {
-            width: 82,
+            width: 175,
             field: `icon`,
             headerName: `Icon`,
             filterable: false,
@@ -226,10 +322,27 @@ export default function AnnouncementsTable({
             field: `name`,
             width: 180,
             headerName: `Announcement`,
-            renderCell: ({ value }: any) => (
-                <span className={`announcementNameCell lineClamp1`}>
-                    {value}
-                </span>
+            valueGetter: (_value: any, row: any) => String(row?.name || row?.title || ``),
+            renderCell: ({ row, value }: any) => (
+                canManageAnnouncements ? (
+                    <EditableCell
+                        mode={`text`}
+                        value={value}
+                        showActions={false}
+                        showStepper={false}
+                        saveOnEnter={true}
+                        cancelOnBlur={true}
+                        canEdit={true}
+                        pendingValue={(pendingAnnouncementNameByID?.[String(row?.id)] ?? optimisticAnnouncementNameByID?.[String(row?.id)])}
+                        onChangeValue={(next: string) => onChangeAnnouncementNameDraft(row, next)}
+                        onCancel={() => onCancelAnnouncementNameDraft(row)}
+                        onSave={(next: string, original: string) => onSaveAnnouncementNameDraft(row, next, original)}
+                    />
+                ) : (
+                    <span className={`announcementNameCell lineClamp1`}>
+                        {value}
+                    </span>
+                )
             ),
         },
         {
@@ -238,9 +351,27 @@ export default function AnnouncementsTable({
             minWidth: 260,
             headerName: `Message`,
             valueGetter: (_value: any, row: any) => richTextToPlainText(row?.description) || String(row?.name || ``),
-            renderCell: ({ row }: any) => <AnnouncementDescriptionCell row={row} />,
+            renderCell: ({ row, value }: any) => (
+                canManageAnnouncements ? (
+                    <EditableCell
+                        mode={`text`}
+                        value={value}
+                        showActions={false}
+                        showStepper={false}
+                        saveOnEnter={true}
+                        cancelOnBlur={true}
+                        canEdit={true}
+                        pendingValue={(pendingAnnouncementMessageByID?.[String(row?.id)] ?? optimisticAnnouncementMessageByID?.[String(row?.id)])}
+                        onChangeValue={(next: string) => onChangeAnnouncementMessageDraft(row, next)}
+                        onCancel={() => onCancelAnnouncementMessageDraft(row)}
+                        onSave={(next: string, original: string) => onSaveAnnouncementMessageDraft(row, next, original)}
+                    />
+                ) : (
+                    <AnnouncementDescriptionCell row={row} />
+                )
+            ),
         },
-        { width: 140, field: `status`, headerName: `Status`, renderCell: ({ row }: any) => <AnnouncementStatusCell row={row} /> },
+        { width: 155, field: `status`, headerName: `Status`, renderCell: ({ row }: any) => <AnnouncementStatusCell row={row} /> },
         { field: `created`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
@@ -273,7 +404,6 @@ export default function AnnouncementsTable({
                 rows={visibleAnnouncements}
                 columns={announcementColumns}
                 className={`announcementsTableComponent`}
-                selectable={false}
                 dataGridProps={{
                     onCellClick: ({ row, field }: any) => {
                         if (field == `actions`) return;
