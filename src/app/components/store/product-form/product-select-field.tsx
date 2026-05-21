@@ -91,6 +91,8 @@ interface ProductSelectFieldProps {
     colors?: Record<string, string>;
     onChange: (value: string) => void;
     icons: Record<string, JSX.Element>;
+    search?: boolean;
+    showLabel?: boolean;
 }
 
 export default function ProductSelectField({
@@ -101,6 +103,8 @@ export default function ProductSelectField({
     options,
     onChange,
     className = ``,
+    search = true,
+    showLabel = true,
 }: ProductSelectFieldProps) {
     const filteredOptions = options?.filter(option => option !== value);
 
@@ -120,9 +124,9 @@ export default function ProductSelectField({
     return (
         <>
             <div className={`productSelectField ${className}`}>
-                <span className={`productFieldLabelText`}>{label}</span>
+                {showLabel ? <span className={`productFieldLabelText`}>{label}</span> : <></>}
                 <MenuTrigger
-                    search={true}
+                    search={search}
                     id={`${label.toLowerCase().replace(/\s/g, '-')}-menu-trigger`}
                     colors={true}
                     topOffset={0.5}
@@ -142,15 +146,21 @@ export default function ProductSelectField({
                         className={`productSelectButton tableDropDown`}
                         style={currentColor ? { color: currentColor } : undefined}
                     >
-                            <input
-                                value={searchValue || value}
-                                onClick={(event) => event.stopPropagation()}
-                                onFocus={onFocus}
-                                onChange={onType}
-                                className={`dropDownBtnLabel`}
-                                placeholder={value}
-                                style={{ border: `none`, background: `transparent`, color: `inherit`, width: `100%` }}
-                            />
+                            {search ? (
+                                <input
+                                    value={searchValue || value}
+                                    onClick={(event) => event.stopPropagation()}
+                                    onFocus={onFocus}
+                                    onChange={onType}
+                                    className={`dropDownBtnLabel`}
+                                    placeholder={value}
+                                    style={{ border: `none`, background: `transparent`, color: `inherit`, width: `100%` }}
+                                />
+                            ) : (
+                                <span className={`dropDownBtnLabel`}>
+                                    {searchValue || value}
+                                </span>
+                            )}
                         </Button>
                     )}
                 />

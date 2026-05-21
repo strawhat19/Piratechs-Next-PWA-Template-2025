@@ -500,6 +500,19 @@ export default function ProductForm({
                     <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
                     <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} />
                     <ProductField funsized={funsized} label={`Quantity`} name={`stock`} type={`number`} min={`0`} step={`0.01`} value={form?.stock} onChange={updateForm} />
+                    {compact ? (
+                        <ProductSelectField
+                            label={`Status`}
+                            value={form?.status}
+                            options={Object.values(ProductStatus)}
+                            icons={statusIcons}
+                            colors={statusColors}
+                            onChange={(value: string) => updateSelectValue(`status`, value)}
+                            className={`productStatusSelectField`}
+                            showLabel={!funsized}
+                            search={false}
+                        />
+                    ) : <></>}
                     <ProductImageURLField 
                         funsized={funsized} 
                         label={`Attachment URL`} 
