@@ -3,13 +3,12 @@ import { DataSources, Types } from '../types';
 import { capWords, customDate, countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
 
 export enum ProductStatus {
-  Draft = `Draft`,
+  // Draft = `Draft`,
   Active = `Active`,
   Pending = `Pending`,
   Archived = `Archived`,
-  Backorder = `Backorder`,
+  // Backorder = `Backorder`,
   Unavailable = `Unavailable`,
-  OutOfStock = `Out of Stock`,
 }
 
 export enum ProductType {
@@ -300,10 +299,17 @@ export class Product extends Data {
       if (productData.inventoryQuantity == undefined && productData.inventory_quantity == undefined) this.inventoryQuantity = this.totalInventory;
     }
     if (productData.available == undefined) this.available = this.stock > 0 || variants.some(variant => variant.available == true);
-    const unavailableStatuses = [ProductStatus.Archived, ProductStatus.Unavailable, ProductStatus.OutOfStock].map(status => status.toLowerCase());
     const statusValue = String(this.status || ``).toLowerCase();
-    if (unavailableStatuses.includes(statusValue)) this.available = false;
-    if (statusValue == ProductStatus.Backorder.toLowerCase()) this.available = this.allowBackorder;
+    const archivedValue = ProductStatus.Archived.toLowerCase();
+    const unavailableValue = ProductStatus.Unavailable.toLowerCase();
+    // const backorderValue = ProductStatus.Backorder.toLowerCase();
+    const hasNoStock = Number(this.stock || 0) <= 0;
+    const isArchived = statusValue == archivedValue;
+    if (hasNoStock && !isArchived) this.status = ProductStatus.Unavailable;
+    const normalizedStatusValue = String(this.status || ``).toLowerCase();
+    const unavailableStatuses = [archivedValue, unavailableValue];
+    if (unavailableStatuses.includes(normalizedStatusValue)) this.available = false;
+    // if (normalizedStatusValue == backorderValue) this.available = this.allowBackorder;
     if (productData.requiresShipping == undefined && productData.requires_shipping == undefined && firstVariant?.requires_shipping !== undefined) this.requiresShipping = firstVariant.requires_shipping;
     if (productData.grams == undefined && isValid(firstVariant?.grams)) this.grams = firstVariant?.grams;
 

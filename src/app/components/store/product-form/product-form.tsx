@@ -5,7 +5,7 @@ import { Roles } from '@/shared/types/types';
 import Img from '@/app/components/image/image';
 import { Button, Dialog, Skeleton } from '@mui/material';
 import { StateGlobals } from '@/shared/global-context';
-import { Add, Close, OpenInFull, Remove, Save } from '@mui/icons-material';
+import { Add, Close, DoDisturb, OpenInFull, Remove, Save } from '@mui/icons-material';
 import ProductSelectField, { categoryColors, categoryIcons, statusColors, statusIcons, typeColors, typeIcons } from './product-select-field';
 import { FormEvent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { addProductToDatabase, updateProductInDatabase } from '@/shared/server/firebase';
@@ -76,7 +76,7 @@ const getProductForm = (product: Product | null | undefined, number: number) => 
     price: editing ? centsToDollars(product?.price) : ``,
     // price: editing ? centsToDollars(product?.price) : ``,
     brand: product?.brand || product?.vendor || ``,
-    status: product?.status || ProductStatus.Active,
+    status: product?.status || ProductStatus.Unavailable,
     weight: String(product?.weight ?? 0),
     vendor: product?.vendor || product?.brand || ``,
     currency: product?.currency || `usd`,
@@ -242,7 +242,11 @@ export default function ProductForm({
         setForm(prev => ({ ...prev, [target?.name]: value }));
     }
     const updateSelectValue = (field: `category` | `productType` | `status`, value: string) => {
-        setForm(prev => ({ ...prev, [field]: value }));
+        setForm(prev => ({
+            ...prev,
+            [field]: value,
+            ...(field == `status` && String(value || ``).toLowerCase() == ProductStatus.Unavailable.toLowerCase() ? { stock: `0` } : {}),
+        }));
     };
     const clearImageURL = () => {
         setForm(prev => ({ ...prev, imageURL: `` }));
@@ -268,13 +272,21 @@ export default function ProductForm({
         resetProductForm(product);
     }
 
-    const requiredFieldsFilled = () => form?.name?.trim() && Number(form?.price || 0) >= 0;
-
     const formMatchesProduct = () => {
         if (!product?.id) return false;
         const currentForm = getProductForm(product, product?.number || nextProductNumber);
         return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].every(key => comparableFormValue((form as any)?.[key]) == comparableFormValue((currentForm as any)?.[key]));
     }
+
+    const requiredFieldsFilled = () => form?.name?.trim() && Number(form?.price || 0) >= 0;
+    const actionDisabled = saving || !requiredFieldsFilled() || formMatchesProduct();
+
+    const isFormDirty = () => {
+        const currentForm = getProductForm(product, product?.number || nextProductNumber);
+        return [`name`, `price`, `stock`, `category`, `productType`, `status`, `imageURL`].some(key => comparableFormValue((form as any)?.[key]) != comparableFormValue((currentForm as any)?.[key]));
+    };
+
+    const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
 
     useEffect(() => {
         if (!product?.id && preserveFormOnProductClearRef.current) {
@@ -391,7 +403,7 @@ export default function ProductForm({
     return (
         <div className={`productFormContainer ${className} ${funsized ? `funsized` : ``} ${compact ? `productFormWidget` : `productFormFull`} ${product?.id ? `productFormEditing pulsate` : ``}`}>
             <form ref={formRef} onSubmit={saveProduct}>
-                <div className={`productFormHeader`}>
+                <div className={`productFormHeader ${showWidgetDirtyActions ? `dirtied` : `notDirtied`}`}>
                     {!funsized && (
                         <div className={`productFormTitle`}>
                             <h3>
@@ -407,24 +419,39 @@ export default function ProductForm({
                                 <OpenInFull fontSize={`small`} /> Full
                             </Button>
                         ) : <></>} */}
-                        {product == null ? (
-                            <Button disabled={saving || !requiredFieldsFilled() || formMatchesProduct()} type={`button`} className={`productFormButton productCancelButton ${(saving || !requiredFieldsFilled() || formMatchesProduct()) ? `disabled` : ``}`} onClick={clearProductForm}>
+                        {product?.id && onCancelEdit ? (
+                            <Button type={`button`} className={`productFormButton productCancelButton`} onClick={cancelProductEdit}>
                                 <Close fontSize={`small`} /> Cancel
                             </Button>
                         ) : <></>}
-                        {product?.id && onCancelEdit ? <Button type={`button`} className={`productFormButton productCancelButton`} onClick={cancelProductEdit}>
-                            <Close fontSize={`small`} /> Cancel
-                        </Button> : <></>}
-                        <Button type={`submit`} disabled={saving || !requiredFieldsFilled() || formMatchesProduct()} className={`productFormButton productSaveButton ${(saving || !requiredFieldsFilled() || formMatchesProduct()) ? `disabled` : ``}`}>
-                            <Save fontSize={`small`} /> {saving ? `Saving` : `Save`}
-                        </Button>
+                        {showWidgetDirtyActions ? <>
+                            <Button
+                                type={`submit`}
+                                disabled={actionDisabled}
+                                className={`productFormButton productSaveButton ${actionDisabled ? `disabled` : ``}`}
+                            >
+                                <Save fontSize={`small`} /> {saving ? `Saving` : `Save`}
+                            </Button>
+                            {product == null ? (
+                                <Button
+                                    type={`button`}
+                                    disabled={actionDisabled}
+                                    onClick={clearProductForm}
+                                    className={`productFormButton productCancelButton ${actionDisabled ? `disabled` : ``}`}
+                                >
+                                    <DoDisturb fontSize={`small`} /> Cancel
+                                </Button>
+                            ) : <></>}
+                        </> : <></>}
                     </div>
                 </div>
                 <div className={`productFormGrid`}>
                     {!compact ? (
-                    <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
+                        <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
                     ) : <></>}
                     <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
+                    <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
+                    <ProductField funsized={funsized} label={`Quantity`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
                     <ProductImageURLField 
                         funsized={funsized} 
                         label={`Attachment URL`} 
@@ -433,8 +460,6 @@ export default function ProductForm({
                         onClear={clearImageURL}
                         showClear={Boolean(product?.id && String(form?.imageURL || ``).trim())}
                     />
-                    <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} required />
-                    <ProductField funsized={funsized} label={`Stock`} name={`stock`} type={`number`} min={`0`} step={`1`} value={form?.stock} onChange={updateForm} />
                     {!funsized && product != null && <>
                         <ProductSelectField
                             label={`Category`}

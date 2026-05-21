@@ -157,7 +157,7 @@ export default function UsersTable({
     const { user, users } = useContext<any>(StateGlobals);
     const canViewUsers = minRole(user?.role, Roles.Editor);
     const user_columns: GridColDef[] = [
-        { field: `number`, headerName: `ID`, width: 87, },
+        { field: `number`, headerName: `ID`, width: 50 },
         { field: `name`, headerName: `Name`, width: 130, editable: true, },
         { field: `properties`, type: `number`, headerName: `Props`, width: 90, },
         {

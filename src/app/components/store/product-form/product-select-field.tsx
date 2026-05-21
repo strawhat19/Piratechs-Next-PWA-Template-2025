@@ -4,16 +4,13 @@ import { JSX } from 'react';
 import { Button } from '@mui/material';
 import MenuTrigger from '../../menu/menu-trigger';
 import { ProductCategory, ProductType, ProductStatus } from '@/shared/types/models/Product';
-import { KeyboardArrowDown, LocalOffer, Checkroom, Palette, Newspaper, Computer, Draw, Backpack, AutoAwesome, TheaterComedy, ShoppingBag, PushPin, Print, BusinessCenter, Autorenew, Download, Drafts, CheckCircle, HourglassTop, Archive, Cancel, SentimentDissatisfied } from '@mui/icons-material';
+import { KeyboardArrowDown, LocalOffer, Checkroom, Palette, Newspaper, Computer, Draw, Backpack, AutoAwesome, TheaterComedy, ShoppingBag, PushPin, Print, BusinessCenter, Autorenew, Download, CheckCircle, HourglassTop, Archive, Cancel } from '@mui/icons-material';
 
 export const statusColors: Record<ProductStatus, string> = {
-    [ProductStatus.Draft]: `var(--disabled)`,
+    [ProductStatus.Pending]: `var(--links)`,
     [ProductStatus.Active]: `var(--success)`,
     [ProductStatus.Unavailable]: `var(--error)`,
-    [ProductStatus.Backorder]: `var(--blueneon)`,
-    [ProductStatus.Pending]: `var(--yellow_neon)`,
     [ProductStatus.Archived]: `var(--soft-silver)`,
-    [ProductStatus.OutOfStock]: `var(--pink_neon)`,
 };
 
 export const categoryColors: Record<ProductCategory, string> = {
@@ -80,13 +77,11 @@ export const typeIcons: Record<ProductType, JSX.Element> = {
 
 // Icon and color mappings for ProductStatus
 export const statusIcons: Record<ProductStatus, JSX.Element> = {
-    [ProductStatus.Draft]: <Drafts fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
+    // [ProductStatus.Draft]: <Drafts fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Draft]} />,
     [ProductStatus.Active]: <CheckCircle fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Active]} />,
     [ProductStatus.Pending]: <HourglassTop fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Pending]} />,
     [ProductStatus.Archived]: <Archive fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Archived]} />,
-    [ProductStatus.Backorder]: <Autorenew fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Backorder]} />,
     [ProductStatus.Unavailable]: <Cancel fontSize={`small`} htmlColor={statusColors?.[ProductStatus.Unavailable]} />,
-    [ProductStatus.OutOfStock]: <SentimentDissatisfied fontSize={`small`} htmlColor={statusColors?.[ProductStatus.OutOfStock]} />,
 };
 
 interface ProductSelectFieldProps {

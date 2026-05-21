@@ -109,6 +109,11 @@ body {
     font-family: var(--font);
 }
 
+.bgLinks {
+    background: var(--links);
+    border-color: var(--links) !important;
+}
+
 main {
     background: var(--navy);
 }

@@ -10,7 +10,7 @@ import { GridToolbar } from '@mui/x-data-grid/internals';
 const paginationModel = { page: 0, pageSize: 12 };
 
 const default_columns: GridColDef[] = [
-  { field: `id`, headerName: `ID`, width: 87 },
+  { field: `id`, headerName: `ID`, width: 50 },
   { field: `lastName`, headerName: `Last Name`, width: 130 },
   { field: `firstName`, headerName: `First Name`, width: 130 },
   { field: `age`, type: `number`, headerName: `Age`, width: 90, },
@@ -52,6 +52,7 @@ export default function Table({
   columns = default_columns, 
   className = `tableComponent`, 
   rowCount = rows?.length || 0,
+  dataGridProps = {},
   page_size_options = [5, 10, 12],
   pagination_options = paginationModel, 
   emptyRowsLabel = `(${rowCount}) ${type}(s)`,
@@ -69,6 +70,7 @@ export default function Table({
           </> : <></>}
           {/* <MUI> */}
             <DataGrid
+              {...dataGridProps}
               rows={rows}
               columns={columns}
               density={density}

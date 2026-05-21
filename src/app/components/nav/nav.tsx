@@ -1,15 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import MenuTrigger from '../menu/menu-trigger';
 import { useContext, useState } from 'react';
+import CartDrawer from '../store/cart-drawer';
+import MenuTrigger from '../menu/menu-trigger';
 import { capWords } from '@/shared/scripts/constants';
+import { useStoreCart } from '../store/use-store-cart';
 import { StateGlobals } from '@/shared/global-context';
 import { useRouter, usePathname } from 'next/navigation';
 import Icon_Button from '../buttons/icon-button/icon-button';
-import CartDrawer from '../store/cart-drawer';
-import { useStoreCart } from '../store/use-store-cart';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
+import { statusColors } from '../store/product-form/product-select-field';
 import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart, Person, Logout, Storefront, DeleteSweep } from '@mui/icons-material';
 
 const size = 20;
@@ -42,15 +43,15 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         {
             id: `profile`,
             label: `Profile`,
-            icon: <Person />,
+            icon: <Person htmlColor={`var(--links)`} />,
             onClick: () => {
                 router.push(`/profile`);
             },
         },
         {
             id: `signout`,
-            icon: <Logout />,
             label: `Sign Out`,
+            icon: <Logout htmlColor={statusColors.Unavailable} />,
             onClick: async () => {
                 // toast.info(`Signing Out`);
                 await onSignOut()?.then(() => {
@@ -65,19 +66,19 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         {
             id: `view-cart`,
             label: `View Cart`,
-            icon: <ShoppingCart />,
+            icon: <ShoppingCart htmlColor={`var(--links)`} />,
             onClick: () => setCartDrawerOpen(true),
         },
         {
             id: `clear-cart`,
             label: `Clear Cart`,
-            icon: <DeleteSweep />,
+            icon: <DeleteSweep htmlColor={statusColors.Unavailable} />,
             onClick: clearCart,
         },
         {
             id: `go-store`,
             label: `Go to Store`,
-            icon: <Storefront />,
+            icon: <Storefront htmlColor={`var(--links)`} />,
             onClick: () => router.push(`/store`),
         },
     ];
@@ -100,10 +101,11 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         if (hasCartItems) {
             return (
                 <MenuTrigger
+                    colors={true}
                     topOffset={1}
+                    id={`store-menu-trigger`}
                     menuItems={storeMenuItems}
                     className={`storeCartMenu`}
-                    id={`store-menu-trigger`}
                     targetID={`store-menu-trigger`}
                     renderTrigger={({ id, onClick }) => (
                         <button
@@ -142,8 +144,9 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                         <li className={`menuButton`}>
                             {/* Welcome, {user?.name} */}
                             <MenuTrigger
-                                id={`profileMenuButton`}
+                                colors={true}
                                 topOffset={1}
+                                id={`profileMenuButton`}
                                 menuItems={profileMenuItems}
                                 renderTrigger={({ id, onClick }) => (
                                     <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Profile`} className={`profileButton`}>

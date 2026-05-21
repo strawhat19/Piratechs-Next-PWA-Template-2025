@@ -130,6 +130,11 @@
     max-height: 30px;
     max-width: fit-content;
     justify-content: flex-end;
+    transition: var(--transition);
+    &.notDirtied {
+      max-width: 0;
+      min-width: 0;
+    }
   }
   .productFormGrid {
     gap: 2px;

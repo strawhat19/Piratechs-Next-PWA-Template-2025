@@ -9,6 +9,31 @@
     display: grid;
 }
 
+.numberHeaderCell {
+    .MuiDataGrid-columnHeaderTitleContainer {
+        padding-left: 5px;
+        flex-direction: row !important;
+    }
+}
+
+.qtyBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &.qtyBlue {
+        background: var(--links) !important;
+        border-color: var(--links) !important;
+    }
+    &.qtyRed {
+        background: var(--error) !important;
+        border-color: var(--error) !important;
+    }
+    &.qtySuccess {
+        background: var(--success) !important;
+        border-color: var(--success) !important;
+    }
+}
+
 .productFormContainer {
     --productFormAccent: var(--success);
     width: 99.9%;
