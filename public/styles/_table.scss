@@ -114,6 +114,9 @@
   align-items: center;
   padding: 2px !important;
   flex-direction: row-reverse;
+  &:has(#announcement-form) {
+    max-height: 38px;
+  }
   form {
     grid-gap: 3px !important;
     display: flex !important;
@@ -191,7 +194,7 @@
       position: relative;
     }
     &.announcementFormSelectField {
-      top: 5px;
+      top: 2px;
       min-width: 132px;
       max-width: 132px;
       position: relative;

@@ -99,16 +99,13 @@
     gap: 10px;
     padding: 0;
     display: flex;
-    min-height: 36px;
+    min-height: 30px;
     align-items: center;
     background: var(--navy);
+    justify-content: center;
     min-width: 45px !important;
-    justify-content: space-between;
     border-radius: var(--borderRadius);
     border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
-    .MuiSwitch-root {
-        margin-right: -8px;
-    }
 }
 
 .productStatusSelectField {

@@ -157,6 +157,7 @@ const AnnouncementActionsCell = ({
     ]?.includes(rw?.status);
     const selectedRows = rows?.filter((r: Announcement) => selectedAnnouncementIDs?.includes(r?.id));
     const deletableRows = selectedRows?.filter((r: Announcement) => rowDeletable(r));
+    const archivableRows = selectedRows?.filter((r: Announcement) => !rowDeletable(r));
     const deleteAnnouncement = async (event: any) => {
         event.stopPropagation();
         const delTitle = `Delete${deletableRows?.length > 0 ? ` ${deletableRows?.length}` : ``}`;
@@ -196,6 +197,49 @@ const AnnouncementActionsCell = ({
             toast.success(`Announcement Deleted`);
         });
     };
+    const archiveAnnouncement = async (event: any) => {
+        event.stopPropagation();
+        const archiveRows = selectedRows?.length > 1 ? (archivableRows?.length > 0 ? archivableRows : [row]) : [row];
+        const targetRows = archiveRows?.filter((announcement: Announcement) => Boolean(announcement?.id));
+        if (!targetRows?.length) return;
+        const archiveTitle = `Archive${targetRows?.length > 1 ? ` ${targetRows?.length}` : ``}`;
+        const title = `${archiveTitle} Announcement(s)`;
+        const targetAnnouncement = targetRows?.[0] || row;
+        const confirmed = await showConfirm({
+            title,
+            cancelText: `Cancel`,
+            confirmText: archiveTitle,
+            cancelAction: { color: `var(--buttons)` },
+            confirmAction: { color: `var(--links)`, className: `dialogDeleteAction`, icon: <Archive /> },
+            message: targetRows?.length > 1 ? title : `Archive Announcement #${targetAnnouncement?.number} "${targetAnnouncement?.name}"?`,
+        });
+        if (!confirmed) return;
+        if (selectedRows?.length > 1) {
+            let failed = 0;
+            let processed = 0;
+            for (const announcement of targetRows) {
+                try {
+                    const archived = await updateAnnouncementInDatabase(String(announcement?.id), { status: AnnouncementStatus.Archived, active: false }, true);
+                    if (!archived) failed += 1;
+                } catch {
+                    failed += 1;
+                } finally {
+                    processed += 1;
+                    await new Promise(resolve => requestAnimationFrame(() => resolve(true)));
+                }
+            }
+            setSelectedAnnouncementIDs([]);
+            if (failed > 0) {
+                toast.warn(`Archived ${processed - failed}/${targetRows?.length} Announcement(s)`);
+                return;
+            }
+            toast.success(targetRows?.length > 1 ? `Announcements Archived` : `Announcement Archived`);
+            return;
+        }
+        await updateAnnouncementInDatabase(String(targetAnnouncement?.id), { status: AnnouncementStatus.Archived, active: false }, true)?.then(() => {
+            toast.success(`Announcement Archived`);
+        });
+    };
     return (
         <div className={`actionsCell announcementActionsCell`}>
             <TableStatus label={getAnnouncementStatusLabel(row)} color={getAnnouncementStatusColor(row)} title={getAnnouncementStatusLabel(row)} />
@@ -228,7 +272,7 @@ const AnnouncementActionsCell = ({
                             <Icon_Button
                                 size={26}
                                 placement={`top`}
-                                onClick={deleteAnnouncement}
+                                onClick={archiveAnnouncement}
                                 title={`Archive Announcement`}
                                 className={`actionIconButton`}
                             >
@@ -393,10 +437,11 @@ export default function AnnouncementsTable({
         {
             width: 175,
             field: `icon`,
-            headerName: `Icon`,
             filterable: false,
+            headerName: `Type`,
             renderCell: ({ row }: any) => <AnnouncementIconCell row={row} />,
         },
+        { width: 90, field: `showTitle`, headerName: `Show Title`, filterable: false, renderCell: ({ row }: any) => <AnnouncementShowTitleCell row={row} /> },
         {
             width: 180,
             field: `name`,
@@ -451,7 +496,6 @@ export default function AnnouncementsTable({
                 )
             ),
         },
-        { width: 90, field: `showTitle`, headerName: `Show Title`, filterable: false, renderCell: ({ row }: any) => <AnnouncementShowTitleCell row={row} /> },
         { width: 155, field: `status`, headerName: `Status`, renderCell: ({ row }: any) => <AnnouncementStatusCell row={row} /> },
         { field: `created`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },
