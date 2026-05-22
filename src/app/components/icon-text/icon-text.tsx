@@ -21,15 +21,25 @@ export default function IconText({
     decimalPlaces = 2,
     dollarSign = false, 
     profitLoss = false,
-    style = { opacity: 1 } as any,
-    className = `iconTextComponent`, 
-    dollarSignColor = `var(--success)`,
     zeroColor = `var(--error)`,
-    icon = <BarChart color={`success`} />, 
-}) {
+    style = { opacity: 1 } as any,
+    defaultDollarColor = `success`, 
+    className = `iconTextComponent`, 
+    icon = <BarChart color={defaultDollarColor} />,
+    defaultDlrColor = `var(--${defaultDollarColor})`,
+    dollarSignColor = defaultDlrColor,
+}: any) {
     const numericValue = Number(number || 0);
     const isZeroValue = Number.isFinite(numericValue) && numericValue == 0;
-    const resolvedStyle = profitLoss ? { fontWeight, ...style, color: numericValue > 0 ? `var(--success)` : (numericValue < 0 ? `red` : zeroColor) } : { fontWeight, ...style, color: isZeroValue ? zeroColor : style?.color };
+    const resolvedStyle = profitLoss ? { 
+        fontWeight: isZeroValue ? (fontWeight + 200) : fontWeight, 
+        ...style, 
+        color: numericValue > 0 ? defaultDlrColor : zeroColor, 
+    } : { 
+        fontWeight: isZeroValue ? (fontWeight + 200) : fontWeight, 
+        ...style, 
+        color: isZeroValue ? zeroColor : style?.color, 
+    };
     const resolvedDollarSignColor = isZeroValue ? zeroColor : dollarSignColor;
     return (
         <div className={`iconTextContainer fit ${className}`} style={resolvedStyle}>

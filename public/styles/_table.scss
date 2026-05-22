@@ -162,6 +162,12 @@
   color: var(--links);
 }
 
+.MuiDataGrid-main {
+  .tableDropDown {
+    top: -1px;
+  }
+}
+
 .tableDropDown {
   top: 0px;
   width: 100%;

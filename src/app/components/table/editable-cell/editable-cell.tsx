@@ -47,6 +47,7 @@ export default function EditableCell({
     onDecrease = () => {},
     renderValue = undefined,
     pendingValue = undefined,
+    hasRenderedValue = false,
 }: any) {
     const blurIntentRef = useRef<`save` | `cancel` | null>(null);
     const focusedRef = useRef(false);
@@ -122,12 +123,12 @@ export default function EditableCell({
     );
     if (!canEdit) return <>{renderValue ? renderValue(currentValue) : currentValue}</>;
     return (
-        <div className={`editableCellWrap flexContainer`} style={{ width: `100%`, justifyContent: `space-between` }}>
+        <div className={`editableCellWrap flexContainer`} style={{ width: `100%`, justifyContent: `flex-end`, gridGap: 15 }}>
             {valueFirst ? valueNode : null}
             <div className={`flexContainer`} style={{ flexDirection: showStepper ? `column` : `row`, gap: 3 }}>
                 {showStepper ? (
                     <div className={`flexContainer`} style={{ gap: 3, flexDirection: valueFirst ? `row-reverse` : `row` }}>
-                        <Icon_Button size={14} title={``} rounded={false} className={`qtyBtn actionIconButton grayAction qtyBlue`} onClick={(event: any) => {
+                        <Icon_Button size={14} title={``} rounded={false} className={`qtyBtn actionIconButton grayAction ${(hasRenderedValue && !isDirty) ? `qtySuccess` : `qtyBlue`}`} onClick={(event: any) => {
                             event.stopPropagation();
                             onIncrease?.(currentSaveValue);
                         }}>

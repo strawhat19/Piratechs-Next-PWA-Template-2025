@@ -4,22 +4,22 @@ import Table from '../table';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { flushSync } from 'react-dom';
-import { Button, LinearProgress, Skeleton } from '@mui/material';
 import Loader from '../../loaders/loader';
-import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
-import { usePathname, useRouter } from 'next/navigation';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import EditableCell from '../editable-cell/editable-cell';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { constants, minRole } from '@/shared/scripts/constants';
-import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
 import ProductForm from '../../store/product-form/product-form';
+import { Button, LinearProgress, Skeleton } from '@mui/material';
+import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import ProductDetails from '../../store/product-details/product-details';
+import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
 import { Product, ProductType, ProductStatus, ProductCategory } from '@/shared/types/models/Product';
 import { statusIcons, categoryIcons, typeIcons } from '../../store/product-form/product-select-field';
@@ -57,7 +57,19 @@ const getProductStatusLabel = (product: Product, string: boolean = false) => {
 };
 const toStep = (value: number, step = 0.01) => Math.round(Number(value || 0) / step) * step;
 
-const ProductStockCell = ({ row, value, pendingStock, onIncrease, onDecrease, onSave, onCancel, onChangeValue, valueFirst = true, renderValue = undefined }: any) => {
+const ProductStockCell = ({ 
+    row, 
+    value, 
+    onSave, 
+    onCancel, 
+    onIncrease, 
+    onDecrease, 
+    pendingStock, 
+    onChangeValue, 
+    valueFirst = true, 
+    renderValue = undefined, 
+    hasRenderedValue = false,
+}: any) => {
     const { user } = useContext<any>(StateGlobals);
     const canManageProducts = minRole(user?.role, Roles.Administrator);
     return (
@@ -72,6 +84,7 @@ const ProductStockCell = ({ row, value, pendingStock, onIncrease, onDecrease, on
             pendingValue={pendingStock}
             canEdit={canManageProducts}
             onCancel={() => onCancel?.(row)}
+            hasRenderedValue={hasRenderedValue}
             onChangeValue={(next: string) => onChangeValue?.(row, next)}
             onIncrease={(current: number) => onIncrease?.(row, current)}
             onDecrease={(current: number) => onDecrease?.(row, current)}
@@ -351,8 +364,8 @@ const ProductStatusCell = ({ row, value }: any) => {
             topOffset={0.5}
             menuItems={statusItems}
             className={`roleDropdownMenu`}
-            id={`product-status-menu-trigger-${row?.id}`}
             targetID={`product-status-menu-${row?.id}`}
+            id={`product-status-menu-trigger-${row?.id}`}
             renderTrigger={({ id, onClick, searchValue }) => (
                 <Button
                     id={id}
@@ -753,11 +766,12 @@ export default function ProductsTable({
                 <ProductStockCell
                     row={row}
                     value={value}
+                    hasRenderedValue={true}
                     onSave={onSavePriceDraft}
                     onCancel={onCancelPriceDraft}
-                    onChangeValue={onChangePriceDraft}
                     onIncrease={onIncreasePriceDraft}
                     onDecrease={onDecreasePriceDraft}
+                    onChangeValue={onChangePriceDraft}
                     pendingStock={(pendingPriceByID?.[String(row?.id)] ?? optimisticPriceByID?.[String(row?.id)])}
                     renderValue={(priceCents: number) => (
                         <IconText 
@@ -783,10 +797,18 @@ export default function ProductsTable({
                     value={value}
                     onSave={onSaveStockDraft}
                     onCancel={onCancelStockDraft}
-                    onChangeValue={onChangeStockDraft}
                     onIncrease={onIncreaseStockDraft}
                     onDecrease={onDecreaseStockDraft}
+                    onChangeValue={onChangeStockDraft}
                     pendingStock={(pendingStockByID?.[String(row?.id)] ?? optimisticStockByID?.[String(row?.id)])}
+                    renderValue={(qty: number) => (
+                        <IconText 
+                            format={true}
+                            showIcon={false} 
+                            number={Number(qty)} 
+                            className={`stockText`} 
+                        />
+                    )}
                 />
             ),
         },

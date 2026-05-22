@@ -54,6 +54,8 @@
     // greens
     --teal: #3fa5e3;
     --success: #13deb9;
+    --success_dark_rgb: 13, 159, 65;
+    --success_dark: rgba(var(--success_dark_rgb), 1);
     --green_neon_rgb: 57, 255, 20;
     --green_neon: rgba(var(--green_neon_rgb), 1);
     --mint_neon_rgb: 87, 255, 188;
@@ -73,8 +75,8 @@
     --blueneonDark: #009fd4;
     --blueactivedark: #0057a8;
     --blueneon: rgb(0, 191, 255);
-    --blueopac: rgb(0, 191, 255, 0.7);
     --cool_neon_blue_rgb: 0, 195, 255;
+    --blueopac: rgb(0, 191, 255, 0.7);
     --cool_neon_blue: rgba(var(--cool_neon_blue_rgb), 1);
 
     // navies

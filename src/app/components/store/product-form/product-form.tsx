@@ -99,28 +99,28 @@ const getProductForm = (product: Product | null | undefined, number: number) => 
 };
 
 const productComparableFields = [
-    `sku`,
+    // `sku`,
     `name`,
-    `tags`,
-    `cost`,
+    // `tags`,
+    // `cost`,
     `stock`,
     `price`,
-    `brand`,
-    `status`,
-    `weight`,
-    `vendor`,
-    `currency`,
+    // `brand`,
+    // `weight`,
+    // `vendor`,
+    // `taxable`,
+    // `currency`,
     `imageURL`,
-    `category`,
-    `taxable`,
-    `compareAtPrice`,
-    `productType`,
-    `description`,
-    `allowBackorder`,
-    `requiresShipping`,
-    `trackInventory`,
-    `shortDescription`,
-    `lowStockThreshold`,
+    // `category`,
+    // `status`,
+    // `productType`,
+    // `description`,
+    // `compareAtPrice`,
+    // `allowBackorder`,
+    // `trackInventory`,
+    // `requiresShipping`,
+    // `shortDescription`,
+    // `lowStockThreshold`,
 ] as const;
 
 const getComparableProductForm = (source: any) => productComparableFields.reduce((acc: any, key) => ({
@@ -285,11 +285,11 @@ export default function ProductForm({
     const updateFormValue = (field: keyof typeof form | string, value: any) => {
         setFormValue((prev: any) => ({ ...prev, [field]: value }));
     };
-    const updateSelectValue = (field: `category` | `productType` | `status`, value: string) => {
+    const updateSelectValue = (field: `category` | `productType` | `status`, value: string, updateStock: boolean = true) => {
         setFormValue((prev: any) => ({
             ...prev,
             [field]: value,
-            ...(field == `status` && String(value || ``).toLowerCase() == ProductStatus.Unavailable.toLowerCase() ? { stock: `0` } : {}),
+            ...(updateStock && field == `status` && (String(value || ``).toLowerCase() == ProductStatus.Unavailable.toLowerCase()) ? { stock: `0` } : {}),
         }));
     };
     const clearImageURL = () => {
@@ -328,7 +328,15 @@ export default function ProductForm({
 
     const isFormDirty = () => {
         const currentForm = getProductForm(product, product?.number || nextProductNumber);
-        return (product != null || comparableFormValue(getComparableProductForm(form)) != comparableFormValue(getComparableProductForm(currentForm)));
+        const { name, price, stock, imageURL } = form;
+        const { name: namecf, price: pricecf, stock: stockcf, imageURL: img } = currentForm;
+        const restFrm = { name, price, stock, imageURL };
+        const restcf = { name: namecf, price: pricecf, stock: stockcf, imageURL: img };
+        const formValue = comparableFormValue(getComparableProductForm(restFrm));
+        const currentFormValue = comparableFormValue(getComparableProductForm(restcf));
+        const formChanged: boolean = formValue != currentFormValue;
+        const frmDrty = (product != null || formChanged);
+        return frmDrty;
     };
 
     const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
@@ -495,30 +503,64 @@ export default function ProductForm({
                 </div>
                 <div className={`productFormGrid`}>
                     {!compact ? (
-                        <ProductField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
+                        <ProductField 
+                            disabled={true} 
+                            name={`number`} 
+                            type={`number`} 
+                            label={`Number`} 
+                            funsized={funsized} 
+                            value={form?.number} 
+                            onChange={updateForm} 
+                        />
                     ) : <></>}
-                    <ProductField funsized={funsized} label={`Product Name`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
-                    <ProductField funsized={funsized} label={`Price`} name={`price`} type={`number`} min={`0`} step={`0.01`} value={form?.price} onChange={updateForm} />
-                    <ProductField funsized={funsized} label={`Quantity`} name={`stock`} type={`number`} min={`0`} step={`0.01`} value={form?.stock} onChange={updateForm} />
+                    <ProductField 
+                        required 
+                        name={`name`} 
+                        type={`text`} 
+                        value={form?.name} 
+                        funsized={funsized} 
+                        onChange={updateForm} 
+                        label={`Product Name`} 
+                    />
+                    <ProductField 
+                        min={`0`} 
+                        step={`0.01`} 
+                        name={`price`} 
+                        type={`number`} 
+                        label={`Price`} 
+                        value={form?.price} 
+                        funsized={funsized} 
+                        onChange={updateForm} 
+                    />
+                    <ProductField 
+                        min={`0`} 
+                        step={`0.01`} 
+                        name={`stock`} 
+                        type={`number`} 
+                        label={`Quantity`} 
+                        value={form?.stock} 
+                        funsized={funsized} 
+                        onChange={updateForm} 
+                    />
                     {compact ? (
                         <ProductSelectField
-                            label={`Status`}
-                            value={form?.status}
-                            options={Object.values(ProductStatus)}
-                            icons={statusIcons}
-                            colors={statusColors}
-                            onChange={(value: string) => updateSelectValue(`status`, value)}
-                            className={`productStatusSelectField`}
-                            showLabel={!funsized}
                             search={false}
+                            label={`Status`}
+                            icons={statusIcons}
+                            value={form?.status}
+                            colors={statusColors}
+                            showLabel={!funsized}
+                            options={Object.values(ProductStatus)}
+                            className={`productStatusSelectField`}
+                            onChange={(value: string) => updateSelectValue(`status`, value, false)}
                         />
                     ) : <></>}
                     <ProductImageURLField 
                         funsized={funsized} 
-                        label={`Attachment URL`} 
                         onChange={updateForm}
                         value={form?.imageURL} 
                         onClear={clearImageURL}
+                        label={`Attachment URL`} 
                         showClear={Boolean(product?.id && String(form?.imageURL || ``).trim())}
                     />
                     {!funsized && product != null && <>
