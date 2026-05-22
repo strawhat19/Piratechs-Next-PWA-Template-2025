@@ -82,11 +82,15 @@ export default function HorizontalScroller({
         return announcements
             ?.filter((announcement: any) => String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft)) == AnnouncementStatus.Active)
             ?.map((announcement: any) => {
-                const title = announcement?.title;
-                const value = (richTextToPlainText(announcement?.description) || String(announcement?.name || title || ``).trim());
+                const title = String(announcement?.name || ``).trim();
+                const descriptionText = richTextToPlainText(announcement?.description);
+                const showTitle = Boolean(announcement?.showTitle);
+                const value = showTitle && title
+                    ? (descriptionText ? `${title} - ${descriptionText}` : title)
+                    : (descriptionText || title);
                 return value ? {
                     title,
-                    value: `${title} - ${value}`,
+                    value,
                     icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
                 } : null;
             })

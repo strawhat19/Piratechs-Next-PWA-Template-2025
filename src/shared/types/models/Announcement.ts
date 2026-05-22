@@ -16,6 +16,7 @@ export class Announcement extends Data {
 
   active: boolean = false;
   description?: string = ``;
+  showTitle: boolean = false;
   type: Types = defaultType;
   icon?: string = `Campaign`;
   dataSource?: DataSources | string = DataSources.firebase;
@@ -62,6 +63,8 @@ export class Announcement extends Data {
     }
     if (isValid(announcementData.icon)) this.icon = String(announcementData.icon);
     if (!isValid(this.icon)) this.icon = `Campaign`;
+    if (isValid(announcementData.showTitle)) this.showTitle = Boolean(announcementData.showTitle);
+    if (!isValid(this.showTitle)) this.showTitle = false;
     if (!isValid(this.description) && isValid(announcementData.message)) this.description = String(announcementData.message);
     if (!isValid(this.description) && isValid(announcementData.body_html)) this.description = String(announcementData.body_html);
     if (!isValid(this.description) && isValid(announcementData.bodyHTML)) this.description = String(announcementData.bodyHTML);

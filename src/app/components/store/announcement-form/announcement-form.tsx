@@ -128,12 +128,18 @@ export default function AnnouncementForm({
         updateFormValue(formField?.name, nextValue);
     };
 
-    const isFormDirty = () => {
+    const isFormSame = () => {
         const includeSelectFields = !widget || Boolean(announcement?.id);
         const currentComparable = JSON.stringify(getComparableAnnouncementForm(form, includeSelectFields));
         const initialComparable = JSON.stringify(getComparableAnnouncementForm(getAnnouncementForm(announcement, nextAnnouncementNumber), includeSelectFields));
         return currentComparable != initialComparable;
     };
+
+    const isFormDirty = () => {
+        let formMatch = isFormSame();
+        let editing = announcement != null;
+        return editing || formMatch;
+    }
 
     const clearAnnouncementForm = () => {
         const nextForm = getAnnouncementForm(null, nextAnnouncementNumber);
@@ -187,7 +193,7 @@ export default function AnnouncementForm({
         </div>
     );
 
-    const actionDisabled = saving || !String(form?.description || ``).trim() || !isFormDirty();
+    const actionDisabled = saving || !String(form?.description || ``).trim() || !isFormSame();
     const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
 
     return (
@@ -268,6 +274,7 @@ export default function AnnouncementForm({
                         <AnnouncementField
                             required
                             type={`text`}
+                            minLength={`5`}
                             label={`Message`}
                             funsized={funsized}
                             name={`description`}

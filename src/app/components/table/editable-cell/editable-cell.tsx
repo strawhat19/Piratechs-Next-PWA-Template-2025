@@ -33,6 +33,7 @@ const cleanNumberDraft = (input: any) => {
 export default function EditableCell({
     min = 0,
     step = 1,
+    minLen = 0,
     value = ``,
     mode = `text`,
     canEdit = true,
@@ -90,6 +91,7 @@ export default function EditableCell({
     };
     const valueNode = renderValue ? renderValue(currentValue) : (
         <input
+            minLength={!numericMode && minLen ? minLen : undefined}
             min={numericMode ? min : undefined}
             step={numericMode ? step : undefined}
             type={numericMode ? `number` : `text`}

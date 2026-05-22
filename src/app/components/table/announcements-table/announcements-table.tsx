@@ -7,6 +7,7 @@ import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import { usePathname, useRouter } from 'next/navigation';
+import ToggleCell from '../toggle-cell/toggle-cell';
 import EditableCell from '../editable-cell/editable-cell';
 import { Archive, Delete, Edit } from '@mui/icons-material';
 import { richTextToPlainText } from '../../rich-text/rich-text';
@@ -109,6 +110,31 @@ const AnnouncementIconCell = ({ row }: any) => {
             colors={announcementIconColors}
             options={announcementIconOptions}
             className={`announcementIconCellField`}
+        />
+    );
+};
+
+const AnnouncementShowTitleCell = ({ row }: any) => {
+    const { user } = useContext<any>(StateGlobals);
+    const canManageAnnouncements = minRole(user?.role, Roles.Administrator);
+    const currentValue = Boolean(row?.showTitle);
+    const updateShowTitle = async (nextShowTitle: boolean) => {
+        if (!row?.id) return;
+        try {
+            await updateAnnouncementInDatabase(String(row?.id), { showTitle: nextShowTitle }, true);
+            toast.success(`Announcement Show Title Updated`);
+        } catch (error) {
+            toast.error(`Announcement Show Title Update Failed`);
+            console.error(`Announcement Show Title Update Failed`, error);
+        }
+    };
+    return (
+        <ToggleCell
+            value={currentValue}
+            onChange={updateShowTitle}
+            canEdit={canManageAnnouncements}
+            className={`announcementShowTitleCell`}
+            disabled={!row?.name || row?.name == ``}
         />
     );
 };
@@ -407,6 +433,7 @@ export default function AnnouncementsTable({
             renderCell: ({ row, value }: any) => (
                 canManageAnnouncements ? (
                     <EditableCell
+                        minLen={5}
                         mode={`text`}
                         value={value}
                         canEdit={true}
@@ -424,6 +451,7 @@ export default function AnnouncementsTable({
                 )
             ),
         },
+        { width: 90, field: `showTitle`, headerName: `Show Title`, filterable: false, renderCell: ({ row }: any) => <AnnouncementShowTitleCell row={row} /> },
         { width: 155, field: `status`, headerName: `Status`, renderCell: ({ row }: any) => <AnnouncementStatusCell row={row} /> },
         { field: `created`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },

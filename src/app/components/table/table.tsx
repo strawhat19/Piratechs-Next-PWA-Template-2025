@@ -1,12 +1,12 @@
 'use client';
 
-import { useContext, useRef } from 'react';
 import Loader from '../loaders/loader';
+import { useContext, useRef } from 'react';
 import { Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
-import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridToolbar } from '@mui/x-data-grid/internals';
 import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
+import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 
 const paginationModel = { page: 0, pageSize: 12 };
 
@@ -26,6 +26,7 @@ const interactiveCellSelectors = [
   `.actionIconButton`,
   `.editableCellWrap`,
   `.editableCellInput`,
+  `.toggleCell`
 ].join(`,`);
 
 const shouldIgnoreCellClick = (target: any) => Boolean(target?.closest?.(interactiveCellSelectors));

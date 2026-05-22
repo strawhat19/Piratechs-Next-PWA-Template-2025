@@ -214,6 +214,22 @@
   border-radius: var(--borderRadius) !important;
 }
 
+.toggleCell {
+  width: 100%;
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  .MuiSwitch-root {
+    margin: 0;
+    &:not(:has(.Mui-checked)) {
+      .MuiSwitch-thumb {
+        background: var(--buttons);
+      }
+    }
+  }
+}
+
 .actionsCell {
   gap: 7px;
   width: 100%;
@@ -296,16 +312,17 @@
       color: var(--success) !important;
     }
 
-    .quickEditActive {
-      --pulsateColor: var(--success);
-      --pulsateSize: 30px;
-      color: var(--success) !important;
-      background: var(--success) !important;
-      border-color: var(--success) !important;
-      svg {
-        color: var(--navy) !important;
-      }
-    }
+  }
+}
+
+.quickEditActive {
+  --pulsateColor: var(--success);
+  --pulsateSize: 30px;
+  color: var(--success) !important;
+  background: var(--success) !important;
+  border-color: var(--success) !important;
+  svg {
+    color: var(--navy) !important;
   }
 }
 
@@ -359,6 +376,11 @@
   }
   .MuiDataGrid-cell {
     align-items: center;
+  }
+  form {
+    .tableDropDown {
+      top: 2px;
+    }
   }
 }
 
