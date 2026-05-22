@@ -89,23 +89,19 @@ export default function OrdersTable({
             renderCell: ({ row }: any) => (
                 <div className={`actionsCell orderActionsCell`}>
                     <TableStatus label={row?.status} color={getOrderStatusColor(row?.status)} title={row?.status} />
-                    {row?.stripe_receipt_url ? (
-                        <Icon_Button
-                            size={26}
-                            target={`_blank`}
-                            title={`View Receipt`}
-                            url={row?.stripe_receipt_url}
-                            className={`actionIconButton archiveAction`}
-                            onClick={(event: any) => {
-                                event.stopPropagation();
-                            }}
-                        >
-                            <ReceiptLong fontSize={`small`} />
-                        </Icon_Button>
-                        // <Button className={`orderActionButton`} size={`small`} href={row?.stripe_receipt_url} target={`_blank`} rel={`noreferrer`} startIcon={<ReceiptLong />}>
-                        //     Open
-                        // </Button>
-                    ) : <></>}
+                    <Icon_Button
+                        size={26}
+                        target={`_blank`}
+                        title={`View Receipt`}
+                        url={row?.stripe_receipt_url}
+                        disabled={!row?.stripe_receipt_url}
+                        className={`actionIconButton archiveAction ${row?.stripe_receipt_url ? `` : `grayAction`}`}
+                        onClick={(event: any) => {
+                            event.stopPropagation();
+                        }}
+                    >
+                        <ReceiptLong fontSize={`small`} />
+                    </Icon_Button>
                 </div>
             ),
         },

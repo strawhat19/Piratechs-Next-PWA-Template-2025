@@ -415,23 +415,24 @@ const sanitizeFirestorePayload = <T extends Record<string, any>>(payload: T) => 
 
 export const addAnnouncementToDatabase = async (announcement: Announcement, silent = false) => {
   toastSaveInfo(`Saving Announcement`, silent);
-  const { datetime: now } = customDate();
+  const { update } = customDate();
   const nextAnnouncement = new Announcement({
     ...announcement,
-    created: announcement?.created ?? now,
-    updated: now,
+    created: announcement?.created ?? update,
+    updated: update,
   });
   const announcementPayload = sanitizeFirestorePayload(nextAnnouncement as any);
   const announcementRef = doc(db, Tables.announcements, String(nextAnnouncement?.id)).withConverter(announcementConverter as any);
+  console.log({ announcement, announcementPayload })
   await setDoc(announcementRef, announcementPayload);
   return nextAnnouncement;
 }
 
 export const updateAnnouncementInDatabase = async (id: string, updates: Partial<Announcement>, silent = false) => {
   toastSaveInfo(`Saving Announcement`, silent);
-  const { datetime: now } = customDate();
+  const { update } = customDate();
   const announcementRef = doc(db, Tables.announcements, String(id));
-  const announcementPayload = sanitizeFirestorePayload({ ...updates, updated: now });
+  const announcementPayload = sanitizeFirestorePayload({ ...updates, updated: update });
   await updateDoc(announcementRef, announcementPayload);
   return { id, ...announcementPayload };
 }

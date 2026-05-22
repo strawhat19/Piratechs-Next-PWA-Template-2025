@@ -468,12 +468,12 @@ export default function ProductsTable({
             return;
         }
         const confirmed = await showConfirm({
-            cancelText: `Cancel`,
             title,
             confirmText,
+            cancelText: `Cancel`,
             message: confirmMessage,
-            confirmAction: { color: confirmColor, className: `dialogDeleteAction`, icon: confirmActionIcon },
             cancelAction: { color: `var(--buttons)` },
+            confirmAction: { color: confirmColor, className: `dialogDeleteAction`, icon: confirmActionIcon },
         });
         if (!confirmed) return;
         showAlert({
@@ -483,8 +483,8 @@ export default function ProductsTable({
             content: renderBatchProgress({ actionLabel, processed: 0, failed: 0, total: productsToProcess?.length }),
             className: `dialogAlert dialogCustom`,
         });
-        let processed = 0;
         let failed = 0;
+        let processed = 0;
         for (const product of productsToProcess) {
             try {
                 if (mode == `archive`) {
@@ -738,7 +738,7 @@ export default function ProductsTable({
         {
             flex: 1,
             field: `name`,
-            maxWidth: 155,
+            maxWidth: 165,
             headerName: `Product`,
             renderCell: ({ row, value }: any) => (
                 <EditableCell
@@ -748,11 +748,11 @@ export default function ProductsTable({
                     showStepper={false}
                     showActions={false}
                     cancelOnBlur={true}
-                    canEdit={minRole(user?.role, Roles.Administrator)}
-                    pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
-                    onChangeValue={(next: string) => onChangeNameDraft(row, next)}
                     onCancel={() => onCancelNameDraft(row)}
+                    canEdit={minRole(user?.role, Roles.Administrator)}
+                    onChangeValue={(next: string) => onChangeNameDraft(row, next)}
                     onSave={(next: string, original: string) => onSaveNameDraft(row, next, original)}
+                    pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
                 />
             ),
         },

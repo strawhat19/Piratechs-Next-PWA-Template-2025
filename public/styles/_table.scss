@@ -168,10 +168,39 @@
   }
 }
 
+.productField {
+  &:has(.announcementFormTitleField) {
+    max-width: 200px;
+    input {
+      width: 100%;
+    }
+  }
+  &:has(.announcementFormMessageField) {
+    width: 100%;
+    input {
+      width: 100%;
+    }
+  }
+}
+
+
 .announcementsTableComponent {
   .announcementSelectField {
-    top: 5px;
-    position: relative;
+    &:not(.announcementFormSelectField) {
+      top: 5px;
+      position: relative;
+    }
+    &.announcementFormSelectField {
+      min-width: 132px;
+      max-width: 132px;
+      &.announcementIconSelectField  {
+        min-width: 162px;
+        max-width: 162px;
+      }
+      .tableDropDown {
+        top: 2px;
+      }
+    }
   }
 }
 

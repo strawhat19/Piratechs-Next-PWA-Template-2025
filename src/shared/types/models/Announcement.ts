@@ -9,26 +9,29 @@ export enum AnnouncementStatus {
   Unavailable = `Unavailable`,
 }
 
+const defaultType = Types.Announcement;
+
 export class Announcement extends Data {
   [key: string]: any;
 
-  description?: string = ``;
-  icon?: string = `Campaign`;
-  status: AnnouncementStatus | string = AnnouncementStatus.Draft;
   active: boolean = false;
-  type: Types = Types.Announcement;
+  description?: string = ``;
+  type: Types = defaultType;
+  icon?: string = `Campaign`;
   dataSource?: DataSources | string = DataSources.firebase;
   metadata?: Record<string, string | number | boolean> = {};
+  status: AnnouncementStatus | string = AnnouncementStatus.Draft;
 
   constructor(data: Partial<Announcement> = {}) {
     const announcementData = data as Partial<Announcement> & Record<string, any>;
-    const announcementName = announcementData.name || announcementData.title || announcementData.label || `Announcement`;
-    const hasAppAnnouncementID = isAppCollectionID(announcementData?.id, Types.Announcement);
+    const announcementName = announcementData.name || ``;
+    const hasAppAnnouncementID = isAppCollectionID(announcementData?.id, defaultType);
+    
     super({
       ...announcementData,
-      id: hasAppAnnouncementID ? announcementData?.id : undefined,
+      type: defaultType,
       name: announcementName,
-      type: Types.Announcement,
+      id: hasAppAnnouncementID ? announcementData?.id : undefined,
       created: announcementData.created ?? announcementData.created_at,
       updated: announcementData.updated ?? announcementData.updated_at,
     });

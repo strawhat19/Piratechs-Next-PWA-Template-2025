@@ -215,7 +215,7 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
       <div style={{ gap: 8, display: `flex`, marginTop: 14, justifyContent: `flex-end` }}>
         <Icon_Button
           button
-          size={32}
+          size={35}
           title={confirmLabel}
           className={`dialogActionButton dialogConfirmButton ${confirmClassName}`}
           style={{ gap: 6, color: `white`, padding: `0 12px`, background: confirmColor }}
@@ -231,7 +231,7 @@ const AppDialogContent = ({ appDialog, closeAppDialog }: any) => {
         {appDialog?.mode != `alert` ? (
           <Icon_Button
             button
-            size={32}
+            size={35}
             title={cancelLabel}
             className={`dialogActionButton dialogCancelButton ${cancelClassName}`}
             style={{ gap: 6, color: `white`, padding: `0 12px`, background: cancelColor }}

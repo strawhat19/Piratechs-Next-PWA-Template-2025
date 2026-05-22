@@ -1,35 +1,31 @@
 'use client';
 
 import Table from '../table';
-import EditableCell from '../editable-cell/editable-cell';
-import Loader from '../../loaders/loader';
 import { toast } from 'react-toastify';
-import { GridColDef } from '@mui/x-data-grid';
-import { usePathname, useRouter } from 'next/navigation';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { StateGlobals } from '@/shared/global-context';
+import Loader from '../../loaders/loader';
 import { Roles, Types } from '@/shared/types/types';
-import TableStatus, { tableStatusBlue, tableStatusGray, tableStatusGreen, tableStatusRed } from '../table-status/table-status';
-import Icon_Button from '../../buttons/icon-button/icon-button';
-import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { minRole } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
+import { usePathname, useRouter } from 'next/navigation';
+import EditableCell from '../editable-cell/editable-cell';
+import { Archive, Delete, Edit } from '@mui/icons-material';
+import { richTextToPlainText } from '../../rich-text/rich-text';
+import Icon_Button from '../../buttons/icon-button/icon-button';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import AnnouncementForm from '../../store/announcement-form/announcement-form';
+import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import AnnouncementDetails from '../../store/announcement-details/announcement-details';
 import { deleteAnnouncementFromDatabase, updateAnnouncementInDatabase } from '@/shared/server/firebase';
-import { Delete, Edit } from '@mui/icons-material';
-import { richTextToPlainText } from '../../rich-text/rich-text';
-import AnnouncementSelectField, {
-    announcementIconColors,
-    announcementIconOptions,
-    announcementIcons,
-    announcementStatusColors,
-    announcementStatusIcons,
-} from '../../store/announcement-form/announcement-select-field';
+import TableStatus, { tableStatusBlue, tableStatusGray, tableStatusGreen, tableStatusRed } from '../table-status/table-status';
+import AnnouncementSelectField, { announcementIconColors, announcementIconOptions, announcementIcons, announcementStatusColors, announcementStatusIcons } from '../../store/announcement-form/announcement-select-field';
 
 const announcementRoutePattern = /(?:^|\/)(?:store\/)?announcements?\/([^/?#]+)/i;
 
 const getAnnouncementStatus = (announcement: Announcement) => {
-    const status = String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft) || AnnouncementStatus.Draft);
+    const status = String(announcement?.status || (
+        announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft
+    ) || AnnouncementStatus.Draft);
     const colors: any = {
         [AnnouncementStatus.Draft]: tableStatusBlue,
         [AnnouncementStatus.Active]: tableStatusGreen,
@@ -119,22 +115,57 @@ const AnnouncementIconCell = ({ row }: any) => {
 
 const AnnouncementActionsCell = ({
     row,
+    rows,
     onEdit,
     quickEditing = false,
+    selectedAnnouncementIDs,
+    actionLabel = `processing`,
+    setSelectedAnnouncementIDs,
     canManageAnnouncements = false,
 }: any) => {
     const { showConfirm } = useContext<any>(StateGlobals);
+    const rowDeletable = (rw: any = row) => [
+        AnnouncementStatus.Draft, 
+        AnnouncementStatus.Archived, 
+        AnnouncementStatus.Unavailable
+    ]?.includes(rw?.status);
+    const selectedRows = rows?.filter((r: Announcement) => selectedAnnouncementIDs?.includes(r?.id));
+    const deletableRows = selectedRows?.filter((r: Announcement) => rowDeletable(r));
     const deleteAnnouncement = async (event: any) => {
         event.stopPropagation();
+        const delTitle = `Delete${deletableRows?.length > 0 ? ` ${deletableRows?.length}` : ``}`;
+        const title = `${delTitle} Announcement(s)`;
         const confirmed = await showConfirm({
+            title,
             cancelText: `Cancel`,
-            confirmText: `Delete`,
-            title: `Delete Announcement`,
-            message: `Delete Announcement #${row?.number} "${row?.name}"?`,
-            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Delete /> },
+            confirmText: delTitle,
             cancelAction: { color: `var(--buttons)` },
+            confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Delete /> },
+            message: deletableRows?.length > 1 ? title : `Delete Announcement #${row?.number} "${row?.name}"?`,
         });
         if (!confirmed) return;
+        if (deletableRows?.length > 1) {
+            let failed = 0;
+            let processed = 0;
+            for (const announcement of deletableRows) {
+                try {
+                    const deleted = await deleteAnnouncementFromDatabase(announcement, true);
+                    if (!deleted) failed += 1;
+                } catch {
+                    failed += 1;
+                } finally {
+                    processed += 1;
+                    await new Promise(resolve => requestAnimationFrame(() => resolve(true)));
+                }
+            }
+            // closeAppDialog(true);
+            setSelectedAnnouncementIDs([]);
+            if (failed > 0) {
+                toast.warn(`${actionLabel} ${processed - failed}/${deletableRows?.length} Announcement(s)`);
+                return;
+            }
+            return;
+        }
         await deleteAnnouncementFromDatabase(row, true)?.then(() => {
             toast.success(`Announcement Deleted`);
         });
@@ -157,15 +188,27 @@ const AnnouncementActionsCell = ({
                         >
                             <Edit fontSize={`small`} />
                         </Icon_Button>
-                        <Icon_Button
-                            size={26}
-                            placement={`top`}
-                            title={`Delete Announcement`}
-                            className={`actionIconButton deleteAction`}
-                            onClick={deleteAnnouncement}
-                        >
-                            <Delete fontSize={`small`} />
-                        </Icon_Button>
+                        {rowDeletable() ? <>
+                            <Icon_Button
+                                size={26}
+                                placement={`top`}
+                                onClick={deleteAnnouncement}
+                                title={`Delete Announcement`}
+                                className={`actionIconButton deleteAction`}
+                            >
+                                <Delete fontSize={`small`} />
+                            </Icon_Button>
+                        </> : <>
+                            <Icon_Button
+                                size={26}
+                                placement={`top`}
+                                onClick={deleteAnnouncement}
+                                title={`Archive Announcement`}
+                                className={`actionIconButton`}
+                            >
+                                <Archive fontSize={`small`} />
+                            </Icon_Button>
+                        </>}
                     </>
                 ) : <></>}
             </div>
@@ -178,6 +221,7 @@ export default function AnnouncementsTable({
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
+    const [selectedAnnouncementIDs, setSelectedAnnouncementIDs] = useState<string[]>([]);
     const { user, announcements = [], announcementsLoading = false } = useContext<any>(StateGlobals);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
     const [quickEditAnnouncement, setQuickEditAnnouncement] = useState<Announcement | null>(null);
@@ -314,6 +358,10 @@ export default function AnnouncementsTable({
         router.replace(`/store`);
     }, [announcementsLoading, routeAnnouncementID, selectedAnnouncement, visibleAnnouncements]);
 
+    const onSelectedRowsChange = (selectedIDs: string[]) => {
+        setSelectedAnnouncementIDs(selectedIDs);
+    }
+
     const announcementColumns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 50 },
         {
@@ -327,21 +375,21 @@ export default function AnnouncementsTable({
             width: 180,
             field: `name`,
             headerName: `Title`,
-            valueGetter: (_value: any, row: any) => String(row?.name || row?.title || ``),
+            valueGetter: (_value: any, row: any) => String(row?.name || ``),
             renderCell: ({ row, value }: any) => (
                 canManageAnnouncements ? (
                     <EditableCell
                         mode={`text`}
                         value={value}
-                        showActions={false}
-                        showStepper={false}
+                        canEdit={true}
                         saveOnEnter={true}
                         cancelOnBlur={true}
-                        canEdit={true}
-                        pendingValue={(pendingAnnouncementNameByID?.[String(row?.id)] ?? optimisticAnnouncementNameByID?.[String(row?.id)])}
-                        onChangeValue={(next: string) => onChangeAnnouncementNameDraft(row, next)}
+                        showActions={false}
+                        showStepper={false}
                         onCancel={() => onCancelAnnouncementNameDraft(row)}
+                        onChangeValue={(next: string) => onChangeAnnouncementNameDraft(row, next)}
                         onSave={(next: string, original: string) => onSaveAnnouncementNameDraft(row, next, original)}
+                        pendingValue={(pendingAnnouncementNameByID?.[String(row?.id)] ?? optimisticAnnouncementNameByID?.[String(row?.id)])}
                     />
                 ) : (
                     <span className={`announcementNameCell lineClamp1`}>
@@ -390,9 +438,12 @@ export default function AnnouncementsTable({
             renderCell: ({ row }: any) => (
                 <AnnouncementActionsCell
                     row={row}
+                    rows={visibleAnnouncements}
                     onEdit={setQuickEditAnnouncement}
-                    quickEditing={quickEditAnnouncement?.id == row?.id}
                     canManageAnnouncements={canManageAnnouncements}
+                    selectedAnnouncementIDs={selectedAnnouncementIDs}
+                    quickEditing={quickEditAnnouncement?.id == row?.id}
+                    setSelectedAnnouncementIDs={setSelectedAnnouncementIDs}
                 />
             ),
         },
@@ -413,6 +464,10 @@ export default function AnnouncementsTable({
                     onCellClick: ({ row, field }: any) => {
                         if (field == `actions`) return;
                         openAnnouncementDetails(row);
+                    },
+                    onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
+                        const ids = Array.from(selectionModel?.ids || [])?.map(id => String(id));
+                        onSelectedRowsChange(ids);
                     },
                 }}
                 title={(

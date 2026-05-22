@@ -2,29 +2,23 @@
 
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
-import { Close, DoDisturb, OpenInFull, Save } from '@mui/icons-material';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import RichTextEditorField from '@/app/components/rich-text/rich-text';
-import { richTextToPlainText } from '@/app/components/rich-text/rich-text';
-import { StateGlobals } from '@/shared/global-context';
 import { Roles, Types } from '@/shared/types/types';
+import { StateGlobals } from '@/shared/global-context';
+import RichTextEditorField from '@/app/components/rich-text/rich-text';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Close, DoDisturb, OpenInFull, Save } from '@mui/icons-material';
+import { richTextToPlainText } from '@/app/components/rich-text/rich-text';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
-import { addAnnouncementToDatabase, updateAnnouncementInDatabase } from '@/shared/server/firebase';
 import { capWords, getNextCollectionNumber, minRole } from '@/shared/scripts/constants';
-import AnnouncementSelectField, {
-    announcementIconColors,
-    announcementIconOptions,
-    announcementIcons,
-    announcementStatusColors,
-    announcementStatusIcons,
-} from './announcement-select-field';
+import { addAnnouncementToDatabase, updateAnnouncementInDatabase } from '@/shared/server/firebase';
+import AnnouncementSelectField, { announcementIconColors, announcementIconOptions, announcementIcons, announcementStatusColors, announcementStatusIcons } from './announcement-select-field';
 
 export const defaultAnnouncementForm = {
-    number: 1,
     name: ``,
+    number: 1,
     description: ``,
+    icon: `Announcement`,
     status: AnnouncementStatus.Draft,
-    icon: `Campaign`,
 };
 
 type AnnouncementFormProps = {
@@ -40,11 +34,14 @@ type AnnouncementFormProps = {
     onFullEdit?: (announcement: Announcement | null) => void;
 };
 
-const comparableFields = [`number`, `name`, `description`, `status`, `icon`] as const;
+const comparableSelectFields = [`icon`, `status`] as const;
+const comparableFields = [`number`, `name`, `description`] as const;
 
 const getAnnouncementForm = (announcement: Announcement | null | undefined, number: number) => {
     const editing = Boolean(announcement?.id);
-    const status = String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft) || AnnouncementStatus.Draft);
+    const status = String(announcement?.status || (
+        announcement?.active ? AnnouncementStatus.Active : defaultAnnouncementForm?.status
+    ) || defaultAnnouncementForm?.status);
     return {
         status,
         editing,
@@ -52,14 +49,17 @@ const getAnnouncementForm = (announcement: Announcement | null | undefined, numb
         title: announcement?.title,
         created: announcement?.created,
         updated: announcement?.updated,
-        icon: announcement?.icon || `Campaign`,
-        description: announcement?.description || ``,
         number: Number(announcement?.number || number),
-        name: announcement?.name || announcement?.title || ``,
+        icon: announcement?.icon || defaultAnnouncementForm?.icon,
+        name: announcement?.name || defaultAnnouncementForm?.name,
+        description: announcement?.description || defaultAnnouncementForm?.description,
     };
 };
 
-const getComparableAnnouncementForm = (source: any) => comparableFields.reduce((acc: any, key) => ({
+const getComparableAnnouncementForm = (source: any, includeSelectFields = true) => ([
+    ...comparableFields,
+    ...(includeSelectFields ? comparableSelectFields : []),
+]).reduce((acc: any, key) => ({
     ...acc,
     [key]: source?.[key] ?? ``,
 }), {});
@@ -77,19 +77,20 @@ export default function AnnouncementForm({
     className = ``,
     funsized = false,
     onSaved = () => {},
-    onClose = undefined,
     announcement = null,
+    onClose = undefined,
     onFullEdit = undefined,
     onCancelEdit = undefined,
     formId = `announcement-form`,
 }: AnnouncementFormProps) {
     const formRef = useRef<HTMLFormElement | null>(null);
     const { user, announcements = [] } = useContext<any>(StateGlobals);
+    const [saving, setSaving] = useState(false);
     const canManageAnnouncements = minRole(user?.role, Roles.Administrator);
     const nextAnnouncementNumber = useMemo(() => getNextCollectionNumber(announcements), [announcements]);
-    const [saving, setSaving] = useState(false);
     const [form, setForm] = useState(() => getAnnouncementForm(announcement, nextAnnouncementNumber));
     const formValueRef = useRef<any>(getAnnouncementForm(announcement, nextAnnouncementNumber));
+
     const compact = widget || !full;
 
     const setFormValue = (nextForm: any) => {
@@ -128,8 +129,9 @@ export default function AnnouncementForm({
     };
 
     const isFormDirty = () => {
-        const currentComparable = JSON.stringify(getComparableAnnouncementForm(form));
-        const initialComparable = JSON.stringify(getComparableAnnouncementForm(getAnnouncementForm(announcement, nextAnnouncementNumber)));
+        const includeSelectFields = !widget || Boolean(announcement?.id);
+        const currentComparable = JSON.stringify(getComparableAnnouncementForm(form, includeSelectFields));
+        const initialComparable = JSON.stringify(getComparableAnnouncementForm(getAnnouncementForm(announcement, nextAnnouncementNumber), includeSelectFields));
         return currentComparable != initialComparable;
     };
 
@@ -143,11 +145,13 @@ export default function AnnouncementForm({
     const saveAnnouncement = async (e?: any) => {
         e?.preventDefault?.();
         if (!canManageAnnouncements || saving) return;
-        const currentForm = formValueRef.current || form;
-        const safeName = capWords(String(currentForm?.name || ``).trim() || `Announcement ${currentForm?.number || nextAnnouncementNumber}`);
+        const defaultAnnouncementTitle = ``;
+        const currentForm = formValueRef?.current || form;
+        // const defaultAnnouncement = `Announcement ${currentForm?.number || nextAnnouncementNumber}`;
+        const safeName = capWords(String(currentForm?.name || ``).trim() || defaultAnnouncementTitle);
         const number = Number(currentForm?.number || nextAnnouncementNumber);
-        const status = String(currentForm?.status || AnnouncementStatus.Draft);
-        const icon = String(currentForm?.icon || `Campaign`);
+        const status = String(currentForm?.status || defaultAnnouncementForm?.status);
+        const icon = String(currentForm?.icon || defaultAnnouncementForm?.icon);
         const announcementToSave = {
             ...(announcement || {}),
             ...currentForm,
@@ -156,15 +160,15 @@ export default function AnnouncementForm({
             number,
             name: safeName,
             active: status == AnnouncementStatus.Active,
-            description: currentForm?.description || ``,
+            description: currentForm?.description || defaultAnnouncementForm?.description,
         };
         const safeAnnouncementToSave = JSON.parse(JSON.stringify(announcementToSave));
         const announcementModel = new Announcement(safeAnnouncementToSave);
         try {
             setSaving(true);
-            const savedAnnouncement = announcement?.id
-                ? await updateAnnouncementInDatabase(String(announcement?.id), safeAnnouncementToSave)
-                : await addAnnouncementToDatabase(announcementModel);
+            const savedAnnouncement = announcement?.id ? (
+                await updateAnnouncementInDatabase(String(announcement?.id), safeAnnouncementToSave)
+            ) : await addAnnouncementToDatabase(announcementModel);
             toast.success(announcement?.id ? `Announcement Updated` : `Announcement Added`);
             onSaved(savedAnnouncement as Announcement);
             if (!announcement?.id) clearAnnouncementForm();
@@ -183,7 +187,7 @@ export default function AnnouncementForm({
         </div>
     );
 
-    const actionDisabled = saving || !String(form?.name || ``).trim() || !isFormDirty();
+    const actionDisabled = saving || !String(form?.description || ``).trim() || !isFormDirty();
     const showWidgetDirtyActions = !(widget && funsized) || isFormDirty();
 
     return (
@@ -241,43 +245,35 @@ export default function AnnouncementForm({
 
                 {compact ? (
                     <div className={`productFormGrid productTextGrid`}>
-                        <AnnouncementField 
-                            required 
-                            name={`name`} 
-                            type={`text`} 
-                            label={`Title`} 
-                            value={form?.name} 
-                            funsized={funsized} 
-                            onChange={updateForm} 
+                        <AnnouncementSelectField
+                            search={false}
+                            label={`Icon`}
+                            value={form?.icon}
+                            showLabel={!funsized}
+                            icons={announcementIcons}
+                            colors={announcementIconColors}
+                            options={announcementIconOptions}
+                            onChange={(value: string) => updateFormValue(`icon`, value)}
+                            className={`announcementIconSelectField announcementFormSelectField`}
                         />
-                        <AnnouncementField 
-                            type={`text`} 
-                            label={`Message`} 
-                            funsized={funsized} 
-                            name={`description`} 
-                            onChange={updateForm} 
-                            value={richTextToPlainText(form?.description) || form?.description} 
+                        <AnnouncementField
+                            name={`name`}
+                            type={`text`}
+                            label={`Title`}
+                            value={form?.name}
+                            funsized={funsized}
+                            onChange={updateForm}
+                            className={`announcementFormTextField announcementFormTitleField`}
                         />
-                    </div>
-                ) : (
-                    <div className={`productFormGrid`}>
-                        <AnnouncementField 
-                            disabled={true} 
-                            name={`number`} 
-                            type={`number`} 
-                            label={`Number`} 
-                            funsized={funsized} 
-                            value={form?.number} 
-                            onChange={updateForm} 
-                        />
-                        <AnnouncementField 
-                            required 
-                            name={`name`} 
-                            type={`text`} 
-                            value={form?.name} 
-                            funsized={funsized} 
-                            onChange={updateForm} 
-                            label={`Announcement Title`} 
+                        <AnnouncementField
+                            required
+                            type={`text`}
+                            label={`Message`}
+                            funsized={funsized}
+                            name={`description`}
+                            onChange={updateForm}
+                            className={`announcementFormTextField announcementFormMessageField`}
+                            value={richTextToPlainText(form?.description, true) || form?.description}
                         />
                         <AnnouncementSelectField
                             search={false}
@@ -286,9 +282,40 @@ export default function AnnouncementForm({
                             showLabel={!funsized}
                             icons={announcementStatusIcons}
                             colors={announcementStatusColors}
-                            className={`announcementStatusSelectField`}
                             options={Object.values(AnnouncementStatus)}
                             onChange={(value: string) => updateFormValue(`status`, value)}
+                            className={`announcementStatusSelectField productStatusSelectField announcementFormSelectField`}
+                        />
+                    </div>
+                ) : (
+                    <div className={`productFormGrid`}>
+                        <AnnouncementField
+                            disabled={true}
+                            name={`number`}
+                            type={`number`}
+                            label={`Number`}
+                            funsized={funsized}
+                            value={form?.number}
+                            onChange={updateForm}
+                        />
+                        <AnnouncementField
+                            name={`name`}
+                            type={`text`}
+                            value={form?.name}
+                            funsized={funsized}
+                            onChange={updateForm}
+                            label={`Announcement Title`}
+                        />
+                        <AnnouncementSelectField
+                            search={false}
+                            label={`Status`}
+                            value={form?.status}
+                            showLabel={!funsized}
+                            icons={announcementStatusIcons}
+                            colors={announcementStatusColors}
+                            options={Object.values(AnnouncementStatus)}
+                            onChange={(value: string) => updateFormValue(`status`, value)}
+                            className={`announcementStatusSelectField productStatusSelectField`}
                         />
                         <AnnouncementSelectField
                             search={false}

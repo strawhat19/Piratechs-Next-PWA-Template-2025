@@ -76,6 +76,7 @@ export default function HorizontalScroller({
     items?: HorizontalScrollerItem[];
 }) {
     const { announcements = [], announcementsLoading = false } = useContext<any>(StateGlobals);
+
     const announcementItems = useMemo(() => {
         if (announcementsLoading || !Array.isArray(announcements) || announcements.length <= 0) return [];
         return announcements
@@ -85,18 +86,20 @@ export default function HorizontalScroller({
                 const value = (richTextToPlainText(announcement?.description) || String(announcement?.name || title || ``).trim());
                 return value ? {
                     title,
-                    value,
+                    value: `${title} - ${value}`,
                     icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
                 } : null;
             })
             ?.filter(Boolean) as HorizontalScrollerItem[];
     }, [announcements, announcementsLoading]);
-    const scrollerItems = (items?.length ? items : announcementItems?.length ? announcementItems : defaultMessages)
+
+    const databaseScrollerItems = (items?.length ? items : announcementItems?.length ? announcementItems : defaultMessages)
         ?.filter((item: HorizontalScrollerItem | null) => item?.value)
         ?.map((item: HorizontalScrollerItem) => ({
             icon: item?.icon,
             value: String(item?.value || ``),
         }));
+    const scrollerItems = databaseScrollerItems?.length < 10 ? [ ...databaseScrollerItems, /* ...defaultMessages */ ] : databaseScrollerItems;
 
     if (scrollerItems?.length <= 0) return null;
 

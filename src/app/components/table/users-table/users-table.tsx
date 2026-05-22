@@ -114,8 +114,7 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
         <TableStatus label={statusLabel} color={statusColor} />
         <div className={`actions`}>
             {minRole(user?.role, Roles.Editor) ? <>
-                <Icon_Button title="Edit User" size="small"
-                    className="actionIconButton editAction"
+                <Icon_Button title="Edit User" size="small" className="actionIconButton editAction" 
                     onClick={(e: any) => {
                         e.stopPropagation();
                         onEditUser();
@@ -126,22 +125,21 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
             </> : <></>}
             {canManage ? <>
                 {online ? (
-                    <Icon_Button title="Sign User Out" size="small"
-                    className="actionIconButton signOutAction"
-                    onClick={(e: any) => {
-                        e.stopPropagation();
-                        onSignUserOut();
-                    }}>
+                    <Icon_Button title="Sign User Out" size="small" className="actionIconButton signOutAction grayAction" 
+                        onClick={(e: any) => {
+                            e.stopPropagation();
+                            onSignUserOut();
+                        }}
+                    >
                         <Logout fontSize="small" />
                     </Icon_Button>
                 ) : (
-                <Icon_Button title="Delete User" size="small"
-                    className="actionIconButton deleteAction"
+                <Icon_Button title="Delete User" size="small" className="actionIconButton deleteAction"
                     onClick={(e: any) => {
                         e.stopPropagation();
                         onDeleteUser();
                     }}
-                    >
+                >
                         <Delete fontSize="small" />
                 </Icon_Button>
                 )}

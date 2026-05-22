@@ -41,6 +41,7 @@ const escapeHtml = (value: string) => value
   .replace(/'/g, '&#39;');
 
 const isBlankRichText = (value: string) => /^(?:<p><br><\/p>|<p>&nbsp;<\/p>|<div><br><\/div>|\s*)$/i.test(value);
+const hasRichTextMarkup = (value: string) => /<\/?[a-z][\s\S]*>/i.test(value);
 
 export const normalizeRichTextValue = (value?: string) => {
   const text = String(value ?? ``).trim();
@@ -55,8 +56,11 @@ export const toRichTextMarkup = (value?: string) => {
   return escapeHtml(text).replace(/\n/g, `<br />`);
 };
 
-export const richTextToPlainText = (value?: string) => {
-  const text = normalizeRichTextValue(value);
+export const richTextToPlainText = (value?: string, preserveSpaces = false) => {
+  const rawText = String(value ?? ``);
+  if (!rawText) return ``;
+  if (preserveSpaces && !hasRichTextMarkup(rawText)) return rawText;
+  const text = normalizeRichTextValue(rawText);
   if (!text) return ``;
   return text
     .replace(/<\s*br\s*\/?\s*>/gi, ` `)
