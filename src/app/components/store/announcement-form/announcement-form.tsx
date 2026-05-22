@@ -1,7 +1,7 @@
 'use client';
 
 import { toast } from 'react-toastify';
-import { Button } from '@mui/material';
+import { Button, Switch } from '@mui/material';
 import { Roles, Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
 import RichTextEditorField from '@/app/components/rich-text/rich-text';
@@ -17,6 +17,7 @@ export const defaultAnnouncementForm = {
     name: ``,
     number: 1,
     description: ``,
+    showTitle: false,
     icon: `Announcement`,
     status: AnnouncementStatus.Draft,
 };
@@ -34,8 +35,8 @@ type AnnouncementFormProps = {
     onFullEdit?: (announcement: Announcement | null) => void;
 };
 
+const comparableFields = [`number`, `name`, `description`, `showTitle`] as const;
 const comparableSelectFields = [`icon`, `status`] as const;
-const comparableFields = [`number`, `name`, `description`] as const;
 
 const getAnnouncementForm = (announcement: Announcement | null | undefined, number: number) => {
     const editing = Boolean(announcement?.id);
@@ -53,6 +54,7 @@ const getAnnouncementForm = (announcement: Announcement | null | undefined, numb
         icon: announcement?.icon || defaultAnnouncementForm?.icon,
         name: announcement?.name || defaultAnnouncementForm?.name,
         description: announcement?.description || defaultAnnouncementForm?.description,
+        showTitle: Boolean(announcement?.showTitle ?? defaultAnnouncementForm?.showTitle),
     };
 };
 
@@ -68,6 +70,27 @@ const AnnouncementField = ({ label, funsized = false, showInput = true, ...props
     <label className={`productField`}>
         {!funsized && <span>{label}</span>}
         {showInput && <input placeholder={label} {...props} />}
+    </label>
+);
+
+const AnnouncementToggleField = ({ label, funsized = false, value = false, onChange = () => {}, className = ``, ...props }: any) => (
+    <label className={`productField announcementFormToggleField ${className}`.trim()}>
+        {!funsized && <span>{label}</span>}
+        <Switch
+            size={`small`}
+            checked={Boolean(value)}
+            onChange={(_event, checked) => onChange(checked)}
+            slotProps={{ input: { 'aria-label': label } }}
+            sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: `var(--green_neon)`,
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: `var(--green_neon)`,
+                },
+            }}
+            {...props}
+        />
     </label>
 );
 
@@ -113,6 +136,7 @@ export default function AnnouncementForm({
         announcement?.number,
         announcement?.status,
         announcement?.icon,
+        announcement?.showTitle,
         announcement?.active,
         nextAnnouncementNumber,
     ]);
@@ -130,8 +154,13 @@ export default function AnnouncementForm({
 
     const isFormSame = () => {
         const includeSelectFields = !widget || Boolean(announcement?.id);
-        const currentComparable = JSON.stringify(getComparableAnnouncementForm(form, includeSelectFields));
-        const initialComparable = JSON.stringify(getComparableAnnouncementForm(getAnnouncementForm(announcement, nextAnnouncementNumber), includeSelectFields));
+        const { name, description } = form;
+        const cf = { name, description };
+        const announcementForm = getAnnouncementForm(announcement, nextAnnouncementNumber);
+        const { name: nameaf, description: descriptionaf } = announcementForm;
+        const af = { name: nameaf, description: descriptionaf };
+        const currentComparable = JSON.stringify(getComparableAnnouncementForm(cf, includeSelectFields));
+        const initialComparable = JSON.stringify(getComparableAnnouncementForm(af, includeSelectFields));
         return currentComparable != initialComparable;
     };
 
@@ -164,6 +193,7 @@ export default function AnnouncementForm({
             icon,
             status,
             number,
+            showTitle: Boolean(currentForm?.showTitle ?? defaultAnnouncementForm?.showTitle),
             name: safeName,
             active: status == AnnouncementStatus.Active,
             description: currentForm?.description || defaultAnnouncementForm?.description,
@@ -261,6 +291,13 @@ export default function AnnouncementForm({
                             options={announcementIconOptions}
                             onChange={(value: string) => updateFormValue(`icon`, value)}
                             className={`announcementIconSelectField announcementFormSelectField`}
+                        />
+                        <AnnouncementToggleField
+                            label={`Show Title`}
+                            funsized={funsized}
+                            value={form?.showTitle}
+                            className={`announcementFormToggleField`}
+                            onChange={(checked: boolean) => updateFormValue(`showTitle`, checked)}
                         />
                         <AnnouncementField
                             name={`name`}

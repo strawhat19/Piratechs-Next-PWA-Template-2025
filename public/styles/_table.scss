@@ -191,14 +191,13 @@
       position: relative;
     }
     &.announcementFormSelectField {
+      top: 5px;
       min-width: 132px;
       max-width: 132px;
+      position: relative;
       &.announcementIconSelectField  {
         min-width: 162px;
         max-width: 162px;
-      }
-      .tableDropDown {
-        top: 2px;
       }
     }
   }
@@ -220,12 +219,18 @@
   min-height: 32px;
   align-items: center;
   justify-content: center;
-  .MuiSwitch-root {
-    margin: 0;
-    &:not(:has(.Mui-checked)) {
-      .MuiSwitch-thumb {
-        background: var(--buttons);
-      }
+}
+
+.MuiSwitch-root {
+  margin: 0;
+  &:has(.Mui-checked) {
+    .MuiSwitch-thumb {
+      background: var(--green_neon);
+    }
+  }
+  &:not(:has(.Mui-checked)) {
+    .MuiSwitch-thumb {
+      background: var(--buttons);
     }
   }
 }

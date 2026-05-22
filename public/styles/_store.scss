@@ -95,6 +95,22 @@
     justify-content: space-between;
 }
 
+.announcementFormToggleField {
+    gap: 10px;
+    padding: 0;
+    display: flex;
+    min-height: 36px;
+    align-items: center;
+    background: var(--navy);
+    min-width: 45px !important;
+    justify-content: space-between;
+    border-radius: var(--borderRadius);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+    .MuiSwitch-root {
+        margin-right: -8px;
+    }
+}
+
 .productStatusSelectField {
     width: 100%;
     max-width: 165px;
