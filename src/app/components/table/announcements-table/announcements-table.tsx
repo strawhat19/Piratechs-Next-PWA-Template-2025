@@ -67,15 +67,15 @@ const AnnouncementStatusCell = ({ row }: any) => {
     return (
         <AnnouncementSelectField
             search={false}
-            showLabel={false}
             showText={true}
             label={`Status`}
+            showLabel={false}
             value={currentStatus}
-            options={Object.values(AnnouncementStatus)}
+            onChange={updateStatus}
             icons={announcementStatusIcons}
             colors={announcementStatusColors}
-            onChange={updateStatus}
             className={`announcementStatusCellField`}
+            options={Object.values(AnnouncementStatus)}
         />
     );
 };
@@ -99,14 +99,14 @@ const AnnouncementIconCell = ({ row }: any) => {
     return (
         <AnnouncementSelectField
             search={false}
-            showLabel={false}
-            showText={false}
             label={`Icon`}
+            showText={false}
+            showLabel={false}
             value={currentIcon}
-            options={announcementIconOptions}
+            onChange={updateIcon}
             icons={announcementIcons}
             colors={announcementIconColors}
-            onChange={updateIcon}
+            options={announcementIconOptions}
             className={`announcementIconCellField`}
         />
     );
@@ -319,9 +319,9 @@ export default function AnnouncementsTable({
             renderCell: ({ row }: any) => <AnnouncementIconCell row={row} />,
         },
         {
-            field: `name`,
             width: 180,
-            headerName: `Announcement`,
+            field: `name`,
+            headerName: `Title`,
             valueGetter: (_value: any, row: any) => String(row?.name || row?.title || ``),
             renderCell: ({ row, value }: any) => (
                 canManageAnnouncements ? (
@@ -346,9 +346,9 @@ export default function AnnouncementsTable({
             ),
         },
         {
-            field: `description`,
             flex: 1,
-            minWidth: 260,
+            maxWidth: 235,
+            field: `description`,
             headerName: `Message`,
             valueGetter: (_value: any, row: any) => richTextToPlainText(row?.description) || String(row?.name || ``),
             renderCell: ({ row, value }: any) => (
@@ -356,11 +356,11 @@ export default function AnnouncementsTable({
                     <EditableCell
                         mode={`text`}
                         value={value}
-                        showActions={false}
-                        showStepper={false}
-                        saveOnEnter={true}
-                        cancelOnBlur={true}
                         canEdit={true}
+                        saveOnEnter={true}
+                        showStepper={false}
+                        cancelOnBlur={true}
+                        showActions={false}
                         pendingValue={(pendingAnnouncementMessageByID?.[String(row?.id)] ?? optimisticAnnouncementMessageByID?.[String(row?.id)])}
                         onChangeValue={(next: string) => onChangeAnnouncementMessageDraft(row, next)}
                         onCancel={() => onCancelAnnouncementMessageDraft(row)}

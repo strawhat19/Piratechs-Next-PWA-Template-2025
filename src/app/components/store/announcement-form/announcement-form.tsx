@@ -30,12 +30,12 @@ export const defaultAnnouncementForm = {
 type AnnouncementFormProps = {
     full?: boolean;
     widget?: boolean;
+    formId?: string;
     funsized?: boolean;
     className?: string;
-    formId?: string;
     onClose?: () => void;
-    announcement?: Announcement | null;
     onCancelEdit?: () => void;
+    announcement?: Announcement | null;
     onSaved?: (announcement: Announcement) => void;
     onFullEdit?: (announcement: Announcement | null) => void;
 };
@@ -46,16 +46,16 @@ const getAnnouncementForm = (announcement: Announcement | null | undefined, numb
     const editing = Boolean(announcement?.id);
     const status = String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft) || AnnouncementStatus.Draft);
     return {
-        number: Number(announcement?.number || number),
-        name: announcement?.name || announcement?.title || ``,
-        description: announcement?.description || ``,
         status,
-        icon: announcement?.icon || `Campaign`,
+        editing,
         id: announcement?.id,
+        title: announcement?.title,
         created: announcement?.created,
         updated: announcement?.updated,
-        title: announcement?.title,
-        editing,
+        icon: announcement?.icon || `Campaign`,
+        description: announcement?.description || ``,
+        number: Number(announcement?.number || number),
+        name: announcement?.name || announcement?.title || ``,
     };
 };
 
@@ -74,14 +74,14 @@ const AnnouncementField = ({ label, funsized = false, showInput = true, ...props
 export default function AnnouncementForm({
     full = false,
     widget = false,
-    funsized = false,
     className = ``,
-    formId = `announcement-form`,
+    funsized = false,
+    onSaved = () => {},
     onClose = undefined,
     announcement = null,
-    onSaved = () => {},
     onFullEdit = undefined,
     onCancelEdit = undefined,
+    formId = `announcement-form`,
 }: AnnouncementFormProps) {
     const formRef = useRef<HTMLFormElement | null>(null);
     const { user, announcements = [] } = useContext<any>(StateGlobals);
@@ -151,16 +151,15 @@ export default function AnnouncementForm({
         const announcementToSave = {
             ...(announcement || {}),
             ...currentForm,
+            icon,
+            status,
             number,
             name: safeName,
-            status,
-            icon,
             active: status == AnnouncementStatus.Active,
             description: currentForm?.description || ``,
         };
         const safeAnnouncementToSave = JSON.parse(JSON.stringify(announcementToSave));
         const announcementModel = new Announcement(safeAnnouncementToSave);
-
         try {
             setSaving(true);
             const savedAnnouncement = announcement?.id
@@ -230,8 +229,8 @@ export default function AnnouncementForm({
                             {announcement?.id && onFullEdit ? (
                                 <Button
                                     type={`button`}
-                                    onClick={() => onFullEdit(new Announcement({ ...(announcement || {}), ...formValueRef.current, name: formValueRef.current?.name || announcement?.name || Types.Announcement }))}
                                     className={`productFormButton`}
+                                    onClick={() => onFullEdit(new Announcement({ ...(announcement || {}), ...formValueRef.current, name: formValueRef.current?.name || announcement?.name || Types.Announcement }))}
                                 >
                                     <OpenInFull fontSize={`small`} /> Full
                                 </Button>
@@ -242,34 +241,65 @@ export default function AnnouncementForm({
 
                 {compact ? (
                     <div className={`productFormGrid productTextGrid`}>
-                        <AnnouncementField funsized={funsized} label={`Announcement Title`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
-                        <AnnouncementField funsized={funsized} label={`Message`} name={`description`} type={`text`} value={richTextToPlainText(form?.description) || form?.description} onChange={updateForm} />
+                        <AnnouncementField 
+                            required 
+                            name={`name`} 
+                            type={`text`} 
+                            value={form?.name} 
+                            funsized={funsized} 
+                            onChange={updateForm} 
+                            label={`Announcement Title`} 
+                        />
+                        <AnnouncementField 
+                            type={`text`} 
+                            label={`Message`} 
+                            funsized={funsized} 
+                            name={`description`} 
+                            onChange={updateForm} 
+                            value={richTextToPlainText(form?.description) || form?.description} 
+                        />
                     </div>
                 ) : (
                     <div className={`productFormGrid`}>
-                        <AnnouncementField funsized={funsized} disabled={true} label={`Number`} name={`number`} type={`number`} value={form?.number} onChange={updateForm} />
-                        <AnnouncementField funsized={funsized} label={`Announcement Title`} name={`name`} type={`text`} value={form?.name} onChange={updateForm} required />
-                        <AnnouncementSelectField
-                            label={`Status`}
-                            value={form?.status}
-                            options={Object.values(AnnouncementStatus)}
-                            icons={announcementStatusIcons}
-                            colors={announcementStatusColors}
-                            onChange={(value: string) => updateFormValue(`status`, value)}
-                            className={`announcementStatusSelectField`}
-                            showLabel={!funsized}
-                            search={false}
+                        <AnnouncementField 
+                            disabled={true} 
+                            name={`number`} 
+                            type={`number`} 
+                            label={`Number`} 
+                            funsized={funsized} 
+                            value={form?.number} 
+                            onChange={updateForm} 
+                        />
+                        <AnnouncementField 
+                            required 
+                            name={`name`} 
+                            type={`text`} 
+                            value={form?.name} 
+                            funsized={funsized} 
+                            onChange={updateForm} 
+                            label={`Announcement Title`} 
                         />
                         <AnnouncementSelectField
+                            search={false}
+                            label={`Status`}
+                            value={form?.status}
+                            showLabel={!funsized}
+                            icons={announcementStatusIcons}
+                            colors={announcementStatusColors}
+                            className={`announcementStatusSelectField`}
+                            options={Object.values(AnnouncementStatus)}
+                            onChange={(value: string) => updateFormValue(`status`, value)}
+                        />
+                        <AnnouncementSelectField
+                            search={false}
                             label={`Icon`}
                             value={form?.icon}
-                            options={announcementIconOptions}
+                            showLabel={!funsized}
                             icons={announcementIcons}
                             colors={announcementIconColors}
-                            onChange={(value: string) => updateFormValue(`icon`, value)}
+                            options={announcementIconOptions}
                             className={`announcementIconSelectField`}
-                            showLabel={!funsized}
-                            search={false}
+                            onChange={(value: string) => updateFormValue(`icon`, value)}
                         />
                 </div>
                 )}
@@ -277,10 +307,10 @@ export default function AnnouncementForm({
                 {!compact ? (
                     <div className={`productFormGrid productTextGrid`}>
                         <RichTextEditorField
-                            label={`Message`}
-                            className={`productTextAreaField announcementTextAreaField`}
                             minHeight={220}
+                            label={`Message`}
                             value={form?.description}
+                            className={`productTextAreaField announcementTextAreaField`}
                             onChange={(value: string) => updateFormValue(`description`, value)}
                         />
                     </div>
