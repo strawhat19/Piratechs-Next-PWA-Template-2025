@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function GalleryPage() {
     return (
-        <Container className={`galleryPage`}>
+        <Container className={`galleryPage`} topBarComponent={null}>
             <ImagesCarousel className={`galleryCarousel`} imageClassName={`galleryCarouselImage`} />
         </Container>
     )

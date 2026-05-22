@@ -4,9 +4,10 @@ import { Switch } from '@mui/material';
 
 type ToggleCellProps = {
     value?: boolean;
+    checked?: boolean;
+    canEdit?: boolean;
     className?: string;
     disabled?: boolean;
-    canEdit?: boolean;
     onChange?: (value: boolean) => void;
 };
 
@@ -16,24 +17,22 @@ export default function ToggleCell({
     className = ``,
     disabled = false,
     onChange = () => {},
+    checked = Boolean(value),
 }: ToggleCellProps) {
-    const checked = Boolean(value);
     const readOnly = disabled || !canEdit;
     const updateChecked = (_event: any, nextChecked: boolean) => {
         if (readOnly) return;
         onChange?.(nextChecked);
     };
     return (
-        <div
-            className={`toggleCell ${className}`.trim()}
-        >
+        <div className={`toggleCell ${className}`.trim()}>
             <Switch
                 size={`small`}
                 checked={checked}
                 disabled={readOnly}
+                onChange={updateChecked}
                 onClick={(event) => { if (!readOnly) event.stopPropagation(); }}
                 onMouseDown={(event) => { if (!readOnly) event.stopPropagation(); }}
-                onChange={updateChecked}
                 slotProps={{ input: { [`data-row-click-ignore`]: `true` } as any }}
                 sx={{
                     m: 0,

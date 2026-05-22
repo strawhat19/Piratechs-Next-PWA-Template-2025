@@ -14,6 +14,7 @@ import DialogComponent from '../dialog/dialog';
 import { ToastContainer } from 'react-toastify';
 import { constants, devEnv } from '@/shared/scripts/constants';
 import { getPageName, StateGlobals } from '@/shared/global-context';
+import HorizontalScroller from '../horizontal-scroller/horizontal-scroller';
 
 const BodyClassManager = ({ className }: { className: string }) => {
     useEffect(() => {
@@ -28,9 +29,9 @@ export default function Container({
     topBarStyle = {},
     showPageLogo = true, 
     showPageFooter = true, 
-    topBarComponent = null, 
     mainClassName = `mainClassName`,
     className = `containerComponent`,
+    topBarComponent = <HorizontalScroller />, 
     logoComponentClass = `logoComponentClass`,
     pageLogoComponentContainerEndComponent = null, 
     pageLogoComponentContainerStartComponent = null, 

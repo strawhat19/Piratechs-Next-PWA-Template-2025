@@ -1,15 +1,15 @@
 import Table from '../table';
-import EditableCell from '../editable-cell/editable-cell';
-import MenuTrigger from '../../menu/menu-trigger';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
-import { JSX, useContext, useEffect, useState } from 'react';
+import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
+import EditableCell from '../editable-cell/editable-cell';
+import { JSX, useContext, useEffect, useState } from 'react';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 // import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
@@ -209,10 +209,11 @@ export default function UsersTable({
                 <EditableCell
                     mode={`text`}
                     value={value}
-                    showActions={false}
-                    showStepper={false}
                     saveOnEnter={true}
                     cancelOnBlur={true}
+                    showActions={false}
+                    showStepper={false}
+                    placeholder={`Name`}
                     canEdit={minRole(user?.role, Roles.Editor)}
                     pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
                     onChangeValue={(next: string) => onChangeNameDraft(row, next)}

@@ -37,6 +37,7 @@ export default function EditableCell({
     value = ``,
     mode = `text`,
     canEdit = true,
+    placeholder = ``,
     valueFirst = true,
     onSave = () => {},
     showActions = true,
@@ -61,14 +62,18 @@ export default function EditableCell({
     const isDirty = `${currentSaveValue}` != `${originalValue}`;
     const minReached = numericMode ? Number(currentValue || 0) <= Number(min || 0) : false;
     const zeroNumber = numericMode && String(currentValue ?? ``).trim() != `` && Number(currentSaveValue || 0) === 0;
+
     const saveCurrent = () => onSave?.(currentSaveValue, originalValue);
+
     const cancelCurrent = () => {
         setDraftValue(originalValue);
         onCancel?.();
     };
+
     useEffect(() => {
         if (!focusedRef.current) setDraftValue(externalValue);
     }, [externalValue]);
+
     const handleInputKeyDown = (event: any) => {
         shieldTableKeys(event);
         if (numericMode) blockENotation(event);
@@ -85,25 +90,29 @@ export default function EditableCell({
             return;
         }
     };
+
     const handleInputChange = (event: any) => {
         const nextValue = numericMode ? cleanNumberDraft(event?.target?.value) : event?.target?.value;
         setDraftValue(nextValue);
     };
+
     const valueNode = renderValue ? renderValue(currentValue) : (
         <input
-            minLength={!numericMode && minLen ? minLen : undefined}
+            value={currentValue}
+            placeholder={placeholder}
+            onChange={handleInputChange}
+            onKeyDown={handleInputKeyDown}
             min={numericMode ? min : undefined}
             step={numericMode ? step : undefined}
             type={numericMode ? `number` : `text`}
-            inputMode={numericMode ? `decimal` : `text`}
-            value={currentValue}
-            onKeyDown={handleInputKeyDown}
-            onKeyUp={(event) => shieldTableKeys(event)}
-            onKeyDownCapture={(event) => markTableKeysHandled(event)}
             className={`editableCellInput stockText`}
+            onKeyUp={(event) => shieldTableKeys(event)}
             onClick={(event) => shieldTableKeys(event)}
-            onChange={handleInputChange}
+            inputMode={numericMode ? `decimal` : `text`}
             onMouseDown={(event) => shieldTableKeys(event)}
+            minLength={!numericMode && minLen ? minLen : undefined}
+            onKeyDownCapture={(event) => markTableKeysHandled(event)}
+            style={{ border: `none`, width: `100%`, color: zeroNumber ? `var(--error)` : `inherit`, background: `transparent` }}
             onFocus={(event) => {
                 focusedRef.current = true;
                 shieldTableKeys(event);
@@ -120,10 +129,11 @@ export default function EditableCell({
                 }
                 if (cancelOnBlur && isDirty) cancelCurrent();
             }}
-            style={{ border: `none`, width: `100%`, color: zeroNumber ? `var(--error)` : `inherit`, background: `transparent` }}
         />
     );
+
     if (!canEdit) return <>{renderValue ? renderValue(currentValue) : currentValue}</>;
+
     return (
         <div className={`editableCellWrap flexContainer`} style={{ width: `100%`, justifyContent: `flex-end`, gridGap: 15 }}>
             {valueFirst ? valueNode : null}

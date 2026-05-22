@@ -6,10 +6,10 @@ import { Item } from './types/models/Item';
 import { Task } from './types/models/Task';
 import { Board } from './types/models/Board';
 import { Product } from './types/models/Product';
-import { Announcement } from './types/models/Announcement';
 import { User } from '@/shared/types/models/User';
 import { Stock } from './types/models/stocks/Stock';
 import { Position } from './types/models/stocks/Position';
+import { Announcement } from './types/models/Announcement';
 import { Order as StoreOrder } from './types/models/Order';
 import { Order as StockOrder } from './types/models/stocks/Order';
 import { AuthStates, RobinhoodAccountTypes } from '@/shared/types/types';
@@ -24,9 +24,10 @@ import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userC
 
 export const StateGlobals = createContext({});
 
+export const minMsg = 5;
 export const minStocksLen = 235;
 export const minStockPositions = 15;
-export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen, minStockPositions };
+export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen, minStockPositions, minMsg };
 
 export const getFirstNumber = (str: string): number | null => {
   const match = str.match(/-?\d+(\.\d+)?/);

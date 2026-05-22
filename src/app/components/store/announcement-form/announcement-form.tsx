@@ -3,7 +3,7 @@
 import { toast } from 'react-toastify';
 import { Button, Switch } from '@mui/material';
 import { Roles, Types } from '@/shared/types/types';
-import { StateGlobals } from '@/shared/global-context';
+import { minMsg, StateGlobals } from '@/shared/global-context';
 import RichTextEditorField from '@/app/components/rich-text/rich-text';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Close, DoDisturb, OpenInFull, Save } from '@mui/icons-material';
@@ -293,7 +293,7 @@ export default function AnnouncementForm({
                             className={`announcementIconSelectField announcementFormSelectField`}
                         />
                         <AnnouncementToggleField
-                            label={`Show Title`}
+                            label={`Show Name`}
                             funsized={funsized}
                             value={form?.showTitle}
                             className={`announcementFormToggleField`}
@@ -302,7 +302,7 @@ export default function AnnouncementForm({
                         <AnnouncementField
                             name={`name`}
                             type={`text`}
-                            label={`Title`}
+                            label={`Name`}
                             value={form?.name}
                             funsized={funsized}
                             onChange={updateForm}
@@ -311,8 +311,8 @@ export default function AnnouncementForm({
                         <AnnouncementField
                             required
                             type={`text`}
-                            minLength={`5`}
                             label={`Message`}
+                            minLength={minMsg}
                             funsized={funsized}
                             name={`description`}
                             onChange={updateForm}

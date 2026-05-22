@@ -13,7 +13,6 @@ export default function StorePage() {
         <Container
             className={`storePage`}
             topBarStyle={{ padding: 0 }}
-            topBarComponent={<HorizontalScroller />}
         >
             <Store />
         </Container>

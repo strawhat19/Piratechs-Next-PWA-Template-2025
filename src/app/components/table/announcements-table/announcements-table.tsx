@@ -4,12 +4,12 @@ import Table from '../table';
 import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
 import { Roles, Types } from '@/shared/types/types';
-import { minRole } from '@/shared/scripts/constants';
-import { StateGlobals } from '@/shared/global-context';
-import { usePathname, useRouter } from 'next/navigation';
 import ToggleCell from '../toggle-cell/toggle-cell';
+import { minRole } from '@/shared/scripts/constants';
+import { usePathname, useRouter } from 'next/navigation';
 import EditableCell from '../editable-cell/editable-cell';
 import { Archive, Delete, Edit } from '@mui/icons-material';
+import { minMsg, StateGlobals } from '@/shared/global-context';
 import { richTextToPlainText } from '../../rich-text/rich-text';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { useContext, useEffect, useMemo, useState } from 'react';
@@ -18,10 +18,25 @@ import AnnouncementForm from '../../store/announcement-form/announcement-form';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import AnnouncementDetails from '../../store/announcement-details/announcement-details';
 import { deleteAnnouncementFromDatabase, updateAnnouncementInDatabase } from '@/shared/server/firebase';
-import TableStatus, { tableStatusBlue, tableStatusGray, tableStatusGreen, tableStatusRed } from '../table-status/table-status';
+import TableStatus, { tableStatusBlue, tableStatusGray, tableStatusGreen } from '../table-status/table-status';
 import AnnouncementSelectField, { announcementIconColors, announcementIconOptions, announcementIcons, announcementStatusColors, announcementStatusIcons } from '../../store/announcement-form/announcement-select-field';
 
 const announcementRoutePattern = /(?:^|\/)(?:store\/)?announcements?\/([^/?#]+)/i;
+const normalizeAnnouncementSelectionModel = (selectionModel: any = {}): GridRowSelectionModel => ({
+    type: selectionModel?.type == `exclude` ? `exclude` : `include`,
+    ids: selectionModel?.ids instanceof Set ? selectionModel?.ids : new Set(Array.isArray(selectionModel?.ids) ? selectionModel?.ids : []),
+});
+const createEmptyAnnouncementSelectionModel = (): GridRowSelectionModel => normalizeAnnouncementSelectionModel();
+const getSelectedAnnouncementIDs = (selectionModel: GridRowSelectionModel, rows: Announcement[] = []) => {
+    const rowIDs = rows?.map((row: Announcement) => String(row?.id)).filter(Boolean);
+    if (selectionModel?.type == `exclude`) {
+        return rowIDs?.filter(id => !selectionModel?.ids?.has?.(id));
+    }
+    return Array.from(selectionModel?.ids || [])?.map(id => String(id));
+};
+
+export const readyStatuses = [ AnnouncementStatus.Active, AnnouncementStatus.Draft ];
+export const deletableStatuses = [ AnnouncementStatus.Draft,  AnnouncementStatus.Archived ];
 
 const getAnnouncementStatus = (announcement: Announcement) => {
     const status = String(announcement?.status || (
@@ -31,7 +46,7 @@ const getAnnouncementStatus = (announcement: Announcement) => {
         [AnnouncementStatus.Draft]: tableStatusBlue,
         [AnnouncementStatus.Active]: tableStatusGreen,
         [AnnouncementStatus.Archived]: tableStatusGray,
-        [AnnouncementStatus.Unavailable]: tableStatusRed,
+        // [AnnouncementStatus.Unavailable]: tableStatusRed,
     };
     return {
         label: status,
@@ -114,18 +129,21 @@ const AnnouncementIconCell = ({ row }: any) => {
     );
 };
 
-const AnnouncementShowTitleCell = ({ row }: any) => {
+const AnnouncementToggleNameCell = ({ row, saving, setSaving }: any) => {
     const { user } = useContext<any>(StateGlobals);
     const canManageAnnouncements = minRole(user?.role, Roles.Administrator);
     const currentValue = Boolean(row?.showTitle);
     const updateShowTitle = async (nextShowTitle: boolean) => {
         if (!row?.id) return;
+        setSaving(true);
         try {
             await updateAnnouncementInDatabase(String(row?.id), { showTitle: nextShowTitle }, true);
+            setSaving(false);
             toast.success(`Announcement Show Title Updated`);
         } catch (error) {
+            setSaving(false);
             toast.error(`Announcement Show Title Update Failed`);
-            console.error(`Announcement Show Title Update Failed`, error);
+            console.log(`Announcement Show Title Update Failed`, error);
         }
     };
     return (
@@ -133,8 +151,9 @@ const AnnouncementShowTitleCell = ({ row }: any) => {
             value={currentValue}
             onChange={updateShowTitle}
             canEdit={canManageAnnouncements}
-            className={`announcementShowTitleCell`}
-            disabled={!row?.name || row?.name == ``}
+            className={`announcementToggleNameCell`}
+            checked={Boolean(currentValue && readyStatuses?.includes(row?.status))}
+            disabled={!row?.name || row?.name == `` || saving || !readyStatuses?.includes(row?.status)}
         />
     );
 };
@@ -146,21 +165,19 @@ const AnnouncementActionsCell = ({
     quickEditing = false,
     selectedAnnouncementIDs,
     actionLabel = `processing`,
-    setSelectedAnnouncementIDs,
+    clearSelectedAnnouncementRows,
     canManageAnnouncements = false,
 }: any) => {
     const { showConfirm } = useContext<any>(StateGlobals);
-    const rowDeletable = (rw: any = row) => [
-        AnnouncementStatus.Draft, 
-        AnnouncementStatus.Archived, 
-        AnnouncementStatus.Unavailable
-    ]?.includes(rw?.status);
+    const rowDeletable = (rw: any = row) => deletableStatuses?.includes(rw?.status);
     const selectedRows = rows?.filter((r: Announcement) => selectedAnnouncementIDs?.includes(r?.id));
     const deletableRows = selectedRows?.filter((r: Announcement) => rowDeletable(r));
     const archivableRows = selectedRows?.filter((r: Announcement) => !rowDeletable(r));
+    const deletableRowIDs = deletableRows?.map((announcement: Announcement) => String(announcement?.id)).filter(Boolean);
+    const archivableRowIDs = archivableRows?.map((announcement: Announcement) => String(announcement?.id)).filter(Boolean);
     const deleteAnnouncement = async (event: any) => {
         event.stopPropagation();
-        const delTitle = `Delete${deletableRows?.length > 0 ? ` ${deletableRows?.length}` : ``}`;
+        const delTitle = `Delete${deletableRowIDs?.length > 0 ? ` ${deletableRowIDs?.length}` : ``}`;
         const title = `${delTitle} Announcement(s)`;
         const confirmed = await showConfirm({
             title,
@@ -168,10 +185,10 @@ const AnnouncementActionsCell = ({
             confirmText: delTitle,
             cancelAction: { color: `var(--buttons)` },
             confirmAction: { color: `var(--error)`, className: `dialogDeleteAction`, icon: <Delete /> },
-            message: deletableRows?.length > 1 ? title : `Delete Announcement #${row?.number} "${row?.name}"?`,
+            message: deletableRowIDs?.length > 1 ? title : `Delete Announcement #${row?.number} "${row?.name}"?`,
         });
         if (!confirmed) return;
-        if (deletableRows?.length > 1) {
+        if (deletableRowIDs?.length > 1 && deletableRowIDs?.includes(row?.id)) {
             let failed = 0;
             let processed = 0;
             for (const announcement of deletableRows) {
@@ -186,20 +203,21 @@ const AnnouncementActionsCell = ({
                 }
             }
             // closeAppDialog(true);
-            setSelectedAnnouncementIDs([]);
+            clearSelectedAnnouncementRows?.();
             if (failed > 0) {
-                toast.warn(`${actionLabel} ${processed - failed}/${deletableRows?.length} Announcement(s)`);
+                toast.warn(`${actionLabel} ${processed - failed}/${deletableRowIDs?.length} Announcement(s)`);
                 return;
             }
             return;
         }
         await deleteAnnouncementFromDatabase(row, true)?.then(() => {
             toast.success(`Announcement Deleted`);
+            clearSelectedAnnouncementRows?.();
         });
     };
     const archiveAnnouncement = async (event: any) => {
         event.stopPropagation();
-        const archiveRows = selectedRows?.length > 1 ? (archivableRows?.length > 0 ? archivableRows : [row]) : [row];
+        const archiveRows = selectedRows?.length > 1 ? (archivableRowIDs?.length > 0 ? archivableRows : [row]) : [row];
         const targetRows = archiveRows?.filter((announcement: Announcement) => Boolean(announcement?.id));
         if (!targetRows?.length) return;
         const archiveTitle = `Archive${targetRows?.length > 1 ? ` ${targetRows?.length}` : ``}`;
@@ -228,7 +246,7 @@ const AnnouncementActionsCell = ({
                     await new Promise(resolve => requestAnimationFrame(() => resolve(true)));
                 }
             }
-            setSelectedAnnouncementIDs([]);
+            clearSelectedAnnouncementRows?.();
             if (failed > 0) {
                 toast.warn(`Archived ${processed - failed}/${targetRows?.length} Announcement(s)`);
                 return;
@@ -238,6 +256,7 @@ const AnnouncementActionsCell = ({
         }
         await updateAnnouncementInDatabase(String(targetAnnouncement?.id), { status: AnnouncementStatus.Archived, active: false }, true)?.then(() => {
             toast.success(`Announcement Archived`);
+            clearSelectedAnnouncementRows?.();
         });
     };
     return (
@@ -291,6 +310,8 @@ export default function AnnouncementsTable({
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
+    const [announcementSelectionModel, setAnnouncementSelectionModel] = useState<GridRowSelectionModel>(() => createEmptyAnnouncementSelectionModel());
+    const [saving, setSaving] = useState<boolean>(false);
     const [selectedAnnouncementIDs, setSelectedAnnouncementIDs] = useState<string[]>([]);
     const { user, announcements = [], announcementsLoading = false } = useContext<any>(StateGlobals);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
@@ -336,6 +357,12 @@ export default function AnnouncementsTable({
         });
     }, [visibleAnnouncements]);
 
+    const clearSelectedAnnouncementRows = () => {
+        const nextSelectionModel = createEmptyAnnouncementSelectionModel();
+        setAnnouncementSelectionModel(nextSelectionModel);
+        setSelectedAnnouncementIDs([]);
+    };
+
     const onChangeAnnouncementNameDraft = (row: Announcement, nextName: string) => {
         setPendingAnnouncementNameByID(prev => ({ ...prev, [String(row?.id)]: nextName }));
     };
@@ -353,17 +380,20 @@ export default function AnnouncementsTable({
         const safeName = String(nextName || ``).trim();
         const rowID = String(row?.id);
         if (safeName == String(originalName || ``).trim()) return onCancelAnnouncementNameDraft(row);
+        setSaving(true);
         setOptimisticAnnouncementNameByID(prev => ({ ...prev, [rowID]: safeName }));
         onCancelAnnouncementNameDraft(row);
-        updateAnnouncementInDatabase(rowID, { name: safeName, title: safeName }, true)?.then(() => {
-            toast.success(`Announcement Title Updated`);
+        updateAnnouncementInDatabase(rowID, { name: safeName }, true)?.then(() => {
+            setSaving(false);
+            toast.success(`Announcement Name Updated`);
         }).catch(() => {
             setOptimisticAnnouncementNameByID(prev => {
                 const next = { ...prev };
                 delete next[rowID];
                 return next;
             });
-            toast.error(`Announcement Title Update Failed`);
+            setSaving(false);
+            toast.error(`Announcement Name Update Failed`);
         });
     };
 
@@ -428,7 +458,10 @@ export default function AnnouncementsTable({
         router.replace(`/store`);
     }, [announcementsLoading, routeAnnouncementID, selectedAnnouncement, visibleAnnouncements]);
 
-    const onSelectedRowsChange = (selectedIDs: string[]) => {
+    const onSelectedRowsChange = (selectionModel: GridRowSelectionModel) => {
+        const safeSelectionModel = normalizeAnnouncementSelectionModel(selectionModel);
+        const selectedIDs = getSelectedAnnouncementIDs(safeSelectionModel, visibleAnnouncements);
+        setAnnouncementSelectionModel(safeSelectionModel);
         setSelectedAnnouncementIDs(selectedIDs);
     }
 
@@ -441,11 +474,17 @@ export default function AnnouncementsTable({
             headerName: `Type`,
             renderCell: ({ row }: any) => <AnnouncementIconCell row={row} />,
         },
-        { width: 90, field: `showTitle`, headerName: `Show Title`, filterable: false, renderCell: ({ row }: any) => <AnnouncementShowTitleCell row={row} /> },
+        { 
+            width: 95, 
+            filterable: false, 
+            field: `showTitle`, 
+            headerName: `Show Name`, 
+            renderCell: ({ row }: any) => <AnnouncementToggleNameCell row={row} saving={saving} setSaving={setSaving} />, 
+        },
         {
             width: 180,
             field: `name`,
-            headerName: `Title`,
+            headerName: `Name`,
             valueGetter: (_value: any, row: any) => String(row?.name || ``),
             renderCell: ({ row, value }: any) => (
                 canManageAnnouncements ? (
@@ -457,6 +496,7 @@ export default function AnnouncementsTable({
                         cancelOnBlur={true}
                         showActions={false}
                         showStepper={false}
+                        placeholder={`Name`}
                         onCancel={() => onCancelAnnouncementNameDraft(row)}
                         onChangeValue={(next: string) => onChangeAnnouncementNameDraft(row, next)}
                         onSave={(next: string, original: string) => onSaveAnnouncementNameDraft(row, next, original)}
@@ -478,14 +518,15 @@ export default function AnnouncementsTable({
             renderCell: ({ row, value }: any) => (
                 canManageAnnouncements ? (
                     <EditableCell
-                        minLen={5}
                         mode={`text`}
                         value={value}
                         canEdit={true}
+                        minLen={minMsg}
                         saveOnEnter={true}
                         showStepper={false}
                         cancelOnBlur={true}
                         showActions={false}
+                        placeholder={`Message`}
                         onCancel={() => onCancelAnnouncementMessageDraft(row)}
                         onChangeValue={(next: string) => onChangeAnnouncementMessageDraft(row, next)}
                         onSave={(next: string, original: string) => onSaveAnnouncementMessageDraft(row, next, original)}
@@ -515,7 +556,7 @@ export default function AnnouncementsTable({
                     canManageAnnouncements={canManageAnnouncements}
                     selectedAnnouncementIDs={selectedAnnouncementIDs}
                     quickEditing={quickEditAnnouncement?.id == row?.id}
-                    setSelectedAnnouncementIDs={setSelectedAnnouncementIDs}
+                    clearSelectedAnnouncementRows={clearSelectedAnnouncementRows}
                 />
             ),
         },
@@ -533,13 +574,13 @@ export default function AnnouncementsTable({
                 columns={announcementColumns}
                 className={`announcementsTableComponent`}
                 dataGridProps={{
+                    rowSelectionModel: normalizeAnnouncementSelectionModel(announcementSelectionModel),
                     onCellClick: ({ row, field }: any) => {
                         if (field == `actions`) return;
                         openAnnouncementDetails(row);
                     },
                     onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
-                        const ids = Array.from(selectionModel?.ids || [])?.map(id => String(id));
-                        onSelectedRowsChange(ids);
+                        onSelectedRowsChange(selectionModel);
                     },
                 }}
                 title={(

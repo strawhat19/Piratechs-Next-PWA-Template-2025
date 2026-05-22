@@ -28,6 +28,18 @@ import { AddShoppingCart, Archive, Delete, Edit, Restore, KeyboardArrowDown } fr
 const storeDollarSignColor = `var(--green_neon)`;
 const tableStatusGray = `rgba(255, 255, 255, 0.35)`;
 const productRoutePattern = /(?:^|\/)(?:store\/)?products?\/([^/?#]+)/i;
+const normalizeProductSelectionModel = (selectionModel: any = {}): GridRowSelectionModel => ({
+    type: selectionModel?.type == `exclude` ? `exclude` : `include`,
+    ids: selectionModel?.ids instanceof Set ? selectionModel?.ids : new Set(Array.isArray(selectionModel?.ids) ? selectionModel?.ids : []),
+});
+const createEmptyProductSelectionModel = (): GridRowSelectionModel => normalizeProductSelectionModel();
+const getSelectedProductIDs = (selectionModel: GridRowSelectionModel, rows: Product[] = []) => {
+    const rowIDs = rows?.map((row: Product) => String(row?.id)).filter(Boolean);
+    if (selectionModel?.type == `exclude`) {
+        return rowIDs?.filter(id => !selectionModel?.ids?.has?.(id));
+    }
+    return Array.from(selectionModel?.ids || [])?.map(id => String(id));
+};
 
 const getProductStatus = (product: Product, string: boolean = false) => {
     const stock = Number(product?.stock || 0);
@@ -64,6 +76,7 @@ const ProductStockCell = ({
     onCancel, 
     onIncrease, 
     onDecrease, 
+    placeholder,
     pendingStock, 
     onChangeValue, 
     valueFirst = true, 
@@ -80,6 +93,7 @@ const ProductStockCell = ({
             mode={`number`}
             showStepper={true}
             valueFirst={valueFirst}
+            placeholder={placeholder}
             renderValue={renderValue}
             pendingValue={pendingStock}
             canEdit={canManageProducts}
@@ -112,6 +126,7 @@ const ProductActionsCell = ({
     quickEditing = false, 
     onBatchDeleteProducts, 
     onBatchArchiveProducts,
+    clearSelectedProductRows,
     selectedActiveProductIDs, 
     selectedInactiveProductIDs, 
 }: any) => {
@@ -126,7 +141,7 @@ const ProductActionsCell = ({
         await updateProductInDatabase(String(row?.id), { status: safeStatus }, user)?.then(() => toast.success(`Product Updated`));
     }
     const archiveProduct = async () => {
-        if (selectedActiveProductIDs?.length > 1) {
+        if (selectedActiveProductIDs?.length > 1 && selectedActiveProductIDs?.includes(row?.id)) {
             onBatchArchiveProducts();
             return;
         }
@@ -140,10 +155,13 @@ const ProductActionsCell = ({
         });
         if (!confirmed) return;
         toast.info(`Archiving Product`);
-        await updateStatus(ProductStatus.Archived)?.then(() => toast.success(`Product Archived`));
+        await updateStatus(ProductStatus.Archived)?.then(() => {
+            toast.success(`Product Archived`);
+            clearSelectedProductRows?.();
+        });
     }
     const deleteProduct = async () => {
-        if (selectedInactiveProductIDs?.length > 1) {
+        if (selectedInactiveProductIDs?.length > 1 && selectedInactiveProductIDs?.includes(row?.id)) {
             onBatchDeleteProducts();
             return;
         }
@@ -157,7 +175,10 @@ const ProductActionsCell = ({
         });
         if (!confirmed) return;
         toast.info(`Deleting Product`);
-        deleteProductFromDatabase(row, user)?.then(() => toast.success(`Product Deleted`));
+        deleteProductFromDatabase(row, user)?.then(() => {
+            toast.success(`Product Deleted`);
+            clearSelectedProductRows?.();
+        });
     }
     return (
         <div className={`actionsCell productActionsCell`}>
@@ -395,6 +416,7 @@ export default function ProductsTable({
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
+    const [productSelectionModel, setProductSelectionModel] = useState<GridRowSelectionModel>(() => createEmptyProductSelectionModel());
     const [selectedProductIDs, setSelectedProductIDs] = useState<string[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
@@ -451,16 +473,24 @@ export default function ProductsTable({
         );
     };
 
+    const clearProductSelections = () => {
+        const nextSelectionModel = createEmptyProductSelectionModel();
+        setProductSelectionModel(nextSelectionModel);
+        setSelectedProductIDs([]);
+        setSelectedActiveProductIDs([]);
+        setSelectedInactiveProductIDs([]);
+    };
+
     const runProductBatchAction = async ({
         mode = `delete`,
         selectedIDs = [],
-        productsToProcess = [],
         title = `Batch Action`,
+        productsToProcess = [],
+        successMessage = `Done`,
+        confirmText = `Confirm`,
         actionLabel = `Processing`,
         confirmMessage = `Continue?`,
-        successMessage = `Done`,
         confirmColor = `var(--error)`,
-        confirmText = `Confirm`,
         confirmActionIcon = <Delete />,
     }: any = {}) => {
         if (selectedIDs?.length <= 1 || productsToProcess?.length <= 0) {
@@ -508,9 +538,7 @@ export default function ProductsTable({
             }
         }
         closeAppDialog(true);
-        setSelectedProductIDs([]);
-        setSelectedActiveProductIDs([]);
-        setSelectedInactiveProductIDs([]);
+        clearProductSelections();
         if (failed > 0) {
             toast.warn(`${actionLabel} ${processed - failed}/${productsToProcess?.length} Product(s)`);
             return;
@@ -525,13 +553,13 @@ export default function ProductsTable({
         await runProductBatchAction({
             mode: `delete`,
             confirmText: `Delete`,
-            selectedIDs: selectedInactiveProductIDs,
-            productsToProcess: archivedProducts,
-            title: `Delete Product(s)`,
             actionLabel: `Deleting`,
-            confirmActionIcon: <Delete />,
-            successMessage: `Deleted ${archivedProducts?.length} Product(s)`,
+            title: `Delete Product(s)`,
             confirmColor: `var(--error)`,
+            confirmActionIcon: <Delete />,
+            productsToProcess: archivedProducts,
+            selectedIDs: selectedInactiveProductIDs,
+            successMessage: `Deleted ${archivedProducts?.length} Product(s)`,
             confirmMessage: blockedCount > 0
                 ? `Delete ${archivedProducts?.length} Archived Product(s)? ${blockedCount} Selected Product(s) Are Not Archived And Will Be Skipped`
                 : `Delete ${archivedProducts?.length} Archived Product(s)? This Cannot Be Undone`,
@@ -610,7 +638,7 @@ export default function ProductsTable({
             return changed ? next : prev;
         });
         const productIDs = products?.map((p: Product | null) => p?.id);
-        const uniqueIDs = [ ...new Set(selectedProductIDs?.filter(id => productIDs?.includes(id))) ];
+        const uniqueIDs: any = [ ...new Set(selectedProductIDs?.filter(id => productIDs?.includes(id))) ];
         onSelectedRowsChange(uniqueIDs);
     }, [products]);
 
@@ -739,7 +767,7 @@ export default function ProductsTable({
             flex: 1,
             field: `name`,
             maxWidth: 165,
-            headerName: `Product`,
+            headerName: `Name`,
             renderCell: ({ row, value }: any) => (
                 <EditableCell
                     mode={`text`}
@@ -748,6 +776,7 @@ export default function ProductsTable({
                     showStepper={false}
                     showActions={false}
                     cancelOnBlur={true}
+                    placeholder={`Name`}
                     onCancel={() => onCancelNameDraft(row)}
                     canEdit={minRole(user?.role, Roles.Administrator)}
                     onChangeValue={(next: string) => onChangeNameDraft(row, next)}
@@ -766,6 +795,7 @@ export default function ProductsTable({
                 <ProductStockCell
                     row={row}
                     value={value}
+                    placeholder={`Price`}
                     hasRenderedValue={true}
                     onSave={onSavePriceDraft}
                     onCancel={onCancelPriceDraft}
@@ -795,6 +825,7 @@ export default function ProductsTable({
                 <ProductStockCell
                     row={row}
                     value={value}
+                    placeholder={`Quantity`}
                     onSave={onSaveStockDraft}
                     onCancel={onCancelStockDraft}
                     onIncrease={onIncreaseStockDraft}
@@ -836,6 +867,7 @@ export default function ProductsTable({
                     onBatchDeleteProducts={onBatchDeleteProducts}
                     quickEditing={quickEditProduct?.id == row?.id} 
                     onBatchArchiveProducts={onBatchArchiveProducts}
+                    clearSelectedProductRows={clearProductSelections}
                     selectedActiveProductIDs={selectedActiveProductIDs}
                     selectedInactiveProductIDs={selectedInactiveProductIDs}
                 />
@@ -843,13 +875,16 @@ export default function ProductsTable({
         },
     ];
 
-    const onSelectedRowsChange = (selectedIDs: string[]) => {
-        setSelectedProductIDs(selectedIDs);
-        const rows = products?.filter((p: Product | null) => selectedIDs?.includes(p?.id));
+    const onSelectedRowsChange = (selectionModel: GridRowSelectionModel) => {
+        const safeSelectionModel = normalizeProductSelectionModel(selectionModel);
+        const selectedIDs = getSelectedProductIDs(safeSelectionModel, products);
+        const rows = products?.filter((p: Product | null) => selectedIDs?.includes(String(p?.id)));
         const inactiveRows = rows?.filter((p: Product | null) => p?.status == ProductStatus.Archived);
         const activeRows = rows?.filter((p: Product | null) => p?.status != ProductStatus.Archived);
         const inactiveIds = inactiveRows?.map((p: Product | null) => p?.id);
         const activeIds = activeRows?.map((p: Product | null) => p?.id);
+        setProductSelectionModel(safeSelectionModel);
+        setSelectedProductIDs(selectedIDs);
         setSelectedInactiveProductIDs(inactiveIds);
         setSelectedActiveProductIDs(activeIds);
     }
@@ -866,40 +901,18 @@ export default function ProductsTable({
                 columns={productColumns}
                 className={`productsTableComponent`}
                 dataGridProps={{
+                    rowSelectionModel: normalizeProductSelectionModel(productSelectionModel),
                     onCellClick: ({ row, field }: any) => {
                         if (field == `actions`) return;
                         openProductDetails(row);
                     },
                     onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
-                        const ids = Array.from(selectionModel?.ids || [])?.map(id => String(id));
-                        onSelectedRowsChange(ids);
+                        onSelectedRowsChange(selectionModel);
                     },
                 }}
                 title={(
                     <div className={`tableHeaderComponent tableHeaderForm`}>
                         {type}(s)
-                        {/* {selectedActiveProductIDs?.length > 1 ? (
-                            <Button
-                                size={`small`}
-                                onClick={onBatchArchiveProducts}
-                                className={`tableControlsButton`}
-                                startIcon={<Archive fontSize={`small`} />}
-                                style={{ color: `white`, marginLeft: 8, background: `var(--links)` }}
-                            >
-                                Archive Selected ({selectedActiveProductIDs?.length})
-                            </Button>
-                        ) : <></>}
-                        {selectedInactiveProductIDs?.length > 1 ? (
-                            <Button
-                                size={`small`}
-                                onClick={onBatchDeleteProducts}
-                                className={`tableControlsButton`}
-                                startIcon={<Delete fontSize={`small`} />}
-                                style={{ color: `white`, marginLeft: 8, background: `var(--error)` }}
-                            >
-                                Delete Selected ({selectedInactiveProductIDs?.length})
-                            </Button>
-                        ) : <></>} */}
                         <ProductForm
                             widget
                             funsized
@@ -913,8 +926,8 @@ export default function ProductsTable({
             />
             <ProductDetails
                 product={selectedProduct}
-                open={selectedProduct != null}
                 onClose={closeProductDetails}
+                open={selectedProduct != null}
             />
         </>
     );

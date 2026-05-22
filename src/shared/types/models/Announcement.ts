@@ -1,12 +1,12 @@
 import { Data } from './Data';
 import { DataSources, Types } from '../types';
-import { capWords, countPropertiesInObject, genID, isAppCollectionID, isValid } from '@/shared/scripts/constants';
+import { capWords, countPropertiesInObject, isAppCollectionID, isValid } from '@/shared/scripts/constants';
 
 export enum AnnouncementStatus {
   Draft = `Draft`,
   Active = `Active`,
   Archived = `Archived`,
-  Unavailable = `Unavailable`,
+  // Unavailable = `Unavailable`,
 }
 
 const defaultType = Types.Announcement;
@@ -15,9 +15,8 @@ export class Announcement extends Data {
   [key: string]: any;
 
   active: boolean = false;
-  description?: string = ``;
-  showTitle: boolean = false;
   type: Types = defaultType;
+  showTitle: boolean = false;
   icon?: string = `Campaign`;
   dataSource?: DataSources | string = DataSources.firebase;
   metadata?: Record<string, string | number | boolean> = {};

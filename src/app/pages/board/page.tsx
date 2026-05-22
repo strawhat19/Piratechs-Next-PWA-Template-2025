@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function BoardPage() {
     return (
-        <Container className={`boardPage`} logoLabel={`To Do`} showPageLogo={false}>
+        <Container className={`boardPage`} logoLabel={`To Do`} showPageLogo={false} topBarComponent={null}>
             <Board />
         </Container>
     )
