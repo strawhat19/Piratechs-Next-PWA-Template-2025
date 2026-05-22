@@ -81,10 +81,12 @@ export default function HorizontalScroller({
         return announcements
             ?.filter((announcement: any) => String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft)) == AnnouncementStatus.Active)
             ?.map((announcement: any) => {
-                const value = richTextToPlainText(announcement?.description) || String(announcement?.name || announcement?.title || ``).trim();
+                const title = announcement?.title;
+                const value = (richTextToPlainText(announcement?.description) || String(announcement?.name || title || ``).trim());
                 return value ? {
-                    icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
+                    title,
                     value,
+                    icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
                 } : null;
             })
             ?.filter(Boolean) as HorizontalScrollerItem[];
@@ -102,19 +104,25 @@ export default function HorizontalScroller({
         <div className={`horizontalScrollerContainer w100 h100 ${className}`}>
             <Slider
                 autoplay
-                showButtons={false}
-                spaceBetween={24}
-                className={`horizontalScrollerCarousel`}
-                autoplaySpeed={18000}
                 autoplayDelay={0}
+                spaceBetween={24}
+                showButtons={false}
+                autoplaySpeed={18000}
                 autoplayPauseOnHover={false}
                 autoplaySlidesPerView={`auto`}
+                className={`horizontalScrollerCarousel`}
             >
                 {scrollerItems?.map((item: HorizontalScrollerItem, itemIndex: number) => (
                     <SwiperSlide key={`${item?.value}-${itemIndex}`} className={`horizontalScrollerSlide`}>
                         <div className={`horizontalScrollerItem`}>
-                            {item?.icon ? <span className={`horizontalScrollerIcon`}>{item?.icon}</span> : <></>}
-                            <span className={`horizontalScrollerText`}>{item?.value}</span>
+                            {item?.icon ? (
+                                <span className={`horizontalScrollerIcon`}>
+                                    {item?.icon}
+                                </span>
+                            ) : <></>}
+                            <span className={`horizontalScrollerText`}>
+                                {item?.value}
+                            </span>
                         </div>
                     </SwiperSlide>
                 ))}

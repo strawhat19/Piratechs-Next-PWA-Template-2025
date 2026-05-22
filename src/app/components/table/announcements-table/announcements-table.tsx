@@ -9,7 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { StateGlobals } from '@/shared/global-context';
 import { Roles, Types } from '@/shared/types/types';
-import TableStatus from '../table-status/table-status';
+import TableStatus, { tableStatusBlue, tableStatusGray, tableStatusGreen, tableStatusRed } from '../table-status/table-status';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { minRole } from '@/shared/scripts/constants';
@@ -30,10 +30,15 @@ const announcementRoutePattern = /(?:^|\/)(?:store\/)?announcements?\/([^/?#]+)/
 
 const getAnnouncementStatus = (announcement: Announcement) => {
     const status = String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft) || AnnouncementStatus.Draft);
-    const active = status == AnnouncementStatus.Active;
+    const colors: any = {
+        [AnnouncementStatus.Draft]: tableStatusBlue,
+        [AnnouncementStatus.Active]: tableStatusGreen,
+        [AnnouncementStatus.Archived]: tableStatusGray,
+        [AnnouncementStatus.Unavailable]: tableStatusRed,
+    };
     return {
-        color: active ? `var(--green_neon)` : `rgba(255,255,255,0.35)`,
         label: status,
+        color: colors?.[status] || tableStatusGray,
     };
 };
 
@@ -361,10 +366,10 @@ export default function AnnouncementsTable({
                         showStepper={false}
                         cancelOnBlur={true}
                         showActions={false}
-                        pendingValue={(pendingAnnouncementMessageByID?.[String(row?.id)] ?? optimisticAnnouncementMessageByID?.[String(row?.id)])}
-                        onChangeValue={(next: string) => onChangeAnnouncementMessageDraft(row, next)}
                         onCancel={() => onCancelAnnouncementMessageDraft(row)}
+                        onChangeValue={(next: string) => onChangeAnnouncementMessageDraft(row, next)}
                         onSave={(next: string, original: string) => onSaveAnnouncementMessageDraft(row, next, original)}
+                        pendingValue={(pendingAnnouncementMessageByID?.[String(row?.id)] ?? optimisticAnnouncementMessageByID?.[String(row?.id)])}
                     />
                 ) : (
                     <AnnouncementDescriptionCell row={row} />
@@ -376,8 +381,8 @@ export default function AnnouncementsTable({
         { field: `updated`, headerName: `Updated`, width: 155 },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
         {
-            width: 160,
-            minWidth: 160,
+            width: 170,
+            minWidth: 170,
             field: `actions`,
             filterable: false,
             headerName: `Action(s)`,

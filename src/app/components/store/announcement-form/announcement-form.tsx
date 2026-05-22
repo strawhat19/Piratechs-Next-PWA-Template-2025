@@ -245,10 +245,10 @@ export default function AnnouncementForm({
                             required 
                             name={`name`} 
                             type={`text`} 
+                            label={`Title`} 
                             value={form?.name} 
                             funsized={funsized} 
                             onChange={updateForm} 
-                            label={`Announcement Title`} 
                         />
                         <AnnouncementField 
                             type={`text`} 
