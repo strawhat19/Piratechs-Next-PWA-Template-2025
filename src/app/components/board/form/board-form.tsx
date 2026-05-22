@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Button, Tooltip } from '@mui/material';
 import { Add, Search } from '@mui/icons-material';
 import { StateGlobals } from '@/shared/global-context';
@@ -17,6 +17,8 @@ export default function BoardForm({
     className = `boardFormComponent`, 
 }: any) {    
     const { width, boardItems, boardForm, setBoardForm } = useContext<any>(StateGlobals);
+
+    const [showDescriptionFields, setShowDescriptionFields] = useState<boolean>(false);
 
     const submitButtonShowing = () => showIconButton && (!boardSearch || (boardSearch && width > 768));
 
@@ -57,14 +59,16 @@ export default function BoardForm({
                     <input name={`search`} type={`search`} className={`searchField`} placeholder={`Search...`} autoFocus={autoFocus} required />
                 </> : <>
                     <input name={`name`} type={`text`} className={`nameField`} placeholder={placeholder} required />
-                    {!newDataForm && <>
-                        <RichTextEditorField
-                            label={`Description`}
-                            className={`descriptionField`}
-                            minHeight={120}
-                            value={boardForm?.description}
-                            onChange={(value: string) => updateFormValue(`description`, value)}
-                        />
+                    {(!newDataForm) && <>
+                        {showDescriptionFields && (
+                            <RichTextEditorField
+                                minHeight={120}
+                                label={`Description`}
+                                className={`descriptionField`}
+                                value={boardForm?.description}
+                                onChange={(value: string) => updateFormValue(`description`, value)}
+                            />
+                        )}
                         <input name={`imageURL`} type={`url`} className={`imageURLField`} placeholder={`Image URL`} />
                     </>}
                 </>}

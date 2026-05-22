@@ -414,7 +414,14 @@ export const genID = (type: Types = Types.Data, number = 1, name: string) => {
 
 export const isAppCollectionID = (id: any, type?: Types | string) => typeof id == `string` && id?.startsWith(type ? `${type}_` : ``) && id?.split(`_`)?.length >= 5;
 export const getAppCollectionIDNumber = (id: any, type?: Types | string) => isAppCollectionID(id, type) ? Number(String(id)?.split(`_`)?.[1]) || 0 : 0;
-export const getNextCollectionNumber = (items: any[] = []) => (Math.max(0, ...items?.map(item => Number(item?.number || getAppCollectionIDNumber(item?.id) || 0)).filter(number => Number.isInteger(number))) ?? items?.length) + 1;
+export const getNextCollectionNumber = (items: any[] = []) => {
+  let num: number = Math.max(0, ...items?.map(item => (
+    Number(item?.number || getAppCollectionIDNumber(item?.id) || 0)
+  )).filter(number => Number.isInteger(number)));
+  let numb = num < items?.length ? items?.length : num;
+  let nextNumber = numb + 1;
+  return nextNumber;
+};
 
 export const findHighestNumberInArrayByKey = async ( arrayOfObjects: any[], key: string ): Promise<number> => {
   try {

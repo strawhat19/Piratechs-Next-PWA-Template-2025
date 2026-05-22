@@ -66,20 +66,20 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         {
             id: `view-cart`,
             label: `View Cart`,
-            icon: <ShoppingCart htmlColor={`var(--links)`} />,
             onClick: () => setCartDrawerOpen(true),
+            icon: <ShoppingCart htmlColor={`var(--links)`} />,
         },
         {
             id: `clear-cart`,
+            onClick: clearCart,
             label: `Clear Cart`,
             icon: <DeleteSweep htmlColor={statusColors.Unavailable} />,
-            onClick: clearCart,
         },
         {
             id: `go-store`,
-            label: `Go to Store`,
-            icon: <Storefront htmlColor={`var(--links)`} />,
+            label: `To Store`,
             onClick: () => router.push(`/store`),
+            icon: <Storefront htmlColor={`var(--success)`} />,
         },
     ];
 
