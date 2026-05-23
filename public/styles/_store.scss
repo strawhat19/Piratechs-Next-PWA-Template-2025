@@ -1,5 +1,12 @@
-.storeOptions {
+.storePageTop {
+    top: 60px;
     width: 100%;
+    margin: 0px auto 52px;
+    justify-content: center !important;
+}
+
+.storeOptions {
+    width: auto;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

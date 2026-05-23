@@ -149,19 +149,18 @@ export default function Store({ className = `storeComponent` }) {
     useCheckoutReturnToast(saveCart);
 
     return <>
-        <div
-            style={{ top: 60, left: 10, width: `99%`, margin: `0 auto 52px 0` }}
-            className={`customPageTop mh40 flex alignCenter gap5 spaceBetween relative`}
-        >
-            <Logo label={`Store`} style={{ marginRight: 5 }} />
-            <Selector
-                value={storeSlideIndex}
-                options={storeSlideNames}
-                className={`storeOptions`}
-                ariaLabel={`Store sections`}
-                onChange={(nextSlideIndex) => setStoreSlideIndex(Number(nextSlideIndex))}
-            />
-        </div>
+        {loaded && <>
+            <div className={`storePageTop customPageTop mh40 flex alignCenter gap5 relative`}>
+                <Logo label={`Store`} style={{ marginRight: 5 }} />
+                <Selector
+                    value={storeSlideIndex}
+                    options={storeSlideNames}
+                    className={`storeOptions`}
+                    ariaLabel={`Store sections`}
+                    onChange={(nextSlideIndex) => setStoreSlideIndex(Number(nextSlideIndex))}
+                />
+            </div>
+        </>}
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
                 <Slider 
