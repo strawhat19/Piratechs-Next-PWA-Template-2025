@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 export default function StorePage() {
     return (
         <Container
+            showPageLogo={false}
             className={`storePage`}
             topBarStyle={{ padding: 0 }}
         >

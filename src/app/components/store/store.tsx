@@ -1,25 +1,26 @@
 'use client';
 
+import Logo from '../logo/logo';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
-import { useContext, useEffect, useState } from 'react';
-import { Roles, Types } from '@/shared/types/types';
-import { StateGlobals } from '@/shared/global-context';
-import { Product } from '@/shared/types/models/Product';
 import { User } from '@/shared/types/models/User';
-import { Order as StoreOrder } from '@/shared/types/models/Order';
+import { Roles, Types } from '@/shared/types/types';
+import UserDetails from './user-details/user-details';
+import { StateGlobals } from '@/shared/global-context';
+import { useContext, useEffect, useState } from 'react';
+import { Product } from '@/shared/types/models/Product';
+import OrderDetails from './order-details/order-details';
+import { usePathname, useRouter } from 'next/navigation';
 import UsersTable from '../table/users-table/users-table';
 import OrdersTable from '../table/orders-table/orders-table';
-import AnnouncementsTable from '../table/announcements-table/announcements-table';
 import { constants, minRole } from '@/shared/scripts/constants';
 import { ProductFormDialog } from './product-form/product-form';
-import UserDetails from './user-details/user-details';
-import OrderDetails from './order-details/order-details';
+import { Order as StoreOrder } from '@/shared/types/models/Order';
 import ProductsTable from '../table/products-table/products-table';
-import { Campaign, Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
-import { usePathname, useRouter } from 'next/navigation';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
+import AnnouncementsTable from '../table/announcements-table/announcements-table';
+import { Campaign, Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
 
 const { Order, Customer } = Types;
 
@@ -114,13 +115,19 @@ export default function Store({ className = `storeComponent` }) {
     
     useCheckoutReturnToast(saveCart);
 
-    return (
+    return <>
+        {user != null && <>
+                <div className={`customPageTop mh40 flex alignCenter gap5 spaceBetween w100 relative`} style={{ top: 60, left: 10, marginBottom: 52 }}>
+                    <Logo label={`Store`} style={{ marginRight: 5 }} />
+                </div>
+            </>
+        }
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
                 <Slider 
-                    className={`componentSlider`} 
-                    showButtons={width > constants?.breakpoints?.tabletSmall}
                     slideNames={storeSlideNames} 
+                    className={`componentSlider storeSlider`} 
+                    showButtons={width > constants?.breakpoints?.tabletSmall}
                 >
                     <SwiperSlide>
                         <div className={`storeProductsPanel`}>
@@ -162,5 +169,5 @@ export default function Store({ className = `storeComponent` }) {
                 />
             </> : <Loader height={250} label={`Store Loading`} />}
         </div>
-    )
+    </>
 }

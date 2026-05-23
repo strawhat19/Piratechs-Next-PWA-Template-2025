@@ -8,7 +8,7 @@ import { GridToolbar } from '@mui/x-data-grid/internals';
 import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 
-const paginationModel = { page: 0, pageSize: 12 };
+const paginationModel = { page: 0, pageSize: 15 };
 
 const interactiveCellSelectors = [
   `button`,
@@ -75,7 +75,7 @@ export default function Table({
   columns = default_columns, 
   className = `tableComponent`, 
   rowCount = rows?.length || 0,
-  page_size_options = [5, 10, 12],
+  page_size_options = [5, 10, 15],
   pagination_options = paginationModel, 
   emptyRowsLabel = `(${rowCount}) ${type}(s)`,
 }: any) {

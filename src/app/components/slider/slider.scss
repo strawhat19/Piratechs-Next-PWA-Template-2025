@@ -91,6 +91,9 @@
         grid-template-columns: minmax(auto, 45px) 1fr minmax(auto, 45px);
         &.componentSlider {
             grid-template-rows: var(--stockSliderHeight);
+            &.storeSlider {
+                --stockSliderHeight: 687px;
+            }
             .stockMetricTableContainer {
                 overflow: auto;
                 max-height: calc(var(--stockSliderHeight) - var(--stockSliderOffset));
