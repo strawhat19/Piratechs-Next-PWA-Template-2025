@@ -79,6 +79,7 @@
     left: 13px;
     z-index: 1;
     position: absolute;
+    transition: 33ms var(--transitionalt);
     &:has(.tableHeaderComponent) {
       top: 7.5px;
       width: 90%;
@@ -87,6 +88,11 @@
       &:has(.tableHeaderSimple) {
         top: 12px !important;
       }
+    }
+  }
+  &:has(.MuiDataGrid-toolbarQuickFilter button[aria-expanded="true"]) {
+    .table_header {
+      max-width: 77%;
     }
   }
 }

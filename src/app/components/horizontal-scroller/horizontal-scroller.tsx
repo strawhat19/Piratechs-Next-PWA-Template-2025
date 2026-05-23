@@ -114,7 +114,7 @@ export default function HorizontalScroller({
                 autoplayDelay={0}
                 spaceBetween={24}
                 showButtons={false}
-                autoplaySpeed={18000}
+                autoplaySpeed={18_000}
                 autoplayPauseOnHover={false}
                 autoplaySlidesPerView={`auto`}
                 className={`horizontalScrollerCarousel`}

@@ -674,11 +674,12 @@ export default function StocksScroll({ className = `stocksScrollComponent` }) {
                 <>
                     <Slider
                         autoplay
-                        showButtons={false}
                         spaceBetween={8}
-                        className={`stocksCarousel`}
-                        autoplaySpeed={20000}
                         autoplayDelay={0}
+                        showButtons={false}
+                        autoplaySpeed={20_000}
+                        marqueeSpeed={3_333_333}
+                        className={`stocksCarousel`}
                         autoplayPauseOnHover={false}
                         autoplaySlidesPerView={`auto`}
                     >

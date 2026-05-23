@@ -105,6 +105,39 @@
     }
 }
 
+.sliderMarquee {
+    overflow: hidden;
+    .swiper {
+        overflow: hidden;
+    }
+}
+
+.sliderMarqueeViewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.sliderMarqueeTrack {
+    width: max-content;
+    display: flex;
+    align-items: stretch;
+    will-change: transform;
+    animation: sliderMarquee var(--sliderMarqueeDuration, 20s) linear infinite;
+}
+
+.sliderMarqueeTrack > * {
+    flex: 0 0 auto;
+}
+
+@keyframes sliderMarquee {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(var(--sliderMarqueeDistance, -50%), 0, 0);
+    }
+}
+
 .swiper {
     width: 100%;
 }
