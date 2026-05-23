@@ -12,6 +12,18 @@
 
     // Colors
     // whites
+    --white_soft_rgb: 248, 250, 252;
+    --white_soft: rgba(var(--white_soft_rgb), 1);
+    --white_off_rgb: 241, 245, 249;
+    --white_off: rgba(var(--white_off_rgb), 1);
+    --white_smoke_rgb: 226, 232, 240;
+    --white_smoke: rgba(var(--white_smoke_rgb), 1);
+    --white_silver_rgb: 203, 213, 225;
+    --white_silver: rgba(var(--white_silver_rgb), 1);
+    --white_warm_rgb: 255, 248, 240;
+    --white_warm: rgba(var(--white_warm_rgb), 1);
+    --white_cool_rgb: 240, 249, 255;
+    --white_cool: rgba(var(--white_cool_rgb), 1);
     --white: white;
     
     // reds
@@ -51,8 +63,53 @@
     --cyber_red: rgba(var(--cyber_red_rgb), 1);
     
     // greens
-    --teal: #3fa5e3;
     --success_neon: #13deb9;
+    --success_rgb: 19, 222, 185;
+    --success_main: rgba(var(--success_rgb), 1);
+    --success_light_rgb: 92, 245, 205;
+    --success_light: rgba(var(--success_light_rgb), 1);
+    --success_soft_rgb: 52, 211, 153;
+    --success_soft: rgba(var(--success_soft_rgb), 1);
+    --success_pastel_rgb: 110, 231, 183;
+    --success_pastel: rgba(var(--success_pastel_rgb), 1);
+    --success_mint_rgb: 72, 255, 191;
+    --success_mint: rgba(var(--success_mint_rgb), 1);
+    --success_aqua_rgb: 0, 214, 143;
+    --success_aqua: rgba(var(--success_aqua_rgb), 1);
+    --success_emerald_rgb: 16, 185, 129;
+    --success_emerald: rgba(var(--success_emerald_rgb), 1);
+    --success_teal_rgb: 20, 184, 166;
+    --success_teal: rgba(var(--success_teal_rgb), 1);
+    --success_vibrant_rgb: 0, 255, 163;
+    --success_vibrant: rgba(var(--success_vibrant_rgb), 1);
+    --success_neon_soft_rgb: 19, 222, 185;
+    --success_neon_soft: rgba(var(--success_neon_soft_rgb), 0.85);
+    --success_dark_soft_rgb: 13, 159, 65;
+    --success_dark_soft: rgba(var(--success_dark_soft_rgb), 0.85);
+    --success_darkest_rgb: 8, 92, 38;
+    --success_darkest: rgba(var(--success_darkest_rgb), 1);
+    --success_forest_rgb: 21, 128, 61;
+    --success_forest: rgba(var(--success_forest_rgb), 1);
+    --success_hunter_rgb: 34, 139, 34;
+    --success_hunter: rgba(var(--success_hunter_rgb), 1);
+    --success_glow_rgb: 57, 255, 140;
+    --success_glow: rgba(var(--success_glow_rgb), 1);
+    --success_neon_green_rgb: 0, 255, 128;
+    --success_neon_green: rgba(var(--success_neon_green_rgb), 1);
+    --success_deep_rgb: 4, 120, 87;
+    --success_deep: rgba(var(--success_deep_rgb), 1);
+    --success_rich_rgb: 5, 150, 105;
+    --success_rich: rgba(var(--success_rich_rgb), 1);
+    --success_shadow_rgb: 10, 90, 45;
+    --success_shadow: rgba(var(--success_shadow_rgb), 1);
+    --success_dark_glow_rgb: 45, 220, 105;
+    --success_dark_glow: rgba(var(--success_dark_glow_rgb), 1);
+    --success_dark_light_rgb: 18, 175, 72;
+    --success_dark_light: rgba(var(--success_dark_light_rgb), 1);
+    --success_dark_bright_rgb: 24, 190, 80;
+    --success_dark_bright: rgba(var(--success_dark_bright_rgb), 1);
+    --success_dark_vibrant_rgb: 32, 205, 92;
+    --success_dark_vibrant: rgba(var(--success_dark_vibrant_rgb), 1);
     --success_dark_rgb: 13, 159, 65;
     --success_dark: rgba(var(--success_dark_rgb), 1);
     --green_neon_rgb: 57, 255, 20;
@@ -63,8 +120,33 @@
     --emerald_neon: rgba(var(--emerald_neon_rgb), 1);
     --lime_neon_rgb: 178, 255, 89;
     --lime_neon: rgba(var(--lime_neon_rgb), 1);
+    --forest_dark_rgb: 16, 74, 35;
+    --forest_dark: rgba(var(--forest_dark_rgb), 1);
+    --pine_dark_rgb: 1, 68, 33;
+    --pine_dark: rgba(var(--pine_dark_rgb), 1);
+    --hunter_dark_rgb: 27, 94, 32;
+    --hunter_dark: rgba(var(--hunter_dark_rgb), 1);
+    --moss_dark_rgb: 62, 89, 76;
+    --moss_dark: rgba(var(--moss_dark_rgb), 1);
+    --olive_dark_rgb: 74, 93, 35;
+    --olive_dark: rgba(var(--olive_dark_rgb), 1);
+    --jade_dark_rgb: 0, 121, 107;
+    --jade_dark: rgba(var(--jade_dark_rgb), 1);
+    --deep_emerald_rgb: 0, 97, 61;
+    --deep_emerald: rgba(var(--deep_emerald_rgb), 1);
+    --evergreen_dark_rgb: 5, 84, 63;
+    --evergreen_dark: rgba(var(--evergreen_dark_rgb), 1);
+    --toxic_green_dark_rgb: 44, 95, 45;
+    --toxic_green_dark: rgba(var(--toxic_green_dark_rgb), 1);
+    --swamp_green_rgb: 54, 69, 45;
+    --swamp_green: rgba(var(--swamp_green_rgb), 1);
+    --matrix_green_dark_rgb: 0, 120, 50;
+    --matrix_green_dark: rgba(var(--matrix_green_dark_rgb), 1);
+    --cyber_green_dark_rgb: 0, 140, 72;
+    --cyber_green_dark: rgba(var(--cyber_green_dark_rgb), 1);
     
     // blues
+    --teal: #3fa5e3;
     --blue: #0082c6;
     --gameBlue: #00c2ff;
     --bluedark: #04397b;

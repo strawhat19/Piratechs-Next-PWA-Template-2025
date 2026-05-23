@@ -18,11 +18,11 @@ export type SelectorOption = {
 };
 
 type SelectorProps = {
-    value?: string | number | null;
-    options?: SelectorOption[];
     className?: string;
-    size?: `small` | `medium`;
     ariaLabel?: string;
+    size?: `small` | `medium`;
+    options?: SelectorOption[];
+    value?: string | number | null;
     onChange?: (value: string | number) => void;
 };
 
@@ -31,8 +31,8 @@ export default function Selector({
     options = [],
     className = ``,
     size = `small`,
-    ariaLabel = `Selector`,
     onChange = () => {},
+    ariaLabel = `Selector`,
 }: SelectorProps) {
     const handleChange = (_event: any, nextValue: string | number | null) => {
         if (nextValue == null) return;
@@ -45,8 +45,8 @@ export default function Selector({
                 exclusive
                 size={size}
                 value={value}
-                onChange={handleChange}
                 aria-label={ariaLabel}
+                onChange={handleChange}
                 className={`selectorGroup`}
             >
                 {options?.map((option: SelectorOption) => {
@@ -60,14 +60,14 @@ export default function Selector({
                             sx={{
                                 gap: `6px`,
                                 fontWeight: 700,
-                                minHeight: `36px`,
                                 // color: white,
+                                minHeight: `36px`,
                                 color: optionColor,
                                 padding: `5px 12px`,
                                 textTransform: `none`,
                                 minWidth: `fit-content`,
-                                borderColor: optionColor,
                                 backgroundColor: `var(--navy)`,
+                                borderColor: option?.activeButtonBG ? option?.activeButtonBG : optionColor,
                                 '&.Mui-selected': {
                                     color: option?.activeFontColor ? option?.activeFontColor : `white`,
                                     backgroundColor: option?.activeButtonBG ? option?.activeButtonBG : optionColor,
