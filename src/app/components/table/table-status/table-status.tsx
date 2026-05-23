@@ -12,12 +12,12 @@ export default function TableStatus({ title = ``, label = ``, color = tableStatu
     const rowStatus = (
         <Tooltip title={title} arrow>
             <div className={`rowStatus`}>
-                <span className={`statusDotWrap ${pulsateColors?.includes(color) ? `pulsate circular` : ``}`}>
+                <span className={`statusDotWrap ${pulsateColors?.includes(color) ? `pulsate circular` : ``}`} style={{ 
+                    [`--pulsateColor` as any]: color, 
+                }}>
                     <Circle
+                        style={{ color, }}
                         className={`statusDot`}
-                        style={{
-                            color,
-                        }}
                     />
                 </span>
                 <span className={`statusText`}>

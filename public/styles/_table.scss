@@ -1,5 +1,5 @@
 :root {
-    --mui_blue: #1976d2;
+  --mui_blue: #1976d2;
 }
 
 .pulsate {
@@ -356,7 +356,7 @@
 }
 
 .MuiDataGrid-cell {
-  &:has(img) {
+  &:has(.iconImg) {
     width: 100%;
     display: flex;
     align-items: center;
@@ -364,7 +364,7 @@
   }
 }
 
-.productTableImage {
+.iconImg {
   width: 30px;
   height: 30px;
   display: flex;
@@ -377,10 +377,6 @@
   background: var(--navy);
   border-radius: var(--borderRadius);
   // border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
-}
-
-.productTableImageEmpty {
-  color: var(--green_neon);
 }
 
 .productsTableComponent {

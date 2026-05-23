@@ -6,7 +6,7 @@ import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
-import { minRole } from '@/shared/scripts/constants';
+import { colors, minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import EditableCell from '../editable-cell/editable-cell';
@@ -47,7 +47,6 @@ const RoleCell = ({ row, value }: any) => {
   }));
   return (
     <>
-        {/* <CheckboxMulti optionsToUse={roleItems} placeholder={`Role(s) (${roleItems?.length})`} /> */}
       <MenuTrigger
         search={false}
         colors={true}
@@ -68,15 +67,6 @@ const RoleCell = ({ row, value }: any) => {
             <span className={`dropDownBtnLabel`}>
                 {value || Roles.Guest}
             </span>
-            {/* <input
-              onFocus={onFocus}
-              onChange={onType}
-              onClick={(event) => event.stopPropagation()}
-              className={`dropDownBtnLabel`}
-              value={searchValue || value || Roles.Guest}
-              placeholder={value || Roles.Guest}
-              style={{ border: `none`, width: `100%`, color: `inherit`, background: `transparent` }}
-            /> */}
           </Button>
         )}
       />
@@ -87,35 +77,31 @@ const RoleCell = ({ row, value }: any) => {
 const getUserImageURL = (row: any) => String(row?.imageURL || row?.imageUrl || row?.avatar || row?.photoURL || row?.image || ``).trim();
 const getUserInitial = (row: any) => String(row?.name || row?.displayName || row?.email || `User`).trim()?.[0]?.toUpperCase() || `U`;
 
-const UserImageCell = ({ row }: any) => {
-    const imageURL = getUserImageURL(row);
+const UserImageCell = ({ row, user }: any) => {
     const initial = getUserInitial(row);
+    const imageURL = getUserImageURL(row);
     if (imageURL) {
         return (
             <Image
-                unoptimized
                 width={38}
+                unoptimized
                 height={38}
                 src={imageURL}
                 alt={row?.name || `User`}
-                className={`productTableImage`}
                 style={{ borderRadius: `50%` }}
+                className={`iconImg productTableImage`}
             />
         );
     }
     return (
-        <div
-            className={`productTableImage`}
-            style={{
-                borderRadius: `50%`,
-                background: `var(--buttons)`,
-                color: `white`,
-                fontSize: 15,
-                fontWeight: 700,
-                lineHeight: 1,
-            }}
-        >
-            {initial}
+        <div className={`iconImg avatar productTableImage`} style={{ 
+            borderRadius: (user != null && row?.id == user?.id) ? `50%` : undefined,
+            background: (user != null && row?.id == user?.id) ? colors.info.color : row?.color?.color, 
+            color: ((user != null && row?.id == user?.id) || row?.color?.type == `dark`) ? `white` : `var(--navy)`, 
+        }}>
+            <div className={`avatarLetter`} style={{ position: `relative`, top: 1 }}>
+                {initial}
+            </div>
         </div>
     );
 };
@@ -244,7 +230,7 @@ export default function UsersTable({
             filterable: false,
             headerName: `Image`,
             headerClassName: `imageHeaderCell`,
-            renderCell: ({ row }: any) => <UserImageCell row={row} />,
+            renderCell: ({ row }: any) => <UserImageCell row={row} user={user} />,
         },
         {
             field: `name`,

@@ -149,7 +149,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                                 id={`profileMenuButton`}
                                 menuItems={profileMenuItems}
                                 renderTrigger={({ id, onClick }) => (
-                                    <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Profile`} className={`profileButton`}>
+                                    <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Profile`} className={`profileButton avatar iconImg`}>
                                         <span className={`letter`}>
                                             {user?.name?.[0]}
                                         </span>

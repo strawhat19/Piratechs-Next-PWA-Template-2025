@@ -1,5 +1,5 @@
 import { Types } from '../types';
-import { capWords, countPropertiesInObject, customDate, genID, isValid } from '@/shared/scripts/constants';
+import { capWords, countPropertiesInObject, customDate, genID, getRandomUnusedColor, isValid } from '@/shared/scripts/constants';
 
 export class Data {
   id!: string | number | any;
@@ -7,6 +7,7 @@ export class Data {
   name!: string;
   uuid!: string;
   email!: string;
+  color?: any;
   title?: string;
   password?: string;
   number: number = 1;
@@ -24,5 +25,8 @@ export class Data {
     if (!isValid(this.uuid)) this.uuid = uuid;
     if (!isValid(this.title)) this.title = title;
     if (!isValid(this.properties)) this.properties = countPropertiesInObject(this) + 1;
+    if (!isValid(this.color)) {
+      this.color = getRandomUnusedColor();
+    }
   }
 }

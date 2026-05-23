@@ -4,7 +4,7 @@ import { List } from './List';
 import { Board } from './Board';
 import type { PaymentMethodSummary } from './Order';
 import { DataSources, Roles, Types } from '../types';
-import { capWords, countPropertiesInObject, genID, getIDParts, isValid } from '@/shared/scripts/constants';
+import { capWords, colors, countPropertiesInObject, genID, getIDParts, getRandomUnusedColor, isValid } from '@/shared/scripts/constants';
 
 export enum Providers { 
   Google = `Google` ,
@@ -60,7 +60,6 @@ export class User extends Data {
 
   board?: Board;
   items?: Item[];
-  color?: string;
   lists?: List[];
   phone?: string;
   imageURL?: string = ``;
@@ -158,5 +157,10 @@ export class User extends Data {
     if (!isValid(this.uuid)) this.uuid = uuid;
     if (!isValid(this.title)) this.title = title;
     if (!isValid(this.properties)) this.properties = countPropertiesInObject(this) + 1;
+
+    const userColors = Object.values(colors).filter(c => c.name !== colors.info.name);
+    if (!isValid(this.color) || this.color?.name === colors.info.name) {
+      this.color = getRandomUnusedColor(userColors);
+    }
   }
 }

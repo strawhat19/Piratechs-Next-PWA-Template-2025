@@ -2,19 +2,19 @@
 
 import Table from '../table';
 import Image from 'next/image';
-import { toast } from 'react-toastify';
 import { flushSync } from 'react-dom';
+import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
+import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import EditableCell from '../editable-cell/editable-cell';
 import Icon_Button from '../../buttons/icon-button/icon-button';
-import { constants, minRole } from '@/shared/scripts/constants';
 import ProductForm from '../../store/product-form/product-form';
 import { Button, LinearProgress, Skeleton } from '@mui/material';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
@@ -109,12 +109,17 @@ const ProductStockCell = ({
 
 const ProductImageCell = ({ row }: { row: Product }) => {
     let imageURL = row?.attachments?.[0]?.value || row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
-    if (!imageURL) imageURL = constants.images.icons.logo;
+    // if (!imageURL) imageURL = constants.images.icons.logo;
     return imageURL ? (
-        <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`productTableImage`} />
+        <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`iconImg productTableImage`} />
     ) : (
-        <div className={`productTableImage productTableImageEmpty`}>
-            {row?.name?.[0] || `P`}
+        <div className={`iconImg avatar productTableImage productTableImageEmpty`} style={{ 
+            background: row?.color?.color, 
+            color: row?.color?.type == `dark` ? `white` : `var(--navy)`,
+        }}>
+            <div className={`avatarLetter`} style={{ position: `relative`, top: 1 }}>
+                {row?.name?.[0] || `P`}
+            </div>
         </div>
     );
 }

@@ -356,9 +356,11 @@ ul {
         margin-left: 10px;
     }
     .letter {
+        top: -1px;
         color: white;
         font-size: 15px;
         font-weight: 700;
+        position: relative;
     }
 }
 

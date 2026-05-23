@@ -24,9 +24,9 @@ import { auth, renderFirebaseAuthErrorMessage, Tables, db, boardConverter, userC
 
 export const StateGlobals = createContext({});
 
-export const minMsg = 5;
 export const minStocksLen = 235;
 export const minStockPositions = 15;
+export const minMsg = dev() ? 1 : 5;
 export const defaultSizes = { window: 1920, headerEnd: 325, headerStart: 415, windowH: 1080, minStocksLen, minStockPositions, minMsg };
 
 export const getFirstNumber = (str: string): number | null => {

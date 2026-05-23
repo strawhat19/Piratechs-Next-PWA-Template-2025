@@ -74,6 +74,16 @@ export const apiRoutes = {
   }
 }
 
+export const colors = {
+  info: { name: `info`, color: `var(--buttons)`, type: `dark`, },
+  error: { name: `error`, color: `var(--error)`, type: `dark`, },
+  pink: { name: `pink`, color: `var(--pink_neon)`, type: `dark` },
+  warning: { name: `warning`, color: `var(--warning)`, type: `light`, },
+  success: { name: `success`, color: `var(--success_dark)`, type: `dark`, },
+  emerald: { name: `emerald`, color: `var(--emerald_neon)`, type: `light` },
+  // disabled: { name: `disabled`, color: `var(--disabled)`, type: `light`, },
+}
+
 export const average = (numbers: (number | null | undefined)[]): number => {
   const valid = numbers.filter((n): n is number => typeof n === 'number' && !isNaN(n));
   if (valid.length === 0) return 0;
@@ -81,6 +91,7 @@ export const average = (numbers: (number | null | undefined)[]): number => {
   return avg;
 }
 
+export const usedColorNames = new Set<string>();
 export const defaultTimeZoneName = `America/New_York`;
 export const isOdd = (number: number) => number % 2 != 0;
 export const isEven = (number: number) => number % 2 == 0;
@@ -89,6 +100,7 @@ export const getRandomArrayIndex = (array: any[]) => Math.floor(Math.random() * 
 export const getRandomArrayValue = (array: any[]) => array[getRandomArrayIndex(array)];
 export const arraySum = (arr: number[]): number => arr.reduce((total, val) => total + Number(val), 0);
 export const capWords = (str: string) => str.replace(/\b\w/g, (match: string) => match.toUpperCase());
+export const getRandomColor = (array: any[] = Object.values(colors)) => array[getRandomArrayIndex(array)];
 export const is_valid_date_time_str = (date_time_str: Date | string | null) => !isNaN(Date.parse(String(date_time_str)));
 export const arraysMatch = (a: string[], b: string[]): boolean => a.length === b.length && a.every((val, idx) => val === b[idx]);
 export const normalizeDateString = (dateStr: string) => !dateStr ? null : dateStr.replace(` `, `T`).replace(/\.(\d{3})\d+/, `.$1`);
@@ -118,6 +130,19 @@ export const unauthorized = (req: Request, returnResponse: boolean = true, messa
   }
   return null;
 }
+
+export const getRandomUnusedColor = (array: any[] = Object.values(colors)) => {
+  if (!array?.length) return null;
+  if (usedColorNames.size >= array.length) {
+    usedColorNames.clear();
+  }
+  const availableColors = array.filter(color => !usedColorNames.has(color?.name));
+  const selectedColor = getRandomColor(availableColors);
+  if (selectedColor?.name) {
+    usedColorNames.add(selectedColor.name);
+  }
+  return selectedColor;
+};
 
 export const isMarketOpen = (): boolean => {
   const now = new Date();
@@ -415,11 +440,13 @@ export const genID = (type: Types = Types.Data, number = 1, name: string) => {
 export const isAppCollectionID = (id: any, type?: Types | string) => typeof id == `string` && id?.startsWith(type ? `${type}_` : ``) && id?.split(`_`)?.length >= 5;
 export const getAppCollectionIDNumber = (id: any, type?: Types | string) => isAppCollectionID(id, type) ? Number(String(id)?.split(`_`)?.[1]) || 0 : 0;
 export const getNextCollectionNumber = (items: any[] = []) => {
+  let itemsLen = items?.length;
   let num: number = Math.max(0, ...items?.map(item => (
     Number(item?.number || getAppCollectionIDNumber(item?.id) || 0)
   )).filter(number => Number.isInteger(number)));
-  let numb = num < items?.length ? items?.length : num;
+  let numb = num < itemsLen ? itemsLen : num;
   let nextNumber = numb + 1;
+  dev() && console.log(`getNextCollectionNumber`, { itemsLen, num, numb, nextNumber, type: items?.[0]?.type });
   return nextNumber;
 };
 
