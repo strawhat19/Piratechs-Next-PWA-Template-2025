@@ -173,8 +173,8 @@ export default function AnnouncementForm({
         return editing || formMatch;
     }
 
-    const clearAnnouncementForm = () => {
-        const nextForm = getAnnouncementForm(null, nextAnnouncementNumber);
+    const clearAnnouncementForm = (number = nextAnnouncementNumber) => {
+        const nextForm = getAnnouncementForm(null, number);
         formValueRef.current = nextForm;
         setForm(nextForm);
         formRef.current?.reset?.();
@@ -211,7 +211,10 @@ export default function AnnouncementForm({
             ) : await addAnnouncementToDatabase(announcementModel);
             toast.success(announcement?.id ? `Announcement Updated` : `Announcement Added`);
             onSaved(savedAnnouncement as Announcement);
-            if (!announcement?.id) clearAnnouncementForm();
+            if (!announcement?.id) {
+                const savedNumber = Number(savedAnnouncement?.number || currentForm?.number || nextAnnouncementNumber);
+                clearAnnouncementForm(Math.max(savedNumber + 1, nextAnnouncementNumber));
+            }
             if (announcement?.id) onCancelEdit?.();
         } catch (error) {
             toast.error(`Announcement Save Failed`);
@@ -264,7 +267,7 @@ export default function AnnouncementForm({
                                 <Button
                                     type={`button`}
                                     disabled={actionDisabled}
-                                    onClick={clearAnnouncementForm}
+                                    onClick={() => clearAnnouncementForm()}
                                     className={`productFormButton productCancelButton ${actionDisabled ? `disabled` : ``}`}
                                 >
                                     <DoDisturb fontSize={`small`} /> Cancel

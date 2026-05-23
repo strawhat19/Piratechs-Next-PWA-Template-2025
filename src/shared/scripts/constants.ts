@@ -446,7 +446,6 @@ export const getNextCollectionNumber = (items: any[] = []) => {
   )).filter(number => Number.isInteger(number)));
   let numb = num < itemsLen ? itemsLen : num;
   let nextNumber = numb + 1;
-  dev() && console.log(`getNextCollectionNumber`, { itemsLen, num, numb, nextNumber, type: items?.[0]?.type });
   return nextNumber;
 };
 
