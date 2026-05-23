@@ -26,7 +26,9 @@ export default function Slider({
     showPaginationDots = false,
     autoplayPauseOnHover = true,
     className = `sliderComponent`, 
+    onSlideChangeIndex = () => {},
     autoplaySlidesPerView = `auto`,
+    selectedSlideIndex = undefined,
     paginationClass = `paginationClass`, 
 }: any) {
     let swiperRef = useRef<any>(null);
@@ -53,8 +55,10 @@ export default function Slider({
     }, [childrenArray, isMarquee, marqueeCopies]);
 
     const onSlideChange = (e: any) => {
-        setRealSlideIndex(e?.realIndex);
+        const nextRealSlideIndex = Number(e?.realIndex ?? e?.activeIndex ?? 0);
+        setRealSlideIndex(nextRealSlideIndex);
         setActiveSlideIndex(e?.activeIndex);
+        onSlideChangeIndex?.(nextRealSlideIndex);
     }
 
     const getDotsNumToShow = (): number => {
@@ -70,6 +74,15 @@ export default function Slider({
         }
         return swiperInstance;
     }
+
+    const getSlideButtonColor = (slideIndex: number) => slideNames?.length > 0
+        ? (slideNames?.[(slideIndex + slideNames?.length) % slideNames?.length]?.activeButtonBG ?? slideNames?.[(slideIndex + slideNames?.length) % slideNames?.length]?.color)
+        : undefined;
+
+    const getSlideButtonStyle = (slideIndex: number) => {
+        const buttonColor = getSlideButtonColor(slideIndex);
+        return buttonColor ? ({ [`--slideButton`]: buttonColor } as any) : undefined;
+    };
 
     const restartAutoplay = () => {
         const swiperInstance = getSwiper();
@@ -97,6 +110,28 @@ export default function Slider({
         spaceBetween,
     ]);
 
+    useEffect(() => {
+        if (isMarquee) return;
+        if (selectedSlideIndex == null) return;
+        const swiperInstance = getSwiper();
+        if (!swiperInstance || swiperInstance?.destroyed) return;
+        const targetSlideIndex = Math.max(0, Math.min(Number(selectedSlideIndex || 0), Math.max(childrenArray?.length - 1, 0)));
+        const currentSlideIndex = Number(swiperInstance?.realIndex ?? swiperInstance?.activeIndex ?? 0);
+        if (currentSlideIndex == targetSlideIndex) return;
+        const frame = requestAnimationFrame(() => {
+            if (typeof swiperInstance?.slideToLoop == `function`) {
+                swiperInstance?.slideToLoop(targetSlideIndex);
+            } else {
+                swiperInstance?.slideTo(targetSlideIndex);
+            }
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [
+        childrenArray?.length,
+        isMarquee,
+        selectedSlideIndex,
+    ]);
+
     const slide = (direction: number) => {
         let swiperInstance = getSwiper();
         if (swiperInstance != null) {
@@ -118,7 +153,13 @@ export default function Slider({
     return <>
         <div className={`slider ${className} ${autoplay ? `autoplayLinear` : ``} ${isMarquee ? `sliderMarquee` : ``} ${!isMarquee && getDotsNumToShow() > 1 ? `multi-slider` : `single-slider`}`}>
             {childrenArray?.length > 1 && showButtons && (
-                <Icon_Button rounded={false} button={true} className={`sliderButton sliderButtonPrev`} onClick={() => slide(-1)}>
+                <Icon_Button
+                    rounded={false}
+                    button={true}
+                    className={`sliderButton sliderButtonPrev`}
+                    onClick={() => slide(-1)}
+                    style={{ ...getSlideButtonStyle(realSlideIndex - 1) }}
+                >
                     <Tooltip arrow title={slideNames?.length > 0 ? slideNames?.[(realSlideIndex - 1 + slideNames?.length) % slideNames?.length]?.label : ``}>
                        <div className={`slideNameContent`}>
                             <span className={`pointerEventsNoneI`}>
@@ -149,6 +190,7 @@ export default function Slider({
                 <Swiper 
                     loop={true}
                     nested={true}
+                    initialSlide={startingSlideIndex}
                     // speed={500}
                     ref={swiperRef}
                     noSwiping={true}
@@ -186,7 +228,13 @@ export default function Slider({
             )}
             
             {childrenArray?.length > 1 && showButtons && (
-                <Icon_Button rounded={false} button={true} className={`sliderButton sliderButtonNext`} onClick={() => slide(1)}>
+                <Icon_Button
+                    rounded={false}
+                    button={true}
+                    onClick={() => slide(1)}
+                    className={`sliderButton sliderButtonNext`}
+                    style={{ ...getSlideButtonStyle(realSlideIndex + 1) }}
+                >
                     <Tooltip arrow title={slideNames?.length > 0 ? slideNames?.[(realSlideIndex + 1) % slideNames?.length]?.label : ``}>
                         <div className={`slideNameContent`}>
                             <span className={`slideName slideNameNext pointerEventsNoneI`}>

@@ -3,12 +3,12 @@
 import Logo from '../logo/logo';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
+import Selector from '../selector/selector';
 import { SwiperSlide } from 'swiper/react';
 import { User } from '@/shared/types/models/User';
 import { Roles, Types } from '@/shared/types/types';
 import UserDetails from './user-details/user-details';
 import { StateGlobals } from '@/shared/global-context';
-import { useContext, useEffect, useState } from 'react';
 import { Product } from '@/shared/types/models/Product';
 import OrderDetails from './order-details/order-details';
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,6 +16,7 @@ import UsersTable from '../table/users-table/users-table';
 import OrdersTable from '../table/orders-table/orders-table';
 import { constants, minRole } from '@/shared/scripts/constants';
 import { ProductFormDialog } from './product-form/product-form';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Order as StoreOrder } from '@/shared/types/models/Order';
 import ProductsTable from '../table/products-table/products-table';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
@@ -27,25 +28,52 @@ const { Order, Customer } = Types;
 export default function Store({ className = `storeComponent` }) {
     const router = useRouter();
     const pathname = usePathname();
-    const { user, users = [], orders = [], width, loaded, products = [] } = useContext<any>(StateGlobals);
+    const { user, users = [], orders = [], width, loaded, products = [], announcements = [] } = useContext<any>(StateGlobals);
     const canManageStore = minRole(user?.role, Roles.Editor);
     const { addToCart, saveCart } = useStoreCart();
     const [fullEditProduct, setFullEditProduct] = useState<Product | null>(null);
     const [quickEditProduct, setQuickEditProduct] = useState<Product | null>(null);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [selectedOrder, setSelectedOrder] = useState<StoreOrder | null>(null);
+    const [storeSlideIndex, setStoreSlideIndex] = useState(0);
     const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct(prev => prev?.id == product?.id ? null : product);
     const routeEditMatch = pathname?.match(/\/(edit|update)\/([^/]+)/);
     const routeProductID = decodeURIComponent(routeEditMatch?.[2] || ``);
     const routeDetailsMatch = pathname?.match(/(?:^|\/)(?:store\/)?(user|users|order|orders)\/([^/?#]+)/i);
     const routeDetailsType = String(routeDetailsMatch?.[1] || ``).toLowerCase();
     const routeDetailsID = decodeURIComponent(routeDetailsMatch?.[2] || ``);
-    const storeSlideNames = [
-        { key: 0, icon: <ShoppingCart />, label: `${Types.Product}s` }, 
-        { key: 1, icon: <ReceiptLong />, label: `${Order}s` }, 
-        { key: 2, icon: <Campaign />, label: `${Types.Announcement}s` },
-        ...(canManageStore ? [{ key: 3, icon: <Person />, label: `${Customer}s` }] : []),
-    ];
+    const storeSlideNames = useMemo(() => ([
+        { 
+            value: 0, 
+            number: products?.length,
+            label: `${Types.Product}s`, 
+            color: `var(--success_dark)`, 
+            icon: <ShoppingCart style={{ fontSize: 15 }} />, 
+        },
+        { 
+            value: 1, 
+            label: `${Order}s`, 
+            color: `var(--error)`, 
+            number: orders?.length,
+            icon: <ReceiptLong style={{ fontSize: 16 }} />, 
+        },
+        { 
+            value: 2, 
+            color: `var(--links)`,
+            number: announcements?.length,
+            activeButtonBG: `var(--buttons)`, 
+            label: `${Types.Announcement}s`, 
+            icon: <Campaign style={{ fontSize: 18 }} />, 
+        },
+        ...(canManageStore ? [{ 
+            value: 3, 
+            label: `${Customer}s`, 
+            number: users?.length,
+            color: `var(--warning)`, 
+            activeFontColor: `black`, 
+            icon: <Person style={{ fontSize: 16 }} />, 
+        }] : []),
+    ]), [canManageStore]);
 
     const closeFullEdit = () => {
         setFullEditProduct(null);
@@ -57,6 +85,11 @@ export default function Store({ className = `storeComponent` }) {
         setSelectedOrder(null);
         if (routeDetailsID) router.replace(`/store`);
     };
+
+    useEffect(() => {
+        const maxSlideIndex = Math.max(storeSlideNames?.length - 1, 0);
+        setStoreSlideIndex(prev => Math.min(prev, maxSlideIndex));
+    }, [storeSlideNames?.length]);
 
     const openUserDetails = (nextUser: User | null) => {
         if (!nextUser?.id) return;
@@ -116,16 +149,26 @@ export default function Store({ className = `storeComponent` }) {
     useCheckoutReturnToast(saveCart);
 
     return <>
-        {user != null && <>
-                <div className={`customPageTop mh40 flex alignCenter gap5 spaceBetween w100 relative`} style={{ top: 60, left: 10, marginBottom: 52 }}>
-                    <Logo label={`Store`} style={{ marginRight: 5 }} />
-                </div>
-            </>
-        }
+        <div
+            style={{ top: 60, left: 10, width: `99%`, margin: `0 auto 52px 0` }}
+            className={`customPageTop mh40 flex alignCenter gap5 spaceBetween relative`}
+        >
+            <Logo label={`Store`} style={{ marginRight: 5 }} />
+            <Selector
+                value={storeSlideIndex}
+                options={storeSlideNames}
+                className={`storeOptions`}
+                ariaLabel={`Store sections`}
+                onChange={(nextSlideIndex) => setStoreSlideIndex(Number(nextSlideIndex))}
+            />
+        </div>
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
                 <Slider 
                     slideNames={storeSlideNames} 
+                    startingSlideIndex={storeSlideIndex}
+                    selectedSlideIndex={storeSlideIndex}
+                    onSlideChangeIndex={setStoreSlideIndex}
                     className={`componentSlider storeSlider`} 
                     showButtons={width > constants?.breakpoints?.tabletSmall}
                 >

@@ -1,0 +1,49 @@
+.selectorContainer {
+    display: flex;
+    align-items: center;
+}
+
+.selectorGroup {
+    gap: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    .MuiToggleButtonGroup-grouped {
+        margin: 0;
+        // border-radius: var(--borderRadius) !important;
+    }
+}
+
+.selectorButton {
+    border-left: unset;
+    white-space: nowrap;
+    margin-left: 0 !important;
+    .selectorButtonContent {
+        gap: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .selectorButtonIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    &:not(.Mui-selected) {
+        .selectorButtonText {
+            color: white;
+        }
+        .selectorButtonNumber {
+            font-weight: 600;
+        }
+    }
+    .selectorButtonLabel {
+        line-height: 1;
+        font-weight: 500;
+    }
+    .selectorButtonNumber {
+        font-size: 11px;
+        margin-left: 5px;
+    }
+}

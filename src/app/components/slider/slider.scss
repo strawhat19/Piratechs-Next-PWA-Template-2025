@@ -7,6 +7,9 @@
     -webkit-user-select: none;
     text-orientation: upright;
     writing-mode: vertical-rl;
+    .MuiSvgIcon-root {
+        font-size: 24px !important;
+    }
     &.slideNameNext {
         margin-left: -2px;
         margin-right: 0px;

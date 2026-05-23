@@ -49,11 +49,10 @@
     --hot_red_neon: rgba(var(--hot_red_neon_rgb), 1);
     --cyber_red_rgb: 255, 0, 85;
     --cyber_red: rgba(var(--cyber_red_rgb), 1);
-    --error: var(--deep_red);
     
     // greens
     --teal: #3fa5e3;
-    --success: #13deb9;
+    --success_neon: #13deb9;
     --success_dark_rgb: 13, 159, 65;
     --success_dark: rgba(var(--success_dark_rgb), 1);
     --green_neon_rgb: 57, 255, 20;
@@ -114,6 +113,13 @@
     --buttons: var(--blue);
     --main: var(--blueneon);
     --links: var(--blueneon);
+    
+    // palette
+    --info: var(--links);
+    --active: var(--buttons);
+    --error: var(--deep_red);
+    --warning: var(--yellow_neon);
+    --success: var(--success_neon);
     --disabled: var(--soft-silver);
 
     --blackGrayGradient: linear-gradient(180deg, #1f1f1f, #171717);
@@ -162,8 +168,57 @@ main {
     background: var(--main);
 }
 
+.bgSuccess {
+    background: var(--success) !important;
+}
+
+.bgSuccessDark {
+    background: var(--success_dark) !important;
+}
+
+.bgInfo {
+    background: var(--info) !important;
+}
+
+.bgActive {
+    background: var(--active) !important;
+}
+
+.bgError {
+    background: var(--error) !important;
+}
+
+.bgDisabled {
+    background: var(--disabled) !important;
+}
+
+.bgWarning {
+    background: var(--warning) !important;
+}
+
 .colorwhite {
     color: white;
+}
+
+.colorSuccess {
+    color: var(--success) !important;
+    path {
+        fill: var(--success) !important;
+    }
+}
+
+.colorError {
+    color: var(--error) !important;
+    path {
+        fill: var(--error) !important;
+    }
+}
+
+.colorInfo {
+    color: var(--info) !important;
+    path {
+        fill: var(--info) !important;
+    }
 }
 
 h1 {
