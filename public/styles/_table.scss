@@ -65,10 +65,11 @@
 }
 
 .table {
-  width: 100cqw;
+  width: 100%;
   margin: 0 auto;
   padding-right: 0;
   max-width: 93cqw;
+  box-sizing: border-box;
   position: relative;
   border: 1px solid var(--buttons);
   @container (max-width: 500px) {
@@ -109,7 +110,9 @@
 
 .tableGridCards {
   gap: 14px;
+  width: 100%;
   display: grid;
+  box-sizing: border-box;
   padding: 62px 14px 14px;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
 }

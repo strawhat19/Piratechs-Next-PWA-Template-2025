@@ -449,7 +449,8 @@
 
 .productsTableComponent {
     &.table {
-        max-width: 96cqw;
+        width: 100%;
+        max-width: 100%;
     }
 
     .tableGridCards {
@@ -620,7 +621,7 @@
 @container (max-width: 768px) {
     .productsTableComponent {
         &.table {
-            max-width: 94cqw;
+            max-width: 100%;
         }
 
         .tableGridCards {
@@ -638,7 +639,7 @@
 @container (max-width: 500px) {
     .productsTableComponent {
         &.table {
-            max-width: 89cqw;
+            max-width: 100%;
         }
 
         .tableGridCards {
