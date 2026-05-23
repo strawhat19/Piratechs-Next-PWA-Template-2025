@@ -155,6 +155,7 @@ export default function Store({ className = `storeComponent` }) {
             <div className={`storePageTop customPageTop mh40 flex alignCenter gap5 relative`}>
                 <Logo label={`Store`} style={{ marginRight: 5 }} />
                 <Selector
+                    customColors={false}
                     value={storeSlideIndex}
                     options={storeSlideNames}
                     className={`storeOptions`}

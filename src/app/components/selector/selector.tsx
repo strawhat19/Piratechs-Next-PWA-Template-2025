@@ -20,6 +20,7 @@ export type SelectorOption = {
 type SelectorProps = {
     className?: string;
     ariaLabel?: string;
+    customColors?: boolean;
     size?: `small` | `medium`;
     options?: SelectorOption[];
     value?: string | number | null;
@@ -32,6 +33,7 @@ export default function Selector({
     className = ``,
     size = `small`,
     onChange = () => {},
+    customColors = false,
     ariaLabel = `Selector`,
 }: SelectorProps) {
     const handleChange = (_event: any, nextValue: string | number | null) => {
@@ -50,7 +52,8 @@ export default function Selector({
                 className={`selectorGroup`}
             >
                 {options?.map((option: SelectorOption) => {
-                    const optionColor = option?.color || `var(--buttons)`;
+                    const optionColor = customColors ? option?.color : `var(--links)`;
+                    const optionBg =  customColors ? (option?.activeButtonBG ? option?.activeButtonBG : optionColor) : `var(--buttons)`;
                     return (
                         <ToggleButton
                             value={option?.value}
@@ -65,12 +68,12 @@ export default function Selector({
                                 color: optionColor,
                                 padding: `5px 12px`,
                                 textTransform: `none`,
+                                borderColor: optionBg,
                                 minWidth: `fit-content`,
-                                backgroundColor: `var(--navy)`,
-                                borderColor: option?.activeButtonBG ? option?.activeButtonBG : optionColor,
+                                backgroundColor: `transparent`,
                                 '&.Mui-selected': {
+                                    backgroundColor: optionBg,
                                     color: option?.activeFontColor ? option?.activeFontColor : `white`,
-                                    backgroundColor: option?.activeButtonBG ? option?.activeButtonBG : optionColor,
                                 },
                                 '&.Mui-selected:hover': {
                                     color: `var(--navy)`,

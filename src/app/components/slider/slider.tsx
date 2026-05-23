@@ -81,7 +81,10 @@ export default function Slider({
 
     const getSlideButtonStyle = (slideIndex: number) => {
         const buttonColor = getSlideButtonColor(slideIndex);
+        // return buttonColor ? ({ [`--buttons`]: buttonColor } as any) : undefined;
+        // return buttonColor ? ({ [`--buttons`]: buttonColor } as any) : undefined;
         return buttonColor ? ({ [`--slideButton`]: buttonColor } as any) : undefined;
+        // return buttonColor ? ({ [`--activeButtonBG`]: buttonColor } as any) : undefined;
     };
 
     const restartAutoplay = () => {
