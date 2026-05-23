@@ -63,6 +63,7 @@ export class User extends Data {
   color?: string;
   lists?: List[];
   phone?: string;
+  imageURL?: string = ``;
   image?: string;
   avatar?: string;
   z_token?: string;
@@ -125,7 +126,12 @@ export class User extends Data {
     if (!isValid(this.metadata) && isValid(authUser.metadata)) this.metadata = authUser.metadata;
     if (!isValid(this.photoURL) && isValid(authUser.photoURL)) this.photoURL = authUser.photoURL;
     if (!isValid(this.avatar) && isValid(this.photoURL)) this.avatar = this.photoURL;
+    if (!isValid(this.imageURL) && isValid(userData.imageUrl)) this.imageURL = String(userData.imageUrl);
+    if (!isValid(this.imageURL) && isValid(this.avatar)) this.imageURL = this.avatar;
+    if (!isValid(this.imageURL) && isValid(this.image)) this.imageURL = this.image;
+    if (!isValid(this.avatar) && isValid(this.imageURL)) this.avatar = this.imageURL;
     if (!isValid(this.image) && isValid(this.avatar)) this.image = this.avatar;
+    if (!isValid(this.image) && isValid(this.imageURL)) this.image = this.imageURL;
     if (!isValid(this.roles) && isValid(this.role)) this.roles = [this.role];
     const firstRole = this.roles?.[0];
     if (isValid(firstRole) && !isValid(userData.role)) this.role = String(firstRole);

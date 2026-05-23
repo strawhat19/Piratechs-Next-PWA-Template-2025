@@ -1,4 +1,5 @@
 import Table from '../table';
+import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
@@ -82,6 +83,42 @@ const RoleCell = ({ row, value }: any) => {
     </>
   );
 }
+
+const getUserImageURL = (row: any) => String(row?.imageURL || row?.imageUrl || row?.avatar || row?.photoURL || row?.image || ``).trim();
+const getUserInitial = (row: any) => String(row?.name || row?.displayName || row?.email || `User`).trim()?.[0]?.toUpperCase() || `U`;
+
+const UserImageCell = ({ row }: any) => {
+    const imageURL = getUserImageURL(row);
+    const initial = getUserInitial(row);
+    if (imageURL) {
+        return (
+            <Image
+                unoptimized
+                width={38}
+                height={38}
+                src={imageURL}
+                alt={row?.name || `User`}
+                className={`productTableImage`}
+                style={{ borderRadius: `50%` }}
+            />
+        );
+    }
+    return (
+        <div
+            className={`productTableImage`}
+            style={{
+                borderRadius: `50%`,
+                background: `var(--buttons)`,
+                color: `white`,
+                fontSize: 15,
+                fontWeight: 700,
+                lineHeight: 1,
+            }}
+        >
+            {initial}
+        </div>
+    );
+};
 
 const ActionsCell = ({ row, value, canManage = false }: any) => {
     const { user, showConfirm } = useContext<any>(StateGlobals);
@@ -201,6 +238,14 @@ export default function UsersTable({
     };
     const user_columns: GridColDef[] = [
         { field: `number`, headerName: `ID`, width: 50 },
+        {
+            width: 70,
+            field: `imageURL`,
+            filterable: false,
+            headerName: `Image`,
+            headerClassName: `imageHeaderCell`,
+            renderCell: ({ row }: any) => <UserImageCell row={row} />,
+        },
         {
             field: `name`,
             width: 130,
