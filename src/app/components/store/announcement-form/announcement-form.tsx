@@ -17,6 +17,7 @@ export const defaultAnnouncementForm = {
     name: ``,
     number: 1,
     description: ``,
+    details: ``,
     showTitle: false,
     icon: `Announcement`,
     status: AnnouncementStatus.Draft,
@@ -35,7 +36,7 @@ type AnnouncementFormProps = {
     onFullEdit?: (announcement: Announcement | null) => void;
 };
 
-const comparableFields = [`number`, `name`, `description`, `showTitle`] as const;
+const comparableFields = [`number`, `name`, `description`, `details`, `showTitle`] as const;
 const comparableSelectFields = [`icon`, `status`] as const;
 
 const getAnnouncementForm = (announcement: Announcement | null | undefined, number: number) => {
@@ -54,6 +55,7 @@ const getAnnouncementForm = (announcement: Announcement | null | undefined, numb
         icon: announcement?.icon || defaultAnnouncementForm?.icon,
         name: announcement?.name || defaultAnnouncementForm?.name,
         description: announcement?.description || defaultAnnouncementForm?.description,
+        details: announcement?.details || defaultAnnouncementForm?.details,
         showTitle: Boolean(announcement?.showTitle ?? defaultAnnouncementForm?.showTitle),
     };
 };
@@ -131,6 +133,7 @@ export default function AnnouncementForm({
         setForm(nextForm);
     }, [
         announcement?.description,
+        announcement?.details,
         announcement?.id,
         announcement?.name,
         announcement?.number,
@@ -154,11 +157,11 @@ export default function AnnouncementForm({
 
     const isFormSame = () => {
         const includeSelectFields = !widget || Boolean(announcement?.id);
-        const { name, description } = form;
-        const cf = { name, description };
+        const { name, description, details } = form;
+        const cf = { name, description, details };
         const announcementForm = getAnnouncementForm(announcement, nextAnnouncementNumber);
-        const { name: nameaf, description: descriptionaf } = announcementForm;
-        const af = { name: nameaf, description: descriptionaf };
+        const { name: nameaf, description: descriptionaf, details: detailsaf } = announcementForm;
+        const af = { name: nameaf, description: descriptionaf, details: detailsaf };
         const currentComparable = JSON.stringify(getComparableAnnouncementForm(cf, includeSelectFields));
         const initialComparable = JSON.stringify(getComparableAnnouncementForm(af, includeSelectFields));
         return currentComparable != initialComparable;
@@ -197,6 +200,7 @@ export default function AnnouncementForm({
             name: safeName,
             active: status == AnnouncementStatus.Active,
             description: currentForm?.description || defaultAnnouncementForm?.description,
+            details: currentForm?.details || defaultAnnouncementForm?.details,
         };
         const safeAnnouncementToSave = JSON.parse(JSON.stringify(announcementToSave));
         const announcementModel = new Announcement(safeAnnouncementToSave);
@@ -383,6 +387,13 @@ export default function AnnouncementForm({
                             value={form?.description}
                             className={`productTextAreaField announcementTextAreaField`}
                             onChange={(value: string) => updateFormValue(`description`, value)}
+                        />
+                        <RichTextEditorField
+                            minHeight={180}
+                            label={`Details`}
+                            value={form?.details}
+                            className={`productTextAreaField announcementDetailsAreaField`}
+                            onChange={(value: string) => updateFormValue(`details`, value)}
                         />
                     </div>
                 ) : <></>}

@@ -250,6 +250,11 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.announcementTextAreaField,
+.announcementDetailsAreaField {
+    grid-column: 1 / -1;
+}
+
 .productFormChecks {
     gap: 12px;
     display: flex;

@@ -14,10 +14,11 @@ const defaultType = Types.Announcement;
 export class Announcement extends Data {
   [key: string]: any;
 
+  details?: string = ``;
   active: boolean = false;
   type: Types = defaultType;
-  showTitle: boolean = false;
   icon?: string = `Campaign`;
+  showTitle: boolean = false;
   dataSource?: DataSources | string = DataSources.firebase;
   metadata?: Record<string, string | number | boolean> = {};
   status: AnnouncementStatus | string = AnnouncementStatus.Draft;
@@ -64,6 +65,8 @@ export class Announcement extends Data {
     if (!isValid(this.icon)) this.icon = `Campaign`;
     if (isValid(announcementData.showTitle)) this.showTitle = Boolean(announcementData.showTitle);
     if (!isValid(this.showTitle)) this.showTitle = false;
+    if (isValid(announcementData.details)) this.details = String(announcementData.details);
+    if (!isValid(this.details)) this.details = ``;
     if (!isValid(this.description) && isValid(announcementData.message)) this.description = String(announcementData.message);
     if (!isValid(this.description) && isValid(announcementData.body_html)) this.description = String(announcementData.body_html);
     if (!isValid(this.description) && isValid(announcementData.bodyHTML)) this.description = String(announcementData.bodyHTML);

@@ -4,6 +4,7 @@ import './horizontal-scroller.scss';
 
 import React, { useContext, useMemo } from 'react';
 import Slider from '../slider/slider';
+import { Tooltip } from '@mui/material';
 import { SwiperSlide } from 'swiper/react';
 import { StateGlobals } from '@/shared/global-context';
 import { AnnouncementStatus } from '@/shared/types/models/Announcement';
@@ -39,6 +40,8 @@ import { announcementIcons } from '../store/announcement-form/announcement-selec
 export type HorizontalScrollerItem = {
     icon?: React.ReactNode;
     value: string;
+    details?: string;
+    detailsContent?: React.ReactNode;
 };
 
 export const defaultMessages: HorizontalScrollerItem[] = [
@@ -84,12 +87,14 @@ export default function HorizontalScroller({
             ?.map((announcement: any) => {
                 const title = String(announcement?.name || ``).trim();
                 const descriptionText = richTextToPlainText(announcement?.description);
+                const detailsText = richTextToPlainText(announcement?.details);
                 const showTitle = Boolean(announcement?.showTitle);
                 const value = showTitle && title
                     ? (descriptionText ? `${title} - ${descriptionText}` : title)
                     : (descriptionText || title);
                 return value ? {
                     title,
+                    details: detailsText,
                     value,
                     icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
                 } : null;
@@ -101,9 +106,28 @@ export default function HorizontalScroller({
         ?.filter((item: HorizontalScrollerItem | null) => item?.value)
         ?.map((item: HorizontalScrollerItem) => ({
             icon: item?.icon,
+            details: item?.details,
+            detailsContent: item?.detailsContent,
             value: String(item?.value || ``),
         }));
     const scrollerItems = databaseScrollerItems?.length < 10 ? [ ...databaseScrollerItems, /* ...defaultMessages */ ] : databaseScrollerItems;
+
+    const getDetailsBubble = (item: HorizontalScrollerItem) => {
+        if (item?.detailsContent) {
+            return (
+                <div className={`horizontalScrollerDetails`}>
+                    {item?.detailsContent}
+                </div>
+            );
+        }
+        const detailsText = richTextToPlainText(item?.details).trim();
+        if (!detailsText) return null;
+        return (
+            <div className={`horizontalScrollerDetails`}>
+                {detailsText}
+            </div>
+        );
+    };
 
     if (scrollerItems?.length <= 0) return null;
 
@@ -119,9 +143,10 @@ export default function HorizontalScroller({
                 autoplaySlidesPerView={`auto`}
                 className={`horizontalScrollerCarousel`}
             >
-                {scrollerItems?.map((item: HorizontalScrollerItem, itemIndex: number) => (
-                    <SwiperSlide key={`${item?.value}-${itemIndex}`} className={`horizontalScrollerSlide`}>
-                        <div className={`horizontalScrollerItem`}>
+                {scrollerItems?.map((item: HorizontalScrollerItem, itemIndex: number) => {
+                    const detailsBubble = getDetailsBubble(item);
+                    const itemContent = (
+                        <div className={`horizontalScrollerItem ${detailsBubble ? `horizontalScrollerItemInteractive` : ``}`}>
                             {item?.icon ? (
                                 <span className={`horizontalScrollerIcon`}>
                                     {item?.icon}
@@ -131,8 +156,23 @@ export default function HorizontalScroller({
                                 {item?.value}
                             </span>
                         </div>
-                    </SwiperSlide>
-                ))}
+                    );
+                    return (
+                        <SwiperSlide key={`${item?.value}-${itemIndex}`} className={`horizontalScrollerSlide`}>
+                            {detailsBubble ? (
+                                <Tooltip
+                                    arrow
+                                    placement={`bottom`}
+                                    title={detailsBubble}
+                                    enterDelay={200}
+                                    leaveDelay={75}
+                                >
+                                    {itemContent}
+                                </Tooltip>
+                            ) : itemContent}
+                        </SwiperSlide>
+                    );
+                })}
             </Slider>
         </div>
     );

@@ -20,6 +20,15 @@
     align-items: center;
     width: fit-content;
     white-space: nowrap;
+    transition: transform var(--transition), color var(--transition);
+    &.horizontalScrollerItemInteractive {
+        cursor: pointer;
+        &:hover {
+            .horizontalScrollerText {
+                color: white;
+            }
+        }
+    }
 }
 
 .horizontalScrollerIcon {
@@ -33,4 +42,11 @@
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.2px;
+}
+
+.horizontalScrollerDetails {
+    max-width: 260px;
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: normal;
 }
