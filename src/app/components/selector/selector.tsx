@@ -53,6 +53,7 @@ export default function Selector({
             >
                 {options?.map((option: SelectorOption) => {
                     const optionColor = customColors ? option?.color : `var(--links)`;
+                    const optionFontColor = customColors ? (option?.activeFontColor ? option?.activeFontColor : `white`) : `white`;
                     const optionBg =  customColors ? (option?.activeButtonBG ? option?.activeButtonBG : optionColor) : `var(--buttons)`;
                     return (
                         <ToggleButton
@@ -72,8 +73,8 @@ export default function Selector({
                                 minWidth: `fit-content`,
                                 backgroundColor: `transparent`,
                                 '&.Mui-selected': {
+                                    color: optionFontColor,
                                     backgroundColor: optionBg,
-                                    color: option?.activeFontColor ? option?.activeFontColor : `white`,
                                 },
                                 '&.Mui-selected:hover': {
                                     color: `var(--navy)`,
