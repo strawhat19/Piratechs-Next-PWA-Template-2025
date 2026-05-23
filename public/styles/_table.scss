@@ -107,6 +107,153 @@
   }
 }
 
+.tableGridCards {
+  gap: 14px;
+  display: grid;
+  padding: 62px 14px 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
+}
+
+.tableGridCardSlot {
+  min-width: 0;
+}
+
+.tableGridEmpty {
+  margin: 62px 14px 14px;
+  padding: 18px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  text-align: center;
+  border-radius: var(--borderRadius);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.22);
+}
+
+.dataDisplayCard {
+  width: 100%;
+  height: 100%;
+  color: white;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--navy) 84%, black);
+  border-radius: calc(var(--borderRadius) + 3px);
+  border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.28);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    transform: translateY(-2px);
+    border-color: rgba(var(--cool_neon_blue_rgb), 0.65);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.24), 0 0 14px rgba(var(--cool_neon_blue_rgb), 0.16);
+  }
+
+  &.selected {
+    border-color: var(--success);
+    box-shadow: 0 0 0 1px var(--success), 0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.dataDisplayCardSelect {
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  cursor: pointer;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--borderRadiusSmall, 4px);
+  background: rgba(2, 10, 25, 0.56);
+
+  .dataDisplayCardCheckbox {
+    margin: 0;
+    padding: 0;
+    color: var(--links) !important;
+
+    svg {
+      font-size: 24px;
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
+    }
+  }
+}
+
+.dataDisplayCardSkeleton {
+  gap: 10px;
+  padding: 10px;
+
+  .MuiSkeleton-root {
+    transform: none;
+    background-color: rgba(255, 255, 255, 0.09);
+  }
+}
+
+.dataDisplayCardSkeletonRow {
+  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.genericGridCard {
+  gap: 12px;
+  padding: 14px;
+}
+
+.genericGridCardHeader {
+  gap: 8px;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    color: var(--links);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  strong {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.genericGridCardFields {
+  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.genericGridCardField {
+  gap: 4px;
+  display: grid;
+  min-width: 0;
+  font-size: 13px;
+
+  > span {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.62);
+  }
+}
+
+.genericGridCardActions {
+  margin-top: auto;
+}
+
 .tableButton {
   height: 27px !important;
   min-height: 27px !important;

@@ -5,7 +5,7 @@ import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
 import MenuTrigger from '../../menu/menu-trigger';
-import { Roles, Types } from '@/shared/types/types';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { colors, minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
@@ -174,6 +174,7 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
 
 export default function UsersTable({
     type = Types.User,
+    mode = DataDisplayModes.Table,
     onOpenUserDetails = () => {},
 }: any) {
     const { user, users } = useContext<any>(StateGlobals);
@@ -286,6 +287,7 @@ export default function UsersTable({
         users?.length > 0 ? <>
             <Table
                 type={type}
+                mode={mode}
                 title={`${type}(s)`}
                 rows={users}
                 columns={user_columns}

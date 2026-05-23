@@ -1,8 +1,9 @@
 'use client';
 
 import Loader from '../loaders/loader';
+import TableGrid from './table-grid/table-grid';
 import { useContext, useRef } from 'react';
-import { Types } from '@/shared/types/types';
+import { DataDisplayModes, Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
 import { GridToolbar } from '@mui/x-data-grid/internals';
 import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
@@ -66,11 +67,14 @@ export default function Table({
   search = true,
   toolbar = true,
   title = `Table`,
+  mode = DataDisplayModes.Table,
   search_delay = 0,
   type = Types.Data,
+  loading = false,
   selectable = true,
   density = `compact`,
   rows = default_rows, 
+  gridProps = {},
   dataGridProps = {},
   columns = default_columns, 
   className = `tableComponent`, 
@@ -102,7 +106,21 @@ export default function Table({
               </span> {title}
             </div>
           </> : <></>}
-          {/* <MUI> */}
+          {mode == DataDisplayModes.Grid ? (
+            <TableGrid
+              type={type}
+              rows={rows}
+              columns={columns}
+              loading={loading}
+              rowCount={rowCount}
+              selectable={selectable}
+              dataGridProps={dataGridProps}
+              emptyRowsLabel={emptyRowsLabel}
+              {...gridProps}
+            />
+          ) : loading ? (
+            <Loader height={250} label={`${type}(s) Loading`} />
+          ) : (
             <DataGrid
               {...dataGridProps}
               rows={rows}
@@ -133,7 +151,7 @@ export default function Table({
                 }, 
               }}
             />
-          {/* </MUI> */}
+          )}
         </> : <Loader height={250} label={`Table Loading`} />}
       </div>
   )

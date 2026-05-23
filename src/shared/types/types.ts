@@ -32,6 +32,11 @@ export enum DataSources {
   financialModelingPrep = `FinancialModelingPrep`,
 }
 
+export enum DataDisplayModes {
+  Grid = `Grid`,
+  Table = `Table`,
+}
+
 export enum RobinhoodAccountTypes {
   alpaca = `Alpaca`,
   individual = `Individual`,

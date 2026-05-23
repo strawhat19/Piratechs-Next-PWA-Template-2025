@@ -6,8 +6,8 @@ import Loader from '../loaders/loader';
 import Selector from '../selector/selector';
 import { SwiperSlide } from 'swiper/react';
 import { User } from '@/shared/types/models/User';
-import { Roles, Types } from '@/shared/types/types';
 import UserDetails from './user-details/user-details';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
 import { Product } from '@/shared/types/models/Product';
 import OrderDetails from './order-details/order-details';
@@ -22,6 +22,7 @@ import ProductsTable from '../table/products-table/products-table';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 import AnnouncementsTable from '../table/announcements-table/announcements-table';
 import { Campaign, Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
+import DataDisplayModeSelector from '../table/data-display-mode-selector/data-display-mode-selector';
 
 const { Order, Customer } = Types;
 
@@ -36,6 +37,12 @@ export default function Store({ className = `storeComponent` }) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [selectedOrder, setSelectedOrder] = useState<StoreOrder | null>(null);
     const [storeSlideIndex, setStoreSlideIndex] = useState(0);
+    const [tableDisplayModes, setTableDisplayModes] = useState<Record<number, DataDisplayModes>>({
+        0: DataDisplayModes.Grid,
+        1: DataDisplayModes.Table,
+        2: DataDisplayModes.Table,
+        3: DataDisplayModes.Table,
+    });
     const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct(prev => prev?.id == product?.id ? null : product);
     const routeEditMatch = pathname?.match(/\/(edit|update)\/([^/]+)/);
     const routeProductID = decodeURIComponent(routeEditMatch?.[2] || ``);
@@ -75,7 +82,12 @@ export default function Store({ className = `storeComponent` }) {
             activeButtonBG: `var(--white_silver)`, 
             icon: <Person style={{ fontSize: 16 }} />, 
         }] : []),
-    ]), [canManageStore]);
+    ]), [announcements?.length, canManageStore, orders?.length, products?.length, users?.length]);
+
+    const activeDisplayMode = tableDisplayModes?.[storeSlideIndex] || DataDisplayModes.Table;
+    const setActiveDisplayMode = (nextMode: DataDisplayModes) => {
+        setTableDisplayModes(prev => ({ ...prev, [storeSlideIndex]: nextMode }));
+    };
 
     const closeFullEdit = () => {
         setFullEditProduct(null);
@@ -162,6 +174,11 @@ export default function Store({ className = `storeComponent` }) {
                     ariaLabel={`Store sections`}
                     onChange={(nextSlideIndex) => setStoreSlideIndex(Number(nextSlideIndex))}
                 />
+                <DataDisplayModeSelector
+                    value={activeDisplayMode}
+                    className={`storeDisplayOptions`}
+                    onChange={setActiveDisplayMode}
+                />
             </div>
         </>}
         <div className={`storeContainer w99 ${className}`}>
@@ -177,6 +194,7 @@ export default function Store({ className = `storeComponent` }) {
                     <SwiperSlide>
                         <div className={`storeProductsPanel`}>
                             <ProductsTable 
+                                mode={tableDisplayModes?.[0]}
                                 onAddToCart={addToCart} 
                                 quickEditProduct={quickEditProduct} 
                                 onQuickEdit={toggleQuickEditProduct} 
@@ -186,14 +204,14 @@ export default function Store({ className = `storeComponent` }) {
                         </div>
                     </SwiperSlide>
                     <SwiperSlide>
-                        <OrdersTable onOpenOrderDetails={openOrderDetails} />
+                        <OrdersTable mode={tableDisplayModes?.[1]} onOpenOrderDetails={openOrderDetails} />
                     </SwiperSlide>
                     <SwiperSlide>
-                        <AnnouncementsTable />
+                        <AnnouncementsTable mode={tableDisplayModes?.[2]} />
                     </SwiperSlide>
                     {canManageStore ? (
                         <SwiperSlide>
-                            <UsersTable type={`Customer`} onOpenUserDetails={openUserDetails} />
+                            <UsersTable type={`Customer`} mode={tableDisplayModes?.[3]} onOpenUserDetails={openUserDetails} />
                         </SwiperSlide>
                     ) : <></>}
                 </Slider>

@@ -8,7 +8,7 @@ import { getIdToken } from 'firebase/auth';
 import { GridColDef } from '@mui/x-data-grid';
 import { auth } from '@/shared/server/firebase';
 import IconText from '../../icon-text/icon-text';
-import { Roles, Types } from '@/shared/types/types';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { Order } from '@/shared/types/models/Order';
 import ZeroState from '../../zero-state/zero-state';
 import { useContext, useMemo, useState } from 'react';
@@ -43,6 +43,7 @@ const getOrderStatusColor = (status?: string) => {
 
 export default function OrdersTable({
     type = Types.Order,
+    mode = DataDisplayModes.Table,
     onOpenOrderDetails = () => {},
 }: any) {
     const { user, orders = [], ordersLoading = false } = useContext<any>(StateGlobals);
@@ -123,6 +124,7 @@ export default function OrdersTable({
         <div className={`ordersTableWrap`}>
             <Table 
                 type={type} 
+                mode={mode}
                 rows={visibleOrders} 
                 columns={orderColumns} 
                 selectable={canManageOrders}

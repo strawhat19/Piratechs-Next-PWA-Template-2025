@@ -3,7 +3,7 @@
 import Table from '../table';
 import { toast } from 'react-toastify';
 import Loader from '../../loaders/loader';
-import { Roles, Types } from '@/shared/types/types';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import ToggleCell from '../toggle-cell/toggle-cell';
 import { minRole } from '@/shared/scripts/constants';
 import { usePathname, useRouter } from 'next/navigation';
@@ -307,6 +307,7 @@ const AnnouncementActionsCell = ({
 
 export default function AnnouncementsTable({
     type = Types.Announcement,
+    mode = DataDisplayModes.Table,
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
@@ -570,6 +571,7 @@ export default function AnnouncementsTable({
         <>
             <Table
                 type={type}
+                mode={mode}
                 rows={visibleAnnouncements}
                 columns={announcementColumns}
                 className={`announcementsTableComponent`}

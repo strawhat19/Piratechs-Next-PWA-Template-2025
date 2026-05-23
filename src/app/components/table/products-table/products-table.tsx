@@ -4,10 +4,10 @@ import Table from '../table';
 import Image from 'next/image';
 import { flushSync } from 'react-dom';
 import { toast } from 'react-toastify';
-import Loader from '../../loaders/loader';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
-import { Roles, Types } from '@/shared/types/types';
+import ProductCard from '../../store/product-card/product-card';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
@@ -415,9 +415,10 @@ export default function ProductsTable({
     setFullEditProduct,
     setQuickEditProduct,
     type = Types.Product, 
-    onAddToCart = () => false, 
     onQuickEdit = undefined,
     quickEditProduct = null,
+    onAddToCart = () => false, 
+    mode = DataDisplayModes.Grid,
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
@@ -894,17 +895,18 @@ export default function ProductsTable({
         setSelectedActiveProductIDs(activeIds);
     }
 
-    if (productsLoading) {
-        return <Loader height={250} label={`Product(s) Loading`} />;
-    }
-
     return (
         <>
             <Table
                 type={type}
+                mode={mode}
                 rows={products}
                 columns={productColumns}
+                loading={productsLoading}
                 className={`productsTableComponent`}
+                gridProps={{
+                    renderCard: (params: any) => <ProductCard {...params} />,
+                }}
                 dataGridProps={{
                     rowSelectionModel: normalizeProductSelectionModel(productSelectionModel),
                     onCellClick: ({ row, field }: any) => {
