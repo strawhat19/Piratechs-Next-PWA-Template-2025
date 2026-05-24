@@ -452,7 +452,6 @@
         width: 100%;
         max-width: 100%;
     }
-
     .tableGridCards {
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 258px), 1fr));
     }
@@ -613,40 +612,346 @@
     }
 }
 
+.ordersTableComponent,
+.usersTableComponent,
+.announcementsTableComponent {
+    &.table {
+        width: 100%;
+        max-width: 100%;
+    }
+    .tableGridCards {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+    }
+}
+
+.storeGridCard {
+    min-height: 388px;
+    background:
+        linear-gradient(180deg, rgba(var(--cool_neon_blue_rgb), 0.08), rgba(255, 255, 255, 0.02) 36%, rgba(0, 0, 0, 0.12)),
+        color-mix(in srgb, var(--bg) 74%, var(--navy));
+}
+
+.storeGridCardHero {
+    gap: 12px;
+    width: 100%;
+    display: flex;
+    min-height: 132px;
+    overflow: hidden;
+    position: relative;
+    align-items: center;
+    padding: 18px 16px;
+    background:
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.18), rgba(255, 255, 255, 0.045)),
+        var(--navy);
+}
+
+.orderGridCardHero {
+    background:
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.15), transparent 34%),
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.18), rgba(255, 255, 255, 0.045)),
+        var(--navy);
+
+    &.orderStatusPaid {
+        background:
+            radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.15), transparent 34%),
+            linear-gradient(135deg, color-mix(in srgb, var(--green_neon) 24%, transparent), rgba(255, 255, 255, 0.045)),
+            var(--navy);
+    }
+
+    &.orderStatusFailed {
+        background:
+            radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.15), transparent 34%),
+            linear-gradient(135deg, color-mix(in srgb, var(--error) 28%, transparent), rgba(255, 255, 255, 0.045)),
+            var(--navy);
+    }
+}
+
+.announcementGridCardHero {
+    background:
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.15), transparent 34%),
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.24), rgba(255, 255, 255, 0.045)),
+        var(--navy);
+}
+
+.userGridCardHero {
+    justify-content: center;
+    background:
+        radial-gradient(circle at 50% 16%, rgba(255, 255, 255, 0.17), transparent 34%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(var(--cool_neon_blue_rgb), 0.12)),
+        var(--navy);
+}
+
+.storeGridCardHeroIcon {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    flex: 0 0 72px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    color: var(--links);
+    border-radius: calc(var(--borderRadius) + 6px);
+    background: rgba(2, 10, 25, 0.45);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.28);
+
+    svg {
+        font-size: 34px;
+    }
+
+    .tableGridField {
+        width: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.orderGridCardIcon {
+    &.orderStatusPaid {
+        color: var(--green_neon);
+    }
+
+    &.orderStatusFailed {
+        color: var(--error);
+    }
+}
+
+.announcementGridCardIcon {
+    color: var(--links);
+
+    .tableDropDown {
+        width: 58px;
+        min-width: 58px;
+        justify-content: center !important;
+    }
+}
+
+.storeGridCardHeroText {
+    gap: 3px;
+    display: grid;
+    min-width: 0;
+
+    span {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    strong {
+        font-size: 22px;
+        line-height: 1;
+    }
+}
+
+.storeGridCardBody {
+    gap: 11px;
+    flex: 1;
+    display: flex;
+    padding: 12px;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.storeGridCardTop {
+    gap: 8px;
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.storeGridCardNumber {
+    color: var(--links);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.storeGridCardTitle {
+    min-width: 0;
+    min-height: 34px;
+    font-size: 16px;
+    font-weight: 800;
+
+    .editableCellWrap {
+        min-height: 34px;
+        padding: 0 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.2);
+    }
+
+    .editableCellInput {
+        font-size: 16px;
+        font-weight: 800;
+    }
+}
+
+.storeGridCardField,
+.storeGridCardMetaItem,
+.storeGridCardMetric {
+    gap: 5px;
+    display: grid;
+    min-width: 0;
+
+    > span {
+        line-height: 1;
+        font-size: 11px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.58);
+    }
+}
+
+.storeGridCardField,
+.storeGridCardMetric {
+    padding: 8px;
+    border-radius: var(--borderRadius);
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.18);
+}
+
+.storeGridCardMetrics,
+.storeGridCardMeta {
+    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.storeGridCardMeta {
+    .tableGridField {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+.storeGridCardMessage {
+    min-height: 76px;
+}
+
+.storeGridCardStatus {
+    width: min(145px, 62%);
+    margin-left: auto;
+
+    .tableDropDown {
+        max-height: 29px;
+        min-height: 29px;
+    }
+}
+
+.storeGridCardActions,
+.storeGridCardActionsCompact {
+    .actionsCell {
+        min-height: 30px;
+    }
+
+    .actions {
+        margin-left: auto;
+    }
+}
+
+.storeGridCardActions {
+    margin-top: auto;
+}
+
+.storeGridCardActionsCompact {
+    width: min(150px, 64%);
+    margin-left: auto;
+}
+
+.userGridCardAvatar {
+    width: 96px;
+    height: 96px;
+    display: flex;
+    overflow: hidden;
+    font-size: 42px;
+    font-weight: 900;
+    position: relative;
+    align-items: center;
+    border-radius: 50%;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(var(--cool_neon_blue_rgb), 0.38);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+}
+
+.userGridCardAvatarImage,
+.userGridCardAvatarSkeleton {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.userGridCardAvatarImage {
+    object-fit: cover;
+    transition: opacity 180ms ease;
+
+    &.loading {
+        opacity: 0;
+    }
+}
+
+.userGridCardAvatarSkeleton {
+    z-index: 1;
+    transform: none !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 @container (max-width: 768px) {
+    .ordersTableComponent,
+    .usersTableComponent,
+    .announcementsTableComponent {
+        .tableGridCards {
+            gap: 10px;
+            padding: 72px 10px 10px;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+        }
+    }
     .productsTableComponent {
         &.table {
             max-width: 100%;
         }
-
         .tableGridCards {
             gap: 10px;
             padding: 72px 10px 10px;
             grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
         }
     }
-
     .productGridCard {
         min-height: 398px;
     }
 }
 
 @container (max-width: 500px) {
-    .productsTableComponent {
-        &.table {
-            max-width: 100%;
-        }
-
+    .ordersTableComponent,
+    .usersTableComponent,
+    .announcementsTableComponent {
         .tableGridCards {
             padding-top: 124px;
             grid-template-columns: 1fr;
         }
-
         .table_header {
             width: calc(100% - 18px) !important;
         }
     }
-
+    .storeGridCardMeta,
+    .storeGridCardMetrics {
+        grid-template-columns: 1fr;
+    }
+    .productsTableComponent {
+        &.table {
+            max-width: 100%;
+        }
+        .tableGridCards {
+            padding-top: 124px;
+            grid-template-columns: 1fr;
+        }
+        .table_header {
+            width: calc(100% - 18px) !important;
+        }
+    }
     .productGridCardMeta,
     .productGridCardMetrics {
         grid-template-columns: 1fr;

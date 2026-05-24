@@ -23,13 +23,14 @@ export default function ProductCard({
     selectable,
     onCardClick,
     renderColumn,
+    checkboxAlignmentStart,
 }: TableGridCardParams) {
     const product = row as Product;
     const imageURL = getProductImageURL(product);
     const [imageError, setImageError] = useState(false);
     const [imageLoading, setImageLoading] = useState(Boolean(imageURL));
     return (
-        <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard`}>
+        <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard`} checkboxAlignmentStart={checkboxAlignmentStart}>
             <div className={`productGridCardMedia`}>
                 {selectable ? (
                     <label className={`dataDisplayCardSelect productGridCardSelect`} onClick={(event) => event.stopPropagation()}>

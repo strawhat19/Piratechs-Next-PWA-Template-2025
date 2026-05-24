@@ -11,6 +11,14 @@ import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 
 const paginationModel = { page: 0, pageSize: 15 };
 
+export const checkboxColumn = {
+  width: 50,
+  sortable: false,
+  filterable: false,
+  disableColumnMenu: true,
+  field: GRID_CHECKBOX_SELECTION_FIELD,
+};
+
 const interactiveCellSelectors = [
   `button`,
   `a`,

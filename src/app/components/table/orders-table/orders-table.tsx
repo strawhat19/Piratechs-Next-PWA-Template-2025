@@ -1,22 +1,22 @@
 'use client';
 
-import Table from '../table';
 import { Button } from '@mui/material';
 import { toast } from 'react-toastify';
-import Loader from '../../loaders/loader';
 import { getIdToken } from 'firebase/auth';
 import { GridColDef } from '@mui/x-data-grid';
 import { auth } from '@/shared/server/firebase';
+import Table, { checkboxColumn } from '../table';
 import IconText from '../../icon-text/icon-text';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { Order } from '@/shared/types/models/Order';
 import ZeroState from '../../zero-state/zero-state';
 import { useContext, useMemo, useState } from 'react';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { Sync, ReceiptLong } from '@mui/icons-material';
+import OrderCard from '../../store/order-card/order-card';
 import { capWords, minRole } from '@/shared/scripts/constants';
 import Icon_Button from '../../buttons/icon-button/icon-button';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 
 const storeDollarSignColor = `var(--green_neon)`;
 
@@ -106,6 +106,7 @@ export default function OrdersTable({
                 </div>
             ),
         },
+        checkboxColumn,
         // { field: `id`, headerName: `Firestore ID`, width: 260 },
         // { field: `stripe_order_id`, headerName: `Stripe Order ID`, width: 245 },
         // { field: `currency`, headerName: `Currency`, width: 95, valueGetter: (value: any) => String(value || `usd`).toUpperCase() },
@@ -114,9 +115,7 @@ export default function OrdersTable({
         // { field: `stripe_charge_id`, headerName: `Charge`, width: 190 },
     ];
 
-    if (ordersLoading) return <Loader height={250} label={`${type}(s) Loading`} />;
-
-    if (user == null) {
+    if (user == null && !ordersLoading) {
         return <ZeroState type={Types.Order} />
     }
 
@@ -125,9 +124,13 @@ export default function OrdersTable({
             <Table 
                 type={type} 
                 mode={mode}
+                loading={ordersLoading}
                 rows={visibleOrders} 
                 columns={orderColumns} 
                 selectable={canManageOrders}
+                gridProps={{
+                    renderCard: (params: any) => <OrderCard {...params} />,
+                }}
                 className={`ordersTableComponent`} 
                 pagination_options={{ page: 0, pageSize: 10 }} 
                 emptyRowsLabel={`(${visibleOrders?.length}) ${type}(s), Sign In or Check Role Permission(s)`} 

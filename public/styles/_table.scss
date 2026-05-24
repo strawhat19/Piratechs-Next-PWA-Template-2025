@@ -112,8 +112,10 @@
   gap: 14px;
   width: 100%;
   display: grid;
+  overflow-y: auto;
   box-sizing: border-box;
   padding: 62px 14px 14px;
+  max-height: calc(var(--stockSliderHeight) - 10px);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
 }
 
@@ -122,12 +124,12 @@
 }
 
 .tableGridEmpty {
-  margin: 62px 14px 14px;
   padding: 18px;
-  color: rgba(255, 255, 255, 0.78);
   font-size: 13px;
   text-align: center;
+  margin: 62px 14px 14px;
   border-radius: var(--borderRadius);
+  color: rgba(255, 255, 255, 0.78);
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.22);
 }
@@ -188,6 +190,13 @@
       font-size: 24px;
       filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
     }
+  }
+}
+
+.dataDisplayCard.checkboxAlignmentEnd {
+  .dataDisplayCardSelect {
+    left: auto;
+    right: 10px;
   }
 }
 
@@ -505,12 +514,19 @@
   }
 }
 
+.flexCenteredCell {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+}
+
 .MuiDataGrid-cell {
   &:has(.iconImg) {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center !important;
+    @extend .flexCenteredCell;
+  }
+  &:has(.MuiCheckbox-root) {
+    @extend .flexCenteredCell;
   }
 }
 

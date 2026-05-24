@@ -1,18 +1,19 @@
-import Table from '../table';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { Button } from '@mui/material';
 import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
+import Table, { checkboxColumn } from '../table';
 import MenuTrigger from '../../menu/menu-trigger';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
-import { colors, minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
+import UserCard from '../../store/user-card/user-card';
 import EditableCell from '../editable-cell/editable-cell';
+import { colors, minRole } from '@/shared/scripts/constants';
 import { JSX, useContext, useEffect, useState } from 'react';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 // import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
 import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, ShoppingCart, Logout, Delete, KeyboardArrowDown } from '@mui/icons-material';
 
@@ -281,6 +282,7 @@ export default function UsersTable({
                 />
             ),
         },
+        checkboxColumn,
     ];
     if (!canViewUsers) return <Loader height={250} label={`${type}(s) Restricted`} />;
     return (
@@ -291,6 +293,10 @@ export default function UsersTable({
                 title={`${type}(s)`}
                 rows={users}
                 columns={user_columns}
+                className={`usersTableComponent ${String(type).toLowerCase()}sTableComponent`}
+                gridProps={{
+                    renderCard: (params: any) => <UserCard {...params} />,
+                }}
                 dataGridProps={{
                     onCellClick: ({ row, field }: any) => {
                         if (field == `signedIn` || field == `actions`) return;

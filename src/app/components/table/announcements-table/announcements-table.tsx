@@ -1,9 +1,7 @@
 'use client';
 
-import Table from '../table';
 import { toast } from 'react-toastify';
-import Loader from '../../loaders/loader';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
+import Table, { checkboxColumn } from '../table';
 import ToggleCell from '../toggle-cell/toggle-cell';
 import { minRole } from '@/shared/scripts/constants';
 import { usePathname, useRouter } from 'next/navigation';
@@ -14,7 +12,9 @@ import { richTextToPlainText } from '../../rich-text/rich-text';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import AnnouncementForm from '../../store/announcement-form/announcement-form';
+import AnnouncementCard from '../../store/announcement-card/announcement-card';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import AnnouncementDetails from '../../store/announcement-details/announcement-details';
 import { deleteAnnouncementFromDatabase, updateAnnouncementInDatabase } from '@/shared/server/firebase';
@@ -561,20 +561,21 @@ export default function AnnouncementsTable({
                 />
             ),
         },
+        checkboxColumn,
     ];
-
-    if (announcementsLoading) {
-        return <Loader height={250} label={`${announcementsLabel} Loading`} />;
-    }
 
     return (
         <>
             <Table
                 type={type}
                 mode={mode}
+                loading={announcementsLoading}
                 rows={visibleAnnouncements}
                 columns={announcementColumns}
                 className={`announcementsTableComponent`}
+                gridProps={{
+                    renderCard: (params: any) => <AnnouncementCard {...params} />,
+                }}
                 dataGridProps={{
                     rowSelectionModel: normalizeAnnouncementSelectionModel(announcementSelectionModel),
                     onCellClick: ({ row, field }: any) => {

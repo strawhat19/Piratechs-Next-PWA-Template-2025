@@ -1,19 +1,22 @@
 'use client';
 
 import { KeyboardEvent, MouseEvent, ReactNode } from 'react';
+import { defaultCheckboxAlignmentStart } from '../table-grid/table-grid';
 
 type DataDisplayCardProps = {
+    className?: string;
     selected?: boolean;
     children: ReactNode;
-    className?: string;
+    checkboxAlignmentStart?: boolean;
     onClick?: (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>) => void;
 };
 
 export default function DataDisplayCard({
     children,
+    className = ``,
     selected = false,
     onClick = undefined,
-    className = ``,
+    checkboxAlignmentStart = defaultCheckboxAlignmentStart,
 }: DataDisplayCardProps) {
     const clickable = typeof onClick == `function`;
     const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -25,9 +28,9 @@ export default function DataDisplayCard({
     return (
         <article
             onClick={onClick}
-            tabIndex={clickable ? 0 : undefined}
             onKeyDown={handleKeyDown}
-            className={`dataDisplayCard ${selected ? `selected` : ``} ${clickable ? `clickable` : ``} ${className}`.trim()}
+            tabIndex={clickable ? 0 : undefined}
+            className={`dataDisplayCard ${selected ? `selected` : ``} ${clickable ? `clickable` : ``} ${checkboxAlignmentStart ? `checkboxAlignmentStart` : `checkboxAlignmentEnd`} ${className}`.trim()}
         >
             {children}
         </article>

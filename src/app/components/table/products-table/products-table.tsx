@@ -1,9 +1,9 @@
 'use client';
 
-import Table from '../table';
 import Image from 'next/image';
 import { flushSync } from 'react-dom';
 import { toast } from 'react-toastify';
+import Table, { checkboxColumn } from '../table';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
@@ -904,6 +904,7 @@ export default function ProductsTable({
                 />
             ),
         },
+        checkboxColumn,
     ];
 
     const onSelectedRowsChange = (selectionModel: GridRowSelectionModel) => {

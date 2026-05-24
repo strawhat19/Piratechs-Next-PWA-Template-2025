@@ -1,9 +1,11 @@
 'use client';
 
-import { Checkbox, Skeleton } from '@mui/material';
 import { useState } from 'react';
+import { Checkbox, Skeleton } from '@mui/material';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import DataDisplayCard from '../data-display-card/data-display-card';
+
+export const defaultCheckboxAlignmentStart = false;
 
 const interactiveGridSelectors = [
     `button`,
@@ -30,25 +32,27 @@ const shouldIgnoreGridClick = (target: any) => Boolean(target?.closest?.(interac
 export type TableGridCardParams = {
     row: any;
     rowID: string;
-    selected: boolean;
     rowIndex: number;
+    selected: boolean;
     columns: GridColDef[];
     selectable: boolean;
     onSelect: (event: any) => void;
+    checkboxAlignmentStart?: boolean;
     onCardClick: (event: any) => void;
     getColumnValue: (field: string | GridColDef) => any;
     renderColumn: (field: string | GridColDef, className?: string) => any;
 };
 
 type TableGridProps = {
+    rows?: any[];
     type?: string;
     loading?: boolean;
     rowCount?: number;
+    dataGridProps?: any;
     selectable?: boolean;
-    rows?: any[];
     columns?: GridColDef[];
     emptyRowsLabel?: string;
-    dataGridProps?: any;
+    checkboxAlignmentStart?: boolean;
     renderCard?: (params: TableGridCardParams) => any;
 };
 
@@ -96,8 +100,9 @@ const GenericGridCard = ({
     selectable,
     onCardClick,
     renderColumn,
+    checkboxAlignmentStart = defaultCheckboxAlignmentStart,
 }: TableGridCardParams) => (
-    <DataDisplayCard selected={selected} onClick={onCardClick} className={`genericGridCard`}>
+    <DataDisplayCard selected={selected} onClick={onCardClick} className={`genericGridCard`} checkboxAlignmentStart={checkboxAlignmentStart}>
         {selectable ? (
             <label className={`dataDisplayCardSelect`} onClick={(event) => event.stopPropagation()}>
                 <Checkbox
@@ -131,12 +136,13 @@ const GenericGridCard = ({
 export default function TableGrid({
     rows = [],
     columns = [],
-    rowCount = rows?.length || 0,
+    loading = false,
     selectable = true,
     dataGridProps = {},
-    loading = false,
     renderCard = undefined,
     emptyRowsLabel = `No Rows`,
+    rowCount = rows?.length || 0,
+    checkboxAlignmentStart = defaultCheckboxAlignmentStart,
 }: TableGridProps) {
     const [internalSelectionModel, setInternalSelectionModel] = useState<GridRowSelectionModel>({ type: `include`, ids: new Set() });
     if (loading) return <TableGridSkeleton count={Math.max(4, Math.min(rowCount || 6, 8))} />;
@@ -158,6 +164,7 @@ export default function TableGrid({
                     selected,
                     rowIndex,
                     selectable,
+                    checkboxAlignmentStart,
                     getColumnValue: (field: string | GridColDef) => getColumnValue(typeof field == `string` ? columns?.find(column => column?.field == field) as GridColDef : field, row),
                     renderColumn: (field: string | GridColDef, className = ``) => {
                         const column = typeof field == `string` ? columns?.find(currentColumn => currentColumn?.field == field) : field;
