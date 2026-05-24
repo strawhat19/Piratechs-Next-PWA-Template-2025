@@ -1,11 +1,11 @@
 'use client';
 
 import Loader from '../loaders/loader';
-import TableGrid from './table-grid/table-grid';
 import { useContext, useRef } from 'react';
-import { DataDisplayModes, Types } from '@/shared/types/types';
+import TableGrid from './table-grid/table-grid';
 import { StateGlobals } from '@/shared/global-context';
 import { GridToolbar } from '@mui/x-data-grid/internals';
+import { DataDisplayModes, Types } from '@/shared/types/types';
 import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 

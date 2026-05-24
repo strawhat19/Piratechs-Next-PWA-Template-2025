@@ -522,11 +522,39 @@
   overflow: hidden;
   font-weight: 800;
   object-fit: cover;
+  position: relative;
   align-items: center;
   justify-content: center;
   background: var(--navy);
   border-radius: var(--borderRadius);
   // border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.35);
+}
+
+.productTableImageWrap {
+  top: -1px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--borderRadius);
+  .productTableImage {
+    inset: 0;
+    position: absolute;
+    transition: opacity 180ms ease;
+    &.loading {
+      opacity: 0;
+    }
+  }
+}
+
+.productTableImageSkeleton {
+  z-index: 1;
+  min-height: 30px;
+  transform: none !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .productsTableComponent {

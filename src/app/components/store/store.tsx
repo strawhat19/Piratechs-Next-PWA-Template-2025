@@ -7,7 +7,6 @@ import Selector from '../selector/selector';
 import { SwiperSlide } from 'swiper/react';
 import { User } from '@/shared/types/models/User';
 import UserDetails from './user-details/user-details';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { StateGlobals } from '@/shared/global-context';
 import { Product } from '@/shared/types/models/Product';
 import OrderDetails from './order-details/order-details';
@@ -19,12 +18,15 @@ import { ProductFormDialog } from './product-form/product-form';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Order as StoreOrder } from '@/shared/types/models/Order';
 import ProductsTable from '../table/products-table/products-table';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 import AnnouncementsTable from '../table/announcements-table/announcements-table';
 import { Campaign, Person, ReceiptLong, ShoppingCart } from '@mui/icons-material';
 import DataDisplayModeSelector from '../table/data-display-mode-selector/data-display-mode-selector';
 
 const { Order, Customer } = Types;
+
+export const productsDefaultDisplayType: DataDisplayModes = DataDisplayModes.Grid;
 
 export default function Store({ className = `storeComponent` }) {
     const router = useRouter();
@@ -38,7 +40,7 @@ export default function Store({ className = `storeComponent` }) {
     const [selectedOrder, setSelectedOrder] = useState<StoreOrder | null>(null);
     const [storeSlideIndex, setStoreSlideIndex] = useState(0);
     const [tableDisplayModes, setTableDisplayModes] = useState<Record<number, DataDisplayModes>>({
-        0: DataDisplayModes.Grid,
+        0: productsDefaultDisplayType,
         1: DataDisplayModes.Table,
         2: DataDisplayModes.Table,
         3: DataDisplayModes.Table,

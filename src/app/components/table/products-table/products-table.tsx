@@ -6,18 +6,19 @@ import { flushSync } from 'react-dom';
 import { toast } from 'react-toastify';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
+import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import EditableCell from '../editable-cell/editable-cell';
+import { productsDefaultDisplayType } from '../../store/store';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import ProductCard from '../../store/product-card/product-card';
 import ProductForm from '../../store/product-form/product-form';
 import { Button, LinearProgress, Skeleton } from '@mui/material';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import ProductDetails from '../../store/product-details/product-details';
 import { useCheckoutReturnToast, useStoreCart } from '../../store/use-store-cart';
 import { updateProductInDatabase, deleteProductFromDatabase } from '@/shared/server/firebase';
@@ -108,11 +109,15 @@ const ProductStockCell = ({
 };
 
 const ProductImageCell = ({ row }: { row: Product }) => {
-    let imageURL = row?.attachments?.[0]?.value || row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url;
+    const imageURL = row?.attachments?.[0]?.value || row?.imageURL || row?.imageURLs?.[0] || row?.images?.[0]?.src || row?.images?.[0]?.url || ``;
+    const [imageError, setImageError] = useState(false);
+    const [imageLoading, setImageLoading] = useState(Boolean(imageURL));
     // if (!imageURL) imageURL = constants.images.icons.logo;
-    return imageURL ? (
-        <Image unoptimized width={38} height={38} alt={row?.name || `Product`} src={imageURL} className={`iconImg productTableImage`} />
-    ) : (
+    useEffect(() => {
+        setImageError(false);
+        setImageLoading(Boolean(imageURL));
+    }, [imageURL]);
+    const fallback = (
         <div className={`iconImg avatar productTableImage productTableImageEmpty`} style={{ 
             background: row?.color?.color, 
             color: row?.color?.type == `dark` ? `white` : `var(--navy)`,
@@ -120,6 +125,27 @@ const ProductImageCell = ({ row }: { row: Product }) => {
             <div className={`avatarLetter`} style={{ position: `relative`, top: 1 }}>
                 {row?.name?.[0] || `P`}
             </div>
+        </div>
+    );
+    if (!imageURL || imageError) return fallback;
+    return (
+        <div className={`productTableImageWrap`}>
+            {imageLoading ? (
+                <Skeleton variant={`rectangular`} animation={`wave`} className={`iconImg productTableImage productTableImageSkeleton`} />
+            ) : <></>}
+            <Image
+                unoptimized
+                width={38}
+                height={38}
+                src={imageURL}
+                alt={row?.name || `Product`}
+                className={`iconImg productTableImage ${imageLoading ? `loading` : ``}`}
+                onLoad={() => setImageLoading(false)}
+                onError={() => {
+                    setImageError(true);
+                    setImageLoading(false);
+                }}
+            />
         </div>
     );
 }
@@ -418,7 +444,7 @@ export default function ProductsTable({
     onQuickEdit = undefined,
     quickEditProduct = null,
     onAddToCart = () => false, 
-    mode = DataDisplayModes.Grid,
+    mode = productsDefaultDisplayType,
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
@@ -433,8 +459,7 @@ export default function ProductsTable({
     const [optimisticPriceByID, setOptimisticPriceByID] = useState<Record<string, number>>({});
     const [optimisticStockByID, setOptimisticStockByID] = useState<Record<string, number>>({});
     const [selectedInactiveProductIDs, setSelectedInactiveProductIDs] = useState<string[]>([]);
-    const { products = [], productsLoading = false } = useContext<any>(StateGlobals);
-    const { user, showAlert, showConfirm, setAppDialog, closeAppDialog } = useContext<any>(StateGlobals);
+    const { user, showAlert, showConfirm, setAppDialog, closeAppDialog, products = [], productsLoading = false } = useContext<any>(StateGlobals);
     const editProduct = (product: Product | null) => onQuickEdit ? onQuickEdit(product) : setSelectedProduct(product);
     const routeProductID = decodeURIComponent(pathname?.match(productRoutePattern)?.[1] || ``);
     const openProductDetails = (product: Product | null) => {
