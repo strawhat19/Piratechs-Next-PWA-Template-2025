@@ -10,6 +10,7 @@ export default function Icon_Button({
     arrow = true,
     button = false,
     rounded = true,
+    onHover = false,
     target = `_self`,
     color = `primary`,
     disabled = false, 
@@ -57,6 +58,7 @@ export default function Icon_Button({
                     size={`small`} 
                     onClick={disabled ? undefined : handleClick}
                     className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
+                    onMouseOver={onHover ? (disabled ? undefined : handleClick) : undefined}
                     style={{ 
                         ...style, 
                         maxWidth: size, 
@@ -70,9 +72,10 @@ export default function Icon_Button({
                 <IconButton 
                     id={id}
                     color={color}
-                    size={`small`} 
+                    size={`small`}
                     onClick={disabled ? undefined : handleClick}
                     className={`iconButton p0 ${className} ${disabled ? `disabled` : ``}`} 
+                    onMouseOver={onHover ? (disabled ? undefined : handleClick) : undefined} 
                     style={{ 
                         ...style, 
                         maxWidth: size, 

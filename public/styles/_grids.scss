@@ -16,3 +16,17 @@
         justify-content: space-between;
     }
 }
+
+.tableGridCardSlot {
+    &:has(.featured) {
+        grid-column: 1 / -1;
+        .dataDisplayCard {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            .productGridCardMedia {
+                max-width: 30%;
+            }
+        }
+    }
+}

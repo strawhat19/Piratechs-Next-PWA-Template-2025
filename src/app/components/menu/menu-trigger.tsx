@@ -1,14 +1,15 @@
-import { ChangeEvent, FocusEvent, MouseEvent, ReactNode, useMemo, useState } from 'react';
+import { ChangeEvent, FocusEvent, MouseEvent, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import Menu from './menu';
 
 interface MenuTriggerProps {
     id?: string;
     search?: boolean;
     colors?: boolean;
+    menuItems?: any[];
+    onHover?: boolean;
+    targetID?: string;
     topOffset?: number;
     className?: string;
-    menuItems?: any[];
-    targetID?: string;
     searchValue?: string;
     searchKeys?: string[];
     onSearchChange?: (value: string) => void;
@@ -23,32 +24,62 @@ interface MenuTriggerProps {
     }) => ReactNode;
 }
 
+const hoverCloseDelay = 500;
+const hoverMinOpenTime = 450;
+
 export default function MenuTrigger({
-    id = `menu-trigger`,
-    search = false,
-    colors = false,
+    renderTrigger,
     topOffset = 0,
     className = ``,
     menuItems = [],
-    targetID = `menu-target`,
+    search = false,
+    colors = false,
+    onHover = false,
     searchValue = ``,
+    id = `menu-trigger`,
     searchKeys = [`label`],
-    renderTrigger,
+    targetID = `menu-target`,
     onSearchChange = () => {},
 }: MenuTriggerProps) {
+    const clickOpenRef = useRef(false);
+    const menuHoverRef = useRef(false);
+    const triggerHoverRef = useRef(false);
+    const lastHoverOpenAtRef = useRef(0);
+    const hoverCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [internalSearchValue, setInternalSearchValue] = useState(``);
     const open = anchorEl != null;
     const valueToUse = searchValue || internalSearchValue;
+    const clearHoverCloseTimer = () => {
+        if (hoverCloseTimerRef?.current) clearTimeout(hoverCloseTimerRef.current);
+        hoverCloseTimerRef.current = null;
+    };
     const onClose = () => {
+        clearHoverCloseTimer();
+        clickOpenRef.current = false;
+        menuHoverRef.current = false;
+        triggerHoverRef.current = false;
         setAnchorEl(null);
         if (search && !searchValue) setInternalSearchValue(``);
     };
     const openAt = (element: HTMLElement) => {
+        clearHoverCloseTimer();
+        if (onHover) lastHoverOpenAtRef.current = Date.now();
         setAnchorEl(element);
+    };
+    const scheduleHoverClose = () => {
+        if (clickOpenRef.current) return;
+        clearHoverCloseTimer();
+        const recentlyOpenedDelay = hoverMinOpenTime - (Date.now() - lastHoverOpenAtRef.current);
+        const closeDelay = Math.max(hoverCloseDelay, recentlyOpenedDelay);
+        hoverCloseTimerRef.current = setTimeout(() => {
+            if (clickOpenRef.current || triggerHoverRef.current || menuHoverRef.current) return;
+            onClose();
+        }, closeDelay);
     };
     const onClick = (event: MouseEvent<HTMLElement>) => {
         event.stopPropagation();
+        clickOpenRef.current = true;
         openAt(event.currentTarget);
     };
     const onFocus = (event: FocusEvent<HTMLElement>) => {
@@ -60,7 +91,30 @@ export default function MenuTrigger({
         setInternalSearchValue(value);
         onSearchChange(value);
     };
+    const onMouseEnter = (event: MouseEvent<HTMLElement>) => {
+        if (!onHover) return;
+        triggerHoverRef.current = true;
+        openAt(event.currentTarget);
+    };
+    const onMouseLeave = () => {
+        if (!onHover) return;
+        triggerHoverRef.current = false;
+        scheduleHoverClose();
+    };
+    const onMenuMouseEnter = () => {
+        if (!onHover) return;
+        menuHoverRef.current = true;
+        clearHoverCloseTimer();
+    };
+    const onMenuMouseLeave = () => {
+        if (!onHover) return;
+        menuHoverRef.current = false;
+        scheduleHoverClose();
+    };
     const normalizedSearch = valueToUse?.toLowerCase?.()?.trim?.();
+    useEffect(() => () => {
+        if (hoverCloseTimerRef?.current) clearTimeout(hoverCloseTimerRef.current);
+    }, []);
     const filteredMenuItems = useMemo(() => {
         if (!search || !normalizedSearch) return menuItems;
         return menuItems?.filter((item: any) => {
@@ -70,18 +124,25 @@ export default function MenuTrigger({
             });
         });
     }, [menuItems, normalizedSearch, search, searchKeys]);
+    const trigger = renderTrigger({ id, open, search, searchValue: valueToUse, onClick, onFocus, onType });
     return (
         <>
-            {renderTrigger({ id, open, search, searchValue: valueToUse, onClick, onFocus, onType })}
+            {onHover ? (
+                <span className={`menuTriggerHoverWrap`} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+                    {trigger}
+                </span>
+            ) : trigger}
             <Menu
                 open={open}
                 colors={colors}
                 onClose={onClose}
+                onMouseEnter={onHover ? onMenuMouseEnter : undefined}
+                onMouseLeave={onHover ? onMenuMouseLeave : undefined}
                 targetID={targetID}
                 anchorEl={anchorEl}
-                menuItems={filteredMenuItems}
                 topOffset={topOffset}
                 className={className}
+                menuItems={filteredMenuItems}
             />
         </>
     );

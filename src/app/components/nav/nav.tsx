@@ -4,16 +4,17 @@ import Link from 'next/link';
 import { useContext, useState } from 'react';
 import CartDrawer from '../store/cart-drawer';
 import MenuTrigger from '../menu/menu-trigger';
-import { capWords } from '@/shared/scripts/constants';
 import { useStoreCart } from '../store/use-store-cart';
 import { StateGlobals } from '@/shared/global-context';
 import { useRouter, usePathname } from 'next/navigation';
+import { capWords, dev } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { statusColors } from '../store/product-form/product-select-field';
 import { Menu, Close, BarChart, Settings, PermMedia, Checklist, ShoppingCart, Person, Logout, Storefront, DeleteSweep } from '@mui/icons-material';
 
 const size = 20;
+const devEnv = dev();
 export const routes = {
 //   settings: {  icons: { fontAwesome: `fa-cog`, mui: <Settings style={{ fontSize: size }} className={`linkHover`} /> } },
 //   chats: { icons: { fontAwesome: `fa-comments`, mui: <Chat style={{ fontSize: size }} className={`linkHover`} /> } },
@@ -103,6 +104,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 <MenuTrigger
                     colors={true}
                     topOffset={1}
+                    onHover={devEnv}
                     id={`store-menu-trigger`}
                     menuItems={storeMenuItems}
                     className={`storeCartMenu`}
@@ -146,6 +148,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                             <MenuTrigger
                                 colors={true}
                                 topOffset={1}
+                                onHover={devEnv}
                                 id={`profileMenuButton`}
                                 menuItems={profileMenuItems}
                                 renderTrigger={({ id, onClick }) => (

@@ -30,13 +30,13 @@ export default function ProductCard({
     const [imageError, setImageError] = useState(false);
     const [imageLoading, setImageLoading] = useState(Boolean(imageURL));
     return (
-        <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard`} checkboxAlignmentStart={checkboxAlignmentStart}>
+        <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard ${product?.featured ? `featured` : ``}`} checkboxAlignmentStart={checkboxAlignmentStart}>
             <div className={`productGridCardMedia`}>
                 {selectable ? (
                     <label className={`dataDisplayCardSelect productGridCardSelect`} onClick={(event) => event.stopPropagation()}>
                         <Checkbox
-                            checked={selected}
                             size={`small`}
+                            checked={selected}
                             onChange={onSelect}
                             className={`dataDisplayCardCheckbox`}
                         />
@@ -52,8 +52,8 @@ export default function ProductCard({
                         src={imageURL}
                         useLazyLoad={true}
                         alt={product?.name || `Product`}
-                        className={`productGridCardImage ${imageLoading ? `loading` : ``}`}
                         onImageLoad={() => setImageLoading(false)}
+                        className={`productGridCardImage ${imageLoading ? `loading` : ``}`}
                         onImageError={() => {
                             setImageError(true);
                             setImageLoading(false);
@@ -67,7 +67,11 @@ export default function ProductCard({
             </div>
             <div className={`productGridCardBody`}>
                 <div className={`productGridCardTop`}>
-                    <span className={`productGridCardNumber`}>#{product?.number || `New`}</span>
+                    <span className={`productGridCardNumber`}>
+                        {product?.number || `New`}
+                    </span>
+                    <span>{product?.featured ? `Featured` : `Feat.`}</span>
+                    {renderColumn(`featured`)}
                     {renderColumn(`status`, `productGridCardStatus`)}
                 </div>
                 <div className={`productGridCardName`}>
@@ -79,12 +83,8 @@ export default function ProductCard({
                         {renderColumn(`price`)}
                     </div>
                     <div className={`productGridCardMetric`}>
-                        <span>Qty</span>
+                        <span>Quantity</span>
                         {renderColumn(`stock`)}
-                    </div>
-                    <div className={`productGridCardMetric productGridCardFeaturedMetric`}>
-                        <span>Featured</span>
-                        {renderColumn(`featured`)}
                     </div>
                 </div>
                 <div className={`productGridCardMeta`}>

@@ -9,6 +9,8 @@ export default function Menu({
     menuItems = [],
     anchorEl = null,
     onClose = () => {},
+    onMouseEnter = undefined,
+    onMouseLeave = undefined,
     targetID = `targetID`,
     id = `menuComponentID`,
     className = `menuComponentClass`,
@@ -24,7 +26,7 @@ export default function Menu({
                     className={`menuComponent ${className}`} 
                     anchorOrigin={{ vertical: `bottom`, horizontal: `right`, }} 
                     transformOrigin={{ vertical: `top`, horizontal: `right`, }} 
-                    slotProps={{ list: { 'aria-labelledby': targetID, }, paper: { sx: { mt: topOffset, }, }, }}
+                    slotProps={{ list: { 'aria-labelledby': targetID, onMouseEnter, }, paper: { onMouseEnter, onMouseLeave, sx: { mt: topOffset, }, }, }}
                 >
                     {[ ...menuItems, { id: `close`, label: `Close`, icon: <Close htmlColor={`var(--links)`} />, divider: true }, ]?.map((mi: any, mii: number) => (
                         <div key={mii} className={`menuItemContent`}>

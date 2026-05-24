@@ -101,7 +101,9 @@ export class Order extends Data {
     const orderData = data as Partial<Order> & Record<string, any>;
     const hasAppOrderID = isAppCollectionID(orderData?.id, Types.Order);
     const possibleStripeOrderID = !hasAppOrderID && isValid(orderData?.id) ? String(orderData?.id) : orderData?.stripe_order_id || orderData?.stripe_payment_intent_id || orderData?.stripePaymentIntentID || orderData?.stripe_checkout_session_id || orderData?.stripeCheckoutSessionID || orderData?.stripe_charge_id || orderData?.stripeChargeID;
+    
     super({ ...data, id: hasAppOrderID ? orderData?.id : undefined, type: Types.Order });
+
     const appID = this.id;
     const appUUID = this.uuid;
     const appTitle = this.title;
@@ -113,6 +115,7 @@ export class Order extends Data {
       this.title = appTitle;
       if (!isValid(this.stripe_order_id) && isValid(possibleStripeOrderID)) this.stripe_order_id = possibleStripeOrderID;
     }
+
     if (!isValid(this.stripePaymentIntentID) && isValid(this.stripe_payment_intent_id)) this.stripePaymentIntentID = this.stripe_payment_intent_id;
     if (!isValid(this.stripe_payment_intent_id) && isValid(this.stripePaymentIntentID)) this.stripe_payment_intent_id = this.stripePaymentIntentID;
     if (!isValid(this.stripeCheckoutSessionID) && isValid(this.stripe_checkout_session_id)) this.stripeCheckoutSessionID = this.stripe_checkout_session_id;
