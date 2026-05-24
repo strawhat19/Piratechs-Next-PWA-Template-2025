@@ -788,13 +788,10 @@
     }
 }
 
-.storeGridCardField,
-.storeGridCardMetaItem,
-.storeGridCardMetric {
+.storeGridCardField, .storeGridCardMetaItem, .storeGridCardMetric {
     gap: 5px;
-    display: grid;
     min-width: 0;
-
+    display: grid;
     > span {
         line-height: 1;
         font-size: 11px;
@@ -803,19 +800,21 @@
     }
 }
 
-.storeGridCardField,
-.storeGridCardMetric {
+.storeGridCardField, .storeGridCardMetric {
     padding: 8px;
     border-radius: var(--borderRadius);
     background: rgba(255, 255, 255, 0.045);
     border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.18);
 }
 
-.storeGridCardMetrics,
-.storeGridCardMeta {
+.storeGridCardMetrics, .storeGridCardMeta {
     gap: 8px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.storeGridCardField, .storeGridCardMeta {
+    font-size: 13px;
 }
 
 .storeGridCardMeta {

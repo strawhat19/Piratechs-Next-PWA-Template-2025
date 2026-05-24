@@ -62,7 +62,7 @@ export default function OrderCard({
                     </div>
                     <div className={`storeGridCardMetric`}>
                         <span>Items</span>
-                        <strong>{lineItemCount || `-`}</strong>
+                        <strong>{lineItemCount || 0}</strong>
                     </div>
                 </div>
                 <div className={`storeGridCardField`}>

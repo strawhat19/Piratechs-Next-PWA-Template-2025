@@ -3,3 +3,16 @@
         width: 99.5% !important;
     }
 }
+
+.orderGridCard {
+    .storeGridCardField {
+        &:has(.tableGridField-description) {
+            min-height: 66px;
+        }
+    }
+    .storeGridCardMeta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
