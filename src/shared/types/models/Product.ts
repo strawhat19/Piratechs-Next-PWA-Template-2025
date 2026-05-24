@@ -151,6 +151,7 @@ export class Product extends Data {
   tags: string[] = [];
   brand?: string = ``;
   vendor?: string = ``;
+  featured: boolean = false;
   categories: string[] = [];
   category: string = ProductCategory.Art;
 
@@ -246,6 +247,7 @@ export class Product extends Data {
     this.ratings = toNumber(this.ratings, 0);
     this.reviews = toNumber(this.reviews, 0);
     this.purchases = toNumber(this.purchases, 0);
+    this.featured = productData.featured == true || String(productData.featured || ``).toLowerCase() == `true`;
     const categoryInput = productData.category || productData.product_type || productData.productType;
     this.categories = normalizeTags(this.categories || productData.categories);
     if (isValid(categoryInput)) this.category = String(categoryInput);

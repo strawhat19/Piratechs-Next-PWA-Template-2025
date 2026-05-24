@@ -82,6 +82,10 @@ export default function ProductCard({
                         <span>Qty</span>
                         {renderColumn(`stock`)}
                     </div>
+                    <div className={`productGridCardMetric productGridCardFeaturedMetric`}>
+                        <span>Featured</span>
+                        {renderColumn(`featured`)}
+                    </div>
                 </div>
                 <div className={`productGridCardMeta`}>
                     {renderColumn(`category`, `productGridCardMetaField`)}

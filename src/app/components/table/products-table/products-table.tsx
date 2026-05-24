@@ -9,6 +9,7 @@ import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
+import ToggleCell from '../toggle-cell/toggle-cell';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -149,6 +150,24 @@ const ProductImageCell = ({ row }: { row: Product }) => {
         </div>
     );
 }
+
+const ProductFeaturedCell = ({ row }: { row: Product }) => {
+    const { user } = useContext<any>(StateGlobals);
+    const canManageProducts = minRole(user?.role, Roles.Administrator);
+    const updateFeatured = async (nextFeatured: boolean) => {
+        if (!row?.id) return;
+        await updateProductInDatabase(String(row?.id), { featured: nextFeatured }, user, true)?.then(() => toast.success(`Product Featured Updated`));
+    };
+    return (
+        <ToggleCell
+            value={Boolean(row?.featured)}
+            canEdit={canManageProducts}
+            onChange={updateFeatured}
+            className={`productFeaturedCell`}
+            checked={Boolean(row?.featured)}
+        />
+    );
+};
 
 const ProductActionsCell = ({ 
     row, 
@@ -815,6 +834,13 @@ export default function ProductsTable({
                     pendingValue={(pendingNameByID?.[String(row?.id)] ?? optimisticNameByID?.[String(row?.id)])}
                 />
             ),
+        },
+        { 
+            width: 90, 
+            field: `featured`, 
+            filterable: true, 
+            headerName: `Featured`, 
+            renderCell: ({ row }: any) => <ProductFeaturedCell row={row} />, 
         },
         {
             width: 115,
