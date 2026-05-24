@@ -35,8 +35,8 @@ export default function UserCard({
                 {selectable ? (
                     <label className={`dataDisplayCardSelect storeGridCardSelect`} onClick={(event) => event.stopPropagation()}>
                         <Checkbox
-                            checked={selected}
                             size={`small`}
+                            checked={selected}
                             onChange={onSelect}
                             className={`dataDisplayCardCheckbox`}
                         />
@@ -56,8 +56,8 @@ export default function UserCard({
                             sizes={`96px`}
                             src={imageURL}
                             alt={user?.name || `User`}
-                            className={`userGridCardAvatarImage ${imageLoading ? `loading` : ``}`}
                             onLoad={() => setImageLoading(false)}
+                            className={`userGridCardAvatarImage ${imageLoading ? `loading` : ``}`}
                             onError={() => {
                                 setImageError(true);
                                 setImageLoading(false);
@@ -70,11 +70,13 @@ export default function UserCard({
             </div>
             <div className={`storeGridCardBody`}>
                 <div className={`storeGridCardTop`}>
-                    <span className={`storeGridCardNumber`}>#{user?.number || `New`}</span>
+                    <span className={`storeGridCardNumber cardNumber`}>
+                        {user?.number || 0}
+                    </span>
                     {renderColumn(`signedIn`, `storeGridCardActionsCompact`)}
                 </div>
                 <div className={`storeGridCardTitle`}>
-                    {renderColumn(`name`)}
+                    {renderColumn(`name`, `userCardName`, { showLabel: true })}
                 </div>
                 <div className={`storeGridCardField`}>
                     <span>Email</span>

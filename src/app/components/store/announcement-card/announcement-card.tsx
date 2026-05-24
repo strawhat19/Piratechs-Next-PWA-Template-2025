@@ -23,8 +23,8 @@ export default function AnnouncementCard({
                 {selectable ? (
                     <label className={`dataDisplayCardSelect storeGridCardSelect`} onClick={(event) => event.stopPropagation()}>
                         <Checkbox
-                            checked={selected}
                             size={`small`}
+                            checked={selected}
                             onChange={onSelect}
                             className={`dataDisplayCardCheckbox`}
                         />
@@ -35,12 +35,16 @@ export default function AnnouncementCard({
                 </div>
                 <div className={`storeGridCardHeroText`}>
                     <span>Announcement</span>
-                    <strong>#{announcement?.number || `New`}</strong>
+                    <strong className={`cardNumber`}>
+                        {announcement?.number || 0}
+                    </strong>
                 </div>
             </div>
             <div className={`storeGridCardBody`}>
                 <div className={`storeGridCardTop`}>
-                    <span className={`storeGridCardNumber`}>#{announcement?.number || `New`}</span>
+                    <span className={`cardNumber`}>
+                        {announcement?.number || 0}
+                    </span>
                     {renderColumn(`status`, `storeGridCardStatus`)}
                 </div>
                 <div className={`storeGridCardTitle`}>

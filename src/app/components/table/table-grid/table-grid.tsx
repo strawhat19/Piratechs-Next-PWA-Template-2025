@@ -167,11 +167,19 @@ export default function TableGrid({
                     checkboxAlignmentStart,
                     getColumnValue: (field: string | GridColDef) => getColumnValue(typeof field == `string` ? columns?.find(column => column?.field == field) as GridColDef : field, row),
                     renderColumn: (field: string | GridColDef, className = ``, options: any = {}) => {
-                        const column = typeof field == `string` ? columns?.find(currentColumn => currentColumn?.field == field) : field;
+                        const column = typeof field == `string` ? (
+                            columns?.find(currentColumn => currentColumn?.field == field)
+                        ) : field;
                         if (!column) return null;
                         const value = getColumnValue(column, row);
-                        const content = typeof column?.renderCell == `function` ? column.renderCell({ id: rowID, row, value, field: column?.field, colDef: column, ...options } as any) : value;
-                        return <div className={`tableGridField tableGridField-${column?.field} ${className}`.trim()}>{content}</div>;
+                        const content = typeof column?.renderCell == `function` ? (
+                            column.renderCell({ id: rowID, row, value, field: column?.field, colDef: column, ...options } as any)
+                        ) : value;
+                        return (
+                            <div className={`tableGridField tableGridField-${column?.field} ${className}`.trim()}>
+                                {content}
+                            </div>
+                        );
                     },
                     onSelect: (event: any) => {
                         event?.stopPropagation?.();

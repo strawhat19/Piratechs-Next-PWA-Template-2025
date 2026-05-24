@@ -531,12 +531,6 @@
     justify-content: space-between;
 }
 
-.productGridCardNumber {
-    font-size: 24px;
-    font-weight: 900;
-    color: var(--links);
-}
-
 .productGridCardStatus {
     margin-left: auto;
     width: min(145px, 60%);
@@ -789,10 +783,10 @@
     justify-content: space-between;
 }
 
-.storeGridCardNumber {
-    color: var(--links);
-    font-size: 12px;
+.cardNumber {
+    font-size: 24px;
     font-weight: 900;
+    color: var(--links);
 }
 
 .storeGridCardTitle {

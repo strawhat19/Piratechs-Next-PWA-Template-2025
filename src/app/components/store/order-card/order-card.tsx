@@ -3,8 +3,8 @@
 import { Checkbox } from '@mui/material';
 import { ReceiptLong } from '@mui/icons-material';
 import { Order } from '@/shared/types/models/Order';
-import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
 import { TableGridCardParams } from '@/app/components/table/table-grid/table-grid';
+import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
 
 const getOrderCardStatusClass = (order: Order) => {
     const statusText = [order?.status, order?.paymentStatus, order?.stripe_status, order?.stripeStatus].map(status => String(status || ``)).join(` `).toLowerCase();
@@ -32,8 +32,8 @@ export default function OrderCard({
                 {selectable ? (
                     <label className={`dataDisplayCardSelect storeGridCardSelect`} onClick={(event) => event.stopPropagation()}>
                         <Checkbox
-                            checked={selected}
                             size={`small`}
+                            checked={selected}
                             onChange={onSelect}
                             className={`dataDisplayCardCheckbox`}
                         />
@@ -44,12 +44,16 @@ export default function OrderCard({
                 </div>
                 <div className={`storeGridCardHeroText`}>
                     <span>Order</span>
-                    <strong>#{order?.number || `New`}</strong>
+                    <strong className={`cardNumber`}>
+                        {order?.number || 0}
+                    </strong>
                 </div>
             </div>
             <div className={`storeGridCardBody`}>
                 <div className={`storeGridCardTop`}>
-                    <span className={`storeGridCardNumber`}>#{order?.number || `New`}</span>
+                    <span className={`storeGridCardNumber cardNumber`}>
+                        {order?.number || 0}
+                    </span>
                     {renderColumn(`actions`, `storeGridCardActionsCompact`)}
                 </div>
                 <div className={`storeGridCardTitle lineClamp1`}>

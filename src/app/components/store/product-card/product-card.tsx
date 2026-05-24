@@ -80,12 +80,14 @@ export default function ProductCard({
             </div>
             <div className={`productGridCardBody`}>
                 <div className={`productGridCardTop`}>
-                    <span className={`productGridCardNumber`}>
-                        {product?.number || `New`}
+                    <span className={`productGridCardNumber cardNumber`}>
+                        {product?.number || 0}
                     </span>
-                    <span>{product?.featured ? `Featured` : `Feat.`}</span>
+                    <span>
+                        {product?.featured ? `Featured` : `Feat.`}
+                    </span>
                     {renderColumn(`featured`)}
-                    {renderColumn(`status`, `productGridCardStatus`)}
+                    {renderColumn(`status`, `cardNumber productGridCardStatus`)}
                 </div>
                 <div className={`productGridCardName`}>
                     {renderColumn(`name`, ``, { showLabel: true })}

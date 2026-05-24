@@ -4,6 +4,21 @@
     }
 }
 
+.userGridCard {
+    .storeGridCardMetrics {
+        grid-template-columns: 1fr 0.78fr;
+    }
+}
+
+.announcementGridCard {
+    .storeGridCardMetrics {
+        grid-template-columns: .42fr 1fr;
+    }
+    .tableGridField-updated {
+        font-size: 15px;
+    }
+}
+
 .orderGridCard {
     .storeGridCardField {
         &:has(.tableGridField-description) {
