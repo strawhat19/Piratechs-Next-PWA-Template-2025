@@ -91,7 +91,7 @@
     &:has(.sliderButton) {
         gap: 15px;
         display: grid;
-        grid-template-columns: minmax(auto, 45px) 1fr minmax(auto, 45px);
+        grid-template-columns: minmax(auto, 45px) 0.999214fr minmax(auto, 45px);
         &.componentSlider {
             grid-template-rows: var(--stockSliderHeight);
             &.storeSlider {

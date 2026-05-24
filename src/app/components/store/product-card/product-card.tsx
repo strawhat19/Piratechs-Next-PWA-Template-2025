@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Checkbox, Skeleton } from '@mui/material';
 import Img from '@/app/components/image/image';
-import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
+import { Checkbox, Skeleton } from '@mui/material';
 import { Product } from '@/shared/types/models/Product';
 import { TableGridCardParams } from '@/app/components/table/table-grid/table-grid';
+import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
 
 const getProductImageURL = (product: Product) => (
     product?.attachments?.[0]?.value ||
@@ -26,9 +26,8 @@ export default function ProductCard({
 }: TableGridCardParams) {
     const product = row as Product;
     const imageURL = getProductImageURL(product);
-    const [imageLoading, setImageLoading] = useState(Boolean(imageURL));
     const [imageError, setImageError] = useState(false);
-
+    const [imageLoading, setImageLoading] = useState(Boolean(imageURL));
     return (
         <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard`}>
             <div className={`productGridCardMedia`}>
@@ -43,7 +42,7 @@ export default function ProductCard({
                     </label>
                 ) : <></>}
                 {imageLoading ? (
-                    <Skeleton variant={`rectangular`} animation={`wave`} className={`productGridCardImageSkeleton`} />
+                    <Skeleton variant={`rectangular`} animation={`wave`} className={`productGridCardImageSkeleton h100`} />
                 ) : <></>}
                 {imageURL && !imageError ? (
                     <Img

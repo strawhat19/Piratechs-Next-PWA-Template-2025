@@ -64,21 +64,21 @@ const default_rows = [
 ];
 
 export default function Table({ 
+  gridProps = {},
   search = true,
   toolbar = true,
   title = `Table`,
-  mode = DataDisplayModes.Table,
+  loading = false,
   search_delay = 0,
   type = Types.Data,
-  loading = false,
   selectable = true,
+  dataGridProps = {},
   density = `compact`,
   rows = default_rows, 
-  gridProps = {},
-  dataGridProps = {},
   columns = default_columns, 
-  className = `tableComponent`, 
   rowCount = rows?.length || 0,
+  className = `tableComponent`, 
+  mode = DataDisplayModes.Table,
   page_size_options = [5, 10, 15],
   pagination_options = paginationModel, 
   emptyRowsLabel = `(${rowCount}) ${type}(s)`,
@@ -97,7 +97,7 @@ export default function Table({
   };
 
   return (
-      <div className={`table ${className}`}>
+      <div className={`table ${className} ${mode == DataDisplayModes.Grid ? `gridded` : `tabled`}`}>
         {loaded ? <>
           {toolbar ? <>
             <div className={`table_header`}>
