@@ -31,7 +31,7 @@ export default function AnnouncementCard({
                     </label>
                 ) : <></>}
                 <div className={`storeGridCardHeroIcon announcementGridCardIcon`}>
-                    {renderColumn(`icon`) || <Campaign />}
+                    {renderColumn(`icon`, ``, { showMenuLabels: false }) || <Campaign />}
                 </div>
                 <div className={`storeGridCardHeroText`}>
                     <span>Announcement</span>
@@ -48,7 +48,7 @@ export default function AnnouncementCard({
                     {renderColumn(`status`, `storeGridCardStatus`)}
                 </div>
                 <div className={`storeGridCardTitle`}>
-                    {renderColumn(`name`)}
+                    {renderColumn(`name`, ``, { showLabel: true })}
                 </div>
                 <div className={`storeGridCardField storeGridCardMessage`}>
                     <span>Message</span>

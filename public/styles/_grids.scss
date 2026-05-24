@@ -11,6 +11,11 @@
 }
 
 .announcementGridCard {
+    .storeGridCardHero {
+        .dropDownBtnLabel {
+            display: none !important;
+        }
+    }
     .storeGridCardMetrics {
         grid-template-columns: .42fr 1fr;
     }

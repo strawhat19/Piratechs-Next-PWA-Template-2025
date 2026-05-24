@@ -5,6 +5,7 @@ interface MenuTriggerProps {
     id?: string;
     search?: boolean;
     colors?: boolean;
+    showLabels?: boolean;
     menuItems?: any[];
     onHover?: boolean;
     targetID?: string;
@@ -34,6 +35,7 @@ export default function MenuTrigger({
     menuItems = [],
     search = false,
     colors = false,
+    showLabels = true,
     onHover = false,
     searchValue = ``,
     id = `menu-trigger`,
@@ -143,6 +145,7 @@ export default function MenuTrigger({
                 topOffset={topOffset}
                 className={className}
                 menuItems={filteredMenuItems}
+                showLabels={showLabels}
             />
         </>
     );

@@ -124,6 +124,7 @@ interface AnnouncementSelectFieldProps {
     search?: boolean;
     showLabel?: boolean;
     showText?: boolean;
+    showMenuLabels?: boolean;
 }
 
 export default function AnnouncementSelectField({
@@ -137,6 +138,7 @@ export default function AnnouncementSelectField({
     search = false,
     showText = true,
     showLabel = true,
+    showMenuLabels = true,
 }: AnnouncementSelectFieldProps) {
     const filteredOptions = options?.filter(option => option !== value);
     const menuItems = filteredOptions?.map(option => ({
@@ -156,6 +158,7 @@ export default function AnnouncementSelectField({
                 search={search}
                 id={`${label.toLowerCase().replace(/\s/g, '-')}-menu-trigger`}
                 colors={true}
+                showLabels={showMenuLabels}
                 topOffset={0.5}
                 menuItems={menuItems}
                 className={`productSelectDropdown announcementSelectDropdown`}

@@ -6,6 +6,7 @@ export default function Menu({
     open = false,
     topOffset = 0,
     colors = false,
+    showLabels = true,
     menuItems = [],
     anchorEl = null,
     onClose = () => {},
@@ -31,17 +32,22 @@ export default function Menu({
                     {[ ...menuItems, { id: `close`, label: `Close`, icon: <Close htmlColor={`var(--links)`} />, divider: true }, ]?.map((mi: any, mii: number) => (
                         <div key={mii} className={`menuItemContent`}>
                             {mi?.divider ? <Divider /> : <></>}
-                            <MenuItem className={`menuItemComponent ${colors ? `hasColors` : `noColors`} ${mi?.className}`} onClick={() => {
+                            <MenuItem
+                                aria-label={String(mi?.label || ``)}
+                                className={`menuItemComponent ${colors ? `hasColors` : `noColors`} ${mi?.className} ${showLabels ? `` : `iconOnly`}`.trim()}
+                                onClick={() => {
                                 mi?.onClick?.();
                                 onClose();
                             }}>
-                                <div className={`menuItemContentContainer`}>
+                                <div className={`menuItemContentContainer ${showLabels ? `` : `iconOnly`}`.trim()}>
                                     <div className={`menuItemIcon`}>
                                         {mi?.icon}
                                     </div>
-                                    <div className={`menuItemLabel`}>
-                                        {mi?.label}
-                                    </div>
+                                    {showLabels ? (
+                                        <div className={`menuItemLabel`}>
+                                            {mi?.label}
+                                        </div>
+                                    ) : <></>}
                                 </div>
                             </MenuItem>
                         </div>

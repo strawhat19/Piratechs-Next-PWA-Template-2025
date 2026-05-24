@@ -97,7 +97,7 @@ const AnnouncementStatusCell = ({ row }: any) => {
     );
 };
 
-const AnnouncementIconCell = ({ row }: any) => {
+const AnnouncementIconCell = ({ row, showMenuLabels = true }: any) => {
     const { user } = useContext<any>(StateGlobals);
     const canManageAnnouncements = minRole(user?.role, Roles.Administrator);
     const currentIcon = String(row?.icon || `Campaign`);
@@ -119,6 +119,7 @@ const AnnouncementIconCell = ({ row }: any) => {
             label={`Icon`}
             showText={false}
             showLabel={false}
+            showMenuLabels={showMenuLabels}
             value={currentIcon}
             onChange={updateIcon}
             icons={announcementIcons}
@@ -487,12 +488,13 @@ export default function AnnouncementsTable({
             field: `name`,
             headerName: `Name`,
             valueGetter: (_value: any, row: any) => String(row?.name || ``),
-            renderCell: ({ row, value }: any) => (
+            renderCell: ({ row, value, showLabel }: any) => (
                 canManageAnnouncements ? (
                     <EditableCell
                         mode={`text`}
                         value={value}
                         canEdit={true}
+                        showLabel={showLabel}
                         saveOnEnter={true}
                         cancelOnBlur={true}
                         showActions={false}
@@ -502,6 +504,14 @@ export default function AnnouncementsTable({
                         onChangeValue={(next: string) => onChangeAnnouncementNameDraft(row, next)}
                         onSave={(next: string, original: string) => onSaveAnnouncementNameDraft(row, next, original)}
                         pendingValue={(pendingAnnouncementNameByID?.[String(row?.id)] ?? optimisticAnnouncementNameByID?.[String(row?.id)])}
+                    />
+                ) : showLabel ? (
+                    <EditableCell
+                        mode={`text`}
+                        value={value}
+                        canEdit={false}
+                        showLabel={true}
+                        placeholder={`Name`}
                     />
                 ) : (
                     <span className={`announcementNameCell lineClamp1`}>

@@ -328,6 +328,9 @@ ul {
     display: flex;
     grid-gap: 7px;
     align-items: center;
+    &.iconOnly {
+        justify-content: center;
+    }
     .menuItemIcon {
         display: flex;
         align-items: center;

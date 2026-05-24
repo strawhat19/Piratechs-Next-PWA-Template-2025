@@ -238,10 +238,11 @@ export default function UsersTable({
             field: `name`,
             width: 130,
             headerName: `Name`,
-            renderCell: ({ row, value }: any) => (
+            renderCell: ({ row, value, showLabel }: any) => (
                 <EditableCell
                     mode={`text`}
                     value={value}
+                    showLabel={showLabel}
                     saveOnEnter={true}
                     cancelOnBlur={true}
                     showActions={false}
