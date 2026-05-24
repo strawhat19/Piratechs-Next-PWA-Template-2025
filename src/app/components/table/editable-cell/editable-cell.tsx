@@ -36,10 +36,12 @@ export default function EditableCell({
     minLen = 0,
     value = ``,
     mode = `text`,
+    label = ``,
     canEdit = true,
     placeholder = ``,
     valueFirst = true,
     onSave = () => {},
+    showLabel = false,
     showActions = true,
     showStepper = false,
     saveOnEnter = false,
@@ -96,10 +98,11 @@ export default function EditableCell({
         setDraftValue(nextValue);
     };
 
-    const valueNode = renderValue ? renderValue(currentValue) : (
+    const labelText = label || placeholder;
+    const inputNode = renderValue ? renderValue(currentValue) : (
         <input
             value={currentValue}
-            placeholder={placeholder}
+            placeholder={showLabel ? `` : placeholder}
             onChange={handleInputChange}
             onKeyDown={handleInputKeyDown}
             min={numericMode ? min : undefined}
@@ -131,11 +134,27 @@ export default function EditableCell({
             }}
         />
     );
+    const valueNode = showLabel && labelText ? (
+        <div className={`editableCellField`}>
+            <span className={`editableCellLabel`}>{labelText}</span>
+            {inputNode}
+        </div>
+    ) : inputNode;
 
-    if (!canEdit) return <>{renderValue ? renderValue(currentValue) : currentValue}</>;
+    if (!canEdit) {
+        const readOnlyNode = renderValue ? renderValue(currentValue) : currentValue;
+        return showLabel && labelText ? (
+            <div className={`editableCellField editableCellReadOnlyField`}>
+                <span className={`editableCellLabel`}>{labelText}</span>
+                <div className={`editableCellReadOnlyValue`}>
+                    {readOnlyNode}
+                </div>
+            </div>
+        ) : <>{readOnlyNode}</>;
+    }
 
     return (
-        <div className={`editableCellWrap flexContainer`} style={{ width: `100%`, justifyContent: `flex-end`, gridGap: 15 }}>
+        <div className={`editableCellWrap flexContainer ${showLabel ? `showLabel` : ``}`} style={{ width: `100%`, justifyContent: `flex-end`, gridGap: 15 }}>
             {valueFirst ? valueNode : null}
             <div className={`flexContainer`} style={{ flexDirection: showStepper ? `column` : `row`, gap: 3 }}>
                 {showStepper ? (

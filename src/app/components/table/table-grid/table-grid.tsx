@@ -40,7 +40,7 @@ export type TableGridCardParams = {
     checkboxAlignmentStart?: boolean;
     onCardClick: (event: any) => void;
     getColumnValue: (field: string | GridColDef) => any;
-    renderColumn: (field: string | GridColDef, className?: string) => any;
+    renderColumn: (field: string | GridColDef, className?: string, options?: any) => any;
 };
 
 type TableGridProps = {
@@ -166,11 +166,11 @@ export default function TableGrid({
                     selectable,
                     checkboxAlignmentStart,
                     getColumnValue: (field: string | GridColDef) => getColumnValue(typeof field == `string` ? columns?.find(column => column?.field == field) as GridColDef : field, row),
-                    renderColumn: (field: string | GridColDef, className = ``) => {
+                    renderColumn: (field: string | GridColDef, className = ``, options: any = {}) => {
                         const column = typeof field == `string` ? columns?.find(currentColumn => currentColumn?.field == field) : field;
                         if (!column) return null;
                         const value = getColumnValue(column, row);
-                        const content = typeof column?.renderCell == `function` ? column.renderCell({ id: rowID, row, value, field: column?.field, colDef: column } as any) : value;
+                        const content = typeof column?.renderCell == `function` ? column.renderCell({ id: rowID, row, value, field: column?.field, colDef: column, ...options } as any) : value;
                         return <div className={`tableGridField tableGridField-${column?.field} ${className}`.trim()}>{content}</div>;
                     },
                     onSelect: (event: any) => {

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Img from '@/app/components/image/image';
 import { Checkbox, Skeleton } from '@mui/material';
 import { Product } from '@/shared/types/models/Product';
+import EditableCell from '@/app/components/table/editable-cell/editable-cell';
+import type { CartItem } from '@/app/components/store/use-store-cart';
 import { TableGridCardParams } from '@/app/components/table/table-grid/table-grid';
 import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
 
@@ -16,6 +18,13 @@ const getProductImageURL = (product: Product) => (
     ``
 );
 
+type ProductCardProps = TableGridCardParams & {
+    cartItem?: CartItem | null;
+    onSaveCartQuantity?: (product: Product | CartItem, quantity: number) => boolean;
+    onIncreaseCartQuantity?: (item: CartItem) => boolean;
+    onDecreaseCartQuantity?: (item: CartItem) => boolean;
+};
+
 export default function ProductCard({
     row,
     selected,
@@ -23,8 +32,12 @@ export default function ProductCard({
     selectable,
     onCardClick,
     renderColumn,
+    cartItem = null,
     checkboxAlignmentStart,
-}: TableGridCardParams) {
+    onSaveCartQuantity = () => false,
+    onIncreaseCartQuantity = () => false,
+    onDecreaseCartQuantity = () => false,
+}: ProductCardProps) {
     const product = row as Product;
     const imageURL = getProductImageURL(product);
     const [imageError, setImageError] = useState(false);
@@ -75,16 +88,14 @@ export default function ProductCard({
                     {renderColumn(`status`, `productGridCardStatus`)}
                 </div>
                 <div className={`productGridCardName`}>
-                    {renderColumn(`name`)}
+                    {renderColumn(`name`, ``, { showLabel: true })}
                 </div>
                 <div className={`productGridCardMetrics`}>
                     <div className={`productGridCardMetric`}>
-                        <span>Price</span>
-                        {renderColumn(`price`)}
+                        {renderColumn(`price`, ``, { showLabel: true })}
                     </div>
                     <div className={`productGridCardMetric`}>
-                        <span>Quantity</span>
-                        {renderColumn(`stock`)}
+                        {renderColumn(`stock`, ``, { showLabel: true })}
                     </div>
                 </div>
                 <div className={`productGridCardMeta`}>
@@ -93,6 +104,24 @@ export default function ProductCard({
                 </div>
                 <div className={`productGridCardActions`}>
                     {renderColumn(`actions`)}
+                    {cartItem ? (
+                        <div className={`productGridCardMetric productGridCardCartMetric`}>
+                            <EditableCell
+                                min={0}
+                                step={1}
+                                mode={`number`}
+                                showLabel={true}
+                                showStepper={true}
+                                saveOnEnter={true}
+                                placeholder={`In Cart`}
+                                value={cartItem?.quantity}
+                                pendingValue={cartItem?.quantity}
+                                onIncrease={() => onIncreaseCartQuantity(cartItem)}
+                                onDecrease={() => onDecreaseCartQuantity(cartItem)}
+                                onSave={(quantity: number) => onSaveCartQuantity(cartItem || product, quantity)}
+                            />
+                        </div>
+                    ) : <></>}
                 </div>
             </div>
         </DataDisplayCard>

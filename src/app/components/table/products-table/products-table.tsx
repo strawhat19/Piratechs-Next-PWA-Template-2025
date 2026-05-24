@@ -82,6 +82,7 @@ const ProductStockCell = ({
     pendingStock, 
     onChangeValue, 
     valueFirst = true, 
+    showLabel = false,
     renderValue = undefined, 
     hasRenderedValue = false,
 }: any) => {
@@ -95,6 +96,7 @@ const ProductStockCell = ({
             mode={`number`}
             showStepper={true}
             valueFirst={valueFirst}
+            showLabel={showLabel}
             placeholder={placeholder}
             renderValue={renderValue}
             pendingValue={pendingStock}
@@ -492,7 +494,7 @@ export default function ProductsTable({
         if (routeProductID) router.replace(`/store`);
     };
 
-    const { saveCart } = useStoreCart();
+    const { cart, saveCart, increaseCartItemQuantity, decreaseCartItemQuantity, upsertCartItemQuantity } = useStoreCart();
     // const canManageStore = minRole(user?.role, Roles.Editor);
     // const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct((prev: any) => prev?.id == product?.id ? null : product);
 
@@ -818,10 +820,11 @@ export default function ProductsTable({
             field: `name`,
             maxWidth: 165,
             headerName: `Name`,
-            renderCell: ({ row, value }: any) => (
+            renderCell: ({ row, value, showLabel }: any) => (
                 <EditableCell
                     mode={`text`}
                     value={value}
+                    showLabel={showLabel}
                     saveOnEnter={true}
                     showStepper={false}
                     showActions={false}
@@ -848,10 +851,11 @@ export default function ProductsTable({
             type: `number`,
             headerName: `Price`,
             headerClassName: `numberHeaderCell`,
-            renderCell: ({ row, value }: any) => (
+            renderCell: ({ row, value, showLabel }: any) => (
                 <ProductStockCell
                     row={row}
                     value={value}
+                    showLabel={showLabel}
                     placeholder={`Price`}
                     hasRenderedValue={true}
                     onSave={onSavePriceDraft}
@@ -878,10 +882,11 @@ export default function ProductsTable({
             type: `number`,
             headerName: `Quantity`,
             headerClassName: `numberHeaderCell`,
-            renderCell: ({ row, value }: any) => (
+            renderCell: ({ row, value, showLabel }: any) => (
                 <ProductStockCell
                     row={row}
                     value={value}
+                    showLabel={showLabel}
                     placeholder={`Quantity`}
                     onSave={onSaveStockDraft}
                     onCancel={onCancelStockDraft}
@@ -957,7 +962,18 @@ export default function ProductsTable({
                 loading={productsLoading}
                 className={`productsTableComponent`}
                 gridProps={{
-                    renderCard: (params: any) => <ProductCard {...params} />,
+                    renderCard: (params: any) => {
+                        const cartItem = cart?.find(item => String(item?.id || ``) == String(params?.row?.id || ``)) || null;
+                        return (
+                            <ProductCard
+                                {...params}
+                                cartItem={cartItem}
+                                onSaveCartQuantity={upsertCartItemQuantity}
+                                onIncreaseCartQuantity={increaseCartItemQuantity}
+                                onDecreaseCartQuantity={decreaseCartItemQuantity}
+                            />
+                        );
+                    },
                 }}
                 dataGridProps={{
                     rowSelectionModel: normalizeProductSelectionModel(productSelectionModel),

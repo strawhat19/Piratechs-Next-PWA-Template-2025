@@ -309,6 +309,7 @@ export const useStoreCart = () => {
         clearCart,
         checkoutCart,
         increaseCartItemQuantity,
+        upsertCartItemQuantity,
         removeFromCart,
         saveCart,
     };
