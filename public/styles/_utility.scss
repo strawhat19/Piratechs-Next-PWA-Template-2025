@@ -299,18 +299,15 @@
     .MuiPaper-root {
         max-width: 360px;
     }
-    .menuItemContentContainer {
-        align-items: flex-start;
-    }
     .menuItemLabel {
         min-width: 0;
     }
 }
 
 .notificationMenuItemLabel {
-    gap: 3px;
-    display: grid;
+    gap: 7px;
     min-width: 0;
+    display: grid;
     line-height: 1.15;
     strong, span, small {
         min-width: 0;
@@ -318,23 +315,23 @@
         text-overflow: ellipsis;
     }
     strong {
+        color: white;
         font-size: 13px;
-        color: var(--white);
     }
     span {
-        display: -webkit-box;
+        color: white;
         font-size: 11px;
-        color: var(--silver);
         white-space: normal;
-        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        // -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
     }
     small {
-        display: -webkit-box;
+        color: white;
         font-size: 10px;
         white-space: normal;
-        color: rgba(255, 255, 255, 0.56);
-        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        // -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
     }
 }

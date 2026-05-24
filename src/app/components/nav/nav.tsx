@@ -140,7 +140,6 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 </span>
             </>
         );
-
         if (hasCartItems) {
             return (
                 <MenuTrigger
@@ -167,7 +166,6 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 />
             );
         }
-
         return (
             <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
                 {content}
@@ -179,24 +177,6 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         <nav className={`container ${className}`}>
             <ul className={`container row justifyEnd`}>
                 {className != `mobileNav` && <>
-                    <li className={`menuButton notificationMenuButton`}>
-                        <MenuTrigger
-                            colors={true}
-                            topOffset={1}
-                            id={`notificationMenuButton`}
-                            menuItems={notificationMenuItems}
-                            className={`notificationMenu`}
-                            targetID={`notificationMenuButton`}
-                            renderTrigger={({ id, onClick }) => (
-                                <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Notifications`} className={`notificationButton iconImg`}>
-                                    <span className={`navIconWrap`}>
-                                        <Notifications className={`settingsIcon`} style={{ fontSize: 20 }} />
-                                        {notificationCount > 0 ? <span className={`cartNavBadge notificationNavBadge`}>{notificationCount}</span> : null}
-                                    </span>
-                                </Icon_Button>
-                            )}
-                        />
-                    </li>
                     {user == null ? <>
                         {/* <AuthForm style={{ position: `relative`, right: -10 }} /> */}
                         <Icon_Button disabled={!loaded} title={`Settings`} url={`/settings`}>
@@ -234,6 +214,24 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                         )}
                     </li>
                 </>}
+                <li className={`menuButton notificationMenuButton`}>
+                    <MenuTrigger
+                        colors={true}
+                        topOffset={1}
+                        id={`notificationMenuButton`}
+                        className={`notificationMenu`}
+                        menuItems={notificationMenuItems}
+                        targetID={`notificationMenuButton`}
+                        renderTrigger={({ id, onClick }) => (
+                            <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Notifications`} className={`notificationButton iconImg`}>
+                                <span className={`navIconWrap`}>
+                                    <Notifications className={`settingsIcon`} style={{ fontSize: 20 }} />
+                                    {notificationCount > 0 ? <span className={`cartNavBadge notificationNavBadge`}>{notificationCount}</span> : null}
+                                </span>
+                            </Icon_Button>
+                        )}
+                    />
+                </li>
                 {Object.entries(routes).map(([path, config]: any) => (
                     <li key={path} onClick={() => !(path == `store` && cartCount > 0) && setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
                         {renderRouteLink(path, config)}
