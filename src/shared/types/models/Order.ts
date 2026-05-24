@@ -11,6 +11,20 @@ export enum OrderStatus {
   Refunded = `Refunded`,
 }
 
+export enum OrderFulfillmentStatus {
+  Unfulfilled = `Unfulfilled`,
+  Pending = `Pending`,
+  Processing = `Processing`,
+  OnHold = `On Hold`,
+  PartiallyFulfilled = `Partially Fulfilled`,
+  Fulfilled = `Fulfilled`,
+  Shipped = `Shipped`,
+  Delivered = `Delivered`,
+  Returned = `Returned`,
+  Canceled = `Canceled`,
+  Closed = `Closed`,
+}
+
 export interface PaymentMethodSummary {
   id?: string;
   type?: string;
@@ -72,7 +86,9 @@ export class Order extends Data {
   currency: string = `usd`;
   status: OrderStatus | string = OrderStatus.Pending;
   paymentStatus?: string = `pending`;
-  fulfillmentStatus?: string = `Unfulfilled`;
+  customStatus?: string = ``;
+  fulfillmentStatus?: OrderFulfillmentStatus | string = OrderFulfillmentStatus.Unfulfilled;
+  fullfilmentStatus?: OrderFulfillmentStatus | string = OrderFulfillmentStatus.Unfulfilled;
   paymentMethod?: PaymentMethodSummary = {};
   lineItems: OrderLineItem[] = [];
   cartItems: OrderLineItem[] = [];
@@ -113,6 +129,9 @@ export class Order extends Data {
     if (!isValid(this.stripe_receipt_url) && isValid(this.receiptURL)) this.stripe_receipt_url = this.receiptURL;
     if (!isValid(this.stripe_order_id)) this.stripe_order_id = this.stripePaymentIntentID || this.stripeCheckoutSessionID || this.stripeChargeID || ``;
     if (!isValid(this.name)) this.name = `Order`;
+    this.fulfillmentStatus = orderData?.fulfillmentStatus || orderData?.fullfilmentStatus || orderData?.customStatus || this.fulfillmentStatus || OrderFulfillmentStatus.Unfulfilled;
+    this.fullfilmentStatus = this.fulfillmentStatus;
+    if (!isValid(this.customStatus) && this.fulfillmentStatus == OrderFulfillmentStatus.Closed) this.customStatus = OrderFulfillmentStatus.Closed;
     if (!isValid(this.lineItems) && isValid(this.cartItems)) this.lineItems = this.cartItems;
     if (!isValid(this.cartItems) && isValid(this.lineItems)) this.cartItems = this.lineItems;
     if (!isValid(this.amountTotal) && isValid(this.amount)) this.amountTotal = this.amount;

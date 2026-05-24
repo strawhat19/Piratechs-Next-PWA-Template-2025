@@ -166,10 +166,10 @@ export default function AnnouncementSelectField({
                         type={`button`}
                         size={`small`}
                         onClick={onClick}
-                        onMouseDown={(event) => event.stopPropagation()}
                         startIcon={currentIcon}
-                        endIcon={<KeyboardArrowDown />}
                         data-row-click-ignore={`true`}
+                        endIcon={<KeyboardArrowDown />}
+                        onMouseDown={(event) => event.stopPropagation()}
                         className={`productSelectButton tableDropDown announcementSelectButton ${showText ? `` : `iconOnly`}`.trim()}
                         style={currentColor ? { color: currentColor } : undefined}
                     >

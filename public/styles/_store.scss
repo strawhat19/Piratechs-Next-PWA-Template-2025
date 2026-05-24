@@ -839,6 +839,14 @@
     }
 }
 
+.orderGridCardFulfillmentStatus {
+    .tableDropDown {
+        width: 100%;
+        min-height: 31px;
+        max-height: 31px;
+    }
+}
+
 .storeGridCardActions,
 .storeGridCardActionsCompact {
     .actionsCell {

@@ -413,6 +413,15 @@ export const announcementConverter = {
 
 const sanitizeFirestorePayload = <T extends Record<string, any>>(payload: T) => JSON.parse(JSON.stringify(payload ?? {})) as T;
 
+export const updateOrderInDatabase = async (id: string, updates: Partial<Order>, silent = false) => {
+  toastSaveInfo(`Saving Order`, silent);
+  const { update } = customDate();
+  const orderRef = doc(db, Tables.orders, String(id));
+  const orderPayload = sanitizeFirestorePayload({ ...updates, updated: update });
+  await updateDoc(orderRef, orderPayload);
+  return { id, ...orderPayload };
+}
+
 export const addAnnouncementToDatabase = async (announcement: Announcement, silent = false) => {
   toastSaveInfo(`Saving Announcement`, silent);
   const { update } = customDate();

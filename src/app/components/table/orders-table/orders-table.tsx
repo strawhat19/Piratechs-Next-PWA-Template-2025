@@ -4,19 +4,20 @@ import { Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import { getIdToken } from 'firebase/auth';
 import { GridColDef } from '@mui/x-data-grid';
-import { auth } from '@/shared/server/firebase';
 import Table, { checkboxColumn } from '../table';
 import IconText from '../../icon-text/icon-text';
-import { Order } from '@/shared/types/models/Order';
 import ZeroState from '../../zero-state/zero-state';
+import MenuTrigger from '../../menu/menu-trigger';
 import { useContext, useMemo, useState } from 'react';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
-import { Sync, ReceiptLong } from '@mui/icons-material';
 import OrderCard from '../../store/order-card/order-card';
 import { capWords, minRole } from '@/shared/scripts/constants';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
+import { Order, OrderFulfillmentStatus } from '@/shared/types/models/Order';
+import { auth, updateOrderInDatabase } from '@/shared/server/firebase';
+import { AltRoute, AssignmentReturn, Cancel, CheckCircle, DoneAll, Inventory2, KeyboardArrowDown, LocalShipping, Lock, PauseCircle, PendingActions, ReceiptLong, Sync } from '@mui/icons-material';
 
 const storeDollarSignColor = `var(--green_neon)`;
 
@@ -33,6 +34,34 @@ const paymentMethodLabel = (order: Order) => {
 };
 
 const orderDescriptionLabel = (order: Order) => order?.description || order?.stripeDescription || order?.lineItems?.map(item => `${item?.name} x${item?.quantity}`).join(`, `) || ``;
+const orderFulfillmentStatusColors: Record<OrderFulfillmentStatus, string> = {
+    [OrderFulfillmentStatus.Unfulfilled]: `rgba(255,255,255,0.35)`,
+    [OrderFulfillmentStatus.Pending]: `var(--links)`,
+    [OrderFulfillmentStatus.Processing]: `var(--yellow_neon)`,
+    [OrderFulfillmentStatus.OnHold]: `var(--warning)`,
+    [OrderFulfillmentStatus.PartiallyFulfilled]: `var(--blueneon)`,
+    [OrderFulfillmentStatus.Fulfilled]: `var(--success)`,
+    [OrderFulfillmentStatus.Shipped]: `var(--links)`,
+    [OrderFulfillmentStatus.Delivered]: `var(--green_neon)`,
+    [OrderFulfillmentStatus.Returned]: `var(--pink_neon)`,
+    [OrderFulfillmentStatus.Canceled]: `var(--error)`,
+    [OrderFulfillmentStatus.Closed]: `var(--green_neon)`,
+};
+const orderFulfillmentStatusIcons: Record<OrderFulfillmentStatus, any> = {
+    [OrderFulfillmentStatus.Unfulfilled]: <Inventory2 fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Unfulfilled]} />,
+    [OrderFulfillmentStatus.Pending]: <PendingActions fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Pending]} />,
+    [OrderFulfillmentStatus.Processing]: <Sync fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Processing]} />,
+    [OrderFulfillmentStatus.OnHold]: <PauseCircle fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.OnHold]} />,
+    [OrderFulfillmentStatus.Shipped]: <LocalShipping fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Shipped]} />,
+    [OrderFulfillmentStatus.Delivered]: <CheckCircle fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Delivered]} />,
+    [OrderFulfillmentStatus.Returned]: <AssignmentReturn fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Returned]} />,
+    [OrderFulfillmentStatus.Canceled]: <Cancel fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Canceled]} />,
+    [OrderFulfillmentStatus.PartiallyFulfilled]: <AltRoute fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.PartiallyFulfilled]} />,
+    [OrderFulfillmentStatus.Fulfilled]: <DoneAll fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Fulfilled]} />,
+    [OrderFulfillmentStatus.Closed]: <Lock fontSize={`small`} htmlColor={orderFulfillmentStatusColors?.[OrderFulfillmentStatus.Closed]} />,
+};
+const getOrderFulfillmentStatus = (order: Order) => String(order?.customStatus || order?.fulfillmentStatus || order?.fullfilmentStatus || OrderFulfillmentStatus.Unfulfilled);
+const getOrderFulfillmentStatusColor = (order: Order) => orderFulfillmentStatusColors?.[getOrderFulfillmentStatus(order) as OrderFulfillmentStatus] || `rgba(255,255,255,0.35)`;
 
 const getOrderStatusColor = (status?: string) => {
     const statusText = String(status || ``).toLowerCase();
@@ -40,6 +69,53 @@ const getOrderStatusColor = (status?: string) => {
     if ([`failed`, `canceled`, `cancelled`, `refunded`].some(label => statusText.includes(label))) return `red`;
     return `rgba(255,255,255,0.35)`;
 }
+
+const OrderFulfillmentStatusCell = ({ row }: any) => {
+    const { user } = useContext<any>(StateGlobals);
+    const canManageOrders = minRole(user?.role, Roles.Administrator);
+    const currentValue = getOrderFulfillmentStatus(row) as OrderFulfillmentStatus;
+    const statusOptions = Object.values(OrderFulfillmentStatus)?.filter(option => option != currentValue);
+    const statusItems = statusOptions?.map((status: OrderFulfillmentStatus | string) => ({
+        id: status,
+        label: status,
+        icon: orderFulfillmentStatusIcons?.[status as OrderFulfillmentStatus],
+        onClick: () => {
+            const updates: Partial<Order> = {
+                customStatus: status == OrderFulfillmentStatus.Closed ? status : ``,
+                fulfillmentStatus: status,
+                fullfilmentStatus: status,
+            };
+            updateOrderInDatabase(String(row?.id), updates, true)?.then(() => toast.success(`Order Status Updated`));
+        },
+    }));
+    if (!canManageOrders) return <TableStatus label={currentValue} color={getOrderFulfillmentStatusColor(row)} title={currentValue} />;
+    return (
+        <MenuTrigger
+            colors={true}
+            search={false}
+            topOffset={0.5}
+            menuItems={statusItems}
+            className={`roleDropdownMenu`}
+            targetID={`order-fulfillment-status-menu-${row?.id}`}
+            id={`order-fulfillment-status-menu-trigger-${row?.id}`}
+            renderTrigger={({ id, onClick, searchValue }) => (
+                <Button
+                    id={id}
+                    size={`small`}
+                    onClick={onClick}
+                    endIcon={<KeyboardArrowDown />}
+                    className={`tableDropDown roleDropdownButton orderFulfillmentStatusCellField`}
+                    startIcon={orderFulfillmentStatusIcons?.[currentValue]}
+                    style={{ color: getOrderFulfillmentStatusColor(row) }}
+                >
+                    <span className={`dropDownBtnLabel`}>
+                        {searchValue || currentValue}
+                    </span>
+                </Button>
+            )}
+        />
+    );
+};
 
 export default function OrdersTable({
     type = Types.Order,
@@ -77,6 +153,7 @@ export default function OrdersTable({
         { field: `userEmail`, headerName: `Customer`, width: 175 },
         { field: `description`, headerName: `Description`, width: 230, flex: 1, valueGetter: (_value: any, row: any) => orderDescriptionLabel(row) },
         { field: `paymentMethod`, headerName: `Method`, width: 85, valueGetter: (_value: any, row: any) => paymentMethodLabel(row) },
+        { field: `fulfillmentStatus`, headerName: `Status`, width: 170, valueGetter: (_value: any, row: any) => getOrderFulfillmentStatus(row), renderCell: ({ row }: any) => <OrderFulfillmentStatusCell row={row} /> },
         { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
         { field: `created`, headerName: `Date`, width: 175, valueGetter: (_value: any, row: any) => formatDate(row?.stripe_created || row?.stripeCreated || row?.created) },
         {

@@ -55,6 +55,10 @@ export default function OrderCard({
                 <div className={`storeGridCardTitle lineClamp1`}>
                     {order?.userEmail || order?.userName || `Customer`}
                 </div>
+                <div className={`storeGridCardField orderGridCardFulfillment`}>
+                    <span>Status</span>
+                    {renderColumn(`fulfillmentStatus`, `orderGridCardFulfillmentStatus`)}
+                </div>
                 <div className={`storeGridCardMetrics`}>
                     <div className={`storeGridCardMetric`}>
                         <span>Total</span>
