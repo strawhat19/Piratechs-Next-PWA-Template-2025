@@ -437,8 +437,24 @@ export const genID = (type: Types = Types.Data, number = 1, name: string) => {
   return { id, date, uuid, title, id_Title, generatedUUID };
 }
 
-export const isAppCollectionID = (id: any, type?: Types | string) => typeof id == `string` && id?.startsWith(type ? `${type}_` : ``) && id?.split(`_`)?.length >= 5;
-export const getAppCollectionIDNumber = (id: any, type?: Types | string) => isAppCollectionID(id, type) ? Number(String(id)?.split(`_`)?.[1]) || 0 : 0;
+export const sortByCreatedNewest = <T extends { created?: string }>(arr: T[]) => arr.sort((a, b) => {
+  const parse = (s?: string) => {
+    if (!s) return 0;
+    const [t, m, d] = s.split(` `);
+    const [mo, da, y] = d.split(`/`).map(Number);
+    let [h, mi, se = 0] = t.split(`:`).map(Number);
+    h = m === `PM` && h !== 12 ? h + 12 : m === `AM` && h === 12 ? 0 : h;
+    return new Date(y < 100 ? 2000 + y : y, mo - 1, da, h, mi, se).getTime();
+  };
+  return parse(b?.created) - parse(a?.created);
+});
+
+export const isAppCollectionID = (id: any, type?: Types | string) => (
+  typeof id == `string` && id?.startsWith(type ? `${type}_` : ``) && id?.split(`_`)?.length >= 5
+);
+export const getAppCollectionIDNumber = (id: any, type?: Types | string) => (
+  isAppCollectionID(id, type) ? Number(String(id)?.split(`_`)?.[1]) || 0 : 0
+);
 export const getNextCollectionNumber = (items: any[] = []) => {
   let itemsLen = items?.length;
   let num: number = Math.max(0, ...items?.map(item => (

@@ -2,12 +2,15 @@
 
 import './horizontal-scroller.scss';
 
-import React, { useContext, useMemo } from 'react';
 import Slider from '../slider/slider';
 import { Tooltip } from '@mui/material';
 import { SwiperSlide } from 'swiper/react';
+import React, { useContext, useMemo } from 'react';
 import { StateGlobals } from '@/shared/global-context';
+import { richTextToPlainText } from '../rich-text/rich-text';
+import { sortByCreatedNewest } from '@/shared/scripts/constants';
 import { AnnouncementStatus } from '@/shared/types/models/Announcement';
+import { announcementIcons } from '../store/announcement-form/announcement-select-field';
 import {
     AutoAwesome,
     Bolt,
@@ -34,8 +37,6 @@ import {
     SupportAgent,
     Verified,
 } from '@mui/icons-material';
-import { richTextToPlainText } from '../rich-text/rich-text';
-import { announcementIcons } from '../store/announcement-form/announcement-select-field';
 
 export type HorizontalScrollerItem = {
     icon?: React.ReactNode;
@@ -82,24 +83,26 @@ export default function HorizontalScroller({
 
     const announcementItems = useMemo(() => {
         if (announcementsLoading || !Array.isArray(announcements) || announcements.length <= 0) return [];
-        return announcements
-            ?.filter((announcement: any) => String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft)) == AnnouncementStatus.Active)
-            ?.map((announcement: any) => {
-                const title = String(announcement?.name || ``).trim();
-                const descriptionText = richTextToPlainText(announcement?.description);
-                const detailsText = richTextToPlainText(announcement?.details);
-                const showTitle = Boolean(announcement?.showTitle);
-                const value = showTitle && title
-                    ? (descriptionText ? `${title} - ${descriptionText}` : title)
-                    : (descriptionText || title);
-                return value ? {
-                    title,
-                    details: detailsText,
-                    value,
-                    icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
-                } : null;
-            })
-            ?.filter(Boolean) as HorizontalScrollerItem[];
+        let filteredAnnouncements = announcements?.filter((announcement: any) => String(announcement?.status || (
+            announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft
+        )) == AnnouncementStatus.Active);
+        // sortByCreatedNewest(filteredAnnouncements)
+        let scrollerItems = filteredAnnouncements?.map((announcement: any) => {
+            const title = String(announcement?.name || ``).trim();
+            const descriptionText = richTextToPlainText(announcement?.description);
+            const detailsText = richTextToPlainText(announcement?.details);
+            const showTitle = Boolean(announcement?.showTitle);
+            const value = showTitle && title
+                ? (descriptionText ? `${title} - ${descriptionText}` : title)
+                : (descriptionText || title);
+            return value ? {
+                title,
+                value,
+                details: detailsText,
+                icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
+            } : null;
+        })?.filter(Boolean) as HorizontalScrollerItem[];
+        return scrollerItems;
     }, [announcements, announcementsLoading]);
 
     const databaseScrollerItems = (items?.length ? items : announcementItems)
@@ -107,8 +110,8 @@ export default function HorizontalScroller({
         ?.map((item: HorizontalScrollerItem) => ({
             icon: item?.icon,
             details: item?.details,
-            detailsContent: item?.detailsContent,
             value: String(item?.value || ``),
+            detailsContent: item?.detailsContent,
         }));
     const scrollerItems = databaseScrollerItems?.length < 10 ? [ ...databaseScrollerItems, /* ...defaultMessages */ ] : databaseScrollerItems;
 

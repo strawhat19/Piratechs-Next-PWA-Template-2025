@@ -353,11 +353,15 @@
 
 
 .announcementsTableComponent {
-  .announcementSelectField {
-    &:not(.announcementFormSelectField) {
-      top: 5px;
-      position: relative;
+  &.tabled {
+    .announcementSelectField {
+      &:not(.announcementFormSelectField) {
+        top: 5px;
+        position: relative;
+      }
     }
+  }
+  .announcementSelectField {
     &.announcementFormSelectField {
       top: 2px;
       min-width: 132px;

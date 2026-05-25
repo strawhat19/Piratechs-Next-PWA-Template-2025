@@ -635,6 +635,16 @@
     }
 }
 
+.ordersTableComponent {
+    .tableGridCards {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 337px), 1fr)) !important;
+    }
+    .storeGridCardActionsCompact {
+        margin-left: 0;
+        margin-right: auto;
+    }
+}
+
 .storeGridCard {
     min-height: 388px;
     background:
@@ -899,9 +909,7 @@
 }
 
 @container (max-width: 768px) {
-    .ordersTableComponent,
-    .usersTableComponent,
-    .announcementsTableComponent {
+    .ordersTableComponent, .usersTableComponent, .announcementsTableComponent {
         .tableGridCards {
             gap: 10px;
             padding: 72px 10px 10px;

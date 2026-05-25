@@ -87,9 +87,9 @@ export default function OrderCard({
                     </span>
                 </div> */}
                 <div className={`storeGridCardTitle flex alignCenter gap5`}>
-                    <span className={`storeGridCardNumber cardNumber`}>
+                    {/* <span className={`storeGridCardNumber cardNumber`}>
                         {order?.number || 0}
-                    </span>
+                    </span> */}
                     <Person fontSize={`small`} htmlColor={getAccColor(String(order?.userEmail))} />
                     <span className={`lineClamp1`}>
                         {order?.userEmail || order?.userName || `Customer`}

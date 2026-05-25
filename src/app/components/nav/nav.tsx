@@ -8,7 +8,7 @@ import { useStoreCart } from '../store/use-store-cart';
 import { richTextToPlainText } from '../rich-text/rich-text';
 import { StateGlobals } from '@/shared/global-context';
 import { useRouter, usePathname } from 'next/navigation';
-import { capWords, dev } from '@/shared/scripts/constants';
+import { capWords, dev, sortByCreatedNewest } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
 // import AuthForm from '../authentication/forms/auth-form/auth-form';
 import { AnnouncementStatus } from '@/shared/types/models/Announcement';
@@ -105,7 +105,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 icon: <Notifications fontSize={`small`} htmlColor={`var(--silver)`} />,
             }];
         }
-        return activeAnnouncements?.map((announcement: any) => {
+        let announcementNotifications = sortByCreatedNewest(activeAnnouncements)?.map((announcement: any) => {
             const title = String(announcement?.name || announcement?.title || `Announcement`).trim();
             const description = richTextToPlainText(announcement?.description).trim();
             const details = richTextToPlainText(announcement?.details).trim();
@@ -122,6 +122,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 ),
             };
         });
+        return announcementNotifications;
     }, [announcements, announcementsLoading]);
 
     const notificationCount = notificationMenuItems?.filter((item: any) => item?.id != `no-notifications`)?.length || 0;

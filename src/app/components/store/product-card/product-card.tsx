@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Types } from '@/shared/types/types';
 import Img from '@/app/components/image/image';
 import { Checkbox, Skeleton } from '@mui/material';
 import { Product } from '@/shared/types/models/Product';
@@ -58,7 +59,7 @@ export default function ProductCard({
         <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard ${product?.featured ? `featured` : ``}`} checkboxAlignmentStart={checkboxAlignmentStart}>
             <div className={`productGridCardMedia`} style={getProductMediaStyle(product, showFallbackImage)}>
                 {selectable ? (
-                    <label className={`dataDisplayCardSelect productGridCardSelect`} onClick={(event) => event.stopPropagation()}>
+                    <label className={`dataDisplayCardSelect productGridCardSelect`} onClick={(event) => event?.stopPropagation()}>
                         <Checkbox
                             size={`small`}
                             checked={selected}
@@ -76,7 +77,7 @@ export default function ProductCard({
                         height={420}
                         src={imageURL}
                         useLazyLoad={true}
-                        alt={product?.name || `Product`}
+                        alt={product?.name || Types.Product}
                         onImageLoad={() => setImageLoading(false)}
                         className={`productGridCardImage ${imageLoading ? `loading` : ``}`}
                         onImageError={() => {

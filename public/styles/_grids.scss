@@ -26,16 +26,24 @@
 }
 
 .announcementGridCard {
+    .tableGridField-description {
+        min-height: 42px !important;
+    }
     .storeGridCardHero {
         .dropDownBtnLabel {
             display: none !important;
         }
     }
     .storeGridCardMetrics {
-        grid-template-columns: .51fr 1fr;
+        display: flex;
+        flex-direction: column;
+        // grid-template-columns: .51fr 1fr;
     }
-    .tableGridField-updated {
+    .tableGridField-created, .tableGridField-updated {
         font-size: 15px;
+    }
+    .storeGridCardStatus {
+        width: min(115px, 62%);
     }
 }
 

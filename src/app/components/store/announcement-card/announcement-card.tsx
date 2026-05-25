@@ -45,19 +45,30 @@ export default function AnnouncementCard({
                     <span className={`cardNumber`}>
                         {announcement?.number || 0}
                     </span>
+                    <span>
+                        Name
+                        {/* {announcement?.showTitle ? `Name` : `Nm.`} */}
+                    </span>
+                    {renderColumn(`showTitle`)}
                     {renderColumn(`status`, `storeGridCardStatus`)}
                 </div>
                 <div className={`storeGridCardTitle`}>
                     {renderColumn(`name`, ``, { showLabel: true })}
                 </div>
                 <div className={`storeGridCardField storeGridCardMessage`}>
-                    <span>Message</span>
+                    <span style={{ maxHeight: 13 }}>
+                        Message
+                    </span>
                     {renderColumn(`description`, `lineClamp3`)}
                 </div>
                 <div className={`storeGridCardMetrics`}>
-                    <div className={`storeGridCardMetric`}>
+                    {/* <div className={`storeGridCardMetric`}>
                         <span>Show Name</span>
                         {renderColumn(`showTitle`)}
+                    </div> */}
+                    <div className={`storeGridCardMetric`}>
+                        <span>Created</span>
+                        {renderColumn(`created`)}
                     </div>
                     <div className={`storeGridCardMetric`}>
                         <span>Updated</span>
