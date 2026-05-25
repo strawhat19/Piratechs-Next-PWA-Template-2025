@@ -243,24 +243,6 @@
                 position: relative;
                 align-items: center;
             }
-            .cartNavBadge {
-                top: -8px;
-                z-index: 1;
-                right: -5px;
-                display: flex;
-                font-size: 9px;
-                min-width: 14px;
-                min-height: 12px;
-                font-weight: 800;
-                padding: 1px 4px;
-                color: var(--navy);
-                position: absolute;
-                align-items: center;
-                border-radius: 999px;
-                justify-content: center;
-                background: var(--success);
-                box-shadow: 0 0 0 2px var(--bg);
-            }
             &.activeRoute {
                 &::before {
                     transform: scale(1, 1);
@@ -273,7 +255,7 @@
                 position: relative;
                 align-items: center;
             }
-            .cartNavBadge {
+            .navBadge {
                 top: -8px;
                 z-index: 1;
                 right: -5px;
@@ -290,6 +272,9 @@
                 justify-content: center;
                 background: var(--success);
                 box-shadow: 0 0 0 2px var(--bg);
+                &.cartNavBadge {
+                    top: -10px;
+                }
             }
         }
     }

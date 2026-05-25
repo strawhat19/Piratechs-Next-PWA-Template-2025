@@ -91,6 +91,9 @@ export default function ProductCard({
                 )}
             </div>
             <div className={`productGridCardBody`}>
+                <div className={`productGridCardName`}>
+                    {renderColumn(`name`, ``, { showLabel: true })}
+                </div>
                 <div className={`productGridCardTop`}>
                     <span className={`productGridCardNumber cardNumber`}>
                         {product?.number || 0}
@@ -101,20 +104,17 @@ export default function ProductCard({
                     {renderColumn(`featured`)}
                     {renderColumn(`status`, `cardNumber productGridCardStatus`)}
                 </div>
-                <div className={`productGridCardName`}>
-                    {renderColumn(`name`, ``, { showLabel: true })}
-                </div>
-                <div className={`productGridCardMetrics`}>
-                    <div className={`productGridCardMetric`}>
-                        {renderColumn(`price`, ``, { showLabel: true })}
-                    </div>
-                    <div className={`productGridCardMetric`}>
-                        {renderColumn(`stock`, ``, { showLabel: true })}
-                    </div>
-                </div>
                 <div className={`productGridCardMeta`}>
                     {renderColumn(`category`, `productGridCardMetaField`)}
                     {renderColumn(`productType`, `productGridCardMetaField`)}
+                </div>
+                <div className={`productGridCardMetrics`}>
+                    <div className={`productGridCardMetric`}>
+                        {renderColumn(`stock`, ``, { showLabel: true })}
+                    </div>
+                    <div className={`productGridCardMetric`}>
+                        {renderColumn(`price`, ``, { showLabel: true })}
+                    </div>
                 </div>
                 <div className={`productGridCardActions`}>
                     {renderColumn(`actions`)}

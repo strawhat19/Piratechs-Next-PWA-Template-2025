@@ -586,21 +586,16 @@
 }
 
 .productGridCardCartMetric {
-    grid-column: 1 / -1;
     min-height: 46px;
-    border-color: rgba(var(--green_neon_rgb), 0.32);
+    grid-column: 1 / -1;
     background: rgba(var(--green_neon_rgb), 0.08);
+    border-color: rgba(var(--green_neon_rgb), 0.32);
 }
 
 .productGridCardMeta {
     gap: 8px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    .tableDropDown {
-        max-height: 31px;
-        min-height: 31px;
-    }
 }
 
 .productGridCardActions {
@@ -952,9 +947,7 @@
 }
 
 @container (max-width: 500px) {
-    .ordersTableComponent,
-    .usersTableComponent,
-    .announcementsTableComponent {
+    .ordersTableComponent, .usersTableComponent, .announcementsTableComponent {
         .tableGridCards {
             padding-top: 124px;
             grid-template-columns: 1fr;
@@ -963,8 +956,7 @@
             width: calc(100% - 18px) !important;
         }
     }
-    .storeGridCardMeta,
-    .storeGridCardMetrics {
+    .storeGridCardMeta, .storeGridCardMetrics {
         grid-template-columns: 1fr;
     }
     .productsTableComponent {
@@ -979,8 +971,7 @@
             width: calc(100% - 18px) !important;
         }
     }
-    .productGridCardMeta,
-    .productGridCardMetrics {
+    .productGridCardMeta, .productGridCardMetrics {
         grid-template-columns: 1fr;
     }
 }

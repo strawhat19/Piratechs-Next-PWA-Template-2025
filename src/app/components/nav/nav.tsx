@@ -28,7 +28,7 @@ export const routes = {
 //   styles: { icons: { fontAwesome: `fa-paint-brush`, mui: <Brush style={{ fontSize: size }} className={`linkHover`} /> } },
 //   contact: { icons: { fontAwesome: `fa-envelope`, mui: <Mail style={{ fontSize: size }} className={`linkHover`} /> } },
 //   about: { icons: { fontAwesome: `fa-info-circle`, mui: <Info style={{ fontSize: size }} className={`linkHover`} /> } },
-    store: { icons: { fontAwesome: `fa-list-shopping-cart`, mui: <ShoppingCart style={{ fontSize: size - 3 }} className={`linkHover`} /> } },
+    store: { icons: { fontAwesome: `fa-store`, mui: <Storefront style={{ fontSize: size - 2 }} className={`linkHover`} /> } },
     board: { icons: { fontAwesome: `fa-list-check`, mui: <Checklist style={{ fontSize: size }} className={`linkHover`} /> } },
     gallery: { icons: { fontAwesome: `fa-images`, mui: <PermMedia style={{ fontSize: size - 2 }} className={`linkHover`} /> } },
     stocks: { icons: { fontAwesome: `fa-bars`, mui: <BarChart style={{ fontSize: size }} className={`linkHover`} /> } },
@@ -47,7 +47,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         {
             id: `profile`,
             label: `Profile`,
-            icon: <Person htmlColor={`var(--links)`} />,
+            icon: <Person fontSize={`small`} htmlColor={`var(--links)`} />,
             onClick: () => {
                 router.push(`/profile`);
             },
@@ -55,7 +55,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         {
             id: `signout`,
             label: `Sign Out`,
-            icon: <Logout htmlColor={statusColors.Unavailable} />,
+            icon: <Logout fontSize={`small`} style={{ fontSize: 18 }} htmlColor={statusColors.Unavailable} />,
             onClick: async () => {
                 // toast.info(`Signing Out`);
                 await onSignOut()?.then(() => {
@@ -66,25 +66,25 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
         },
     ];
 
-    const storeMenuItems = [
+    const cartMenuItems = [
         {
             id: `view-cart`,
             label: `View Cart`,
             onClick: () => setCartDrawerOpen(true),
-            icon: <ShoppingCart htmlColor={`var(--links)`} />,
+            icon: <ShoppingCart fontSize={`small`} style={{ fontSize: 18 }} htmlColor={`var(--links)`} />,
         },
         {
             id: `clear-cart`,
             onClick: clearCart,
             label: `Clear Cart`,
-            icon: <DeleteSweep htmlColor={statusColors.Unavailable} />,
+            icon: <DeleteSweep fontSize={`small`} htmlColor={statusColors.Unavailable} />,
         },
-        {
-            id: `go-store`,
-            label: `To Store`,
-            onClick: () => router.push(`/store`),
-            icon: <Storefront htmlColor={`var(--success)`} />,
-        },
+        // {
+        //     id: `go-store`,
+        //     label: `To Store`,
+        //     onClick: () => router.push(`/store`),
+        //     icon: <Storefront htmlColor={`var(--success)`} />,
+        // },
     ];
 
     const notificationMenuItems = useMemo(() => {
@@ -127,48 +127,14 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
     const notificationCount = notificationMenuItems?.filter((item: any) => item?.id != `no-notifications`)?.length || 0;
 
     const renderRouteLink = (path: string, config: any) => {
-        const isStoreRoute = path == `store`;
-        const hasCartItems = isStoreRoute && cartCount > 0;
-        const content = (
-            <>
+        return (
+            <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
                 <span className={`navIconWrap`}>
                     {config.icons.mui}
-                    {hasCartItems ? <span className={`cartNavBadge`}>{cartCount}</span> : null}
                 </span>
                 <span className={`linkText`}>
                     {capWords(path)}
                 </span>
-            </>
-        );
-        if (hasCartItems) {
-            return (
-                <MenuTrigger
-                    colors={true}
-                    topOffset={1}
-                    onHover={devEnv}
-                    id={`store-menu-trigger`}
-                    menuItems={storeMenuItems}
-                    className={`storeCartMenu`}
-                    targetID={`store-menu-trigger`}
-                    renderTrigger={({ id, onClick }) => (
-                        <button
-                            id={id}
-                            type={`button`}
-                            className={`smallFont colorwhite flexContainer navMenuLinkButton`}
-                            onClick={(event) => {
-                                event.preventDefault();
-                                onClick(event);
-                            }}
-                        >
-                            {content}
-                        </button>
-                    )}
-                />
-            );
-        }
-        return (
-            <Link href={`/${path}`} className={`smallFont colorwhite flexContainer`}>
-                {content}
             </Link>
         );
     };
@@ -226,14 +192,41 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                             <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Notifications`} className={`notificationButton iconImg`}>
                                 <span className={`navIconWrap`}>
                                     <Notifications className={`settingsIcon`} style={{ fontSize: 20 }} />
-                                    {notificationCount > 0 ? <span className={`cartNavBadge notificationNavBadge`}>{notificationCount}</span> : null}
+                                    {notificationCount > 0 ? (
+                                        <span className={`navBadge notificationNavBadge`}>
+                                            {notificationCount}
+                                        </span>
+                                    ) : null}
+                                </span>
+                            </Icon_Button>
+                        )}
+                    />
+                </li>
+                <li className={`menuButton cartMenuButton`}>
+                    <MenuTrigger
+                        colors={true}
+                        topOffset={1}
+                        onHover={devEnv}
+                        id={`cartMenuButton`}
+                        className={`cartMenu`}
+                        menuItems={cartMenuItems}
+                        targetID={`cartMenuButton`}
+                        renderTrigger={({ id, onClick }) => (
+                            <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Cart`} className={`cartButton iconImg`}>
+                                <span className={`navIconWrap`}>
+                                    <ShoppingCart className={`settingsIcon`} style={{ fontSize: 17 }} />
+                                    {cartCount > 0 ? (
+                                        <span className={`navBadge cartNavBadge`}>
+                                            {cartCount}
+                                        </span>
+                                    ) : null}
                                 </span>
                             </Icon_Button>
                         )}
                     />
                 </li>
                 {Object.entries(routes).map(([path, config]: any) => (
-                    <li key={path} onClick={() => !(path == `store` && cartCount > 0) && setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
+                    <li key={path} onClick={() => setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
                         {renderRouteLink(path, config)}
                     </li>
                 ))}
