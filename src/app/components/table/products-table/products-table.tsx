@@ -7,9 +7,9 @@ import Table, { checkboxColumn } from '../table';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import { Roles, Types } from '@/shared/types/types';
+import ToggleCell from '../toggle-cell/toggle-cell';
 import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
-import ToggleCell from '../toggle-cell/toggle-cell';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -142,8 +142,8 @@ const ProductImageCell = ({ row }: { row: Product }) => {
                 height={38}
                 src={imageURL}
                 alt={row?.name || `Product`}
-                className={`iconImg productTableImage ${imageLoading ? `loading` : ``}`}
                 onLoad={() => setImageLoading(false)}
+                className={`iconImg productTableImage ${imageLoading ? `loading` : ``}`}
                 onError={() => {
                     setImageError(true);
                     setImageLoading(false);
@@ -162,11 +162,12 @@ const ProductFeaturedCell = ({ row }: { row: Product }) => {
     };
     return (
         <ToggleCell
-            value={Boolean(row?.featured)}
-            canEdit={canManageProducts}
             onChange={updateFeatured}
-            className={`productFeaturedCell`}
+            canEdit={canManageProducts}
+            value={Boolean(row?.featured)}
             checked={Boolean(row?.featured)}
+            className={`productFeaturedCell`}
+            disabled={Boolean(!row?.imageURL || row?.imageURL == ``)}
         />
     );
 };

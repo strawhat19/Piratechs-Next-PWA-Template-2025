@@ -13,11 +13,11 @@ import OrderDetails from './order-details/order-details';
 import { usePathname, useRouter } from 'next/navigation';
 import UsersTable from '../table/users-table/users-table';
 import OrdersTable from '../table/orders-table/orders-table';
-import { constants, minRole } from '@/shared/scripts/constants';
 import { ProductFormDialog } from './product-form/product-form';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { Order as StoreOrder } from '@/shared/types/models/Order';
 import ProductsTable from '../table/products-table/products-table';
+import { constants, dev, minRole } from '@/shared/scripts/constants';
 import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { useCheckoutReturnToast, useStoreCart } from './use-store-cart';
 import AnnouncementsTable from '../table/announcements-table/announcements-table';
@@ -26,7 +26,19 @@ import DataDisplayModeSelector from '../table/data-display-mode-selector/data-di
 
 const { Order, Customer } = Types;
 
+const devEnv = dev();
+
 export const productsDefaultDisplayType: DataDisplayModes = DataDisplayModes.Grid;
+export const ordersDefaultDisplayType: DataDisplayModes = devEnv ? DataDisplayModes.Grid : DataDisplayModes.Table;
+export const customersDefaultDisplayType: DataDisplayModes = devEnv ? DataDisplayModes.Grid : DataDisplayModes.Table;
+export const announcementsDefaultDisplayType: DataDisplayModes = devEnv ? DataDisplayModes.Grid : DataDisplayModes.Table;
+
+export const defaultDisplayTypes = {
+    orders: ordersDefaultDisplayType,
+    products: productsDefaultDisplayType,
+    customers: customersDefaultDisplayType,
+    announcements: announcementsDefaultDisplayType,
+}
 
 export default function Store({ className = `storeComponent` }) {
     const router = useRouter();
@@ -40,10 +52,10 @@ export default function Store({ className = `storeComponent` }) {
     const [selectedOrder, setSelectedOrder] = useState<StoreOrder | null>(null);
     const [storeSlideIndex, setStoreSlideIndex] = useState(0);
     const [tableDisplayModes, setTableDisplayModes] = useState<Record<number, DataDisplayModes>>({
-        0: productsDefaultDisplayType,
-        1: DataDisplayModes.Table,
-        2: DataDisplayModes.Table,
-        3: DataDisplayModes.Table,
+        0: defaultDisplayTypes?.products,
+        1: defaultDisplayTypes?.orders,
+        2: defaultDisplayTypes?.announcements,
+        3: defaultDisplayTypes?.customers,
     });
     const toggleQuickEditProduct = (product: Product | null) => setQuickEditProduct(prev => prev?.id == product?.id ? null : product);
     const routeEditMatch = pathname?.match(/\/(edit|update)\/([^/]+)/);
