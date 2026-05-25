@@ -84,12 +84,12 @@ export default function UserCard({
                 </div>
                 <div className={`storeGridCardMetrics`}>
                     <div className={`storeGridCardMetric`}>
-                        <span>Role</span>
-                        {renderColumn(`role`)}
-                    </div>
-                    <div className={`storeGridCardMetric`}>
                         <span>Source</span>
                         {renderColumn(`dataSource`)}
+                    </div>
+                    <div className={`storeGridCardMetric`}>
+                        <span>Role</span>
+                        {renderColumn(`role`)}
                     </div>
                 </div>
                 <div className={`storeGridCardMeta`}>

@@ -3,7 +3,9 @@
 import { toast } from 'react-toastify';
 import Table, { checkboxColumn } from '../table';
 import ToggleCell from '../toggle-cell/toggle-cell';
+import { Roles, Types } from '@/shared/types/types';
 import { minRole } from '@/shared/scripts/constants';
+import { defaultDisplayTypes } from '../../store/store';
 import { usePathname, useRouter } from 'next/navigation';
 import EditableCell from '../editable-cell/editable-cell';
 import { Archive, Delete, Edit } from '@mui/icons-material';
@@ -12,7 +14,6 @@ import { richTextToPlainText } from '../../rich-text/rich-text';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import AnnouncementForm from '../../store/announcement-form/announcement-form';
 import AnnouncementCard from '../../store/announcement-card/announcement-card';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
@@ -308,7 +309,7 @@ const AnnouncementActionsCell = ({
 
 export default function AnnouncementsTable({
     type = Types.Announcement,
-    mode = DataDisplayModes.Table,
+    mode = defaultDisplayTypes?.announcements,
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
@@ -579,9 +580,9 @@ export default function AnnouncementsTable({
             <Table
                 type={type}
                 mode={mode}
-                loading={announcementsLoading}
                 rows={visibleAnnouncements}
                 columns={announcementColumns}
+                loading={announcementsLoading}
                 className={`announcementsTableComponent`}
                 gridProps={{
                     renderCard: (params: any) => <AnnouncementCard {...params} />,

@@ -12,9 +12,9 @@ import { minRole } from '@/shared/scripts/constants';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import { useContext, useEffect, useState } from 'react';
+import { defaultDisplayTypes } from '../../store/store';
 import { usePathname, useRouter } from 'next/navigation';
 import EditableCell from '../editable-cell/editable-cell';
-import { productsDefaultDisplayType } from '../../store/store';
 import Icon_Button from '../../buttons/icon-button/icon-button';
 import ProductCard from '../../store/product-card/product-card';
 import ProductForm from '../../store/product-form/product-form';
@@ -466,7 +466,7 @@ export default function ProductsTable({
     onQuickEdit = undefined,
     quickEditProduct = null,
     onAddToCart = () => false, 
-    mode = productsDefaultDisplayType,
+    mode = defaultDisplayTypes?.products,
 }: any) {
     const router = useRouter();
     const pathname = usePathname();
@@ -825,12 +825,12 @@ export default function ProductsTable({
                 <EditableCell
                     mode={`text`}
                     value={value}
-                    showLabel={showLabel}
                     saveOnEnter={true}
                     showStepper={false}
                     showActions={false}
                     cancelOnBlur={true}
                     placeholder={`Name`}
+                    showLabel={showLabel}
                     onCancel={() => onCancelNameDraft(row)}
                     canEdit={minRole(user?.role, Roles.Administrator)}
                     onChangeValue={(next: string) => onChangeNameDraft(row, next)}

@@ -5,15 +5,16 @@ import Loader from '../../loaders/loader';
 import { GridColDef } from '@mui/x-data-grid';
 import Table, { checkboxColumn } from '../table';
 import MenuTrigger from '../../menu/menu-trigger';
+import { Roles, Types } from '@/shared/types/types';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
 import UserCard from '../../store/user-card/user-card';
+import { defaultDisplayTypes } from '../../store/store';
 import EditableCell from '../editable-cell/editable-cell';
 import { colors, minRole } from '@/shared/scripts/constants';
 import { JSX, useContext, useEffect, useState } from 'react';
 import { updateUserInDatabase } from '@/shared/server/firebase';
 import Icon_Button from '../../buttons/icon-button/icon-button';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 // import CheckboxMulti from '../../autocomplete/checkbox-multi/checkbox-multi';
 import { Code, Star, Edit, Person, Security, WorkspacePremium, AdminPanelSettings, ShoppingCart, Logout, Delete, KeyboardArrowDown } from '@mui/icons-material';
 
@@ -175,8 +176,8 @@ const ActionsCell = ({ row, value, canManage = false }: any) => {
 
 export default function UsersTable({
     type = Types.User,
-    mode = DataDisplayModes.Table,
     onOpenUserDetails = () => {},
+    mode = defaultDisplayTypes?.customers,
 }: any) {
     const { user, users } = useContext<any>(StateGlobals);
     const [pendingNameByID, setPendingNameByID] = useState<Record<string, string>>({});
@@ -291,8 +292,8 @@ export default function UsersTable({
             <Table
                 type={type}
                 mode={mode}
-                title={`${type}(s)`}
                 rows={users}
+                title={`${type}(s)`}
                 columns={user_columns}
                 className={`usersTableComponent ${String(type).toLowerCase()}sTableComponent`}
                 gridProps={{

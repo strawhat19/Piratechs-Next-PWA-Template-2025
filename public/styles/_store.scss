@@ -534,10 +534,6 @@
 .productGridCardStatus {
     margin-left: auto;
     width: min(145px, 60%);
-    .tableDropDown {
-        max-height: 29px;
-        min-height: 29px;
-    }
 }
 
 .productGridCardName {
@@ -734,19 +730,15 @@
 
 .announcementGridCardIcon {
     color: var(--links);
-
     .tableDropDown {
-        width: 58px;
-        min-width: 58px;
         justify-content: center !important;
     }
 }
 
 .storeGridCardHeroText {
     gap: 3px;
-    display: grid;
     min-width: 0;
-
+    display: grid;
     span {
         font-size: 11px;
         font-weight: 800;
@@ -754,26 +746,25 @@
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.6);
     }
-
     strong {
-        font-size: 22px;
         line-height: 1;
+        font-size: 22px;
     }
 }
 
 .storeGridCardBody {
-    gap: 11px;
     flex: 1;
+    gap: 11px;
+    min-width: 0;
     display: flex;
     padding: 12px;
-    min-width: 0;
     flex-direction: column;
 }
 
 .storeGridCardTop {
     gap: 8px;
-    display: flex;
     min-width: 0;
+    display: flex;
     align-items: center;
     justify-content: space-between;
 }
@@ -786,17 +777,15 @@
 
 .storeGridCardTitle {
     min-width: 0;
-    min-height: 34px;
     font-size: 16px;
     font-weight: 800;
-
+    min-height: 34px;
     .editableCellWrap {
-        min-height: 34px;
         padding: 0 8px;
+        min-height: 34px;
         background: rgba(255, 255, 255, 0.04);
         border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.2);
     }
-
     .editableCellInput {
         font-size: 16px;
         font-weight: 800;
@@ -845,29 +834,17 @@
 }
 
 .storeGridCardStatus {
-    width: min(145px, 62%);
     margin-left: auto;
-
-    .tableDropDown {
-        max-height: 29px;
-        min-height: 29px;
-    }
+    width: min(145px, 62%);
 }
 
 .orderGridCardFulfillmentStatus {
     .tableDropDown {
         width: 100%;
-        min-height: 31px;
-        max-height: 31px;
     }
 }
 
-.storeGridCardActions,
-.storeGridCardActionsCompact {
-    .actionsCell {
-        min-height: 30px;
-    }
-
+.storeGridCardActions, .storeGridCardActionsCompact {
     .actions {
         margin-left: auto;
     }

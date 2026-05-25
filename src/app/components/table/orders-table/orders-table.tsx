@@ -8,13 +8,14 @@ import Table, { checkboxColumn } from '../table';
 import IconText from '../../icon-text/icon-text';
 import MenuTrigger from '../../menu/menu-trigger';
 import ZeroState from '../../zero-state/zero-state';
+import { Roles, Types } from '@/shared/types/types';
 import { useContext, useMemo, useState } from 'react';
 import TableStatus from '../table-status/table-status';
 import { StateGlobals } from '@/shared/global-context';
+import { defaultDisplayTypes } from '../../store/store';
 import OrderCard from '../../store/order-card/order-card';
 import { capWords, minRole } from '@/shared/scripts/constants';
 import Icon_Button from '../../buttons/icon-button/icon-button';
-import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { auth, updateOrderInDatabase } from '@/shared/server/firebase';
 import { Order, OrderFulfillmentStatus } from '@/shared/types/models/Order';
 import { AltRoute, AssignmentReturn, Cancel, CheckCircle, DoneAll, Inventory2, KeyboardArrowDown, LocalShipping, Lock, PauseCircle, PendingActions, ReceiptLong, Sync } from '@mui/icons-material';
@@ -120,8 +121,8 @@ const OrderFulfillmentStatusCell = ({ row }: any) => {
 
 export default function OrdersTable({
     type = Types.Order,
-    mode = DataDisplayModes.Table,
     onOpenOrderDetails = () => {},
+    mode = defaultDisplayTypes?.orders,
 }: any) {
     const { user, orders = [], ordersLoading = false } = useContext<any>(StateGlobals);
     const [syncing, setSyncing] = useState(false);
@@ -202,9 +203,9 @@ export default function OrdersTable({
             <Table 
                 type={type} 
                 mode={mode}
-                loading={ordersLoading}
                 rows={visibleOrders} 
                 columns={orderColumns} 
+                loading={ordersLoading}
                 selectable={canManageOrders}
                 gridProps={{
                     renderCard: (params: any) => <OrderCard {...params} />,
