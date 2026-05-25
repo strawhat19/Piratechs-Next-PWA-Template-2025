@@ -4,9 +4,24 @@
     }
 }
 
-.userGridCard {
+
+.productGridCardMetrics {
+    grid-template-columns: .75fr 1fr !important;
+}
+
+.orderGridCard {
+    .storeGridCardField {
+        &:has(.tableGridField-description) {
+            min-height: 66px;
+        }
+    }
+    .storeGridCardMeta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
     .storeGridCardMetrics {
-        grid-template-columns: 1fr 0.78fr;
+        grid-template-columns: .75fr 1fr !important;
     }
 }
 
@@ -24,16 +39,9 @@
     }
 }
 
-.orderGridCard {
-    .storeGridCardField {
-        &:has(.tableGridField-description) {
-            min-height: 66px;
-        }
-    }
-    .storeGridCardMeta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+.userGridCard {
+    .storeGridCardMetrics {
+        grid-template-columns: 1fr 0.78fr;
     }
 }
 
@@ -49,8 +57,4 @@
             }
         }
     }
-}
-
-.productGridCardMetrics {
-    grid-template-columns: .75fr 1fr !important;
 }

@@ -16,7 +16,7 @@ export enum OrderFulfillmentStatus {
   Pending = `Pending`,
   Processing = `Processing`,
   OnHold = `On Hold`,
-  PartiallyFulfilled = `Partially Fulfilled`,
+  Partial = `Partial`,
   Fulfilled = `Fulfilled`,
   Shipped = `Shipped`,
   Delivered = `Delivered`,
