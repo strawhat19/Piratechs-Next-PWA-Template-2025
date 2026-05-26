@@ -69,9 +69,11 @@
   margin: 0 auto;
   padding-right: 0;
   max-width: 93cqw;
-  box-sizing: border-box;
   position: relative;
-  border: 1px solid var(--buttons);
+  box-sizing: border-box;
+  &.adminTable {
+    border: 1px solid var(--buttons);
+  }
   @container (max-width: 500px) {
     max-width: 87cqw;
   }
@@ -615,7 +617,7 @@
 }
 
 .editableCellField {
-  gap: 1px;
+  gap: 5px;
   width: 100%;
   min-width: 0;
   display: grid;

@@ -286,6 +286,7 @@
     }
     .menuItemLabel {
         min-width: 0;
+        max-width: 88%;
     }
 }
 
@@ -312,11 +313,11 @@
         -webkit-box-orient: vertical;
     }
     small {
-        color: white;
         font-size: 10px;
         white-space: normal;
         display: -webkit-box;
         // -webkit-line-clamp: 2;
+        color: var(--white_smoke);
         -webkit-box-orient: vertical;
     }
 }

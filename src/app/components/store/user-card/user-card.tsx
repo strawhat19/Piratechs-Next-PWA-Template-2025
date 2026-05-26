@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { Checkbox, Skeleton } from '@mui/material';
 import { User } from '@/shared/types/models/User';
-import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
+import { Checkbox, Skeleton } from '@mui/material';
 import { TableGridCardParams } from '@/app/components/table/table-grid/table-grid';
+import DataDisplayCard from '@/app/components/table/data-display-card/data-display-card';
 
 const getUserImageURL = (user: User) => String(user?.imageURL || user?.imageUrl || user?.avatar || user?.photoURL || user?.image || ``).trim();
 const getUserInitial = (user: User) => String(user?.name || user?.displayName || user?.email || `User`).trim()?.[0]?.toUpperCase() || `U`;

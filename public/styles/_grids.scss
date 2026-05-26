@@ -1,9 +1,46 @@
+.tableGridField-name {
+    .editableCellField {
+        gap: 1px;
+    }
+}
+
+.viewerTable {
+    .productGridCard {
+        min-height: auto;
+        .productGridCardBody {
+            gap: 10px;
+        }
+        .productGridCardName {
+            min-height: 20px;
+        }
+        .productGridCardMetrics {
+            grid-template-columns: 1fr !important;
+            .productGridCardMetric {
+                min-height: 39px;
+                margin-left: auto;
+                max-width: fit-content;
+            }
+        }
+        .productGridCardActions {
+            margin-top: 0;
+        }
+        .productGridCardCartMetric {
+            left: 0;
+            max-width: 88%;
+        }
+        .tableGridField-price {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+    }
+}
+
 .gridded {
     .table_header {
         width: 99.5% !important;
     }
 }
-
 
 .productGridCardMetrics {
     grid-template-columns: .75fr 1fr !important;

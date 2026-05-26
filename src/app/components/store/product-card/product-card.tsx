@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Types } from '@/shared/types/types';
+import { useContext, useState } from 'react';
 import Img from '@/app/components/image/image';
 import { Checkbox, Skeleton } from '@mui/material';
+import { Roles, Types } from '@/shared/types/types';
+import { minRole } from '@/shared/scripts/constants';
+import { StateGlobals } from '@/shared/global-context';
 import { Product } from '@/shared/types/models/Product';
 import type { CartItem } from '@/app/components/store/use-store-cart';
 import EditableCell from '@/app/components/table/editable-cell/editable-cell';
@@ -52,13 +54,14 @@ export default function ProductCard({
 }: ProductCardProps) {
     const product = row as Product;
     const imageURL = getProductImageURL(product);
+    const { user } = useContext<any>(StateGlobals);
     const [imageError, setImageError] = useState(false);
     const [imageLoading, setImageLoading] = useState(Boolean(imageURL));
     const showFallbackImage = !imageURL || imageError;
     return (
         <DataDisplayCard selected={selected} onClick={onCardClick} className={`productGridCard ${product?.featured ? `featured` : ``}`} checkboxAlignmentStart={checkboxAlignmentStart}>
             <div className={`productGridCardMedia`} style={getProductMediaStyle(product, showFallbackImage)}>
-                {selectable ? (
+                {(selectable && (user != null && minRole(user?.role, Roles.Editor))) ? (
                     <label className={`dataDisplayCardSelect productGridCardSelect`} onClick={(event) => event?.stopPropagation()}>
                         <Checkbox
                             size={`small`}
@@ -93,30 +96,46 @@ export default function ProductCard({
             </div>
             <div className={`productGridCardBody`}>
                 <div className={`productGridCardName`}>
-                    {renderColumn(`name`, ``, { showLabel: true })}
+                    {renderColumn(`name`, ``, { showLabel: user != null && minRole(user?.role, Roles.Editor) })}
                 </div>
-                <div className={`productGridCardTop`}>
-                    <span className={`productGridCardNumber cardNumber`}>
-                        {product?.number || 0}
-                    </span>
-                    <span>
-                        {product?.featured ? `Featured` : `Feat.`}
-                    </span>
-                    {renderColumn(`featured`)}
-                    {renderColumn(`status`, `cardNumber productGridCardStatus`)}
-                </div>
-                <div className={`productGridCardMeta`}>
-                    {renderColumn(`category`, `productGridCardMetaField`)}
-                    {renderColumn(`productType`, `productGridCardMetaField`)}
-                </div>
+                {(user != null && minRole(user?.role, Roles.Editor)) && <>
+                    <div className={`productGridCardTop`}>
+                        <span className={`productGridCardNumber cardNumber`}>
+                            {product?.number || 0}
+                        </span>
+                        <span>
+                            {product?.featured ? `Featured` : `Feat.`}
+                        </span>
+                        {renderColumn(`featured`)}
+                        {renderColumn(`status`, `cardNumber productGridCardStatus`)}
+                    </div>
+                    <div className={`productGridCardMeta`}>
+                        {renderColumn(`category`, `productGridCardMetaField`)}
+                        {renderColumn(`productType`, `productGridCardMetaField`)}
+                    </div>
+                </>}
                 <div className={`productGridCardMetrics`}>
+                    {(user != null && minRole(user?.role, Roles.Editor)) && <>
+                        <div className={`productGridCardMetric`}>
+                            {renderColumn(`stock`, ``, { showLabel: true })}
+                        </div>
+                    </>}
                     <div className={`productGridCardMetric`}>
-                        {renderColumn(`stock`, ``, { showLabel: true })}
-                    </div>
-                    <div className={`productGridCardMetric`}>
-                        {renderColumn(`price`, ``, { showLabel: true })}
+                        {renderColumn(`price`, ``, { showLabel: user != null && minRole(user?.role, Roles.Editor) })}
                     </div>
                 </div>
+                {(user != null && minRole(user?.role, Roles.Editor)) && <>
+                    <div className={`storeGridCardMeta`}>
+                        <div className={`storeGridCardMetaItem`}>
+                            <span>Created</span>
+                            {renderColumn(`created_at`)}
+                        </div>
+                        <div className={`storeGridCardMetaItem`}>
+                            <span>Updated</span>
+                            {renderColumn(`updated`)}
+                        </div>
+                    </div>
+                </>}
                 <div className={`productGridCardActions`}>
                     {renderColumn(`actions`)}
                     {cartItem ? (

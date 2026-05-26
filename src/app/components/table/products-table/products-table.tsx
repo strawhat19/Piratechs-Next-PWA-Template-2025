@@ -235,7 +235,9 @@ const ProductActionsCell = ({
     }
     return (
         <div className={`actionsCell productActionsCell`}>
-            <TableStatus label={getProductStatusLabel(row)} color={statusColor} title={getProductStatusLabel(row, true)} />
+            {user != null && minRole(user?.role, Roles.Editor) && <>
+                <TableStatus label={getProductStatusLabel(row)} color={statusColor} title={getProductStatusLabel(row, true)} />
+            </>}
             <div className={`actions`}>
                 {!isArchived ? (
                     <Icon_Button
@@ -958,10 +960,10 @@ export default function ProductsTable({
             <Table
                 type={type}
                 mode={mode}
-                rows={products}
                 columns={productColumns}
                 loading={productsLoading}
                 className={`productsTableComponent`}
+                rows={user != null && minRole(user?.role, Roles.Editor) ? products : products?.filter((p: Product) => p?.status == ProductStatus.Active)}
                 gridProps={{
                     renderCard: (params: any) => {
                         const cartItem = cart?.find(item => String(item?.id || ``) == String(params?.row?.id || ``)) || null;
@@ -980,7 +982,11 @@ export default function ProductsTable({
                     rowSelectionModel: normalizeProductSelectionModel(productSelectionModel),
                     onCellClick: ({ row, field }: any) => {
                         if (field == `actions`) return;
-                        openProductDetails(row);
+                        if (user != null && minRole(user?.role, Roles.Editor)) {
+                            openProductDetails(row);
+                        } else {
+                            onAddToCart(row);
+                        }
                     },
                     onRowSelectionModelChange: (selectionModel: GridRowSelectionModel) => {
                         onSelectedRowsChange(selectionModel);

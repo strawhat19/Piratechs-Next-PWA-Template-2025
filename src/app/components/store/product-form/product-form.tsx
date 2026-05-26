@@ -228,12 +228,12 @@ export default function ProductForm({
     product = null,
     widget = false,
     funsized = false,
-    formId = `product-form-${product?.id || `new`}${widget ? `-widget` : `-dialog`}`,
     onClose = () => {},
     onSaved = () => {},
     onFullEdit = undefined,
     onCancelEdit = undefined,
     className = `productFormComponent`,
+    formId = `product-form-${product?.id || `new`}${widget ? `-widget` : `-dialog`}`,
 }: ProductFormProps) {
     const preserveFormOnProductClearRef = useRef(false);
     const formRef = useRef<HTMLFormElement | null>(null);
@@ -613,24 +613,32 @@ export default function ProductForm({
                         <ProductField funsized={funsized} label={`Low Stock`} name={`lowStockThreshold`} type={`number`} min={`0`} step={`1`} value={form?.lowStockThreshold} onChange={updateForm} />
                     </div>
                     <div className={`productFormChecks`}>
-                        <label><input name={`taxable`} type={`checkbox`} checked={form?.taxable} onChange={updateForm} /> Taxable</label>
-                        <label><input name={`trackInventory`} type={`checkbox`} checked={form?.trackInventory} onChange={updateForm} /> Track Inventory</label>
-                        <label><input name={`allowBackorder`} type={`checkbox`} checked={form?.allowBackorder} onChange={updateForm} /> Allow Backorder</label>
-                        <label><input name={`requiresShipping`} type={`checkbox`} checked={form?.requiresShipping} onChange={updateForm} /> Requires Shipping</label>
+                        <label>
+                            <input name={`taxable`} type={`checkbox`} checked={form?.taxable} onChange={updateForm} /> Taxable
+                        </label>
+                        <label>
+                            <input name={`trackInventory`} type={`checkbox`} checked={form?.trackInventory} onChange={updateForm} /> Track Inventory
+                        </label>
+                        <label>
+                            <input name={`allowBackorder`} type={`checkbox`} checked={form?.allowBackorder} onChange={updateForm} /> Allow Backorder
+                        </label>
+                        <label>
+                            <input name={`requiresShipping`} type={`checkbox`} checked={form?.requiresShipping} onChange={updateForm} /> Requires Shipping
+                        </label>
                     </div>
                     <div className={`productFormGrid productTextGrid`}>
                         <RichTextEditorField
-                            label={`Short Description`}
-                            className={`productTextAreaField`}
                             minHeight={140}
+                            label={`Short Description`}
                             value={form?.shortDescription}
+                            className={`productTextAreaField`}
                             onChange={(value: string) => updateFormValue(`shortDescription`, value)}
                         />
                         <RichTextEditorField
-                            label={`Description`}
-                            className={`productTextAreaField`}
                             minHeight={220}
+                            label={`Description`}
                             value={form?.description}
+                            className={`productTextAreaField`}
                             onChange={(value: string) => updateFormValue(`description`, value)}
                         />
                     </div>
@@ -658,35 +666,40 @@ export default function ProductForm({
     )
 }
 
-export const ProductFormDialog = ({ open = false, onClose = () => {}, product = null }: ProductFormProps) => (
-    <Dialog open={open} onClose={onClose} maxWidth={`lg`} fullWidth>
-        <div className={`productFormDialog`}>
-            <Button className={`productDialogClose`} onClick={onClose}>
-                <Close fontSize={`small`} />
-            </Button>
-            {open ? (
-                <>
-                    <ProductForm 
-                        full 
-                        onClose={onClose} 
-                        product={product} 
-                        key={String(product?.id || `new-product`)} 
-                        formId={`product-form-dialog-${String(product?.id || `new-product`)}`}
-                    />
-                    <div className={`productFormDialogActions`}>
-                        <Button className={`productFormButton productCancelButton`} onClick={onClose}>
-                            <Close fontSize={`small`} /> Close
-                        </Button>
-                        <Button
-                            type={`submit`}
-                            form={`product-form-dialog-${String(product?.id || `new-product`)}`}
-                            className={`productFormButton productSaveButton`}
-                        >
-                            <Save fontSize={`small`} /> {product?.id ? `Save Changes` : `Save Product`}
-                        </Button>
-                    </div>
-                </>
-            ) : <></>}
-        </div>
-    </Dialog>
-);
+export const ProductFormDialog = ({ open = false, onClose = () => {}, product = null }: ProductFormProps) => {
+    const { user } = useContext<any>(StateGlobals);
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth={`lg`} fullWidth>
+            <div className={`productFormDialog`}>
+                <Button className={`productDialogClose`} onClick={onClose}>
+                    <Close fontSize={`small`} />
+                </Button>
+                {open ? (
+                    <>
+                        <ProductForm 
+                            full 
+                            onClose={onClose} 
+                            product={product} 
+                            key={String(product?.id || `new-product`)} 
+                            formId={`product-form-dialog-${String(product?.id || `new-product`)}`}
+                        />
+                        {user != null && minRole(user?.role, Roles.Editor) && <>
+                            <div className={`productFormDialogActions`}>
+                                <Button className={`productFormButton productCancelButton`} onClick={onClose}>
+                                    <Close fontSize={`small`} /> Close
+                                </Button>
+                                <Button
+                                    type={`submit`}
+                                    form={`product-form-dialog-${String(product?.id || `new-product`)}`}
+                                    className={`productFormButton productSaveButton`}
+                                >
+                                    <Save fontSize={`small`} /> {product?.id ? `Save Changes` : `Save Product`}
+                                </Button>
+                            </div>
+                        </>}
+                    </>
+                ) : <></>}
+            </div>
+        </Dialog>
+    )
+};

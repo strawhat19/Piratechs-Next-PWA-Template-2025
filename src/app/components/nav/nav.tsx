@@ -1,18 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useContext, useMemo, useState } from 'react';
 import CartDrawer from '../store/cart-drawer';
 import MenuTrigger from '../menu/menu-trigger';
+import { useContext, useMemo, useState } from 'react';
 import { useStoreCart } from '../store/use-store-cart';
-import { richTextToPlainText } from '../rich-text/rich-text';
 import { StateGlobals } from '@/shared/global-context';
 import { useRouter, usePathname } from 'next/navigation';
-import { capWords, dev, sortByCreatedNewest } from '@/shared/scripts/constants';
 import Icon_Button from '../buttons/icon-button/icon-button';
-// import AuthForm from '../authentication/forms/auth-form/auth-form';
+import Notification from '../notifications/notification/notification';
 import { AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { statusColors } from '../store/product-form/product-select-field';
+import { capWords, dev, sortByCreatedNewest } from '@/shared/scripts/constants';
 import { announcementIcons } from '../store/announcement-form/announcement-select-field';
 import { Menu, Close, Campaign, BarChart, Settings, PermMedia, Checklist, Notifications, ShoppingCart, Person, Logout, Storefront, DeleteSweep } from '@mui/icons-material';
 
@@ -60,7 +59,7 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 // toast.info(`Signing Out`);
                 await onSignOut()?.then(() => {
                     // toast.info(`Signed Out`);
-                    router.push(`/`);
+                    // router.push(`/`);
                 });
             },
         },
@@ -106,20 +105,11 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
             }];
         }
         let announcementNotifications = sortByCreatedNewest(activeAnnouncements)?.map((announcement: any) => {
-            const title = String(announcement?.name || announcement?.title || `Announcement`).trim();
-            const description = richTextToPlainText(announcement?.description).trim();
-            const details = richTextToPlainText(announcement?.details).trim();
             return {
-                id: announcement?.id || title,
                 className: `notificationMenuItem`,
+                id: announcement?.id || announcement?.name,
+                label: <Notification announcement={announcement} />,
                 icon: announcementIcons?.[announcement?.icon] || <Campaign fontSize={`small`} htmlColor={`var(--yellow_neon)`} />,
-                label: (
-                    <div className={`notificationMenuItemLabel`}>
-                        <strong>{title}</strong>
-                        {description ? <span>{description}</span> : <></>}
-                        {details ? <small>{details}</small> : <></>}
-                    </div>
-                ),
             };
         });
         return announcementNotifications;

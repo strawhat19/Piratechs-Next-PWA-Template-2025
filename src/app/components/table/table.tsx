@@ -5,9 +5,10 @@ import { useContext, useRef } from 'react';
 import TableGrid from './table-grid/table-grid';
 import { StateGlobals } from '@/shared/global-context';
 import { GridToolbar } from '@mui/x-data-grid/internals';
-import { DataDisplayModes, Types } from '@/shared/types/types';
+import { DataDisplayModes, Roles, Types } from '@/shared/types/types';
 import { GRID_CHECKBOX_SELECTION_FIELD } from '@mui/x-data-grid/colDef';
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { minRole } from '@/shared/scripts/constants';
 
 const paginationModel = { page: 0, pageSize: 15 };
 
@@ -91,7 +92,7 @@ export default function Table({
   pagination_options = paginationModel, 
   emptyRowsLabel = `(${rowCount}) ${type}(s)`,
 }: any) {
-  const { loaded } = useContext<any>(StateGlobals);
+  const { user, loaded } = useContext<any>(StateGlobals);
   const checkedRowsRef = useRef<GridRowSelectionModel>({ type: `include`, ids: new Set() });
   const handleCellClick = (params: any, event: any) => {
     if (params?.field === GRID_CHECKBOX_SELECTION_FIELD) return;
@@ -105,7 +106,7 @@ export default function Table({
   };
 
   return (
-      <div className={`table ${className} ${mode == DataDisplayModes.Grid ? `gridded` : `tabled`}`}>
+      <div className={`table ${className} ${mode == DataDisplayModes.Grid ? `gridded` : `tabled`} ${(user != null && minRole(user?.role, Roles.Editor)) ? `adminTable` : `viewerTable`}`}>
         {loaded ? <>
           {toolbar ? <>
             <div className={`table_header`}>
@@ -134,10 +135,10 @@ export default function Table({
               rows={rows}
               columns={columns}
               density={density}
-              disableRowSelectionOnClick={dataGridProps?.disableRowSelectionOnClick ?? true}
               showToolbar={toolbar}
-              checkboxSelection={selectable}
               onCellClick={handleCellClick}
+              checkboxSelection={selectable}
+              disableRowSelectionOnClick={dataGridProps?.disableRowSelectionOnClick ?? true}
               onRowSelectionModelChange={(nextRowSelectionModel: GridRowSelectionModel, details: any) => {
                 checkedRowsRef.current = nextRowSelectionModel;
                 console.log(`Checked Rows`, Array.from(nextRowSelectionModel?.ids || []));

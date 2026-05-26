@@ -3,8 +3,8 @@
 import Logo from '../logo/logo';
 import Slider from '../slider/slider';
 import Loader from '../loaders/loader';
-import Selector from '../selector/selector';
 import { SwiperSlide } from 'swiper/react';
+import Selector from '../selector/selector';
 import { User } from '@/shared/types/models/User';
 import UserDetails from './user-details/user-details';
 import { StateGlobals } from '@/shared/global-context';
@@ -180,70 +180,85 @@ export default function Store({ className = `storeComponent` }) {
         {loaded && <>
             <div className={`storePageTop customPageTop mh40 flex alignCenter gap5 relative`}>
                 <Logo label={`Store`} style={{ marginRight: 5 }} />
-                <Selector
-                    customColors={false}
-                    value={storeSlideIndex}
-                    options={storeSlideNames}
-                    className={`storeOptions`}
-                    ariaLabel={`Store sections`}
-                    onChange={(nextSlideIndex) => setStoreSlideIndex(Number(nextSlideIndex))}
-                />
-                <DataDisplayModeSelector
-                    value={activeDisplayMode}
-                    className={`storeDisplayOptions`}
-                    onChange={setActiveDisplayMode}
-                />
+                {user != null && minRole(user?.role, Roles.Editor) ? <>
+                    <Selector
+                        customColors={false}
+                        value={storeSlideIndex}
+                        options={storeSlideNames}
+                        className={`storeOptions`}
+                        ariaLabel={`Store sections`}
+                        onChange={(nextSlideIndex) => setStoreSlideIndex(Number(nextSlideIndex))}
+                    />
+                    <DataDisplayModeSelector
+                        value={activeDisplayMode}
+                        onChange={setActiveDisplayMode}
+                        className={`storeDisplayOptions`}
+                    />
+                </> : <></>}
             </div>
         </>}
         <div className={`storeContainer w99 ${className}`}>
             {loaded ? <>
-                <Slider 
-                    slideNames={storeSlideNames} 
-                    startingSlideIndex={storeSlideIndex}
-                    selectedSlideIndex={storeSlideIndex}
-                    onSlideChangeIndex={setStoreSlideIndex}
-                    className={`componentSlider storeSlider`} 
-                    showButtons={width > constants?.breakpoints?.tabletSmall}
-                >
-                    <SwiperSlide>
-                        <div className={`storeProductsPanel`}>
-                            <ProductsTable 
-                                mode={tableDisplayModes?.[0]}
-                                onAddToCart={addToCart} 
-                                quickEditProduct={quickEditProduct} 
-                                onQuickEdit={toggleQuickEditProduct} 
-                                setFullEditProduct={setFullEditProduct}
-                                setQuickEditProduct={setQuickEditProduct}
-                            />
-                        </div>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <OrdersTable mode={tableDisplayModes?.[1]} onOpenOrderDetails={openOrderDetails} />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                        <AnnouncementsTable mode={tableDisplayModes?.[2]} />
-                    </SwiperSlide>
-                    {canManageStore ? (
+                {user != null && minRole(user?.role, Roles.Editor) ? <>
+                    <Slider 
+                        slideNames={storeSlideNames} 
+                        startingSlideIndex={storeSlideIndex}
+                        selectedSlideIndex={storeSlideIndex}
+                        onSlideChangeIndex={setStoreSlideIndex}
+                        className={`componentSlider storeSlider`} 
+                        showButtons={width > constants?.breakpoints?.tabletSmall}
+                    >
                         <SwiperSlide>
-                            <UsersTable type={`Customer`} mode={tableDisplayModes?.[3]} onOpenUserDetails={openUserDetails} />
+                            <div className={`storeProductsPanel`}>
+                                <ProductsTable 
+                                    onAddToCart={addToCart} 
+                                    mode={tableDisplayModes?.[0]}
+                                    quickEditProduct={quickEditProduct} 
+                                    onQuickEdit={toggleQuickEditProduct} 
+                                    setFullEditProduct={setFullEditProduct}
+                                    setQuickEditProduct={setQuickEditProduct}
+                                />
+                            </div>
                         </SwiperSlide>
-                    ) : <></>}
-                </Slider>
-                <ProductFormDialog
-                    onClose={closeFullEdit}
-                    product={fullEditProduct}
-                    open={fullEditProduct != null}
-                />
-                <UserDetails
-                    user={selectedUser}
-                    open={selectedUser != null}
-                    onClose={closeSelectedDetails}
-                />
-                <OrderDetails
-                    order={selectedOrder}
-                    open={selectedOrder != null}
-                    onClose={closeSelectedDetails}
-                />
+                        <SwiperSlide>
+                            <OrdersTable mode={tableDisplayModes?.[1]} onOpenOrderDetails={openOrderDetails} />
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <AnnouncementsTable mode={tableDisplayModes?.[2]} />
+                        </SwiperSlide>
+                        {canManageStore ? (
+                            <SwiperSlide>
+                                <UsersTable type={`Customer`} mode={tableDisplayModes?.[3]} onOpenUserDetails={openUserDetails} />
+                            </SwiperSlide>
+                        ) : <></>}
+                    </Slider>
+                    <ProductFormDialog
+                        onClose={closeFullEdit}
+                        product={fullEditProduct}
+                        open={fullEditProduct != null}
+                    />
+                    <UserDetails
+                        user={selectedUser}
+                        open={selectedUser != null}
+                        onClose={closeSelectedDetails}
+                    />
+                    <OrderDetails
+                        order={selectedOrder}
+                        open={selectedOrder != null}
+                        onClose={closeSelectedDetails}
+                    />
+                </> : <>
+                    <div className={`storeProductsPanel`}>
+                        <ProductsTable 
+                            onAddToCart={addToCart} 
+                            mode={tableDisplayModes?.[0]}
+                            quickEditProduct={quickEditProduct} 
+                            onQuickEdit={toggleQuickEditProduct} 
+                            setFullEditProduct={setFullEditProduct}
+                            setQuickEditProduct={setQuickEditProduct}
+                        />
+                    </div>
+                </>}
             </> : <Loader height={250} label={`Store Loading`} />}
         </div>
     </>
