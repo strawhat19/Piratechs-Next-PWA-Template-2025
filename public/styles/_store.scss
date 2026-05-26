@@ -19,10 +19,9 @@
 
 @media (max-width: 768px) {
     .storePageTop {
-        flex-wrap: wrap;
         row-gap: 8px;
+        flex-wrap: wrap;
     }
-
     .storeDisplayOptions {
         margin-left: 0;
     }
@@ -32,6 +31,828 @@
     gap: 14px;
     display: flex;
     flex-direction: column;
+}
+
+.overflowDefault {
+    header {
+        top: 0;
+        z-index: 100;
+        position: fixed;
+    }
+    .topBarContainer {
+        z-index: 100;
+        position: fixed;
+        background: var(--navy);
+    }
+    main {
+        padding-top: 95px;
+    }
+}
+
+.storefrontComponent {
+    --storefrontRose: 255, 72, 132;
+    --storefrontGold: 255, 191, 73;
+    --storefrontMint: 87, 255, 188;
+    --storefrontInk: 9, 18, 36;
+    gap: 22px;
+    width: 100%;
+    color: white;
+    display: flex;
+    margin: 0 auto;
+    container-type: inline-size;
+    flex-direction: column;
+}
+
+.storefrontHero {
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    min-height: min(680px, 74dvh);
+    position: relative;
+    align-items: stretch;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+}
+
+.storefrontHeroImage {
+    object-fit: cover;
+    object-position: center;
+}
+
+.storefrontHeroOverlay {
+    inset: 0;
+    z-index: 1;
+    position: absolute;
+    background:
+        linear-gradient(90deg, rgba(3, 9, 22, 0.84) 0%, rgba(3, 9, 22, 0.64) 34%, rgba(3, 9, 22, 0.14) 72%),
+        linear-gradient(180deg, rgba(3, 9, 22, 0.08) 0%, rgba(3, 9, 22, 0.5) 100%);
+}
+
+.storefrontHeroInner {
+    z-index: 2;
+    min-width: 0;
+    display: flex;
+    margin: 0 auto;
+    position: relative;
+    align-items: center;
+    width: min(100%, 1180px);
+    justify-content: space-between;
+    padding: clamp(26px, 0cqw, 64px);
+}
+
+.storefrontHeroCopy {
+    gap: 18px;
+    display: grid;
+    align-content: end;
+    width: min(620px, 100%);
+}
+
+.storefrontEyebrow,
+.storefrontSectionIntro span,
+.storefrontServiceIntro span {
+    gap: 7px;
+    width: fit-content;
+    display: inline-flex;
+    line-height: 1;
+    font-size: 12px;
+    font-weight: 900;
+    align-items: center;
+    letter-spacing: 0;
+    padding: 8px 10px;
+    color: rgb(var(--storefrontGold));
+    text-transform: uppercase;
+    border-radius: var(--borderRadius);
+    background: rgba(0, 0, 0, 0.36);
+    border: 1px solid rgba(var(--storefrontGold), 0.36);
+}
+
+.storefrontHero h1 {
+    margin: 0;
+    line-height: 0.95;
+    font-size: clamp(44px, 7cqw, 92px);
+    letter-spacing: 0;
+    max-width: 10ch;
+}
+
+.storefrontHero p {
+    margin: 0;
+    max-width: 58ch;
+    font-size: clamp(16px, 1.55cqw, 20px);
+    line-height: 1.56;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.storefrontHeroActions {
+    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.storefrontHeroActions a,
+.storefrontHeroFeature button,
+.storefrontAddButton,
+.storefrontCartBar a {
+    gap: 8px;
+    border: none;
+    color: white;
+    display: inline-flex;
+    cursor: pointer;
+    min-height: 42px;
+    font-size: 13px;
+    font-weight: 900;
+    align-items: center;
+    text-decoration: none;
+    white-space: nowrap;
+    justify-content: center;
+    border-radius: var(--borderRadius);
+    transition: transform var(--transition), filter var(--transition), opacity var(--transition), background var(--transition);
+}
+
+.storefrontHeroActions a {
+    padding: 0 16px;
+}
+
+.storefrontPrimaryAction,
+.storefrontAddButton,
+.storefrontCartBar a {
+    background: linear-gradient(135deg, rgb(var(--storefrontRose)), var(--buttons));
+    box-shadow: 0 12px 24px rgba(var(--storefrontRose), 0.26);
+}
+
+.storefrontSecondaryAction {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+}
+
+.storefrontHeroActions a:hover,
+.storefrontHeroFeature button:hover,
+.storefrontAddButton:hover,
+.storefrontCartBar a:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.storefrontHeroStats {
+    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.storefrontHeroStats span {
+    gap: 6px;
+    display: inline-flex;
+    min-height: 34px;
+    font-size: 12px;
+    font-weight: 800;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: var(--borderRadius);
+    color: rgba(255, 255, 255, 0.88);
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.storefrontHeroFeature {
+    gap: 8px;
+    width: min(270px, 34%);
+    display: grid;
+    padding: 14px;
+    min-width: 205px;
+    backdrop-filter: blur(14px);
+    border-radius: var(--borderRadius);
+    background: rgba(5, 14, 29, 0.66);
+    border: 1px solid rgba(var(--storefrontGold), 0.42);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+}
+
+.storefrontHeroFeature span {
+    font-size: 11px;
+    font-weight: 900;
+    color: rgb(var(--storefrontGold));
+    text-transform: uppercase;
+}
+
+.storefrontHeroFeature strong {
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.storefrontHeroFeature button {
+    width: fit-content;
+    min-height: 36px;
+    padding: 0 12px;
+    background: rgba(var(--storefrontMint), 0.18);
+    border: 1px solid rgba(var(--storefrontMint), 0.42);
+}
+
+.storefrontCartBar {
+    top: 76px;
+    z-index: 4;
+    gap: 12px;
+    width: min(100%, 1180px);
+    display: flex;
+    margin: -44px auto 0;
+    padding: 10px;
+    position: sticky;
+    align-items: center;
+    border-radius: 8px;
+    justify-content: space-between;
+    backdrop-filter: blur(14px);
+    background: rgba(3, 10, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+.storefrontCartBar > div {
+    gap: 8px;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.storefrontCartBar span {
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.storefrontCartBar strong {
+    font-size: 14px;
+}
+
+.storefrontCartBar a {
+    min-height: 34px;
+    padding: 0 12px;
+}
+
+.storefrontCartBar:not(.active) {
+    opacity: 0.82;
+}
+
+.storefrontAnnouncements,
+.storefrontCategories,
+.storefrontSection,
+.storefrontServices {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+}
+
+.storefrontAnnouncements {
+    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.storefrontAnnouncementCard {
+    gap: 12px;
+    display: flex;
+    min-width: 0;
+    padding: 14px;
+    align-items: center;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(var(--storefrontGold), 0.13), rgba(var(--cool_neon_blue_rgb), 0.09));
+    border: 1px solid rgba(var(--storefrontGold), 0.24);
+}
+
+.storefrontAnnouncementIcon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    flex: 0 0 38px;
+    align-items: center;
+    color: rgb(var(--storefrontGold));
+    justify-content: center;
+    border-radius: var(--borderRadius);
+    background: rgba(0, 0, 0, 0.26);
+}
+
+.storefrontAnnouncementCard strong,
+.storefrontCategoryTile span,
+.storefrontProductCard h3,
+.storefrontServiceGrid strong {
+    overflow-wrap: anywhere;
+}
+
+.storefrontAnnouncementCard p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.storefrontCategories {
+    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.storefrontCategoryTile {
+    gap: 7px;
+    display: grid;
+    padding: 16px;
+    min-height: 96px;
+    align-content: end;
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.16), rgba(255, 255, 255, 0.045)),
+        rgb(var(--storefrontInk));
+    border: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.storefrontCategoryTile.category1 {
+    background:
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(var(--storefrontRose), 0.2), rgba(var(--cool_neon_blue_rgb), 0.08)),
+        rgb(var(--storefrontInk));
+}
+
+.storefrontCategoryTile.category2 {
+    background:
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(var(--storefrontGold), 0.22), rgba(var(--cool_neon_blue_rgb), 0.08)),
+        rgb(var(--storefrontInk));
+}
+
+.storefrontCategoryTile.category3 {
+    background:
+        radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(var(--storefrontMint), 0.18), rgba(var(--storefrontRose), 0.08)),
+        rgb(var(--storefrontInk));
+}
+
+.storefrontCategoryTile span {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.storefrontCategoryTile strong {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.storefrontSection,
+.storefrontServices {
+    gap: 16px;
+    display: grid;
+    padding-top: 8px;
+}
+
+.storefrontSectionIntro,
+.storefrontServiceIntro {
+    gap: 10px;
+    display: grid;
+    max-width: 760px;
+}
+
+.storefrontSectionIntro h2,
+.storefrontServiceIntro h2 {
+    margin: 0;
+    line-height: 1.1;
+    font-size: clamp(25px, 3.2cqw, 42px);
+    letter-spacing: 0;
+}
+
+.storefrontSectionIntro span,
+.storefrontServiceIntro span {
+    background: rgba(var(--cool_neon_blue_rgb), 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(var(--cool_neon_blue_rgb), 0.28);
+}
+
+.storefrontFeaturedGrid,
+.storefrontProductGrid {
+    gap: 14px;
+    display: grid;
+}
+
+.storefrontFeaturedGrid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.storefrontProductGrid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
+}
+
+.storefrontProductCard {
+    width: 100%;
+    min-width: 0;
+    color: white;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+    flex-direction: column;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+        color-mix(in srgb, var(--navy) 78%, black);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.24);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+}
+
+.storefrontProductCard.featured {
+    display: grid;
+    min-height: 318px;
+    grid-column: span 6;
+    grid-template-columns: minmax(210px, 0.92fr) minmax(0, 1.08fr);
+    border-color: rgba(var(--storefrontGold), 0.4);
+    background:
+        radial-gradient(circle at 0% 0%, rgba(var(--storefrontGold), 0.18), transparent 34%),
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.13), rgba(var(--storefrontRose), 0.08)),
+        color-mix(in srgb, var(--navy) 72%, black);
+}
+
+.storefrontProductRibbon {
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    gap: 5px;
+    height: 30px;
+    display: flex;
+    padding: 0 9px;
+    font-size: 11px;
+    font-weight: 900;
+    position: absolute;
+    align-items: center;
+    border-radius: var(--borderRadius);
+    color: rgb(var(--storefrontGold));
+    background: rgba(2, 10, 25, 0.74);
+    border: 1px solid rgba(var(--storefrontGold), 0.4);
+}
+
+.storefrontProductMedia {
+    width: 100%;
+    display: flex;
+    min-height: 190px;
+    overflow: hidden;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    background:
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.16), rgba(255, 255, 255, 0.04)),
+        var(--navy);
+}
+
+.storefrontProductMedia.featured {
+    min-height: 100%;
+}
+
+.storefrontProductImage {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    object-fit: contain;
+    object-position: center;
+}
+
+.storefrontProductMediaEmpty {
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    flex-direction: column;
+}
+
+.storefrontProductMediaEmpty strong {
+    font-size: 44px;
+    line-height: 1;
+}
+
+.storefrontProductBody {
+    gap: 11px;
+    display: grid;
+    min-width: 0;
+    padding: 14px;
+    align-content: start;
+}
+
+.storefrontProductTopline {
+    gap: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.storefrontProductTopline span {
+    padding: 5px 7px;
+    font-size: 11px;
+    font-weight: 900;
+    border-radius: var(--borderRadius);
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.storefrontProductCard h3 {
+    margin: 0;
+    line-height: 1.15;
+    font-size: 20px;
+    letter-spacing: 0;
+}
+
+.storefrontProductCard.standard h3 {
+    font-size: 17px;
+}
+
+.storefrontProductCard p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.storefrontProductMeta {
+    gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.storefrontProductPrice {
+    gap: 6px;
+    display: flex;
+    align-items: baseline;
+}
+
+.storefrontProductPrice strong {
+    font-size: 18px;
+    color: white;
+}
+
+.storefrontProductPrice span {
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: line-through;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.storefrontProductStock {
+    gap: 5px;
+    display: flex;
+    font-size: 12px;
+    font-weight: 800;
+    align-items: center;
+    color: rgb(var(--storefrontMint));
+}
+
+.storefrontProductStock.muted {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.storefrontAddButton {
+    width: 100%;
+    margin-top: auto;
+}
+
+.storefrontAddButton:disabled {
+    cursor: default;
+    opacity: 0.5;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.storefrontEmptyState {
+    gap: 9px;
+    display: grid;
+    padding: 28px;
+    text-align: center;
+    border-radius: 8px;
+    justify-items: center;
+    color: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(var(--cool_neon_blue_rgb), 0.22);
+}
+
+.storefrontEmptyState p {
+    margin: 0;
+    max-width: 58ch;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.64);
+}
+
+.storefrontLoadingGrid {
+    gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
+}
+
+.storefrontLoadingGrid span {
+    min-height: 330px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+    background-size: 220% 100%;
+    animation: storefrontShimmer 1.2s ease-in-out infinite;
+}
+
+.storefrontServices {
+    padding: 28px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    background:
+        radial-gradient(circle at 8% 18%, rgba(var(--storefrontRose), 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.1), rgba(var(--storefrontGold), 0.08)),
+        rgba(0, 0, 0, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.storefrontServiceGrid {
+    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.storefrontServiceGrid div {
+    gap: 8px;
+    display: grid;
+    min-width: 0;
+    padding: 16px;
+    min-height: 150px;
+    align-content: start;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.storefrontServiceGrid svg {
+    color: rgb(var(--storefrontGold));
+}
+
+.storefrontServiceGrid strong {
+    font-size: 16px;
+}
+
+.storefrontServiceGrid span {
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+@keyframes storefrontShimmer {
+    from {
+        background-position: 100% 0;
+    }
+    to {
+        background-position: -100% 0;
+    }
+}
+
+@container (max-width: 920px) {
+    .storefrontHero {
+        min-height: min(650px, 72dvh);
+    }
+
+    .storefrontHeroInner {
+        align-items: flex-end;
+    }
+
+    .storefrontHeroFeature {
+        display: none;
+    }
+
+    .storefrontHeroCopy {
+        width: min(640px, 100%);
+    }
+
+    .storefrontCategories,
+    .storefrontServiceGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .storefrontProductCard.featured {
+        grid-column: 1 / -1;
+    }
+}
+
+@container (max-width: 680px) {
+    .storefrontComponent {
+        gap: 16px;
+    }
+
+    .storefrontHero {
+        min-height: 520px;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .storefrontHeroOverlay {
+        background:
+            linear-gradient(180deg, rgba(3, 9, 22, 0.5) 0%, rgba(3, 9, 22, 0.88) 72%, rgba(3, 9, 22, 0.94) 100%),
+            linear-gradient(90deg, rgba(3, 9, 22, 0.54), rgba(3, 9, 22, 0.16));
+    }
+
+    .storefrontHeroImage {
+        object-position: 64% center;
+    }
+
+    .storefrontHeroInner {
+        padding: 24px 16px;
+    }
+
+    .storefrontHeroCopy {
+        gap: 14px;
+    }
+
+    .storefrontHero h1 {
+        max-width: 9ch;
+        font-size: clamp(42px, 14cqw, 64px);
+    }
+
+    .storefrontHero p {
+        font-size: 15px;
+    }
+
+    .storefrontHeroActions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .storefrontHeroActions a {
+        width: 100%;
+    }
+
+    .storefrontHeroStats span {
+        min-height: 32px;
+        font-size: 11px;
+    }
+
+    .storefrontCartBar {
+        top: 64px;
+        margin-top: -28px;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .storefrontCartBar > div {
+        justify-content: space-between;
+    }
+
+    .storefrontCartBar a {
+        width: 100%;
+    }
+
+    .storefrontCategories,
+    .storefrontAnnouncements,
+    .storefrontSection,
+    .storefrontServices {
+        width: 100%;
+    }
+
+    .storefrontFeaturedGrid,
+    .storefrontProductGrid,
+    .storefrontAnnouncements,
+    .storefrontCategories,
+    .storefrontServiceGrid {
+        gap: 10px;
+    }
+
+    .storefrontProductCard.featured {
+        display: flex;
+        min-height: auto;
+        grid-template-columns: unset;
+    }
+
+    .storefrontProductMedia.featured {
+        min-height: 220px;
+    }
+
+    .storefrontSectionIntro h2,
+    .storefrontServiceIntro h2 {
+        font-size: 25px;
+    }
+
+    .storefrontServices {
+        padding: 18px;
+    }
+}
+
+@container (max-width: 450px) {
+    .storefrontHero {
+        min-height: 560px;
+    }
+
+    .storefrontEyebrow,
+    .storefrontSectionIntro span,
+    .storefrontServiceIntro span {
+        font-size: 10px;
+        padding: 7px 8px;
+    }
+
+    .storefrontCategories,
+    .storefrontServiceGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .storefrontCategoryTile,
+    .storefrontServiceGrid div {
+        min-height: 112px;
+    }
+
+    .storefrontProductMeta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }
 
 .storeProductsPanel {

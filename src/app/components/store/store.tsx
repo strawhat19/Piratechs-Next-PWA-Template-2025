@@ -2,6 +2,7 @@
 
 import Logo from '../logo/logo';
 import Slider from '../slider/slider';
+import Storefront from './storefront';
 import Loader from '../loaders/loader';
 import { SwiperSlide } from 'swiper/react';
 import Selector from '../selector/selector';
@@ -177,10 +178,10 @@ export default function Store({ className = `storeComponent` }) {
     useCheckoutReturnToast(saveCart);
 
     return <>
-        {loaded && <>
+        {loaded && canManageStore && <>
             <div className={`storePageTop customPageTop mh40 flex alignCenter gap5 relative`}>
                 <Logo label={`Store`} style={{ marginRight: 5 }} />
-                {user != null && minRole(user?.role, Roles.Editor) ? <>
+                <>
                     <Selector
                         customColors={false}
                         value={storeSlideIndex}
@@ -194,10 +195,10 @@ export default function Store({ className = `storeComponent` }) {
                         onChange={setActiveDisplayMode}
                         className={`storeDisplayOptions`}
                     />
-                </> : <></>}
+                </>
             </div>
         </>}
-        <div className={`storeContainer w99 ${className}`}>
+        <div className={`storeContainer ${user != null && minRole(user?.role, Roles.Editor) ? `w99` : `w100`} ${className}`}>
             {loaded ? <>
                 {user != null && minRole(user?.role, Roles.Editor) ? <>
                     <Slider 
@@ -247,18 +248,7 @@ export default function Store({ className = `storeComponent` }) {
                         open={selectedOrder != null}
                         onClose={closeSelectedDetails}
                     />
-                </> : <>
-                    <div className={`storeProductsPanel`}>
-                        <ProductsTable 
-                            onAddToCart={addToCart} 
-                            mode={tableDisplayModes?.[0]}
-                            quickEditProduct={quickEditProduct} 
-                            onQuickEdit={toggleQuickEditProduct} 
-                            setFullEditProduct={setFullEditProduct}
-                            setQuickEditProduct={setQuickEditProduct}
-                        />
-                    </div>
-                </>}
+                </> : <Storefront />}
             </> : <Loader height={250} label={`Store Loading`} />}
         </div>
     </>

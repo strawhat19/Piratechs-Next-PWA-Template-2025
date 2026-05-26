@@ -135,48 +135,50 @@ export default function HorizontalScroller({
     if (scrollerItems?.length <= 0) return null;
 
     return (
-        <div className={`horizontalScrollerContainer w100 h100 ${className}`}>
-            <Slider
-                autoplay
-                autoplayDelay={0}
-                spaceBetween={24}
-                showButtons={false}
-                autoplaySpeed={18_000}
-                autoplayPauseOnHover={false}
-                autoplaySlidesPerView={`auto`}
-                className={`horizontalScrollerCarousel`}
-            >
-                {scrollerItems?.map((item: HorizontalScrollerItem, itemIndex: number) => {
-                    const detailsBubble = getDetailsBubble(item);
-                    const itemContent = (
-                        <div className={`horizontalScrollerItem ${detailsBubble ? `horizontalScrollerItemInteractive` : ``}`}>
-                            {item?.icon ? (
-                                <span className={`horizontalScrollerIcon`}>
-                                    {item?.icon}
+        !announcementsLoading && (
+            <div className={`horizontalScrollerContainer w100 h100 ${className}`}>
+                <Slider
+                    autoplay
+                    autoplayDelay={0}
+                    spaceBetween={24}
+                    showButtons={false}
+                    autoplaySpeed={18_000}
+                    autoplayPauseOnHover={false}
+                    autoplaySlidesPerView={`auto`}
+                    className={`horizontalScrollerCarousel`}
+                >
+                    {scrollerItems?.map((item: HorizontalScrollerItem, itemIndex: number) => {
+                        const detailsBubble = getDetailsBubble(item);
+                        const itemContent = (
+                            <div className={`horizontalScrollerItem ${detailsBubble ? `horizontalScrollerItemInteractive` : ``}`}>
+                                {item?.icon ? (
+                                    <span className={`horizontalScrollerIcon`}>
+                                        {item?.icon}
+                                    </span>
+                                ) : <></>}
+                                <span className={`horizontalScrollerText`}>
+                                    {item?.value}
                                 </span>
-                            ) : <></>}
-                            <span className={`horizontalScrollerText`}>
-                                {item?.value}
-                            </span>
-                        </div>
-                    );
-                    return (
-                        <SwiperSlide key={`${item?.value}-${itemIndex}`} className={`horizontalScrollerSlide`}>
-                            {detailsBubble ? (
-                                <Tooltip
-                                    arrow
-                                    placement={`bottom`}
-                                    title={detailsBubble}
-                                    enterDelay={200}
-                                    leaveDelay={75}
-                                >
-                                    {itemContent}
-                                </Tooltip>
-                            ) : itemContent}
-                        </SwiperSlide>
-                    );
-                })}
-            </Slider>
-        </div>
+                            </div>
+                        );
+                        return (
+                            <SwiperSlide key={`${item?.value}-${itemIndex}`} className={`horizontalScrollerSlide`}>
+                                {detailsBubble ? (
+                                    <Tooltip
+                                        arrow
+                                        placement={`bottom`}
+                                        title={detailsBubble}
+                                        enterDelay={200}
+                                        leaveDelay={75}
+                                    >
+                                        {itemContent}
+                                    </Tooltip>
+                                ) : itemContent}
+                            </SwiperSlide>
+                        );
+                    })}
+                </Slider>
+            </div>
+        )
     );
 }

@@ -32,13 +32,13 @@
 }
 
 html, body {
-  height: 100%;
   max-width: 100vw;
   overflow-x: hidden;
   // main {
   //   padding: 570px 0 500px;
   // }
   &.overflowHidden {
+    height: 100%;
     overflow-y: hidden;
     // main {
     //   overflow-y: auto;

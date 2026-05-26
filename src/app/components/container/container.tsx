@@ -29,6 +29,7 @@ export default function Container({
     topBarStyle = {},
     showPageLogo = true, 
     showPageFooter = true, 
+    oveflowHidden = devEnv,
     mainClassName = `mainClassName`,
     className = `containerComponent`,
     topBarComponent = <HorizontalScroller />, 
@@ -39,7 +40,7 @@ export default function Container({
     const pathname = usePathname();
 
     let { user, loaded, isPWA, width } = useContext<any>(StateGlobals);
-    const bodyClassName = `${className} ${getPageName(pathname)} ${user == null ? `noUser` : `hasUser`} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${devEnv ? `overflowHidden` : ``} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`;
+    const bodyClassName = `${className} ${getPageName(pathname)} ${user == null ? `noUser` : `hasUser`} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${oveflowHidden ? `overflowHidden` : `overflowDefault`} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`;
 
     return (
         <>
