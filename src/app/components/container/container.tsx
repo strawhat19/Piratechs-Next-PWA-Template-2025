@@ -15,6 +15,7 @@ import { ToastContainer } from 'react-toastify';
 import { constants, devEnv } from '@/shared/scripts/constants';
 import { getPageName, StateGlobals } from '@/shared/global-context';
 import HorizontalScroller from '../horizontal-scroller/horizontal-scroller';
+import Loader from '../loaders/loader';
 
 const BodyClassManager = ({ className }: { className: string }) => {
     useEffect(() => {
@@ -22,6 +23,16 @@ const BodyClassManager = ({ className }: { className: string }) => {
     }, [className]);
     return null;
 }
+
+// const announcementsBarComponent = (
+//     <div className={`announcementsBarComponent`}>
+//         {/* {(loading || stocks?.length == 0 || !stocks || !Array.isArray(stocks)) ? (
+//                         <Loader height={35} label={`Stocks Loading`} className={`topBarLoader`} />
+//                     ) : ( */}
+//     </div>
+// )
+
+// const defaultTopBarComponent = ;
 
 export default function Container({ 
     children, 
@@ -39,7 +50,8 @@ export default function Container({
 }: any) {
     const pathname = usePathname();
 
-    let { user, loaded, isPWA, width } = useContext<any>(StateGlobals);
+    let { user, loaded, isPWA, width, announcements, announcementsLoading } = useContext<any>(StateGlobals);
+
     const bodyClassName = `${className} ${getPageName(pathname)} ${user == null ? `noUser` : `hasUser`} pageContainer ${isPWA ? `isPWA` : `isStandardPlatform`} ${oveflowHidden ? `overflowHidden` : `overflowDefault`} ${(!loaded || width <= constants?.breakpoints?.mobile) ? `mobile` : ``}`;
 
     return (
@@ -47,7 +59,9 @@ export default function Container({
             <BodyClassManager className={bodyClassName} />
             {topBarComponent != null && (
                 <TopBar style={topBarStyle}>
-                    {topBarComponent}
+                    {(announcements && announcements?.length > 0 && !announcementsLoading) ? topBarComponent : (
+                        <Loader height={35} label={`Announcement(s) Loading`} className={`topBarLoader`} />
+                    )}
                 </TopBar>
             )}
             <Header />

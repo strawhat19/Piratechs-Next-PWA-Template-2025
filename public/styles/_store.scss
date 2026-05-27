@@ -49,6 +49,12 @@
     }
 }
 
+.topBarContainer {
+    &:has(.announcementsScroller) {
+        padding-top: 0;
+    }
+}
+
 .storefrontComponent {
     --storefrontRose: 255, 72, 132;
     --storefrontGold: 255, 191, 73;

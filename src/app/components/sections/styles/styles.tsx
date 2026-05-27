@@ -8,8 +8,9 @@ import { SwiperSlide } from 'swiper/react';
 import { constants } from '@/shared/scripts/constants';
 import { StateGlobals } from '@/shared/global-context';
 import AuthForm from '../../authentication/forms/auth-form/auth-form';
+import ImagesCarousel from '../../slider/images-carousel/images-carousel';
 
-export default function Styles({ showStyles = true, showAuth = false, type }: any) {
+export default function Styles({ showStyles = true, showAuth = false, showGallery = true, type }: any) {
     let { user, width, loaded, menuExpanded } = useContext<any>(StateGlobals);
 
     const fonts = () => {
@@ -80,6 +81,23 @@ export default function Styles({ showStyles = true, showAuth = false, type }: an
 
     return <>
         {showAuth ? (user != null ? <></> : <AuthForm type={type ? `${type}s` : undefined} extensionText={type ? `To View ${type}s` : undefined} />) : <></>}
+        {showGallery ? (
+            <section className={`galleryWidget flex column gap15 ${width > constants?.breakpoints?.mobile ? `w85` : `w90`} mxauto`}>
+                {loaded ? (
+                    // <div className={`galleryWidgetCarouselContainer`} style={{ maxHeight: 350 }}>
+                        <ImagesCarousel 
+                            autoplay
+                            height={250}
+                            autoplaySpeed={333_333}
+                            className={`galleryWidgetCarousel galleryCarousel`} 
+                            imageClassName={`galleryWidgetCarouselImage galleryCarouselImage`} 
+                        />
+                    // {/* </div> */}
+                ) : (
+                    <Loader height={150} label={`Gallery Loading`} style={{ [`--animation-delay`]: `${4 * 0.15}s` }} />
+                )}
+            </section>
+        ) : <></>}
         {showStyles ? (
             <section className={`typography flex column gap15 ${width > constants?.breakpoints?.mobile ? `w75` : `w90`} mxauto`}>
                 {loaded ? (

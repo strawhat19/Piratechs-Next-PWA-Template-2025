@@ -13,7 +13,7 @@ import { AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { statusColors } from '../store/product-form/product-select-field';
 import { capWords, dev, sortByCreatedNewest } from '@/shared/scripts/constants';
 import { announcementIcons } from '../store/announcement-form/announcement-select-field';
-import { Menu, Close, Campaign, BarChart, Settings, PermMedia, Checklist, Notifications, ShoppingCart, Person, Logout, Storefront, DeleteSweep } from '@mui/icons-material';
+import { Menu, Close, Campaign, BarChart, Settings, Checklist, Notifications, ShoppingCart, Person, Logout, Storefront, DeleteSweep } from '@mui/icons-material';
 
 const size = 20;
 const devEnv = dev();
@@ -29,7 +29,7 @@ export const routes = {
 //   about: { icons: { fontAwesome: `fa-info-circle`, mui: <Info style={{ fontSize: size }} className={`linkHover`} /> } },
     store: { icons: { fontAwesome: `fa-store`, mui: <Storefront style={{ fontSize: size - 2 }} className={`linkHover`} /> } },
     board: { icons: { fontAwesome: `fa-list-check`, mui: <Checklist style={{ fontSize: size }} className={`linkHover`} /> } },
-    gallery: { icons: { fontAwesome: `fa-images`, mui: <PermMedia style={{ fontSize: size - 2 }} className={`linkHover`} /> } },
+    // gallery: { icons: { fontAwesome: `fa-images`, mui: <PermMedia style={{ fontSize: size - 2 }} className={`linkHover`} /> } },
     stocks: { icons: { fontAwesome: `fa-bars`, mui: <BarChart style={{ fontSize: size }} className={`linkHover`} /> } },
 }
 
@@ -159,6 +159,51 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                             />
                         </li>
                     )}
+                    <li className={`menuButton notificationMenuButton`}>
+                        <MenuTrigger
+                            colors={true}
+                            topOffset={1}
+                            id={`notificationMenuButton`}
+                            className={`notificationMenu`}
+                            menuItems={notificationMenuItems}
+                            targetID={`notificationMenuButton`}
+                            renderTrigger={({ id, onClick }) => (
+                                <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Notifications`} className={`notificationButton iconImg`}>
+                                    <span className={`navIconWrap`}>
+                                        <Notifications className={`settingsIcon`} style={{ fontSize: 20 }} />
+                                        {notificationCount > 0 ? (
+                                            <span className={`navBadge notificationNavBadge`}>
+                                                {notificationCount}
+                                            </span>
+                                        ) : null}
+                                    </span>
+                                </Icon_Button>
+                            )}
+                        />
+                    </li>
+                    <li className={`menuButton cartMenuButton`}>
+                        <MenuTrigger
+                            colors={true}
+                            topOffset={1}
+                            onHover={devEnv}
+                            id={`cartMenuButton`}
+                            className={`cartMenu`}
+                            menuItems={cartMenuItems}
+                            targetID={`cartMenuButton`}
+                            renderTrigger={({ id, onClick }) => (
+                                <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Cart`} className={`cartButton iconImg`}>
+                                    <span className={`navIconWrap`}>
+                                        <ShoppingCart className={`settingsIcon`} style={{ fontSize: 17 }} />
+                                        {cartCount > 0 ? (
+                                            <span className={`navBadge cartNavBadge`}>
+                                                {cartCount}
+                                            </span>
+                                        ) : null}
+                                    </span>
+                                </Icon_Button>
+                            )}
+                        />
+                    </li>
                     <li className={`menuToggle showOnMobile`} onClick={() => setMenuExpanded(!menuExpanded)}>
                         {menuExpanded ? (
                             <Icon_Button disabled={!loaded} title={``}>
@@ -171,51 +216,6 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                         )}
                     </li>
                 </>}
-                <li className={`menuButton notificationMenuButton`}>
-                    <MenuTrigger
-                        colors={true}
-                        topOffset={1}
-                        id={`notificationMenuButton`}
-                        className={`notificationMenu`}
-                        menuItems={notificationMenuItems}
-                        targetID={`notificationMenuButton`}
-                        renderTrigger={({ id, onClick }) => (
-                            <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Notifications`} className={`notificationButton iconImg`}>
-                                <span className={`navIconWrap`}>
-                                    <Notifications className={`settingsIcon`} style={{ fontSize: 20 }} />
-                                    {notificationCount > 0 ? (
-                                        <span className={`navBadge notificationNavBadge`}>
-                                            {notificationCount}
-                                        </span>
-                                    ) : null}
-                                </span>
-                            </Icon_Button>
-                        )}
-                    />
-                </li>
-                <li className={`menuButton cartMenuButton`}>
-                    <MenuTrigger
-                        colors={true}
-                        topOffset={1}
-                        onHover={devEnv}
-                        id={`cartMenuButton`}
-                        className={`cartMenu`}
-                        menuItems={cartMenuItems}
-                        targetID={`cartMenuButton`}
-                        renderTrigger={({ id, onClick }) => (
-                            <Icon_Button id={id} onClick={onClick} disabled={!loaded} title={`Cart`} className={`cartButton iconImg`}>
-                                <span className={`navIconWrap`}>
-                                    <ShoppingCart className={`settingsIcon`} style={{ fontSize: 17 }} />
-                                    {cartCount > 0 ? (
-                                        <span className={`navBadge cartNavBadge`}>
-                                            {cartCount}
-                                        </span>
-                                    ) : null}
-                                </span>
-                            </Icon_Button>
-                        )}
-                    />
-                </li>
                 {Object.entries(routes).map(([path, config]: any) => (
                     <li key={path} onClick={() => setMenuExpanded(false)} className={`navigationLink hideOnMobile ${pathname?.includes(path) ? `activeRoute` : ``}`}>
                         {renderRouteLink(path, config)}
@@ -228,12 +228,12 @@ export default function Nav({ iconSize = size, className = `navComponent` }) {
                 )} */}
             </ul>
             <CartDrawer
-                open={cartDrawerOpen}
                 cart={cart}
                 total={cartTotal}
-                onClose={() => setCartDrawerOpen(false)}
+                open={cartDrawerOpen}
                 onClearCart={clearCart}
                 onPaymentSuccess={() => saveCart([])}
+                onClose={() => setCartDrawerOpen(false)}
                 onIncreaseQuantity={increaseCartItemQuantity}
                 onDecreaseQuantity={decreaseCartItemQuantity}
             />

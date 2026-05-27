@@ -5,8 +5,8 @@ import './images-carousel.scss';
 import Slider from '../slider';
 import Img from '../../image/image';
 import { SwiperSlide } from 'swiper/react';
-import { useContext, useEffect, useState } from 'react';
 import { StateGlobals } from '@/shared/global-context';
+import { useContext, useEffect, useState } from 'react';
 import { constants, shuffleArray } from '@/shared/scripts/constants';
 
 export const imagesObject = {
@@ -51,13 +51,27 @@ export const defaultImagesObject = { ...imagesObject.vertical, ...imagesObject.h
 export const defaultImages = Object.values(defaultImagesObject);
 export const shuffledDefaultImages = shuffleArray(defaultImages);
 
+type ImagesCarouselProps = {
+    height?: number;
+    autoplay?: boolean;
+    className?: string;
+    imageURLs?: string[];
+    showButtons?: boolean;
+    autoplaySpeed?: number;
+    imageClassName?: string;
+    heightContainer?: string;
+};
+
 export default function ImagesCarousel({ 
+    autoplay = false,
     height = undefined,
+    showButtons = false,
     heightContainer = ``,
+    autoplaySpeed = 100_000,
     imageURLs = shuffledDefaultImages, 
     className = `imageCarouselComponent`,
     imageClassName = `imageCarouselImage`,
-}: any) {
+}: ImagesCarouselProps) {
     let { width, height: windowHeight, smallScreen } = useContext<any>(StateGlobals);
 
     let [imagesURLs, ] = useState(imageURLs);
@@ -98,9 +112,16 @@ export default function ImagesCarousel({
     };
 
     return (
-        <Slider className={`imagesCarousel ${className}`} slidesPerView={getSlidesPerView()} spaceBetween={15} showButtons={false}>
+        <Slider
+            spaceBetween={15}
+            autoplay={autoplay}
+            showButtons={showButtons}
+            marqueeSpeed={autoplaySpeed}
+            slidesPerView={getSlidesPerView()}
+            className={`imagesCarousel ${className}`}
+        >
             {imagesURLs?.map((imgURL: string, imgIndex: number) => (
-                <SwiperSlide key={imgIndex} className={`imagesCarouselSlide`}>
+                <SwiperSlide key={imgIndex} className={`imagesCarouselSlide`} style={{ ...(autoplay ? { maxWidth: `fit-content` } : {}), }}>
                     <Img 
                         src={imgURL} 
                         alt={`Image`} 

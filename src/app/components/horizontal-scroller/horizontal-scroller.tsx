@@ -8,7 +8,6 @@ import { SwiperSlide } from 'swiper/react';
 import React, { useContext, useMemo } from 'react';
 import { StateGlobals } from '@/shared/global-context';
 import { richTextToPlainText } from '../rich-text/rich-text';
-import { sortByCreatedNewest } from '@/shared/scripts/constants';
 import { AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { announcementIcons } from '../store/announcement-form/announcement-select-field';
 import {
@@ -136,7 +135,7 @@ export default function HorizontalScroller({
 
     return (
         !announcementsLoading && (
-            <div className={`horizontalScrollerContainer w100 h100 ${className}`}>
+            <div className={`horizontalScrollerContainer w100 h100 ${className} announcementsScroller`}>
                 <Slider
                     autoplay
                     autoplayDelay={0}

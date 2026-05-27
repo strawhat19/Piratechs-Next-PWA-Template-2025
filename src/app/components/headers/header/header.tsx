@@ -20,9 +20,10 @@ export default function Header() {
             style={{ 
                 paddingBottom: menuExpanded ? 0 : undefined, 
                 height: menuExpanded ? defaultHeight + (
-                    Object.values(routes).length * (38 + (Object.values(routes)?.length >= 3 
-                    ? (0.44 * Object.values(routes)?.length) 
-                    : 0))
+                    Object.values(routes).length * 36
+                    // Object.values(routes).length * (38 + (Object.values(routes)?.length >= 3 
+                    // ? (0.44 * Object.values(routes)?.length) 
+                    // : 0))
                 ) : defaultHeight, 
             }} 
         >
