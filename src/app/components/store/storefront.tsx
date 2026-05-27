@@ -27,6 +27,8 @@ import {
     Star,
     Storefront as StorefrontIcon,
 } from '@mui/icons-material';
+import { announcementIcons } from './announcement-form/announcement-select-field';
+import IconText from '../icon-text/icon-text';
 
 const heroImageURL = `/assets/store/storefront-hero.png`;
 const activeProductStatus = ProductStatus.Active.toLowerCase();
@@ -76,7 +78,6 @@ const ProductMedia = ({ product, featured = false }: { product: Product; feature
     const imageURL = getProductImageURL(product);
     const [imageError, setImageError] = useState(false);
     const showFallback = !imageURL || imageError;
-
     if (showFallback) {
         return (
             <div className={`storefrontProductMedia storefrontProductMediaEmpty ${featured ? `featured` : ``}`.trim()}>
@@ -85,14 +86,13 @@ const ProductMedia = ({ product, featured = false }: { product: Product; feature
             </div>
         );
     }
-
     return (
         <div className={`storefrontProductMedia ${featured ? `featured` : ``}`.trim()}>
             <Img
-                width={featured ? 680 : 460}
-                height={featured ? 520 : 420}
                 src={imageURL}
                 useLazyLoad={true}
+                width={featured ? 680 : 460}
+                height={featured ? 520 : 420}
                 alt={product?.name || `Art product`}
                 className={`storefrontProductImage`}
                 onImageError={() => setImageError(true)}
@@ -110,9 +110,9 @@ type StorefrontProductCardProps = {
 
 const StorefrontProductCard = ({
     product,
+    onAddToCart,
     featured = false,
     cartQuantity = 0,
-    onAddToCart,
 }: StorefrontProductCardProps) => {
     const description = getProductDescription(product);
     const stock = Number(product?.stock ?? product?.inventoryQuantity ?? product?.totalInventory ?? 0);
@@ -131,23 +131,40 @@ const StorefrontProductCard = ({
             <ProductMedia product={product} featured={featured} />
             <div className={`storefrontProductBody`}>
                 <div className={`storefrontProductTopline`}>
-                    <span>{product?.category || `Art`}</span>
-                    {product?.productType ? <span>{product.productType}</span> : <></>}
+                    <span># {product?.category || `Art`}</span>
+                    {product?.productType ? <span># {product.productType}</span> : <></>}
                 </div>
                 <h3>{product?.name || `Untitled Piece`}</h3>
                 {description ? (
-                    <p className={`lineClamp3`}>{description}</p>
+                    <p className={`lineClamp3`}>
+                        {description}
+                    </p>
                 ) : (
-                    <p className={`lineClamp3`}>Small-batch art goods made for collecting, gifting, and brightening daily objects.</p>
+                    <p className={`lineClamp3`}>
+                        Enter Product Description here for {`"${product?.name}"`}, this is just a placeholder.
+                    </p>
                 )}
                 <div className={`storefrontProductMeta`}>
                     <div className={`storefrontProductPrice`}>
-                        <strong>{formatStorePrice(price)}</strong>
-                        {compareAtPrice > price ? <span>{formatStorePrice(compareAtPrice)}</span> : <></>}
+                        <IconText 
+                            dollarSign 
+                            format={false} 
+                            number={price / 100} 
+                            className={`stockText`} 
+                        />
+                        {compareAtPrice > price ? (
+                            <IconText 
+                                dollarSign 
+                                format={false} 
+                                className={`stockText`} 
+                                number={compareAtPrice / 100} 
+                            />
+                        ) : <></>}
                     </div>
-                    <div className={`storefrontProductStock ${canAddToCart ? `` : `muted`}`.trim()}>
+                    <div className={`storefrontProductStock ${canAddToCart ? (stock > 25 ? `colorWarning` : ``) : `muted`}`.trim()}>
                         <Inventory2 fontSize={`small`} />
-                        {canAddToCart ? `${stock} available` : `Sold out`}
+                        {canAddToCart ? (stock > 25 ? `Almost Out` : `In Stock`) : `Sold Out`}
+                        {/* {canAddToCart ? `${stock} Available` : `Sold Out`} */}
                     </div>
                 </div>
                 <button
@@ -171,11 +188,13 @@ const StorefrontAnnouncement = ({ announcement }: { announcement: Announcement }
     return (
         <article className={`storefrontAnnouncementCard`}>
             <div className={`storefrontAnnouncementIcon`}>
-                <Campaign fontSize={`small`} />
+                {announcementIcons?.[String(announcement?.icon)]}
             </div>
             <div>
                 <strong>{announcement?.name || announcement?.title || `Studio Update`}</strong>
-                <p className={`lineClamp2`}>{description || details || `New art and shop notes are live.`}</p>
+                <p className={`lineClamp4`}>
+                    {description || details || `New art and shop notes are live.`}
+                </p>
             </div>
         </article>
     );
@@ -244,9 +263,9 @@ export default function Storefront({
                     <div className={`storefrontHeroCopy`}>
                         <span className={`storefrontEyebrow`}>
                             <AutoAwesome fontSize={`small`} />
-                            Small-Batch Art Goods
+                            Custom Art & Graphics
                         </span>
-                        <h1>Original Art Store</h1>
+                        <h1>Pocket Fox Studios</h1>
                         <p>
                             Stickers, custom art, paintings, prints, and crisp graphics made to collect, gift, and keep close.
                         </p>
@@ -268,112 +287,121 @@ export default function Storefront({
                     </div>
                     {heroProduct ? (
                         <div className={`storefrontHeroFeature`} aria-label={`Featured product`}>
-                            <span>Featured Now</span>
+                            {featuredProducts?.length > 0 ? <span>Featured Now</span> : <></>}
+                            <ProductMedia product={heroProduct} featured={heroProduct?.featured} />
                             <strong>{heroProduct?.name}</strong>
                             <button type={`button`} onClick={() => addProductToCart(heroProduct)}>
                                 <AddShoppingCart fontSize={`small`} />
                                 {formatStorePrice(Number(heroProduct?.price || 0))}
                             </button>
+                            {/* <StorefrontProductCard
+                                product={heroProduct}
+                                key={String(heroProduct?.id)}
+                                onAddToCart={addProductToCart}
+                                cartQuantity={cart.find(item => String(item?.id) == String(heroProduct?.id))?.quantity || 0}
+                            /> */}
                         </div>
                     ) : <></>}
                 </div>
             </section>
 
-            <div className={`storefrontCartBar ${cartCount > 0 ? `active` : ``}`.trim()}>
-                <div>
-                    <ShoppingCartCheckout fontSize={`small`} />
-                    <span>{cartCount} item{cartCount == 1 ? `` : `s`} in cart</span>
-                    <strong>{cartTotal}</strong>
+            <div className={`storePageContent`}>
+                <div className={`storefrontCartBar ${cartCount > 0 ? `active` : ``}`.trim()}>
+                    <div>
+                        <ShoppingCartCheckout fontSize={`small`} />
+                        <span>{cartCount} item{cartCount == 1 ? `` : `s`} in cart</span>
+                        <strong>{cartTotal}</strong>
+                    </div>
+                    <Link href={`/cart`}>
+                        Checkout
+                        <ArrowForward fontSize={`small`} />
+                    </Link>
                 </div>
-                <Link href={`/cart`}>
-                    Checkout
-                    <ArrowForward fontSize={`small`} />
-                </Link>
-            </div>
 
-            {activeAnnouncements.length > 0 ? (
-                <section className={`storefrontAnnouncements`} aria-label={`Store announcements`}>
-                    {activeAnnouncements.map(announcement => (
-                        <StorefrontAnnouncement key={String(announcement?.id || announcement?.number || announcement?.name)} announcement={announcement} />
+                {activeAnnouncements.length > 0 ? (
+                    <section className={`storefrontAnnouncements`} aria-label={`Store announcements`}>
+                        {activeAnnouncements.map(announcement => (
+                            <StorefrontAnnouncement key={String(announcement?.id || announcement?.number || announcement?.name)} announcement={announcement} />
+                        ))}
+                    </section>
+                ) : <></>}
+
+                <section className={`storefrontCategories`} aria-label={`Art collections`}>
+                    {(categories.length > 0 ? categories : [
+                        { name: `Stickers`, count: 0 },
+                        { name: `Custom Art`, count: 0 },
+                        { name: `Paintings`, count: 0 },
+                        { name: `Graphics`, count: 0 },
+                    ]).map((category, index) => (
+                        <div className={`storefrontCategoryTile category${index + 1}`} key={category.name}>
+                            <span>{category.name}</span>
+                            <strong>{category.count > 0 ? `${category.count} item${category.count == 1 ? `` : `s`}` : `Open`}</strong>
+                        </div>
                     ))}
                 </section>
-            ) : <></>}
 
-            <section className={`storefrontCategories`} aria-label={`Art collections`}>
-                {(categories.length > 0 ? categories : [
-                    { name: `Stickers`, count: 0 },
-                    { name: `Custom Art`, count: 0 },
-                    { name: `Paintings`, count: 0 },
-                    { name: `Graphics`, count: 0 },
-                ]).map((category, index) => (
-                    <div className={`storefrontCategoryTile category${index + 1}`} key={category.name}>
-                        <span>{category.name}</span>
-                        <strong>{category.count > 0 ? `${category.count} item${category.count == 1 ? `` : `s`}` : `Open`}</strong>
-                    </div>
-                ))}
-            </section>
+                {featuredProducts.length > 0 ? (
+                    <section id={`storefront-featured`} className={`storefrontSection storefrontFeaturedProducts`}>
+                        <div className={`storefrontSectionIntro`}>
+                            <span><Star fontSize={`small`} /> Featured Drops</span>
+                            <h2>Collector-ready pieces with extra spotlight.</h2>
+                        </div>
+                        <div className={`storefrontFeaturedGrid`}>
+                            {featuredProducts.map(product => (
+                                <StorefrontProductCard
+                                    featured
+                                    product={product}
+                                    key={String(product?.id)}
+                                    onAddToCart={addProductToCart}
+                                    cartQuantity={cart.find(item => String(item?.id) == String(product?.id))?.quantity || 0}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                ) : <></>}
 
-            {featuredProducts.length > 0 ? (
-                <section id={`storefront-featured`} className={`storefrontSection storefrontFeaturedProducts`}>
+                <section id={`storefront-products`} className={`storefrontSection storefrontProductsSection`}>
                     <div className={`storefrontSectionIntro`}>
-                        <span><Star fontSize={`small`} /> Featured Drops</span>
-                        <h2>Collector-ready pieces with extra spotlight.</h2>
+                        {/* <span><Collections fontSize={`small`} /> Shop The Collection</span> */}
+                        <h2>{standardProducts.length > 0 ? `Fresh stickers, prints, graphics, and originals.` : `The next collection is on the table.`}</h2>
                     </div>
-                    <div className={`storefrontFeaturedGrid`}>
-                        {featuredProducts.map(product => (
-                            <StorefrontProductCard
-                                featured
-                                product={product}
-                                key={String(product?.id)}
-                                onAddToCart={addProductToCart}
-                                cartQuantity={cart.find(item => String(item?.id) == String(product?.id))?.quantity || 0}
-                            />
-                        ))}
+                    {isLoading ? (
+                        <div className={`storefrontLoadingGrid`} aria-label={`Loading products`}>
+                            {Array.from({ length: 4 }).map((_, index) => <span key={index} />)}
+                        </div>
+                    ) : standardProducts.length > 0 ? (
+                        <div className={`storefrontProductGrid`}>
+                            {standardProducts.map(product => (
+                                <StorefrontProductCard
+                                    product={product}
+                                    key={String(product?.id)}
+                                    onAddToCart={addProductToCart}
+                                    cartQuantity={cart.find(item => String(item?.id) == String(product?.id))?.quantity || 0}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={`storefrontEmptyState`}>
+                            <Brush fontSize={`small`} />
+                            <strong>New work is being prepared.</strong>
+                            <p>Check back for active products, limited sticker runs, custom art slots, paintings, and graphics.</p>
+                        </div>
+                    )}
+                </section>
+
+                <section className={`storefrontServices`} aria-label={`Custom art services`}>
+                    <div className={`storefrontServiceIntro`}>
+                        <span><Brush fontSize={`small`} /> Services</span>
+                        <h2>Custom work for gifts, brands, walls, and everyday objects.</h2>
+                    </div>
+                    <div className={`storefrontServiceGrid`}>
+                        <div><AutoAwesome fontSize={`small`} /><strong>Sticker Sets</strong><span>Die-cut, character, botanical, and themed packs.</span></div>
+                        <div><Palette fontSize={`small`} /><strong>Paintings</strong><span>Original canvases, mini works, and display-ready pieces.</span></div>
+                        <div><DesignServices fontSize={`small`} /><strong>Custom Art</strong><span>Commissions, gifts, avatars, and personal concepts.</span></div>
+                        <div><Collections fontSize={`small`} /><strong>Graphics</strong><span>Prints, digital art, icons, covers, and visual assets.</span></div>
                     </div>
                 </section>
-            ) : <></>}
-
-            <section id={`storefront-products`} className={`storefrontSection storefrontProductsSection`}>
-                <div className={`storefrontSectionIntro`}>
-                    <span><Collections fontSize={`small`} /> Shop The Collection</span>
-                    <h2>{standardProducts.length > 0 ? `Fresh stickers, prints, graphics, and originals.` : `The next collection is on the table.`}</h2>
-                </div>
-                {isLoading ? (
-                    <div className={`storefrontLoadingGrid`} aria-label={`Loading products`}>
-                        {Array.from({ length: 4 }).map((_, index) => <span key={index} />)}
-                    </div>
-                ) : standardProducts.length > 0 ? (
-                    <div className={`storefrontProductGrid`}>
-                        {standardProducts.map(product => (
-                            <StorefrontProductCard
-                                product={product}
-                                key={String(product?.id)}
-                                onAddToCart={addProductToCart}
-                                cartQuantity={cart.find(item => String(item?.id) == String(product?.id))?.quantity || 0}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className={`storefrontEmptyState`}>
-                        <Brush fontSize={`small`} />
-                        <strong>New work is being prepared.</strong>
-                        <p>Check back for active products, limited sticker runs, custom art slots, paintings, and graphics.</p>
-                    </div>
-                )}
-            </section>
-
-            <section className={`storefrontServices`} aria-label={`Custom art services`}>
-                <div className={`storefrontServiceIntro`}>
-                    <span><Brush fontSize={`small`} /> Studio Services</span>
-                    <h2>Custom work for gifts, brands, walls, and everyday objects.</h2>
-                </div>
-                <div className={`storefrontServiceGrid`}>
-                    <div><AutoAwesome fontSize={`small`} /><strong>Sticker Sets</strong><span>Die-cut, character, botanical, and themed packs.</span></div>
-                    <div><Palette fontSize={`small`} /><strong>Paintings</strong><span>Original canvases, mini works, and display-ready pieces.</span></div>
-                    <div><DesignServices fontSize={`small`} /><strong>Custom Art</strong><span>Commissions, gifts, avatars, and personal concepts.</span></div>
-                    <div><Collections fontSize={`small`} /><strong>Graphics</strong><span>Prints, digital art, icons, covers, and visual assets.</span></div>
-                </div>
-            </section>
+            </div>
         </section>
     );
 }

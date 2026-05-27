@@ -120,11 +120,11 @@ const AnnouncementIconCell = ({ row, showMenuLabels = true }: any) => {
             label={`Icon`}
             showText={false}
             showLabel={false}
-            showMenuLabels={showMenuLabels}
             value={currentIcon}
             onChange={updateIcon}
             icons={announcementIcons}
             colors={announcementIconColors}
+            showMenuLabels={showMenuLabels}
             options={announcementIconOptions}
             className={`announcementIconCellField`}
         />

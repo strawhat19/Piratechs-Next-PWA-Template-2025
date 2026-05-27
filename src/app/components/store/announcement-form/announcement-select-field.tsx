@@ -153,16 +153,20 @@ export default function AnnouncementSelectField({
 
     return (
         <div className={`productSelectField announcementSelectField ${className}`.trim()}>
-            {showLabel ? <span className={`productFieldLabelText`}>{label}</span> : <></>}
+            {showLabel ? (
+                <span className={`productFieldLabelText`}>
+                    {label}
+                </span>
+            ) : <></>}
             <MenuTrigger
-                search={search}
-                id={`${label.toLowerCase().replace(/\s/g, '-')}-menu-trigger`}
                 colors={true}
-                showLabels={showMenuLabels}
+                search={search}
                 topOffset={0.5}
                 menuItems={menuItems}
-                className={`productSelectDropdown announcementSelectDropdown`}
+                showLabels={showMenuLabels}
                 targetID={`${label.toLowerCase().replace(/\s/g, '-')}-menu`}
+                id={`${label.toLowerCase().replace(/\s/g, '-')}-menu-trigger`}
+                className={`productSelectDropdown announcementSelectDropdown`}
                 renderTrigger={({ id, onClick, onFocus, onType, searchValue }) => (
                     <Button
                         id={id}
@@ -173,17 +177,17 @@ export default function AnnouncementSelectField({
                         data-row-click-ignore={`true`}
                         endIcon={<KeyboardArrowDown />}
                         onMouseDown={(event) => event.stopPropagation()}
-                        className={`productSelectButton tableDropDown announcementSelectButton ${showText ? `` : `iconOnly`}`.trim()}
                         style={currentColor ? { color: currentColor } : undefined}
+                        className={`productSelectButton tableDropDown announcementSelectButton ${showText ? `` : `iconOnly`}`.trim()}
                     >
                         {search ? (
                             <input
-                                value={searchValue || value}
-                                onClick={(event) => event.stopPropagation()}
                                 onFocus={onFocus}
                                 onChange={onType}
-                                className={`dropDownBtnLabel`}
                                 placeholder={value}
+                                value={searchValue || value}
+                                className={`dropDownBtnLabel`}
+                                onClick={(event) => event.stopPropagation()}
                                 style={{ border: `none`, background: `transparent`, color: `inherit`, width: `100%` }}
                             />
                         ) : (

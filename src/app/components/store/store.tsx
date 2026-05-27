@@ -198,7 +198,9 @@ export default function Store({ className = `storeComponent` }) {
                 </>
             </div>
         </>}
-        <div className={`storeContainer ${user != null && minRole(user?.role, Roles.Editor) ? `w99` : `w100`} ${className}`}>
+        <div className={`storeContainer ${className} ${(!loaded && width < constants?.breakpoints?.notebook) ? `w85` : (
+            loaded ? (user != null && minRole(user?.role, Roles.Editor) ? `w99` : `w100`) : `w85`
+        )}`}>
             {loaded ? <>
                 {user != null && minRole(user?.role, Roles.Editor) ? <>
                     <Slider 
