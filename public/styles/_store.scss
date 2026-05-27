@@ -176,14 +176,13 @@
     gap: 8px;
     border: none;
     color: white;
-    display: inline-flex;
     cursor: pointer;
-    min-height: 42px;
     font-size: 13px;
     font-weight: 900;
     align-items: center;
-    text-decoration: none;
     white-space: nowrap;
+    display: inline-flex;
+    text-decoration: none;
     justify-content: center;
     border-radius: var(--borderRadius);
     transition: transform var(--transition), filter var(--transition), opacity var(--transition), background var(--transition);
@@ -222,36 +221,45 @@
 
 .storefrontHeroStats span {
     gap: 6px;
-    display: inline-flex;
-    min-height: 34px;
     font-size: 12px;
+    padding: 0 10px;
+    min-height: 34px;
     font-weight: 800;
     align-items: center;
-    padding: 0 10px;
+    display: inline-flex;
+    background: rgba(0, 0, 0, 0.32);
     border-radius: var(--borderRadius);
     color: rgba(255, 255, 255, 0.88);
-    background: rgba(0, 0, 0, 0.32);
     border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .storefrontHeroFeature {
     gap: 8px;
-    width: min(270px, 34%);
     display: grid;
     padding: 14px;
     min-width: 205px;
     backdrop-filter: blur(14px);
     border-radius: var(--borderRadius);
     background: rgba(5, 14, 29, 0.66);
-    border: 1px solid rgba(var(--storefrontGold), 0.42);
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(var(--storefrontGold), 0.42);
+    &.wFeatured {
+        width: min(590px, 55%);
+    }
+    .productGridCardMetric {
+        padding: 6px;
+    }
+    .storefrontAddButton {
+        padding: 0 12px;
+        min-height: 48px;
+    }
 }
 
 .storefrontHeroFeature span {
     font-size: 11px;
     font-weight: 900;
-    color: rgb(var(--storefrontGold));
     text-transform: uppercase;
+    color: rgb(var(--storefrontGold));
 }
 
 .storefrontHeroFeature strong {
@@ -261,25 +269,23 @@
 
 .storefrontHeroFeature button {
     width: fit-content;
-    min-height: 36px;
-    padding: 0 12px;
     background: rgba(var(--storefrontMint), 0.18);
     border: 1px solid rgba(var(--storefrontMint), 0.42);
 }
 
 .storefrontCartBar {
     top: 76px;
-    z-index: 4;
     gap: 12px;
-    width: min(100%, 1180px);
+    z-index: 4;
     display: flex;
-    margin: -44px auto 0;
     padding: 10px;
     position: sticky;
-    align-items: center;
     border-radius: 8px;
-    justify-content: space-between;
+    align-items: center;
+    margin: -44px auto 0;
+    width: min(100%, 1180px);
     backdrop-filter: blur(14px);
+    justify-content: space-between;
     background: rgba(3, 10, 24, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.16);
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
@@ -482,6 +488,21 @@
         radial-gradient(circle at 0% 0%, rgba(var(--storefrontGold), 0.18), transparent 34%),
         linear-gradient(135deg, rgba(var(--cool_neon_blue_rgb), 0.13), rgba(var(--storefrontRose), 0.08)),
         color-mix(in srgb, var(--navy) 72%, black);
+    .storefrontProductBody {
+        align-content: space-between;
+    }
+}
+
+.storefrontProductIdentifiers {
+    display: flex;
+    grid-gap: 15px;
+    flex-direction: column;
+}
+
+.storefrontProductMetrics {
+    display: flex;
+    grid-gap: 15px;
+    flex-direction: column;
 }
 
 .storefrontProductRibbon {
@@ -496,10 +517,16 @@
     font-weight: 900;
     position: absolute;
     align-items: center;
-    border-radius: var(--borderRadius);
     color: rgb(var(--storefrontGold));
+    border-radius: var(--borderRadius);
     background: rgba(2, 10, 25, 0.74);
     border: 1px solid rgba(var(--storefrontGold), 0.4);
+}
+
+.storeFrontProductCardCartOptions {
+    display: flex;
+    grid-gap: 15px;
+    align-items: center;
 }
 
 .storefrontProductMedia {
@@ -623,7 +650,8 @@
 
 .storefrontAddButton {
     width: 100%;
-    margin-top: auto;
+    font-size: 11px;
+    min-height: 50px;
 }
 
 .storefrontAddButton:disabled {

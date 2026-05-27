@@ -3,23 +3,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import Img from '@/app/components/image/image';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 import { StateGlobals } from '@/shared/global-context';
-import { Product, ProductStatus } from '@/shared/types/models/Product';
+import { Product } from '@/shared/types/models/Product';
 import { richTextToPlainText } from '@/app/components/rich-text/rich-text';
 import { Announcement, AnnouncementStatus } from '@/shared/types/models/Announcement';
 import { formatStorePrice, useStoreCart } from '@/app/components/store/use-store-cart';
+import { StorefrontProductCard, StorefrontProductMedia, isActiveProduct } from './storefront-product-card/storefront-product-card';
 import {
     AddShoppingCart,
     ArrowForward,
     AutoAwesome,
     Brush,
-    Campaign,
     Collections,
     DesignServices,
     Favorite,
-    Inventory2,
     Palette,
     Sell,
     ShoppingBag,
@@ -31,25 +29,7 @@ import { announcementIcons } from './announcement-form/announcement-select-field
 import IconText from '../icon-text/icon-text';
 
 const heroImageURL = `/assets/store/storefront-hero.png`;
-const activeProductStatus = ProductStatus.Active.toLowerCase();
 const activeAnnouncementStatus = AnnouncementStatus.Active.toLowerCase();
-
-const getProductImageURL = (product: Product) => (
-    product?.attachments?.[0]?.value ||
-    product?.imageURL ||
-    product?.imageURLs?.[0] ||
-    product?.images?.[0]?.src ||
-    product?.images?.[0]?.url ||
-    ``
-);
-
-const getProductDescription = (product: Product) => (
-    richTextToPlainText(product?.shortDescription || product?.description || product?.bodyHTML || ``)
-);
-
-const isActiveProduct = (product: Product) => (
-    String(product?.status || ``).toLowerCase() == activeProductStatus
-);
 
 const isActiveAnnouncement = (announcement: Announcement) => (
     String(announcement?.status || (announcement?.active ? AnnouncementStatus.Active : AnnouncementStatus.Draft)).toLowerCase() == activeAnnouncementStatus
@@ -72,114 +52,6 @@ const getCategorySummaries = (products: Product[] = []) => {
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
         .slice(0, 4);
-};
-
-const ProductMedia = ({ product, featured = false }: { product: Product; featured?: boolean }) => {
-    const imageURL = getProductImageURL(product);
-    const [imageError, setImageError] = useState(false);
-    const showFallback = !imageURL || imageError;
-    if (showFallback) {
-        return (
-            <div className={`storefrontProductMedia storefrontProductMediaEmpty ${featured ? `featured` : ``}`.trim()}>
-                <Palette fontSize={`small`} />
-                <strong>{product?.name?.[0] || `A`}</strong>
-            </div>
-        );
-    }
-    return (
-        <div className={`storefrontProductMedia ${featured ? `featured` : ``}`.trim()}>
-            <Img
-                src={imageURL}
-                useLazyLoad={true}
-                width={featured ? 680 : 460}
-                height={featured ? 520 : 420}
-                alt={product?.name || `Art product`}
-                className={`storefrontProductImage`}
-                onImageError={() => setImageError(true)}
-            />
-        </div>
-    );
-};
-
-type StorefrontProductCardProps = {
-    product: Product;
-    featured?: boolean;
-    cartQuantity?: number;
-    onAddToCart: (product: Product) => void;
-};
-
-const StorefrontProductCard = ({
-    product,
-    onAddToCart,
-    featured = false,
-    cartQuantity = 0,
-}: StorefrontProductCardProps) => {
-    const description = getProductDescription(product);
-    const stock = Number(product?.stock ?? product?.inventoryQuantity ?? product?.totalInventory ?? 0);
-    const canAddToCart = isActiveProduct(product) && stock > 0;
-    const price = Number(product?.price || 0);
-    const compareAtPrice = Number(product?.compareAtPrice || 0);
-
-    return (
-        <article className={`storefrontProductCard ${featured ? `featured` : `standard`}`.trim()}>
-            {featured ? (
-                <div className={`storefrontProductRibbon`}>
-                    <Star fontSize={`small`} />
-                    Featured
-                </div>
-            ) : <></>}
-            <ProductMedia product={product} featured={featured} />
-            <div className={`storefrontProductBody`}>
-                <div className={`storefrontProductTopline`}>
-                    <span># {product?.category || `Art`}</span>
-                    {product?.productType ? <span># {product.productType}</span> : <></>}
-                </div>
-                <h3>{product?.name || `Untitled Piece`}</h3>
-                {description ? (
-                    <p className={`lineClamp3`}>
-                        {description}
-                    </p>
-                ) : (
-                    <p className={`lineClamp3`}>
-                        Enter Product Description here for {`"${product?.name}"`}, this is just a placeholder.
-                    </p>
-                )}
-                <div className={`storefrontProductMeta`}>
-                    <div className={`storefrontProductPrice`}>
-                        <IconText 
-                            dollarSign 
-                            format={false} 
-                            number={price / 100} 
-                            className={`stockText`} 
-                        />
-                        {compareAtPrice > price ? (
-                            <IconText 
-                                dollarSign 
-                                format={false} 
-                                className={`stockText`} 
-                                number={compareAtPrice / 100} 
-                            />
-                        ) : <></>}
-                    </div>
-                    <div className={`storefrontProductStock ${canAddToCart ? (stock > 25 ? `colorWarning` : ``) : `muted`}`.trim()}>
-                        <Inventory2 fontSize={`small`} />
-                        {canAddToCart ? (stock > 25 ? `Almost Out` : `In Stock`) : `Sold Out`}
-                        {/* {canAddToCart ? `${stock} Available` : `Sold Out`} */}
-                    </div>
-                </div>
-                <button
-                    type={`button`}
-                    disabled={!canAddToCart}
-                    className={`storefrontAddButton`}
-                    onClick={() => onAddToCart(product)}
-                    aria-label={`${canAddToCart ? `Add` : `Unavailable`} ${product?.name || `product`} to cart`}
-                >
-                    <AddShoppingCart fontSize={`small`} />
-                    {cartQuantity > 0 ? `Add Another` : `Add To Cart`}
-                </button>
-            </div>
-        </article>
-    );
 };
 
 const StorefrontAnnouncement = ({ announcement }: { announcement: Announcement }) => {
@@ -213,8 +85,8 @@ export default function Storefront({
 }: StorefrontProps) {
     const {
         products = [],
-        productsLoading = false,
         announcements = [],
+        productsLoading = false,
         announcementsLoading = false,
     } = useContext<any>(StateGlobals);
     const catalogProducts = (productsProp || products || []) as Product[];
@@ -224,6 +96,9 @@ export default function Storefront({
         cartCount,
         cartTotal,
         addToCart,
+        upsertCartItemQuantity,
+        increaseCartItemQuantity,
+        decreaseCartItemQuantity,
     } = useStoreCart();
 
     const activeProducts = useMemo(() => (
@@ -246,6 +121,10 @@ export default function Storefront({
         const added = addToCart(product);
         if (added !== false) toast.success(`${product?.name || `Product`} Added To Cart`);
     };
+
+    const getCartItem = (product: Product) => (
+        cart.find((item) => String(item?.id) == String(product?.id)) || null
+    );
 
     return (
         <section className={`storefrontComponent ${className}`.trim()}>
@@ -286,20 +165,32 @@ export default function Storefront({
                         </div>
                     </div>
                     {heroProduct ? (
-                        <div className={`storefrontHeroFeature`} aria-label={`Featured product`}>
-                            {featuredProducts?.length > 0 ? <span>Featured Now</span> : <></>}
-                            <ProductMedia product={heroProduct} featured={heroProduct?.featured} />
-                            <strong>{heroProduct?.name}</strong>
-                            <button type={`button`} onClick={() => addProductToCart(heroProduct)}>
-                                <AddShoppingCart fontSize={`small`} />
-                                {formatStorePrice(Number(heroProduct?.price || 0))}
-                            </button>
-                            {/* <StorefrontProductCard
-                                product={heroProduct}
-                                key={String(heroProduct?.id)}
-                                onAddToCart={addProductToCart}
-                                cartQuantity={cart.find(item => String(item?.id) == String(heroProduct?.id))?.quantity || 0}
-                            /> */}
+                        <div className={`storefrontHeroFeature ${featuredProducts?.length > 0 ? `wFeatured` : ``}`} aria-label={`Featured product`}>
+                            {featuredProducts?.length > 0 ? <>
+                                <StorefrontProductCard
+                                    product={heroProduct}
+                                    key={String(heroProduct?.id)}
+                                    onAddToCart={addProductToCart}
+                                    featured={heroProduct?.featured}
+                                    cartItem={getCartItem(heroProduct)}
+                                    onSaveCartQuantity={upsertCartItemQuantity}
+                                    onIncreaseCartQuantity={increaseCartItemQuantity}
+                                    onDecreaseCartQuantity={decreaseCartItemQuantity}
+                                    cartQuantity={getCartItem(heroProduct)?.quantity || 0}
+                                />
+                            </> : <>
+                                <StorefrontProductMedia product={heroProduct} featured={heroProduct?.featured} />
+                                <strong>{heroProduct?.name}</strong>
+                                <button type={`button`} onClick={() => addProductToCart(heroProduct)}>
+                                    <AddShoppingCart fontSize={`small`} />
+                                    <IconText
+                                        dollarSign
+                                        format={false}
+                                        className={`stockText`}
+                                        number={heroProduct?.price / 100}
+                                    />
+                                </button>
+                            </>}
                         </div>
                     ) : <></>}
                 </div>
@@ -347,22 +238,29 @@ export default function Storefront({
                             <h2>Collector-ready pieces with extra spotlight.</h2>
                         </div>
                         <div className={`storefrontFeaturedGrid`}>
-                            {featuredProducts.map(product => (
-                                <StorefrontProductCard
-                                    featured
-                                    product={product}
-                                    key={String(product?.id)}
-                                    onAddToCart={addProductToCart}
-                                    cartQuantity={cart.find(item => String(item?.id) == String(product?.id))?.quantity || 0}
-                                />
-                            ))}
+                            {featuredProducts.map(product => {
+                                const cartItem = getCartItem(product);
+                                return (
+                                    <StorefrontProductCard
+                                        featured
+                                        product={product}
+                                        cartItem={cartItem}
+                                        key={String(product?.id)}
+                                        onAddToCart={addProductToCart}
+                                        cartQuantity={cartItem?.quantity || 0}
+                                        onSaveCartQuantity={upsertCartItemQuantity}
+                                        onIncreaseCartQuantity={increaseCartItemQuantity}
+                                        onDecreaseCartQuantity={decreaseCartItemQuantity}
+                                    />
+                                );
+                            })}
                         </div>
                     </section>
                 ) : <></>}
 
                 <section id={`storefront-products`} className={`storefrontSection storefrontProductsSection`}>
                     <div className={`storefrontSectionIntro`}>
-                        {/* <span><Collections fontSize={`small`} /> Shop The Collection</span> */}
+                        <span><Collections fontSize={`small`} /> Shop The Collection</span>
                         <h2>{standardProducts.length > 0 ? `Fresh stickers, prints, graphics, and originals.` : `The next collection is on the table.`}</h2>
                     </div>
                     {isLoading ? (
@@ -371,14 +269,21 @@ export default function Storefront({
                         </div>
                     ) : standardProducts.length > 0 ? (
                         <div className={`storefrontProductGrid`}>
-                            {standardProducts.map(product => (
-                                <StorefrontProductCard
-                                    product={product}
-                                    key={String(product?.id)}
-                                    onAddToCart={addProductToCart}
-                                    cartQuantity={cart.find(item => String(item?.id) == String(product?.id))?.quantity || 0}
-                                />
-                            ))}
+                            {standardProducts.map(product => {
+                                const cartItem = getCartItem(product);
+                                return (
+                                    <StorefrontProductCard
+                                        product={product}
+                                        cartItem={cartItem}
+                                        key={String(product?.id)}
+                                        onAddToCart={addProductToCart}
+                                        cartQuantity={cartItem?.quantity || 0}
+                                        onSaveCartQuantity={upsertCartItemQuantity}
+                                        onIncreaseCartQuantity={increaseCartItemQuantity}
+                                        onDecreaseCartQuantity={decreaseCartItemQuantity}
+                                    />
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className={`storefrontEmptyState`}>
