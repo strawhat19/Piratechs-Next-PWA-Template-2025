@@ -916,7 +916,7 @@ export default function ProductsTable({
         { width: 150, field: `status`, headerName: `Status`, renderCell: ({ row, value }: any) => <ProductStatusCell row={row} value={value} /> },
         { width: 165, field: `category`, headerName: `Category`, renderCell: ({ row, value }: any) => <ProductCategoryCell row={row} value={value} /> },
         { width: 165, field: `productType`, headerName: `Type`, renderCell: ({ row, value }: any) => <ProductTypeCell row={row} value={value} /> },
-        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
+        { field: `id`, headerName: `UID`, width: 333, flex: 1 },
         {
             width: 150,
             minWidth: 150,

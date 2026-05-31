@@ -271,7 +271,7 @@ export default function UsersTable({
         { field: `lastSignIn`, headerName: `Last Sign In`, width: 160, },
         { field: `updated`, headerName: `Updated`, width: 165, },
         { field: `email`, headerName: `Email`, width: 175 },
-        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
+        { field: `id`, headerName: `UID`, width: 333, flex: 1 },
         {
             minWidth: 150,
             field: `signedIn`,

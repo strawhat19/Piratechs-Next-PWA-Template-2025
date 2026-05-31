@@ -189,7 +189,7 @@
 }
 
 .storefrontHeroActions a {
-    padding: 0 16px;
+    padding: 5px 16px;
 }
 
 .storefrontPrimaryAction,
@@ -245,6 +245,7 @@
     border: 1px solid rgba(var(--storefrontGold), 0.42);
     &.wFeatured {
         width: min(590px, 55%);
+        border-radius: calc(var(--borderRadius) + 12px);
     }
     .productGridCardMetric {
         padding: 6px;
@@ -507,12 +508,12 @@
 
 .storefrontProductRibbon {
     gap: 5px;
-    top: 12px;
-    left: 12px;
+    top: 10px;
+    left: 10px;
     z-index: 2;
-    height: 30px;
+    height: 26px;
     display: flex;
-    padding: 0 9px;
+    padding: 0 5px;
     font-size: 11px;
     font-weight: 900;
     position: absolute;
@@ -2004,7 +2005,7 @@
 
 .cartDrawerPaper {
     padding: 18px;
-    width: min(485px, 94vw);
+    width: min(520px, 94vw);
     color: white !important;
     background: var(--navy) !important;
 }

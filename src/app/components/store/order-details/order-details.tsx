@@ -43,7 +43,7 @@ export default function OrderDetails({
           <DetailRow label={`Total`} value={formatMoney(order?.amountTotal || order?.amount)} />
           <DetailRow label={`Payment`} value={order?.paymentMethod?.brand || order?.paymentMethod?.type} />
           <DetailRow label={`Created`} value={order?.stripeCreated || order?.created} />
-          <DetailRow label={`UUID`} value={order?.id} />
+          <DetailRow label={`UID`} value={order?.id} />
           <DetailRow label={`Receipt`} value={order?.stripe_receipt_url || order?.receiptURL || `-`} />
         </div>
         {order?.stripe_receipt_url ? (

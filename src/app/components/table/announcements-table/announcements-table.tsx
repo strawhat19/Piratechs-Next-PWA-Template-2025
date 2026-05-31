@@ -552,7 +552,7 @@ export default function AnnouncementsTable({
         { width: 155, field: `status`, headerName: `Status`, renderCell: ({ row }: any) => <AnnouncementStatusCell row={row} /> },
         { field: `created`, headerName: `Created`, width: 155 },
         { field: `updated`, headerName: `Updated`, width: 155 },
-        { field: `id`, headerName: `UUID`, width: 333, flex: 1 },
+        { field: `id`, headerName: `UID`, width: 333, flex: 1 },
         {
             width: 170,
             minWidth: 170,

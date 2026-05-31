@@ -41,7 +41,7 @@ export default function UserDetails({
           <DetailRow label={`Signed In`} value={user?.signedIn ? `Yes` : `No`} />
           <DetailRow label={`Created`} value={user?.created} />
           <DetailRow label={`Updated`} value={user?.updated} />
-          <DetailRow label={`UUID`} value={user?.id} />
+          <DetailRow label={`UID`} value={user?.id} />
           <DetailRow label={`Last Sign In`} value={user?.lastSignIn} />
         </div>
       </div>

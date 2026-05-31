@@ -467,8 +467,8 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
         setOrdersLoading(true);
         const ordersDB = collection(db, Tables.orders).withConverter(orderConverter);
         const ordersDBQueryListener = onSnapshot(ordersDB, ordersDBDocs => {
-            const dbOrders = ordersDBDocs.docs.map(d => new StoreOrder(d.data()));
-            // ?.sort((a, b) => new Date(b?.stripe_created || b?.stripeCreated || b?.created || 0).getTime() - new Date(a?.stripe_created || a?.stripeCreated || a?.created || 0).getTime());
+            const dbOrders = ordersDBDocs.docs.map(d => new StoreOrder(d.data()))?.sort((a, b) => a?.number - b?.number);
+            // ?.sort((a, b) => new Date(a?.stripe_created || a?.stripeCreated || a?.created || 0).getTime() - new Date(b?.stripe_crebted || b?.stripeCrebted || b?.created || 0).getTime());
             setOrders(dbOrders);
             setOrdersLoading(false);
             dev() && console.log(`Order(s)`, dbOrders);
