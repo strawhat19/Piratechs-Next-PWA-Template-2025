@@ -92,7 +92,7 @@
 
 .tableGridCardSlot {
     &:has(.featured) {
-        grid-column: 1 / -1;
+        grid-column: 2 / -1;
         .dataDisplayCard {
             display: flex;
             flex-direction: row;
