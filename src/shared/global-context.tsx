@@ -12,10 +12,10 @@ import { Position } from './types/models/stocks/Position';
 import { Announcement } from './types/models/Announcement';
 import { Order as StoreOrder } from './types/models/Order';
 import { Order as StockOrder } from './types/models/stocks/Order';
-import { AuthStates, RobinhoodAccountTypes } from '@/shared/types/types';
 import { defaultBoardForm } from '@/app/components/board/form/board-form';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AuthStates, RobinhoodAccountTypes, Roles } from '@/shared/types/types';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { robinhoodAccountsDefault } from './server/database/samples/stocks/robinhood/robinhood';
 import { sampleStockAccount, sampleStocksDB } from '@/shared/server/database/samples/stocks/stocks';
@@ -405,7 +405,7 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
                 listenForUserAuthChanges = onAuthStateChanged(auth, async (usr) => {
                     if (usr) {
                         if (usr?.uid) {
-                            let thisUser = users.find((us: User) => us?.uid == usr?.uid);
+                            let thisUser = users.find((us: User) => us?.role != Roles.Guest && (us?.uid == usr?.uid || (us?.email?.toLowerCase() == usr?.email?.toLowerCase())));
                             if (thisUser) {
                                 onSignIn(thisUser, true);
                             }
