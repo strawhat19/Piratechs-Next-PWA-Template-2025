@@ -6,6 +6,7 @@ import './container.scss';
 
 import Logo from '../logo/logo';
 import TopBar from '../topbar/topbar';
+import Loader from '../loaders/loader';
 import { useContext, useEffect } from 'react';
 import Header from '../headers/header/header';
 import Footer from '../footers/footer/footer';
@@ -15,7 +16,6 @@ import { ToastContainer } from 'react-toastify';
 import { constants, devEnv } from '@/shared/scripts/constants';
 import { getPageName, StateGlobals } from '@/shared/global-context';
 import HorizontalScroller from '../horizontal-scroller/horizontal-scroller';
-import Loader from '../loaders/loader';
 
 const BodyClassManager = ({ className }: { className: string }) => {
     useEffect(() => {
