@@ -40,16 +40,16 @@ export const POST = async (request: Request) => {
         const description = lineItems.map((item) => `${item.name} x${item.quantity}`).join(`, `).slice(0, 500);
         const metadataItems = JSON.stringify(lineItems.map((item) => ({
             name: item.name,
-            quantity: item.quantity,
             amount: item.amount,
+            quantity: item.quantity,
         }))).slice(0, 500);
 
         const params = new URLSearchParams({
-            amount: String(amount),
-            currency: `usd`,
             description,
-            [`automatic_payment_methods[enabled]`]: `true`,
+            currency: `usd`,
+            amount: String(amount),
             [`metadata[cart_items]`]: metadataItems,
+            [`automatic_payment_methods[enabled]`]: `true`,
         });
         setStripeMetadataParams(params, stripeOrderMetadata(order));
 

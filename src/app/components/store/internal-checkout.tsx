@@ -37,8 +37,8 @@ type PaymentFormProps = InternalCheckoutProps & {
 const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentFormProps) => {
     const stripe = useStripe();
     const elements = useElements();
-    const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState(``);
+    const [submitting, setSubmitting] = useState(false);
 
     const submitPayment = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -193,7 +193,11 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
     if (message) return <p className={`internalCheckoutMessage`}>{message}</p>;
 
     if (loading || !clientSecret || !checkoutStripe) {
-        return <p className={`internalCheckoutMessage`}>Preparing secure checkout...</p>;
+        return (
+            <p className={`internalCheckoutMessage`}>
+                Preparing secure checkout...
+            </p>
+        );
     }
 
     return (
@@ -204,10 +208,10 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                 appearance: {
                     theme: `night`,
                     variables: {
+                        borderRadius: `5px`,
+                        colorText: `#ffffff`,
                         colorPrimary: `#13deb9`,
                         colorBackground: `#041b44`,
-                        colorText: `#ffffff`,
-                        borderRadius: `5px`,
                     },
                 },
             }}
