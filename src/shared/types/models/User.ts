@@ -84,6 +84,7 @@ export class User extends Data {
   validSince?: string = ``;
   customerData?: any = {};
   customerID?: number | string;
+  stripeCustomerID?: string = ``;
   shopifyID?: number | string;
   value?: string | number;
   paymentMethods?: PaymentMethodSummary[] = [];

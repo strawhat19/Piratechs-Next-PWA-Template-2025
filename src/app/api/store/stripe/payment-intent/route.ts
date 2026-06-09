@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { stripePaymentsDisabledMessage, stripePaymentsEnabled } from '@/shared/scripts/payments';
-import { createPendingStripeOrder, getStripeServerKey, normalizeStripeLineItems, setStripeMetadataParams, stripeApiVersion, stripeOrderMetadata } from '@/shared/server/stripe-orders';
+import { createPendingStripeOrder, createStripeCustomerSession, getOrCreateStripeCustomer, getStripeServerKey, normalizeStripeLineItems, saveUserStripeCustomerID, setStripeMetadataParams, stripeApiVersion, stripeOrderMetadata } from '@/shared/server/stripe-orders';
 
 type PaymentIntentRequest = {
     items?: PaymentIntentItem[];
     userID?: string;
     userEmail?: string;
     userName?: string;
+    stripeCustomerID?: string;
 };
 
 type PaymentIntentItem = {
@@ -44,6 +45,21 @@ export const POST = async (request: Request) => {
             quantity: item.quantity,
         }))).slice(0, 500);
 
+        let stripeCustomerID = ``;
+        let customerSessionClientSecret = ``;
+        if (body?.userEmail) {
+            try {
+                stripeCustomerID = await getOrCreateStripeCustomer(stripeServerKey, { userID: body?.userID, userEmail: body?.userEmail, userName: body?.userName, stripeCustomerID: body?.stripeCustomerID });
+                if (stripeCustomerID) {
+                    await saveUserStripeCustomerID(body?.userID, stripeCustomerID);
+                    customerSessionClientSecret = await createStripeCustomerSession(stripeServerKey, stripeCustomerID);
+                }
+            } catch {
+                stripeCustomerID = ``;
+                customerSessionClientSecret = ``;
+            }
+        }
+
         const params = new URLSearchParams({
             description,
             currency: `usd`,
@@ -51,6 +67,11 @@ export const POST = async (request: Request) => {
             [`metadata[cart_items]`]: metadataItems,
             [`automatic_payment_methods[enabled]`]: `true`,
         });
+        if (stripeCustomerID) {
+            params.set(`customer`, stripeCustomerID);
+            params.set(`setup_future_usage`, `off_session`);
+        }
+        if (body?.userEmail) params.set(`receipt_email`, body.userEmail);
         setStripeMetadataParams(params, stripeOrderMetadata(order));
 
         const stripeResponse = await fetch(`https://api.stripe.com/v1/payment_intents`, {
@@ -76,6 +97,8 @@ export const POST = async (request: Request) => {
             ok: true,
             orderID: order.id,
             clientSecret: paymentIntent?.client_secret,
+            customerSessionClientSecret,
+            customerID: stripeCustomerID,
             id: paymentIntent?.id,
         });
     } catch (error) {

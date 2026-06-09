@@ -7,6 +7,7 @@ export type StripeOrderCustomer = {
   userID?: string;
   userEmail?: string;
   userName?: string;
+  stripeCustomerID?: string;
 }
 
 export type StripeCartItem = {
@@ -98,6 +99,73 @@ export const retrieveRecentStripePaymentIntents = (stripeServerKey: string, limi
   params.append(`expand[]`, `data.latest_charge`);
   params.append(`expand[]`, `data.payment_method`);
   return fetchStripeAPI(stripeServerKey, `payment_intents`, params);
+}
+
+export const postStripeAPI = async (stripeServerKey: string, path: string, params: URLSearchParams) => {
+  const response = await fetch(`https://api.stripe.com/v1/${path}`, {
+    method: `POST`,
+    headers: {
+      Authorization: `Bearer ${stripeServerKey}`,
+      [`Content-Type`]: `application/x-www-form-urlencoded`,
+      [`Stripe-Version`]: stripeApiVersion,
+    },
+    body: params,
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data?.error?.message || `Unable to complete Stripe request.`);
+  return data;
+}
+
+const findStripeCustomerByEmail = async (stripeServerKey: string, email?: string) => {
+  if (!email) return null;
+  const params = new URLSearchParams();
+  params.set(`email`, email);
+  params.set(`limit`, `1`);
+  const data = await fetchStripeAPI(stripeServerKey, `customers`, params);
+  return Array.isArray(data?.data) ? data.data[0] || null : null;
+}
+
+export const getOrCreateStripeCustomer = async (stripeServerKey: string, customer: StripeOrderCustomer = {}) => {
+  const { userID, userEmail, userName, stripeCustomerID } = customer;
+  if (stripeCustomerID && String(stripeCustomerID).startsWith(`cus_`)) {
+    try {
+      const existingCustomer = await fetchStripeAPI(stripeServerKey, `customers/${stripeCustomerID}`);
+      if (existingCustomer?.id && !existingCustomer?.deleted) return String(existingCustomer.id);
+    } catch {
+      // Stored customer is missing or invalid - fall through to lookup/create.
+    }
+  }
+  const matchedCustomer = await findStripeCustomerByEmail(stripeServerKey, userEmail);
+  if (matchedCustomer?.id) return String(matchedCustomer.id);
+  const params = new URLSearchParams();
+  if (userEmail) params.set(`email`, userEmail);
+  if (userName) params.set(`name`, userName);
+  if (userID) params.set(`metadata[app_user_id]`, String(userID).slice(0, 500));
+  const createdCustomer = await postStripeAPI(stripeServerKey, `customers`, params);
+  return createdCustomer?.id ? String(createdCustomer.id) : ``;
+}
+
+export const createStripeCustomerSession = async (stripeServerKey: string, customerID: string) => {
+  if (!customerID) return ``;
+  const params = new URLSearchParams();
+  params.set(`customer`, customerID);
+  params.set(`components[payment_element][enabled]`, `true`);
+  params.set(`components[payment_element][features][payment_method_redisplay]`, `enabled`);
+  params.set(`components[payment_element][features][payment_method_remove]`, `enabled`);
+  [`always`, `limited`, `unspecified`].forEach((value, index) => {
+    params.set(`components[payment_element][features][payment_method_allow_redisplay_filters][${index}]`, value);
+  });
+  const customerSession = await postStripeAPI(stripeServerKey, `customer_sessions`, params);
+  return customerSession?.client_secret ? String(customerSession.client_secret) : ``;
+}
+
+export const saveUserStripeCustomerID = async (userID?: string, stripeCustomerID?: string) => {
+  if (!userID || !stripeCustomerID) return;
+  const userRef = doc(db, Tables.users, userID);
+  const userSnap = await getDoc(userRef);
+  const userData = userSnap.exists() ? userSnap.data() : {};
+  if (userData?.stripeCustomerID == stripeCustomerID) return;
+  await setDoc(userRef, { stripeCustomerID, updated: customDate()?.datetime }, { merge: true });
 }
 
 const getStripeObject = (value: any) => value && typeof value == `object` ? value : {};

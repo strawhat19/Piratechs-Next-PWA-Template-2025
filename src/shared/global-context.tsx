@@ -179,12 +179,11 @@ export default function GlobalProvider({ children }: { children: React.ReactNode
 
     const onSignIn = (usr: User, showSuccess = false) => {
         if (user != null) return;
-        if (usr?.id != (user as any)?.id) {
-            setUser(usr);
-            if (usr?.signedIn == false) {
-                let { datetime } = customDate();
-                updateUserInDatabase(usr?.id, { lastSignIn: datetime, signedIn: true }, true);
-            }
+        if (!usr?.id) return;
+        setUser(usr);
+        if (usr?.signedIn == false) {
+            let { datetime } = customDate();
+            updateUserInDatabase(usr?.id, { lastSignIn: datetime, signedIn: true }, true);
         }
         setAuthState(AuthStates.Sign_Out);
         if (showSuccess) {

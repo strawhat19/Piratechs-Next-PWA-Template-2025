@@ -31,10 +31,12 @@ type InternalCheckoutProps = {
 
 type PaymentFormProps = InternalCheckoutProps & {
     clientSecret: string;
+    customerEmail?: string;
+    customerName?: string;
     onPaymentConfirmed: (paymentIntentID: string) => Promise<void>;
 };
 
-const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentFormProps) => {
+const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed, customerEmail, customerName }: PaymentFormProps) => {
     const stripe = useStripe();
     const elements = useElements();
     const [message, setMessage] = useState(``);
@@ -91,7 +93,7 @@ const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentForm
                 </div>
                 <Lock fontSize={`small`} />
             </div>
-            <PaymentElement />
+            <PaymentElement options={{ defaultValues: { billingDetails: { email: customerEmail || ``, name: customerName || `` } } }} />
             {message ? <p className={`internalCheckoutMessage`}>{message}</p> : null}
             <button type={`submit`} className={`checkoutCartButton`} disabled={!stripe || !elements || submitting}>
                 {submitting ? `Processing...` : `Pay ${total}`}
@@ -103,6 +105,7 @@ const PaymentForm = ({ cart, total, onSuccess, onPaymentConfirmed }: PaymentForm
 export default function InternalCheckout({ cart, total, onSuccess }: InternalCheckoutProps) {
     const { user } = useContext<any>(StateGlobals);
     const [clientSecret, setClientSecret] = useState(``);
+    const [customerSessionClientSecret, setCustomerSessionClientSecret] = useState(``);
     const [message, setMessage] = useState(``);
     const [loading, setLoading] = useState(false);
     const [checkoutStripe, setCheckoutStripe] = useState<Stripe | null>(null);
@@ -117,6 +120,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
         const createPaymentIntent = async () => {
             if (cart.length == 0) {
                 setClientSecret(``);
+                setCustomerSessionClientSecret(``);
                 return;
             }
 
@@ -145,6 +149,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                         userID: user?.id,
                         userEmail: user?.email,
                         userName: user?.name,
+                        stripeCustomerID: user?.stripeCustomerID,
                         items: cart.map((item) => ({
                             id: item.id,
                             sku: item.sku,
@@ -163,6 +168,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                 }
 
                 setClientSecret(paymentIntent.clientSecret);
+                setCustomerSessionClientSecret(paymentIntent.customerSessionClientSecret || ``);
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : `Unable To Start Internal Checkout`;
                 setMessage(errorMessage);
@@ -205,6 +211,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
             stripe={checkoutStripe}
             options={{
                 clientSecret,
+                customerSessionClientSecret: customerSessionClientSecret || undefined,
                 appearance: {
                     theme: `night`,
                     variables: {
@@ -216,7 +223,7 @@ export default function InternalCheckout({ cart, total, onSuccess }: InternalChe
                 },
             }}
         >
-            <PaymentForm cart={cart} total={total} clientSecret={clientSecret} onSuccess={onSuccess} onPaymentConfirmed={onPaymentConfirmed} />
+            <PaymentForm cart={cart} total={total} clientSecret={clientSecret} customerEmail={user?.email} customerName={user?.name} onSuccess={onSuccess} onPaymentConfirmed={onPaymentConfirmed} />
         </Elements>
     );
 }
